@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tt-qimen · 启门 · 首页（现代简约）</title>
+  <link rel="stylesheet" href="../assets/minimal.css">
+  <style>
+    /* 首页样式 */
+    .hero {
+      padding: var(--mn-space-16) 0 var(--mn-space-12);
+      text-align: center;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--mn-space-2);
+      padding: 6px 14px;
+      font-size: 12px;
+      background-color: var(--mn-accent-soft);
+      color: var(--mn-accent);
+      border-radius: 999px;
+      margin-bottom: var(--mn-space-6);
+      font-weight: 500;
+    }
+
+    .hero-eyebrow .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--mn-accent);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .hero-title {
+      font-size: clamp(48px, 8vw, 88px);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      margin: 0;
+      color: var(--mn-ink);
+    }
+
+    .hero-title .accent {
+      background: linear-gradient(135deg, var(--mn-accent) 0%, #6b4a99 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 18px;
+      color: var(--mn-ink-soft);
+      line-height: 1.6;
+      margin: var(--mn-space-6) auto 0;
+      max-width: 560px;
+    }
+
+    .hero-cta {
+      display: flex;
+      justify-content: center;
+      gap: var(--mn-space-3);
+      margin-top: var(--mn-space-10);
+      flex-wrap: wrap;
+    }
+
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: var(--mn-space-10);
+      margin-top: var(--mn-space-12);
+      padding-top: var(--mn-space-8);
+      border-top: 1px solid var(--mn-border);
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-num {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--mn-ink);
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--mn-ink-muted);
+      margin-top: 4px;
+    }
+
+    /* 今日黄历 */
+    .huangli-today {
+      max-width: 900px;
+      margin: 0 auto var(--mn-space-16);
+      background: linear-gradient(135deg, var(--mn-bg-elev) 0%, #f5f3ed 100%);
+      border: 1px solid var(--mn-border);
+      border-radius: var(--mn-radius-lg);
+      padding: var(--mn-space-8);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: var(--mn-space-8);
+      align-items: center;
+    }
+
+    .hl-date {
+      text-align: center;
+      padding-right: var(--mn-space-6);
+      border-right: 1px solid var(--mn-border);
+    }
+
+    .hl-day {
+      font-size: 56px;
+      font-weight: 700;
+      color: var(--mn-ink);
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .hl-month {
+      font-size: 13px;
+      color: var(--mn-ink-muted);
+      margin-top: var(--mn-space-2);
+    }
+
+    .hl-info-label {
+      font-size: 11px;
+      color: var(--mn-ink-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: var(--mn-space-1);
+    }
+
+    .hl-yi-row,
+    .hl-ji-row {
+      display: flex;
+      align-items: center;
+      gap: var(--mn-space-3);
+      margin-top: var(--mn-space-3);
+    }
+
+    .hl-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 10px;
+      font-size: 11px;
+      border-radius: 999px;
+      font-weight: 500;
+    }
+
+    .hl-tag.yi {
+      background-color: #dcfce7;
+      color: #166534;
+    }
+
+    .hl-tag.ji {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+
+    .hl-content {
+      color: var(--mn-ink);
+      font-size: 14px;
+    }
+
+    /* 模块网格 */
+    .modules-section {
+      padding: var(--mn-space-12) 0;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: var(--mn-space-10);
+    }
+
+    .section-title {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin: 0;
+    }
+
+    .section-sub {
+      color: var(--mn-ink-soft);
+      margin-top: var(--mn-space-3);
+      font-size: 15px;
+    }
+
+    .module-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--mn-space-5);
+    }
+
+    .module-card {
+      position: relative;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .module-card .mn-card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 220px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .module-card .mn-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--mn-accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+
+    .module-card:hover .mn-card::before {
+      transform: scaleX(1);
+    }
+
+    .module-card:hover .mn-card {
+      transform: translateY(-4px);
+      box-shadow: var(--mn-shadow-md);
+      border-color: var(--mn-accent);
+    }
+
+    .module-icon {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--mn-accent-soft);
+      color: var(--mn-accent);
+      border-radius: var(--mn-radius-md);
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: var(--mn-space-4);
+    }
+
+    .module-card .mn-card-title {
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: var(--mn-space-2);
+    }
+
+    .module-tags {
+      display: flex;
+      gap: var(--mn-space-2);
+      flex-wrap: wrap;
+      margin-top: auto;
+      padding-top: var(--mn-space-4);
+    }
+
+    .module-arrow {
+      position: absolute;
+      top: var(--mn-space-6);
+      right: var(--mn-space-6);
+      color: var(--mn-ink-muted);
+      font-size: 20px;
+      transition: all 0.2s;
+    }
+
+    .module-card:hover .module-arrow {
+      color: var(--mn-accent);
+      transform: translate(4px, -4px);
+    }
+
+    /* 特性 */
+    .features-section {
+      padding: var(--mn-space-12) 0;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: var(--mn-space-5);
+    }
+
+    .feature {
+      padding: var(--mn-space-5) 0;
+    }
+
+    .feature-icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--mn-accent-soft);
+      color: var(--mn-accent);
+      border-radius: var(--mn-radius-md);
+      font-size: 20px;
+      margin-bottom: var(--mn-space-3);
+    }
+
+    .feature-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0 0 var(--mn-space-2);
+    }
+
+    .feature-desc {
+      font-size: 14px;
+      color: var(--mn-ink-soft);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    @media (max-width: 768px) {
+      .huangli-today {
+        grid-template-columns: 1fr;
+        gap: var(--mn-space-5);
+        padding: var(--mn-space-5);
+      }
+
+      .hl-date {
+        padding-right: 0;
+        border-right: none;
+        border-bottom: 1px solid var(--mn-border);
+        padding-bottom: var(--mn-space-4);
+      }
+
+      .hero-stats {
+        gap: var(--mn-space-5);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="prototype-badge">Minimal · Home</div>
+  <div class="mn-disclaimer">内容仅供文化体验与娱乐参考，不构成专业建议</div>
+
+  <header class="mn-header">
+    <div class="mn-header-inner">
+      <a href="index.html" class="mn-logo">
+        <span class="mn-logo-mark">启</span>
+        tt-qimen
+      </a>
+      <nav class="mn-nav">
+        <a href="index.html" class="active">首页</a>
+        <a href="bazi.html">八字</a>
+        <a href="ziwei.html">紫微</a>
+        <a href="chenggu.html">称骨</a>
+        <a href="liuren.html">小六壬</a>
+        <a href="lingqian.html">灵签</a>
+        <a href="xingming.html">姓名</a>
+        <a href="huangli.html">黄历</a>
+        <a href="jiemeng.html">解梦</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="mn-container">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-eyebrow">
+        <span class="dot"></span>
+        MVP v1.0 · 七模块全面上线
+      </div>
+      <h1 class="hero-title">
+        一站式<br>
+        <span class="accent">传统命理</span>体验
+      </h1>
+      <p class="hero-subtitle">
+        基于开源算法库与公版古籍，离线运行、尊重隐私。<br>
+        在浏览器中体验七种中国传统占卜方术。
+      </p>
+      <div class="hero-cta">
+        <a href="bazi.html" class="mn-btn mn-btn-lg">
+          立即排盘
+          <span>→</span>
+        </a>
+        <a href="#modules" class="mn-btn mn-btn-lg mn-btn-outline">
+          浏览模块
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-num">7</div>
+          <div class="stat-label">占卜方法</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">2380</div>
+          <div class="stat-label">解梦词条</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">100</div>
+          <div class="stat-label">观音灵签</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">∞</div>
+          <div class="stat-label">完全离线</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 今日黄历 -->
+    <div class="huangli-today">
+      <div class="hl-date">
+        <div class="hl-day">18</div>
+        <div class="hl-month">四月 · 周六</div>
+        <div class="hl-month" style="margin-top: 4px;">农历三月初二</div>
+      </div>
+      <div>
+        <div>
+          <div class="hl-info-label">今日干支</div>
+          <div class="hl-content" style="font-weight: 500;">丙午年 · 壬辰月 · 辛卯日</div>
+        </div>
+        <div class="hl-yi-row">
+          <span class="hl-tag yi">宜</span>
+          <span class="hl-content">祭祀 · 祈福 · 出行 · 会友 · 签约</span>
+        </div>
+        <div class="hl-ji-row">
+          <span class="hl-tag ji">忌</span>
+          <span class="hl-content">动土 · 嫁娶 · 开业</span>
+        </div>
+      </div>
+      <a href="huangli.html" class="mn-btn mn-btn-outline">
+        查看完整黄历
+        <span>→</span>
+      </a>
+    </div>
+
+    <!-- 模块网格 -->
+    <section class="modules-section" id="modules">
+      <div class="section-header">
+        <h2 class="section-title">七大模块</h2>
+        <p class="section-sub">点击任一卡片，开始你的占卜之旅</p>
+      </div>
+      <div class="module-grid">
+        <a href="bazi.html" class="module-card">
+          <div class="mn-card mn-card-interactive">
+            <div class="module-icon">八</div>
+            <h3 class="mn-card-title">
+              八字命盘
+              <span class="mn-badge">核心</span>
+            </h3>
+            <p class="mn-card-desc">
+              四柱推演、五行强弱、十神格局、大运流年全览。
+            </p>
+            <div class="module-tags">
+              <span class="mn-badge">专业</span>
+              <span class="mn-badge-neutral mn-badge">含大运</span>
+              <span class="mn-badge-neutral mn-badge">含流年</span>
+            </div>
+            <span class="module-arrow">→</span>
+          </div>
+        </a>
+        <a href="ziwei.html" class="module-card">
+          <div class="mn-card mn-card-interactive">
+            <div class="module-icon">紫</div>
+            <h3 class="mn-card-title">
+              紫微斗数
+              <span class="mn-badge">核心</span>
+            </h3>
+            <p class="mn-card-desc">
+              十二宫推演、主星副星、四化飞星、大限小限全覆盖。
+            </p>
+            <div class="module-tags">
+              <span class="mn-badge">专业</span>
+              <span class="mn-badge-neutral mn-badge">12 宫</span>
+              <span class="mn-badge-neutral mn-badge">四化</span>
+            </div>
+            <span class="module-arrow">→</span>
+          </div>
+        </a>
+        <a href="chenggu.html" class="module-card">
+          <div class="mn-card mn-card-interactive">
+            <div class="module-icon">称</div>
+            <h3 class="mn-card-title">称骨算命</h3>
+            <p class="mn-card-desc">
+              袁天罡古歌诀，通过生辰骨重查询 51 段命格歌诀。
+            </p>
+            <div class="module-tags">
+              <span class="mn-badge-neutral mn-badge">入门</span>
+              <span class="mn-badge-neutral mn-badge">古风</span>
+            </div>
+            <span class="module-arrow">→</span>
+          </div>
+        </a>
+        <a href="liuren.html" class="module-card">
+          <div class="mn-card mn-card-interactive">
+            <div class="module-icon">壬</div>
+            <h3 class="mn-card-title">小六壬</h3>
+            <p class="mn-card-desc">
+              大安、留连、速喜、赤口、小吉、空亡，日常速问。
+            </p>
+            <div class="module-tags">
+              <span class="mn-badge-neutral mn-badge">快速</span>
+            </div>
+            <span class="module-arrow">→</span>
+          </div>
+        </a>
+        <a href="lingqian.html" class="module-card">
+          <div class="mn-card mn-card-interactive">
+            <div class="module-icon">签</div>
+            <h3 class="mn-card-title">观音灵签</h3>
+            <p class="mn-card-desc">
+              摇签百支、配古人典故与五事指引，仪式感占卜。
+            </p>
+            <div class="module-tags">
+              <span class="mn-badge-neutral mn-badge">100 签</span>
+            </div>
+            <span class="module-arrow">→</span>
+          </div>
+        </a>
+        <a href="xingming.html" class="module-card">
+          <div class="mn-card mn-card-interactive">
+            <div class="module-icon">名</div>
+            <h3 class="mn-card-title">姓名学五格</h3>
+            <p class="mn-card-desc">
+              康熙笔画计算天人地外总格，结合 81 数理分析。
+            </p>
+            <div class="module-tags">
+              <span class="mn-badge-neutral mn-badge">实用</span>
+            </div>
+            <span class="module-arrow">→</span>
+          </div>
+        </a>
+        <a href="huangli.html" class="module-card">
+          <div class="mn-card mn-card-interactive">
+            <div class="module-icon">历</div>
+            <h3 class="mn-card-title">黄历择日</h3>
+            <p class="mn-card-desc">
+              每日宜忌、吉凶神煞、九类事由点选速查。
+            </p>
+            <div class="module-tags">
+              <span class="mn-badge-success mn-badge">高频</span>
+            </div>
+            <span class="module-arrow">→</span>
+          </div>
+        </a>
+        <a href="jiemeng.html" class="module-card">
+          <div class="mn-card mn-card-interactive">
+            <div class="module-icon">梦</div>
+            <h3 class="mn-card-title">周公解梦</h3>
+            <p class="mn-card-desc">
+              两千词条古籍 + 现代心理学解读，关键词模糊查询。
+            </p>
+            <div class="module-tags">
+              <span class="mn-badge-neutral mn-badge">2380 条</span>
+            </div>
+            <span class="module-arrow">→</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <hr class="mn-divider">
+
+    <!-- 特性 -->
+    <section class="features-section">
+      <div class="section-header">
+        <h2 class="section-title">为什么选择 tt-qimen</h2>
+        <p class="section-sub">专注可靠、尊重隐私、尊重文化</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <h3 class="feature-title">公版古籍 + 开源算法</h3>
+          <p class="feature-desc">
+            核心依赖 tyme4ts、chinese-character-strokes 等开源库；签文歌诀均取自公版古籍。
+          </p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">⌂</div>
+          <h3 class="feature-title">纯静态 · 完全离线</h3>
+          <p class="feature-desc">
+            生辰信息仅存于本机 LocalStorage，不上传、不追踪、无广告。
+          </p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">◐</div>
+          <h3 class="feature-title">文化为本 · 娱乐为辅</h3>
+          <p class="feature-desc">
+            不作吉凶绝对之言，保留传统表达，辅以现代化解读。
+          </p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">◇</div>
+          <h3 class="feature-title">分享友好</h3>
+          <p class="feature-desc">
+            一键生成结果卡片，支持保存到相册或分享到社交平台。
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="mn-footer">
+    <div style="margin-bottom: var(--mn-space-3);">
+      tt-qimen · 启门问卜 · 版本 v1.0
+    </div>
+    <div>
+      <a href="#about">关于</a>
+      <a href="#disclaimer">免责声明</a>
+      <a href="#data-source">数据来源</a>
+      <a href="#privacy">隐私政策</a>
+    </div>
+    <div style="margin-top: var(--mn-space-4); font-size: 12px;">
+      © 2026 tt-qimen. 仅供文化体验，不构成专业建议。
+    </div>
+  </footer>
+</body>
+</html>

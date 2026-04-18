@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tt-qimen · 观音灵签（国风）</title>
+  <link rel="stylesheet" href="../assets/guofeng.css">
+  <style>
+    .page-title { text-align: center; padding: var(--gf-space-xl) 0 var(--gf-space-lg); }
+    .page-title h1 { font-size: 40px; color: var(--gf-ink); margin: 0; letter-spacing: 0.1em; }
+    .page-title .subtitle { font-size: 14px; color: var(--gf-ink-soft); margin-top: var(--gf-space-sm); }
+
+    /* 摇签场景 */
+    .shake-scene {
+      max-width: 720px;
+      margin: 0 auto var(--gf-space-xl);
+      background: linear-gradient(180deg, #fdf5db, #f6ecd6);
+      border: 1.5px solid var(--gf-gold);
+      border-radius: var(--gf-radius-md);
+      padding: var(--gf-space-xxl);
+      text-align: center;
+      position: relative;
+      box-shadow: var(--gf-shadow-sm);
+    }
+
+    .tube {
+      width: 120px;
+      height: 200px;
+      margin: 0 auto var(--gf-space-lg);
+      position: relative;
+      background: linear-gradient(135deg, var(--gf-cinnabar), var(--gf-cinnabar-deep));
+      border-radius: 6px 6px 60px 60px;
+      box-shadow:
+        var(--gf-shadow-md),
+        inset 0 4px 8px rgba(0,0,0,0.2),
+        inset 0 -8px 16px rgba(0,0,0,0.3);
+      animation: shake 2s ease-in-out infinite;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: rotate(-3deg) translateY(0); }
+      50% { transform: rotate(3deg) translateY(-6px); }
+    }
+
+    .tube::before {
+      content: "";
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 140px;
+      height: 20px;
+      background-color: var(--gf-gold);
+      border-radius: 4px;
+      box-shadow: var(--gf-shadow-sm);
+    }
+
+    .tube-stick {
+      position: absolute;
+      top: -30px;
+      width: 3px;
+      height: 50px;
+      background: linear-gradient(180deg, #8a6b3a, #4a3d26);
+      border-radius: 2px;
+    }
+
+    .tube-stick:nth-child(1) { left: 30%; transform: rotate(-8deg); }
+    .tube-stick:nth-child(2) { left: 45%; transform: rotate(2deg); top: -36px; }
+    .tube-stick:nth-child(3) { left: 60%; transform: rotate(10deg); top: -28px; }
+    .tube-stick:nth-child(4) { left: 50%; top: -40px; }
+
+    .tube-label {
+      position: absolute;
+      top: 55%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 30px;
+      color: var(--gf-rice);
+      writing-mode: vertical-rl;
+      letter-spacing: 0.3em;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    .shake-hint {
+      font-size: 16px;
+      color: var(--gf-ink-soft);
+      margin-bottom: var(--gf-space-md);
+      line-height: 1.9;
+    }
+
+    .shake-hint strong {
+      color: var(--gf-cinnabar);
+    }
+
+    .topic-input {
+      display: inline-block;
+      padding: 10px 16px;
+      margin-right: var(--gf-space-sm);
+      border: 1px solid rgba(176, 141, 59, 0.4);
+      background: rgba(255, 251, 240, 0.8);
+      font-family: var(--gf-font-serif);
+      font-size: 14px;
+      border-radius: var(--gf-radius-sm);
+      min-width: 180px;
+    }
+
+    /* 签文展示 */
+    .lingqian-card {
+      max-width: 720px;
+      margin: 0 auto var(--gf-space-xl);
+      background:
+        linear-gradient(180deg, rgba(255, 251, 240, 0.98), rgba(246, 236, 214, 0.95)),
+        repeating-linear-gradient(0deg, transparent, transparent 32px, rgba(176, 141, 59, 0.05) 32px, rgba(176, 141, 59, 0.05) 33px);
+      border: 1.5px solid var(--gf-gold);
+      border-radius: var(--gf-radius-md);
+      padding: var(--gf-space-xxl) var(--gf-space-xl);
+      position: relative;
+      box-shadow: var(--gf-shadow-md);
+    }
+
+    .lingqian-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--gf-space-lg);
+      padding-bottom: var(--gf-space-sm);
+      border-bottom: 1px dashed rgba(176, 141, 59, 0.4);
+    }
+
+    .qian-number {
+      text-align: center;
+    }
+
+    .qian-number .label {
+      font-size: 12px;
+      color: var(--gf-ink-soft);
+      letter-spacing: 0.3em;
+    }
+
+    .qian-number .value {
+      font-size: 56px;
+      color: var(--gf-cinnabar);
+      font-weight: 600;
+      line-height: 1;
+      margin-top: 4px;
+    }
+
+    .qian-meta {
+      text-align: right;
+    }
+
+    .qian-meta .name {
+      font-size: 20px;
+      color: var(--gf-ink);
+      margin-bottom: 4px;
+    }
+
+    .qian-meta .level {
+      padding: 4px 14px;
+      background-color: rgba(74, 109, 93, 0.15);
+      color: var(--gf-jade);
+      border-radius: 14px;
+      font-size: 13px;
+      display: inline-block;
+    }
+
+    .qian-meta .level.mid {
+      background-color: rgba(176, 141, 59, 0.15);
+      color: var(--gf-gold);
+    }
+
+    .qian-verse {
+      text-align: center;
+      padding: var(--gf-space-lg) 0;
+    }
+
+    .qian-verse-title {
+      font-size: 14px;
+      color: var(--gf-ink-soft);
+      margin-bottom: var(--gf-space-md);
+      letter-spacing: 0.3em;
+    }
+
+    .qian-verse-body {
+      font-size: 22px;
+      line-height: 2.4;
+      color: var(--gf-ink);
+      letter-spacing: 0.2em;
+    }
+
+    .qian-verse-body .line {
+      display: block;
+    }
+
+    .qian-tale {
+      background-color: rgba(255, 255, 255, 0.5);
+      border-left: 3px solid var(--gf-cinnabar);
+      padding: var(--gf-space-md) var(--gf-space-lg);
+      margin: var(--gf-space-lg) 0;
+      font-size: 14px;
+      color: var(--gf-ink-soft);
+      line-height: 1.9;
+    }
+
+    .qian-tale strong {
+      color: var(--gf-cinnabar);
+      margin-right: var(--gf-space-sm);
+    }
+
+    .qian-seal {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: var(--gf-space-md);
+    }
+
+    /* 分面展开 */
+    .aspect-list {
+      max-width: 720px;
+      margin: 0 auto var(--gf-space-xl);
+    }
+
+    .aspect-item {
+      background-color: rgba(255, 251, 240, 0.7);
+      border: 1px solid rgba(176, 141, 59, 0.3);
+      border-radius: var(--gf-radius-md);
+      padding: var(--gf-space-md) var(--gf-space-lg);
+      margin-bottom: var(--gf-space-sm);
+      transition: all 0.2s;
+    }
+
+    .aspect-item:hover {
+      border-color: var(--gf-gold);
+      background-color: rgba(255, 251, 240, 0.95);
+    }
+
+    .aspect-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .aspect-title {
+      font-size: 16px;
+      color: var(--gf-ink);
+      display: flex;
+      align-items: center;
+      gap: var(--gf-space-sm);
+    }
+
+    .aspect-icon {
+      width: 28px;
+      height: 28px;
+      line-height: 28px;
+      text-align: center;
+      background-color: var(--gf-cinnabar);
+      color: var(--gf-rice);
+      border-radius: 50%;
+      font-size: 12px;
+    }
+
+    .aspect-summary {
+      font-size: 13px;
+      color: var(--gf-ink-soft);
+    }
+
+    .action-bar {
+      max-width: 720px;
+      margin: var(--gf-space-xl) auto;
+      display: flex;
+      justify-content: center;
+      gap: var(--gf-space-md);
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 768px) {
+      .lingqian-header { flex-direction: column; text-align: center; gap: var(--gf-space-md); }
+      .qian-meta { text-align: center; }
+      .qian-verse-body { font-size: 18px; letter-spacing: 0.15em; }
+    }
+  </style>
+</head>
+<body>
+  <div class="prototype-badge">国风 · 观音灵签</div>
+  <div class="gf-disclaimer">✦ 本站内容仅供文化体验与娱乐参考 · 不构成专业建议 ✦</div>
+
+  <header class="gf-header">
+    <div class="gf-header-inner">
+      <a href="index.html" class="gf-logo">启门问卜</a>
+      <nav class="gf-nav">
+        <a href="index.html">首页</a>
+        <a href="bazi.html">八字</a>
+        <a href="ziwei.html">紫微</a>
+        <a href="chenggu.html">称骨</a>
+        <a href="liuren.html">小六壬</a>
+        <a href="lingqian.html" class="active">灵签</a>
+        <a href="xingming.html">姓名</a>
+        <a href="huangli.html">黄历</a>
+        <a href="jiemeng.html">解梦</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="gf-container">
+    <div class="page-title">
+      <h1>观音灵签</h1>
+      <div class="subtitle">心诚则灵 · 摇签百支 · 问事指迷</div>
+    </div>
+
+    <!-- 起签输入（统一 ds-input-card 规范） -->
+    <div class="gf-card ds-input-card" style="max-width: 640px;">
+      <h3 class="ds-card-title"><span class="ds-ornament">◈</span>所 求 何 事<span class="ds-ornament">◈</span></h3>
+      <div class="ds-input-row" style="grid-template-columns: 2fr 1fr;">
+        <div class="ds-input-group">
+          <label>心中所问（选填）</label>
+          <input type="text" placeholder="如：今年学业、姻缘、事业、求财…">
+        </div>
+        <div class="ds-input-group">
+          <label>占问领域</label>
+          <select>
+            <option selected>综合</option>
+            <option>事业功名</option>
+            <option>姻缘婚配</option>
+            <option>财运求财</option>
+            <option>健康疾病</option>
+            <option>出行远游</option>
+          </select>
+        </div>
+      </div>
+      <p style="font-size: 12px; color: var(--gf-ink-soft); margin: 0 0 var(--gf-space-md); text-align: center; line-height: 1.7;">
+        心中默念所求之事 · <strong>三次深呼吸</strong>后轻按启签
+      </p>
+      <div class="ds-input-actions">
+        <button class="gf-btn">◈ 启签</button>
+        <button class="gf-btn gf-btn-outline">◐ 再摇</button>
+      </div>
+    </div>
+
+    <!-- 摇签场景（视觉动效，保留）-->
+    <div class="shake-scene">
+      <div class="tube">
+        <div class="tube-stick"></div>
+        <div class="tube-stick"></div>
+        <div class="tube-stick"></div>
+        <div class="tube-stick"></div>
+        <div class="tube-label">观音灵签</div>
+      </div>
+    </div>
+
+    <div class="gf-divider"><span>◆ 第四十五签 · 上签 ◆</span></div>
+
+    <!-- 签文 -->
+    <div class="lingqian-card">
+      <div class="lingqian-header">
+        <div class="qian-number">
+          <div class="label">第  签</div>
+          <div class="value">45</div>
+        </div>
+        <div class="qian-meta">
+          <div class="name">汉高祖入关 · 古人</div>
+          <span class="level">上 · 吉</span>
+        </div>
+      </div>
+      <div class="qian-verse">
+        <div class="qian-verse-title">◉ 签 诗 ◉</div>
+        <div class="qian-verse-body">
+          <span class="line">阳 衰 阴 盛 百 事 吉</span>
+          <span class="line">凡 事 贵 人 相 扶 持</span>
+          <span class="line">谋 望 营 求 皆 有 益</span>
+          <span class="line">但 逢 亥 子 始 开 颐</span>
+        </div>
+      </div>
+      <div class="qian-tale">
+        <strong>典故</strong>
+        楚汉相争之时，刘邦率众先入关中，项羽后至而诸侯皆附高祖。
+        此签言时运至则万众归心，宜待机而动，切忌强求。
+      </div>
+      <div class="qian-seal"><span class="gf-seal">观音</span></div>
+    </div>
+
+    <!-- 解曰 / 仙机 双栏 -->
+    <div class="qian-two-cols">
+      <div class="qian-col qian-jieyue">
+        <div class="qian-col-head"><span class="dot"></span>解 曰</div>
+        <p>
+          此签阳衰阴盛，实为阴阳转化之机。所求诸事虽有波折，然<strong>贵人相扶</strong>，
+          终能水落石出。宜守本分、不宜强求；遇事应<strong>顺势而为</strong>，
+          方可化险为夷。逢亥、子之时为应验之期。
+        </p>
+      </div>
+      <div class="qian-col qian-xianji">
+        <div class="qian-col-head"><span class="dot"></span>仙 机</div>
+        <p>
+          "凡事贵人相扶持"——近期有长者或德高望重者为你开路，宜多亲近、虚心请教。
+          若问官非，则宜庭外调解而非争讼；若问求财，则宜稳守不宜扩张，
+          待亥子月（农历十月、十一月）为佳。
+        </p>
+      </div>
+    </div>
+
+    <style>
+      .qian-two-cols { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gf-space-lg); max-width: 980px; margin: 0 auto var(--gf-space-xl); }
+      .qian-col { padding: var(--gf-space-lg); background: var(--gf-rice); border: 1px solid rgba(176, 141, 59, 0.3); border-radius: var(--gf-radius-sm); position: relative; }
+      .qian-col::before { content: ""; position: absolute; inset: 4px; border: 1px dashed rgba(176, 141, 59, 0.2); border-radius: calc(var(--gf-radius-sm) - 2px); pointer-events: none; }
+      .qian-col-head { position: relative; font-family: var(--gf-font-kaiti); font-size: 18px; color: var(--gf-cinnabar); letter-spacing: 0.3em; margin-bottom: var(--gf-space-md); padding-bottom: var(--gf-space-sm); border-bottom: 1px dashed rgba(176, 141, 59, 0.3); display: flex; align-items: center; gap: 10px; }
+      .qian-col-head .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gf-cinnabar); }
+      .qian-jieyue .qian-col-head .dot { background: var(--gf-cinnabar); }
+      .qian-xianji .qian-col-head .dot { background: var(--gf-gold); }
+      .qian-xianji .qian-col-head { color: var(--gf-gold); }
+      .qian-col p { position: relative; margin: 0; font-size: 14px; line-height: 1.9; color: var(--gf-ink); }
+      @media (max-width: 768px) { .qian-two-cols { grid-template-columns: 1fr; } }
+    </style>
+
+    <!-- 分面解读 -->
+    <div class="aspect-list">
+      <h3 style="text-align: center; color: var(--gf-cinnabar); margin-bottom: var(--gf-space-lg);">◉ 分事而问 · 逐项开示</h3>
+      <div class="aspect-item">
+        <div class="aspect-head">
+          <div class="aspect-title"><span class="aspect-icon">谋</span>谋 望</div>
+          <span class="aspect-summary">所谋易成，静候佳机 +</span>
+        </div>
+      </div>
+      <div class="aspect-item">
+        <div class="aspect-head">
+          <div class="aspect-title"><span class="aspect-icon">财</span>求 财</div>
+          <span class="aspect-summary">偏财有望，正财稳进 +</span>
+        </div>
+      </div>
+      <div class="aspect-item">
+        <div class="aspect-head">
+          <div class="aspect-title"><span class="aspect-icon">婚</span>婚 姻</div>
+          <span class="aspect-summary">有情人终成眷属 +</span>
+        </div>
+      </div>
+      <div class="aspect-item">
+        <div class="aspect-head">
+          <div class="aspect-title"><span class="aspect-icon">疾</span>疾 病</div>
+          <span class="aspect-summary">宜静养，渐愈 +</span>
+        </div>
+      </div>
+      <div class="aspect-item">
+        <div class="aspect-head">
+          <div class="aspect-title"><span class="aspect-icon">行</span>出 行</div>
+          <span class="aspect-summary">利远行，忌水路 ±</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-bar">
+      <button class="gf-btn">◈ 生成分享卡片</button>
+      <button class="gf-btn gf-btn-outline">◐ 重新求签</button>
+    </div>
+  </div>
+
+  <footer class="gf-footer">
+    <div>启门问卜 · tt-qimen · 古今同道</div>
+    <div style="margin-top: 12px;">
+      <a href="#about">关于</a> · <a href="#disclaimer">免责声明</a> · <a href="#data-source">数据来源</a>
+    </div>
+    <div style="margin-top: 16px; font-size: 12px;">© 2026 tt-qimen</div>
+  </footer>
+</body>
+</html>

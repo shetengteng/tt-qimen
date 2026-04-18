@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tt-qimen · 小六壬（国风）</title>
+  <link rel="stylesheet" href="../assets/guofeng.css">
+  <style>
+    .page-title { text-align: center; padding: var(--gf-space-xl) 0 var(--gf-space-lg); }
+    .page-title h1 { font-size: 40px; color: var(--gf-ink); margin: 0; letter-spacing: 0.1em; }
+    .page-title .subtitle { font-size: 14px; color: var(--gf-ink-soft); margin-top: var(--gf-space-sm); }
+
+    /* 六宫图 */
+    .palace-wheel-section {
+      display: flex;
+      justify-content: center;
+      padding: var(--gf-space-xl) 0;
+    }
+
+    .wheel {
+      position: relative;
+      width: 480px;
+      height: 480px;
+      max-width: 90vw;
+      max-height: 90vw;
+    }
+
+    .wheel-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, var(--gf-cinnabar), var(--gf-cinnabar-deep));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--gf-rice);
+      box-shadow: 0 8px 24px rgba(194, 58, 42, 0.4), inset 0 -4px 12px rgba(0,0,0,0.2);
+      z-index: 2;
+    }
+
+    .wheel-center-main {
+      font-size: 48px;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .wheel-center-label {
+      font-size: 12px;
+      margin-top: 8px;
+      letter-spacing: 0.3em;
+    }
+
+    .palace {
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(255, 251, 240, 0.9);
+      border: 2px solid rgba(176, 141, 59, 0.4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      box-shadow: var(--gf-shadow-sm);
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .palace:hover {
+      transform: scale(1.08);
+      box-shadow: var(--gf-shadow-md);
+    }
+
+    .palace.active {
+      background: linear-gradient(135deg, #f9e4d4, #f5d0ba);
+      border-color: var(--gf-cinnabar);
+      box-shadow: 0 8px 20px rgba(194, 58, 42, 0.35);
+      transform: scale(1.05);
+    }
+
+    .palace-name {
+      font-size: 22px;
+      color: var(--gf-ink);
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    .palace.active .palace-name {
+      color: var(--gf-cinnabar);
+    }
+
+    .palace-badge {
+      font-size: 11px;
+      color: var(--gf-ink-soft);
+      margin-top: 4px;
+    }
+
+    /* 放置六个宫位 */
+    .palace:nth-child(2) { top: 0; left: 50%; transform: translateX(-50%); }
+    .palace:nth-child(3) { top: 25%; right: 0; }
+    .palace:nth-child(4) { bottom: 25%; right: 0; }
+    .palace:nth-child(5) { bottom: 0; left: 50%; transform: translateX(-50%); }
+    .palace:nth-child(6) { bottom: 25%; left: 0; }
+    .palace:nth-child(7) { top: 25%; left: 0; }
+
+    .palace:nth-child(2).active { transform: translateX(-50%) scale(1.05); }
+    .palace:nth-child(5).active { transform: translateX(-50%) scale(1.05); }
+
+    /* 虚线连接 */
+    .wheel::before {
+      content: "";
+      position: absolute;
+      inset: 60px;
+      border: 2px dashed rgba(176, 141, 59, 0.3);
+      border-radius: 50%;
+    }
+
+    /* 输入区 */
+    .query-bar {
+      max-width: 720px;
+      margin: 0 auto var(--gf-space-lg);
+      padding: var(--gf-space-lg);
+    }
+
+    .query-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: var(--gf-space-md);
+      margin-bottom: var(--gf-space-md);
+    }
+
+    .query-label {
+      font-size: 13px;
+      color: var(--gf-ink-soft);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .query-value {
+      padding: 10px 14px;
+      border: 1px solid rgba(176, 141, 59, 0.4);
+      background-color: rgba(255, 251, 240, 0.8);
+      font-family: var(--gf-font-serif);
+      font-size: 15px;
+      border-radius: var(--gf-radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .question-input {
+      width: 100%;
+      padding: 12px 16px;
+      font-family: var(--gf-font-serif);
+      font-size: 16px;
+      border: 1px solid rgba(176, 141, 59, 0.4);
+      background-color: rgba(255, 251, 240, 0.8);
+      border-radius: var(--gf-radius-sm);
+      margin-bottom: var(--gf-space-md);
+    }
+
+    .aspect-tabs {
+      display: flex;
+      justify-content: center;
+      gap: var(--gf-space-sm);
+      margin: var(--gf-space-xl) auto var(--gf-space-lg);
+      max-width: 720px;
+      flex-wrap: wrap;
+    }
+
+    .aspect-tab {
+      padding: 8px 20px;
+      background: transparent;
+      color: var(--gf-ink-soft);
+      border: 1px solid rgba(176, 141, 59, 0.3);
+      border-radius: var(--gf-radius-sm);
+      cursor: pointer;
+      font-family: var(--gf-font-serif);
+      font-size: 14px;
+      transition: all 0.15s;
+    }
+
+    .aspect-tab.active {
+      background-color: var(--gf-cinnabar);
+      color: var(--gf-rice);
+      border-color: var(--gf-cinnabar);
+    }
+
+    .aspect-tab:hover:not(.active) {
+      border-color: var(--gf-gold);
+      color: var(--gf-ink);
+    }
+
+    .reading-card {
+      max-width: 720px;
+      margin: 0 auto var(--gf-space-xl);
+      background: linear-gradient(135deg, rgba(249, 228, 212, 0.4), rgba(246, 236, 214, 0.6));
+      border: 1px solid var(--gf-cinnabar);
+      border-radius: var(--gf-radius-md);
+      padding: var(--gf-space-xl);
+      box-shadow: var(--gf-shadow-sm);
+    }
+
+    .reading-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--gf-space-md);
+      padding-bottom: var(--gf-space-sm);
+      border-bottom: 1px dashed rgba(194, 58, 42, 0.3);
+    }
+
+    .reading-title {
+      font-size: 22px;
+      color: var(--gf-cinnabar);
+      margin: 0;
+    }
+
+    .reading-verdict {
+      padding: 4px 16px;
+      border-radius: 14px;
+      font-size: 14px;
+    }
+
+    .reading-verdict.ji { background-color: rgba(74, 109, 93, 0.15); color: var(--gf-jade); }
+    .reading-verdict.ping { background-color: rgba(176, 141, 59, 0.15); color: var(--gf-gold); }
+
+    .reading-body {
+      line-height: 2;
+      color: var(--gf-ink);
+      font-size: 15px;
+    }
+
+    .yiji {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--gf-space-md);
+      margin-top: var(--gf-space-md);
+    }
+
+    .yiji-item {
+      display: flex;
+      gap: var(--gf-space-sm);
+    }
+
+    .yiji-label {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      line-height: 28px;
+      text-align: center;
+      color: var(--gf-rice);
+      border-radius: 2px;
+      font-size: 12px;
+    }
+
+    .yiji-label.yi { background-color: var(--gf-jade); }
+    .yiji-label.ji { background-color: var(--gf-cinnabar); }
+
+    .yiji-content {
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .action-bar {
+      max-width: 720px;
+      margin: var(--gf-space-xl) auto;
+      display: flex;
+      justify-content: center;
+      gap: var(--gf-space-md);
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 768px) {
+      .wheel { width: 320px; height: 320px; }
+      .wheel-center { width: 100px; height: 100px; }
+      .wheel-center-main { font-size: 36px; }
+      .palace { width: 84px; height: 84px; }
+      .palace-name { font-size: 18px; }
+      .yiji { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="prototype-badge">国风 · 小六壬</div>
+  <div class="gf-disclaimer">✦ 本站内容仅供文化体验与娱乐参考 · 不构成专业建议 ✦</div>
+
+  <header class="gf-header">
+    <div class="gf-header-inner">
+      <a href="index.html" class="gf-logo">启门问卜</a>
+      <nav class="gf-nav">
+        <a href="index.html">首页</a>
+        <a href="bazi.html">八字</a>
+        <a href="ziwei.html">紫微</a>
+        <a href="chenggu.html">称骨</a>
+        <a href="liuren.html" class="active">小六壬</a>
+        <a href="lingqian.html">灵签</a>
+        <a href="xingming.html">姓名</a>
+        <a href="huangli.html">黄历</a>
+        <a href="jiemeng.html">解梦</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="gf-container">
+    <div class="page-title">
+      <h1>小六壬</h1>
+      <div class="subtitle">大安 · 留连 · 速喜 · 赤口 · 小吉 · 空亡</div>
+    </div>
+
+    <!-- 实时时间速览 -->
+    <div class="gf-card query-bar">
+      <div class="query-row">
+        <div>
+          <span class="query-label">当前农历</span>
+          <div class="query-value">三月初二 午时</div>
+        </div>
+        <div>
+          <span class="query-label">月起</span>
+          <div class="query-value">大安 (3)</div>
+        </div>
+        <div>
+          <span class="query-label">日数</span>
+          <div class="query-value">速喜 (3)</div>
+        </div>
+        <div>
+          <span class="query-label">时辰</span>
+          <div class="query-value">速喜 (7)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 起卦输入（统一 ds-input-card 规范）-->
+    <div class="gf-card ds-input-card" style="max-width: 720px;">
+      <h3 class="ds-card-title"><span class="ds-ornament">◉</span>起 · 卦<span class="ds-ornament">◉</span></h3>
+      <div class="ds-calendar-switch">
+        <button class="ds-switch-btn active">即时起卦</button>
+        <button class="ds-switch-btn">自定时间</button>
+      </div>
+      <div class="ds-input-row" style="grid-template-columns: 2fr 1fr 1fr;">
+        <div class="ds-input-group">
+          <label>心中一问（选填）</label>
+          <input type="text" placeholder="如：今年运势、此事是否成功…">
+        </div>
+        <div class="ds-input-group">
+          <label>问事方向</label>
+          <select>
+            <option selected>综合</option>
+            <option>事业</option>
+            <option>感情</option>
+            <option>财运</option>
+            <option>行人</option>
+            <option>失物</option>
+          </select>
+        </div>
+        <div class="ds-input-group">
+          <label>时辰</label>
+          <select>
+            <option selected>当前（午时）</option>
+            <option>子时 (23-1)</option>
+            <option>丑时 (1-3)</option>
+            <option>寅时 (3-5)</option>
+          </select>
+        </div>
+      </div>
+      <div class="ds-input-actions">
+        <button class="gf-btn">◉ 即刻起卦</button>
+        <button class="gf-btn gf-btn-outline">◐ 重新起卦</button>
+      </div>
+    </div>
+
+    <!-- 六宫轮盘 -->
+    <section class="palace-wheel-section">
+      <div class="wheel">
+        <div class="wheel-center">
+          <div class="wheel-center-main">速喜</div>
+          <div class="wheel-center-label">当 前 卦</div>
+        </div>
+        <div class="palace"><div class="palace-name">大安</div><div class="palace-badge">静</div></div>
+        <div class="palace"><div class="palace-name">留连</div><div class="palace-badge">迟</div></div>
+        <div class="palace"><div class="palace-name">空亡</div><div class="palace-badge">空</div></div>
+        <div class="palace"><div class="palace-name">小吉</div><div class="palace-badge">吉</div></div>
+        <div class="palace"><div class="palace-name">赤口</div><div class="palace-badge">争</div></div>
+        <div class="palace active"><div class="palace-name">速喜</div><div class="palace-badge">喜</div></div>
+      </div>
+    </section>
+
+    <!-- 分面选择（总体/事业/感情/财运/健康/出行 六面）-->
+    <div class="aspect-tabs">
+      <button class="aspect-tab active">综合</button>
+      <button class="aspect-tab">事业</button>
+      <button class="aspect-tab">感情</button>
+      <button class="aspect-tab">财运</button>
+      <button class="aspect-tab">健康</button>
+      <button class="aspect-tab">出行</button>
+    </div>
+
+    <!-- 解读卡 -->
+    <div class="reading-card">
+      <div class="reading-header">
+        <h3 class="reading-title">速喜 · 综合解读</h3>
+        <span class="reading-verdict ji">吉 · 事可速成</span>
+      </div>
+      <p class="reading-body">
+        速喜意谓"喜从天降"，主近期有好事将至，宜把握时机。所求之事多能速成，
+        尤其适合当下已在推进中的项目；若是新开局，则宜顺势而为、不宜过度谋划。
+      </p>
+      <p class="reading-body">
+        此卦主"动"，切忌原地踌躇。人际上得遇贵人、有助力之象。
+      </p>
+      <div class="yiji">
+        <div class="yiji-item">
+          <span class="yiji-label yi">宜</span>
+          <span class="yiji-content">速战速决、主动出击、拜访客户、表白心意、面试跳槽</span>
+        </div>
+        <div class="yiji-item">
+          <span class="yiji-label ji">忌</span>
+          <span class="yiji-content">优柔寡断、拖延观望、纠结细节、错过时机</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-bar">
+      <button class="gf-btn">◈ 生成分享卡片</button>
+      <button class="gf-btn gf-btn-outline">◑ 再起一卦</button>
+    </div>
+  </div>
+
+  <footer class="gf-footer">
+    <div>启门问卜 · tt-qimen · 古今同道</div>
+    <div style="margin-top: 12px;">
+      <a href="#about">关于</a> · <a href="#disclaimer">免责声明</a> · <a href="#data-source">数据来源</a>
+    </div>
+    <div style="margin-top: 16px; font-size: 12px;">© 2026 tt-qimen</div>
+  </footer>
+</body>
+</html>

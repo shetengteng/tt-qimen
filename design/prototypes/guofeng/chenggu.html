@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tt-qimen · 称骨算命（国风）</title>
+  <link rel="stylesheet" href="../assets/guofeng.css">
+  <style>
+    .page-title { text-align: center; padding: var(--gf-space-xl) 0 var(--gf-space-lg); }
+    .page-title h1 { font-size: 40px; color: var(--gf-ink); margin: 0; letter-spacing: 0.1em; }
+    .page-title .subtitle { font-size: 14px; color: var(--gf-ink-soft); margin-top: var(--gf-space-sm); }
+
+    .cg-layout {
+      max-width: 960px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--gf-space-xl);
+      align-items: start;
+    }
+
+    .cg-input-card {
+      padding: var(--gf-space-lg);
+    }
+
+    /* 天秤（balance）动画示意 */
+    .balance-scene {
+      background: linear-gradient(135deg, #fdf5db, #f6ecd6);
+      border: 1px solid var(--gf-gold);
+      border-radius: var(--gf-radius-md);
+      padding: var(--gf-space-xl);
+      min-height: 420px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .balance {
+      width: 240px;
+      height: 160px;
+      position: relative;
+      margin: 0 auto;
+    }
+
+    .balance-pole {
+      position: absolute;
+      top: 30px;
+      left: 50%;
+      width: 1px;
+      height: 80px;
+      background: var(--gf-ink);
+      transform: translateX(-50%);
+    }
+
+    .balance-bar {
+      position: absolute;
+      top: 30px;
+      left: 20px;
+      right: 20px;
+      height: 3px;
+      background: var(--gf-ink);
+      transform: rotate(-4deg);
+      transform-origin: center;
+      animation: swing 2.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes swing {
+      0% { transform: rotate(-4deg); }
+      100% { transform: rotate(4deg); }
+    }
+
+    .balance-pan {
+      position: absolute;
+      top: 60px;
+      width: 50px;
+      height: 20px;
+      border: 1.5px solid var(--gf-cinnabar);
+      border-top: none;
+      border-radius: 0 0 25px 25px;
+      background: linear-gradient(180deg, rgba(194, 58, 42, 0.1), rgba(194, 58, 42, 0.05));
+    }
+
+    .balance-pan.left { left: 20px; }
+    .balance-pan.right { right: 20px; }
+
+    .weight-display {
+      margin-top: var(--gf-space-xl);
+      text-align: center;
+    }
+
+    .weight-value {
+      font-size: 56px;
+      color: var(--gf-cinnabar);
+      font-weight: 600;
+      line-height: 1;
+      letter-spacing: 0.05em;
+    }
+
+    .weight-label {
+      font-size: 13px;
+      color: var(--gf-ink-soft);
+      margin-top: var(--gf-space-sm);
+      letter-spacing: 0.2em;
+    }
+
+    .weight-breakdown {
+      margin-top: var(--gf-space-md);
+      display: flex;
+      justify-content: center;
+      gap: var(--gf-space-md);
+      font-size: 13px;
+      color: var(--gf-ink-soft);
+    }
+
+    .weight-breakdown span strong {
+      color: var(--gf-ink);
+      font-size: 14px;
+    }
+
+    /* 结果歌诀 */
+    .poem-section {
+      max-width: 720px;
+      margin: var(--gf-space-xxl) auto var(--gf-space-xl);
+      text-align: center;
+      position: relative;
+    }
+
+    .poem-card {
+      background:
+        linear-gradient(135deg, rgba(255, 251, 240, 0.95), rgba(246, 236, 214, 0.9)),
+        repeating-linear-gradient(0deg, transparent, transparent 30px, rgba(176, 141, 59, 0.04) 30px, rgba(176, 141, 59, 0.04) 31px);
+      border: 1.5px solid var(--gf-gold);
+      padding: var(--gf-space-xxl) var(--gf-space-xl);
+      border-radius: var(--gf-radius-md);
+      position: relative;
+      box-shadow: var(--gf-shadow-md);
+    }
+
+    .poem-card::before,
+    .poem-card::after {
+      content: "✦";
+      position: absolute;
+      color: var(--gf-gold);
+      font-size: 16px;
+    }
+
+    .poem-card::before { top: 12px; left: 16px; }
+    .poem-card::after { bottom: 12px; right: 16px; }
+
+    .poem-title {
+      font-size: 18px;
+      color: var(--gf-ink-soft);
+      margin-bottom: var(--gf-space-md);
+      letter-spacing: 0.3em;
+    }
+
+    .poem-verse {
+      font-family: var(--gf-font-serif);
+      font-size: 26px;
+      line-height: 2.2;
+      color: var(--gf-ink);
+      letter-spacing: 0.15em;
+      margin: var(--gf-space-md) 0;
+    }
+
+    .poem-verse .line {
+      display: block;
+    }
+
+    .poem-stamp {
+      margin-top: var(--gf-space-lg);
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    /* 白话解读 */
+    .interpret-card {
+      max-width: 720px;
+      margin: 0 auto var(--gf-space-xl);
+      padding: var(--gf-space-lg);
+      background-color: rgba(255, 251, 240, 0.7);
+      border-left: 3px solid var(--gf-cinnabar);
+    }
+
+    .interpret-card h3 {
+      margin: 0 0 var(--gf-space-md);
+      color: var(--gf-cinnabar);
+      font-size: 18px;
+    }
+
+    .interpret-card p {
+      margin: 0 0 var(--gf-space-sm);
+      line-height: 2;
+      color: var(--gf-ink);
+    }
+
+    .action-bar {
+      display: flex;
+      justify-content: center;
+      gap: var(--gf-space-md);
+      margin: var(--gf-space-xl) 0;
+      flex-wrap: wrap;
+    }
+
+    /* 输入表单 */
+    .input-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: var(--gf-space-md);
+      margin-bottom: var(--gf-space-md);
+    }
+
+    .input-group { display: flex; flex-direction: column; }
+    .input-group label { font-size: 13px; color: var(--gf-ink-soft); margin-bottom: 6px; }
+    .input-group input, .input-group select {
+      padding: 10px 14px;
+      border: 1px solid rgba(176, 141, 59, 0.4);
+      background-color: rgba(255, 251, 240, 0.8);
+      font-family: var(--gf-font-serif);
+      font-size: 15px;
+      border-radius: var(--gf-radius-sm);
+    }
+
+    @media (max-width: 768px) {
+      .cg-layout { grid-template-columns: 1fr; }
+      .poem-verse { font-size: 20px; letter-spacing: 0.1em; }
+    }
+  </style>
+</head>
+<body>
+  <div class="prototype-badge">国风 · 称骨</div>
+  <div class="gf-disclaimer">✦ 本站内容仅供文化体验与娱乐参考 · 不构成专业建议 ✦</div>
+
+  <header class="gf-header">
+    <div class="gf-header-inner">
+      <a href="index.html" class="gf-logo">启门问卜</a>
+      <nav class="gf-nav">
+        <a href="index.html">首页</a>
+        <a href="bazi.html">八字</a>
+        <a href="ziwei.html">紫微</a>
+        <a href="chenggu.html" class="active">称骨</a>
+        <a href="liuren.html">小六壬</a>
+        <a href="lingqian.html">灵签</a>
+        <a href="xingming.html">姓名</a>
+        <a href="huangli.html">黄历</a>
+        <a href="jiemeng.html">解梦</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="gf-container">
+    <div class="page-title">
+      <h1>称骨算命</h1>
+      <div class="subtitle">袁天罡古法 · 年月日时骨重 · 五十一段歌诀</div>
+    </div>
+
+    <div class="cg-layout">
+      <!-- 左：输入（统一规范 ds-input-card）-->
+      <div class="gf-card ds-input-card cg-input-card">
+        <h3 class="ds-card-title"><span class="ds-ornament">◈</span>录入生辰<span class="ds-ornament">◈</span></h3>
+        <div class="ds-calendar-switch">
+          <button class="ds-switch-btn active">公历</button>
+          <button class="ds-switch-btn">农历</button>
+        </div>
+        <div class="ds-input-row">
+          <div class="ds-input-group">
+            <label>出生年</label>
+            <input type="text" value="1990">
+          </div>
+          <div class="ds-input-group">
+            <label>月</label>
+            <input type="text" value="5">
+          </div>
+          <div class="ds-input-group">
+            <label>日</label>
+            <input type="text" value="20">
+          </div>
+          <div class="ds-input-group">
+            <label>时辰</label>
+            <select>
+              <option>子时 (23-1)</option>
+              <option selected>午时 (11-13)</option>
+              <option>未时 (13-15)</option>
+            </select>
+          </div>
+        </div>
+        <div class="ds-input-actions">
+          <button class="gf-btn">◈ 开始称骨</button>
+        </div>
+        <p style="font-size: 12px; color: var(--gf-ink-soft); margin: var(--gf-space-md) 0 0; text-align: center; line-height: 1.7;">
+          称骨法以年月日时四骨重相加，对应歌诀以推终身命运<br>
+          骨重范围 2 两 1 钱 ~ 7 两 1 钱
+        </p>
+      </div>
+
+      <!-- 右：天秤动画 -->
+      <div class="balance-scene">
+        <div class="balance">
+          <div class="balance-pole"></div>
+          <div class="balance-bar">
+            <div class="balance-pan left"></div>
+            <div class="balance-pan right"></div>
+          </div>
+        </div>
+        <div class="weight-display">
+          <div class="weight-value">五两一钱</div>
+          <div class="weight-label">骨 · 重</div>
+          <div class="weight-breakdown">
+            <span>年 <strong>1.2 两</strong></span>
+            <span>月 <strong>0.9 两</strong></span>
+            <span>日 <strong>1.6 两</strong></span>
+            <span>时 <strong>1.4 两</strong></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="gf-divider"><span>◆ 四骨分解 ◆</span></div>
+
+    <!-- 骨重分解表 + 等级徽章 -->
+    <div class="gf-card bone-table-card">
+      <div class="bone-table">
+        <div class="bone-col year">
+          <div class="bone-head">年 骨</div>
+          <div class="bone-src">庚午年</div>
+          <div class="bone-weight">1.2 两</div>
+        </div>
+        <div class="bone-col month">
+          <div class="bone-head">月 骨</div>
+          <div class="bone-src">四月生</div>
+          <div class="bone-weight">0.9 两</div>
+        </div>
+        <div class="bone-col day">
+          <div class="bone-head">日 骨</div>
+          <div class="bone-src">二十日</div>
+          <div class="bone-weight">1.6 两</div>
+        </div>
+        <div class="bone-col hour">
+          <div class="bone-head">时 骨</div>
+          <div class="bone-src">午时生</div>
+          <div class="bone-weight">1.4 两</div>
+        </div>
+      </div>
+      <div class="bone-total">
+        <span class="total-label">四 骨 相 加</span>
+        <span class="total-value">5.1 两</span>
+        <span class="rank-badge rank-high">上 · 贵显</span>
+      </div>
+    </div>
+
+    <style>
+      .bone-table-card { max-width: 980px; margin: 0 auto var(--gf-space-xl); padding: var(--gf-space-lg); }
+      .bone-table { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--gf-space-md); margin-bottom: var(--gf-space-md); }
+      .bone-col { padding: var(--gf-space-md); background: rgba(255, 251, 240, 0.5); border: 1px solid rgba(176, 141, 59, 0.3); border-radius: var(--gf-radius-sm); text-align: center; transition: transform 0.2s, box-shadow 0.2s; }
+      .bone-col:hover { transform: translateY(-2px); box-shadow: var(--gf-shadow-sm); }
+      .bone-head { font-size: 13px; color: var(--gf-ink-soft); letter-spacing: 0.3em; margin-bottom: 6px; }
+      .bone-src { font-size: 12px; color: var(--gf-ink-soft); font-family: var(--gf-font-kaiti); margin-bottom: 8px; }
+      .bone-weight { font-family: var(--gf-font-serif); font-size: 22px; font-weight: 600; color: var(--gf-cinnabar); }
+      .bone-total { display: flex; align-items: center; justify-content: center; gap: var(--gf-space-lg); padding-top: var(--gf-space-md); border-top: 1px dashed rgba(176, 141, 59, 0.4); flex-wrap: wrap; }
+      .total-label { font-size: 14px; color: var(--gf-ink-soft); letter-spacing: 0.2em; }
+      .total-value { font-family: var(--gf-font-serif); font-size: 28px; color: var(--gf-cinnabar); font-weight: 600; }
+      .rank-badge { padding: 4px 14px; font-size: 13px; letter-spacing: 0.1em; border-radius: var(--gf-radius-sm); }
+      .rank-badge.rank-high { background: linear-gradient(135deg, #f4c46c, #c89648); color: var(--gf-ink); border: 1px solid rgba(176, 141, 59, 0.5); }
+      .rank-badge.rank-mid { background: rgba(74, 109, 93, 0.12); color: var(--gf-jade); border: 1px solid rgba(74, 109, 93, 0.3); }
+      .rank-badge.rank-low { background: rgba(194, 58, 42, 0.08); color: var(--gf-cinnabar); border: 1px solid rgba(194, 58, 42, 0.2); }
+      @media (max-width: 640px) { .bone-table { grid-template-columns: repeat(2, 1fr); } }
+    </style>
+
+    <div class="gf-divider"><span>◆ 五两一钱骨 · 歌诀 ◆</span></div>
+
+    <!-- 歌诀卡 -->
+    <section class="poem-section">
+      <div class="poem-card">
+        <div class="poem-title">五 两 一 钱</div>
+        <div class="poem-verse">
+          <span class="line">一 世 荣 华 事 事 通</span>
+          <span class="line">不 须 劳 碌 自 享 通</span>
+          <span class="line">职 位 高 显 声 名 显</span>
+          <span class="line">前 呼 后 拥 似 蛟 龙</span>
+        </div>
+        <div class="poem-stamp">
+          <span class="gf-seal">启门</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 白话解读 -->
+    <div class="interpret-card">
+      <h3>◉ 歌诀释义</h3>
+      <p>
+        五两一钱之命，为古法中"贵显"之相。歌诀言"一世荣华"，并非今人所谓必然富贵，
+        而是指心性与格局较为开阔，一生多得遇合，工作上易得贵人提携。
+      </p>
+      <p>
+        "不须劳碌自享通"并非懒怠，而是说你的付出多能直达目标、少走弯路；
+        "职位高显声名显"提示你的事业上升路径较顺，宜专注长期发展而非频繁跳动。
+      </p>
+      <p style="color: var(--gf-ink-soft); font-size: 13px; font-style: italic;">
+        注：本段白话解读由编辑团队在公版古籍基础上整理，仅供文化参考。
+      </p>
+    </div>
+
+    <!-- 操作栏 -->
+    <div class="action-bar">
+      <button class="gf-btn">◈ 生成分享卡片</button>
+      <button class="gf-btn gf-btn-outline">◐ 保存到本地</button>
+      <button class="gf-btn gf-btn-outline">◑ 重新称骨</button>
+    </div>
+  </div>
+
+  <footer class="gf-footer">
+    <div>启门问卜 · tt-qimen · 古今同道</div>
+    <div style="margin-top: 12px;">
+      <a href="#about">关于</a> · <a href="#disclaimer">免责声明</a> · <a href="#data-source">数据来源</a>
+    </div>
+    <div style="margin-top: 16px; font-size: 12px;">© 2026 tt-qimen</div>
+  </footer>
+</body>
+</html>

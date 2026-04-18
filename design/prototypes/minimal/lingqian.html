@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tt-qimen · 观音灵签（现代简约）</title>
+  <link rel="stylesheet" href="../assets/minimal.css">
+  <style>
+    .page-hero { padding: var(--mn-space-10) 0 var(--mn-space-8); }
+    .page-breadcrumb { font-size: 13px; color: var(--mn-ink-muted); margin-bottom: var(--mn-space-3); }
+    .page-breadcrumb a { color: var(--mn-ink-muted); text-decoration: none; }
+    .page-hero h1 { font-size: 40px; font-weight: 700; letter-spacing: -0.03em; margin: 0; }
+    .page-hero p { color: var(--mn-ink-soft); font-size: 16px; margin: var(--mn-space-3) 0 0; }
+
+    /* 摇签容器 */
+    .shake-section {
+      max-width: 560px;
+      margin: 0 auto var(--mn-space-10);
+      text-align: center;
+      padding: var(--mn-space-10);
+      background: linear-gradient(135deg, var(--mn-bg-elev), #f8f7f2);
+      border: 1px solid var(--mn-border);
+      border-radius: var(--mn-radius-xl);
+    }
+
+    .tube-wrap {
+      width: 120px;
+      height: 200px;
+      margin: 0 auto var(--mn-space-6);
+      position: relative;
+    }
+
+    .tube {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, var(--mn-accent), var(--mn-accent-hover));
+      border-radius: 8px 8px 60px 60px;
+      position: relative;
+      box-shadow: 0 12px 32px rgba(59, 47, 99, 0.25);
+      animation: shake 2.5s ease-in-out infinite;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: rotate(-2deg); }
+      50% { transform: rotate(2deg); }
+    }
+
+    .tube::after {
+      content: "观音灵签";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      writing-mode: vertical-rl;
+      font-size: 18px;
+      letter-spacing: 0.3em;
+    }
+
+    .tube-stick {
+      position: absolute;
+      top: -20px;
+      width: 3px;
+      height: 40px;
+      background: var(--mn-ink-soft);
+      border-radius: 2px;
+    }
+
+    .tube-stick.s1 { left: 20%; transform: rotate(-5deg); }
+    .tube-stick.s2 { left: 45%; top: -28px; }
+    .tube-stick.s3 { left: 60%; transform: rotate(8deg); }
+
+    .shake-text {
+      font-size: 15px;
+      color: var(--mn-ink-soft);
+      line-height: 1.8;
+      margin-bottom: var(--mn-space-5);
+    }
+
+    .shake-text strong {
+      color: var(--mn-accent);
+    }
+
+    .topic-input {
+      width: 100%;
+      max-width: 360px;
+      padding: var(--mn-space-3) var(--mn-space-5);
+      background-color: var(--mn-bg);
+      border: 1px solid var(--mn-border);
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 14px;
+      text-align: center;
+      margin-bottom: var(--mn-space-4);
+    }
+
+    /* 签文卡 */
+    .qian-card {
+      max-width: 720px;
+      margin: 0 auto var(--mn-space-8);
+      background-color: var(--mn-bg-elev);
+      border: 1px solid var(--mn-border);
+      border-radius: var(--mn-radius-xl);
+      padding: var(--mn-space-10) var(--mn-space-8);
+      box-shadow: var(--mn-shadow-md);
+    }
+
+    .qian-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--mn-space-8);
+      padding-bottom: var(--mn-space-5);
+      border-bottom: 1px dashed var(--mn-border);
+    }
+
+    .qian-number-box {
+      display: flex;
+      align-items: baseline;
+      gap: var(--mn-space-3);
+    }
+
+    .qian-label {
+      font-size: 11px;
+      color: var(--mn-ink-muted);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .qian-num {
+      font-size: 56px;
+      font-weight: 700;
+      color: var(--mn-accent);
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+
+    .qian-meta {
+      text-align: right;
+    }
+
+    .qian-tale-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--mn-ink);
+      margin-bottom: var(--mn-space-2);
+    }
+
+    .qian-level {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+    }
+
+    .qian-level.up { background-color: #dcfce7; color: #166534; }
+    .qian-level.mid { background-color: #fef3c7; color: #854d0e; }
+
+    .qian-verse {
+      text-align: center;
+      padding: var(--mn-space-6) 0;
+    }
+
+    .qian-verse-label {
+      font-size: 11px;
+      color: var(--mn-ink-muted);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-bottom: var(--mn-space-6);
+    }
+
+    .qian-verse-body {
+      font-size: 22px;
+      line-height: 2.2;
+      color: var(--mn-ink);
+      font-weight: 500;
+      letter-spacing: 0.15em;
+    }
+
+    .qian-verse-body .line { display: block; }
+
+    .qian-tale {
+      background-color: var(--mn-accent-soft);
+      padding: var(--mn-space-4) var(--mn-space-5);
+      border-radius: var(--mn-radius-md);
+      margin-top: var(--mn-space-6);
+    }
+
+    .qian-tale-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--mn-accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: var(--mn-space-2);
+    }
+
+    .qian-tale-body {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--mn-ink);
+      margin: 0;
+    }
+
+    /* 分事列表 */
+    .aspects {
+      max-width: 720px;
+      margin: 0 auto var(--mn-space-8);
+    }
+
+    .aspects h2 {
+      font-size: 20px;
+      font-weight: 600;
+      margin: 0 0 var(--mn-space-5);
+      text-align: center;
+      letter-spacing: -0.01em;
+    }
+
+    .asp-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--mn-space-3);
+    }
+
+    .asp-item {
+      background-color: var(--mn-bg-elev);
+      border: 1px solid var(--mn-border);
+      border-radius: var(--mn-radius-md);
+      padding: var(--mn-space-4) var(--mn-space-5);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .asp-item:hover {
+      border-color: var(--mn-accent);
+      background-color: var(--mn-accent-soft);
+    }
+
+    .asp-left {
+      display: flex;
+      align-items: center;
+      gap: var(--mn-space-3);
+    }
+
+    .asp-icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--mn-accent-soft);
+      color: var(--mn-accent);
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .asp-title {
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .asp-summary {
+      font-size: 13px;
+      color: var(--mn-ink-soft);
+      display: flex;
+      align-items: center;
+      gap: var(--mn-space-2);
+    }
+
+    .asp-arrow {
+      color: var(--mn-ink-muted);
+      font-size: 18px;
+    }
+
+    .actions {
+      max-width: 720px;
+      margin: var(--mn-space-8) auto;
+      display: flex;
+      justify-content: center;
+      gap: var(--mn-space-3);
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 768px) {
+      .qian-top { flex-direction: column; gap: var(--mn-space-4); }
+      .qian-meta { text-align: left; }
+      .qian-verse-body { font-size: 18px; letter-spacing: 0.1em; }
+    }
+  </style>
+</head>
+<body>
+  <div class="prototype-badge">Minimal · Lingqian</div>
+  <div class="mn-disclaimer">内容仅供文化体验与娱乐参考，不构成专业建议</div>
+
+  <header class="mn-header">
+    <div class="mn-header-inner">
+      <a href="index.html" class="mn-logo"><span class="mn-logo-mark">启</span>tt-qimen</a>
+      <nav class="mn-nav">
+        <a href="index.html">首页</a>
+        <a href="bazi.html">八字</a>
+        <a href="ziwei.html">紫微</a>
+        <a href="chenggu.html">称骨</a>
+        <a href="liuren.html">小六壬</a>
+        <a href="lingqian.html" class="active">灵签</a>
+        <a href="xingming.html">姓名</a>
+        <a href="huangli.html">黄历</a>
+        <a href="jiemeng.html">解梦</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="mn-container">
+    <section class="page-hero">
+      <div class="page-breadcrumb"><a href="index.html">首页</a> / 观音灵签</div>
+      <h1>观音灵签</h1>
+      <p>心诚则灵 · 摇签百支 · 问事指迷</p>
+    </section>
+
+    <!-- 所求输入（统一 ds-input-card 规范）-->
+    <div class="mn-card ds-input-card" style="max-width: 640px;">
+      <h3 class="ds-card-title"><span class="ds-ornament">◆</span>所 求 何 事</h3>
+      <div class="ds-input-row" style="grid-template-columns: 2fr 1fr;">
+        <div class="ds-input-group">
+          <label>心中所问（选填）</label>
+          <input type="text" placeholder="如：今年学业、姻缘、事业、求财…">
+        </div>
+        <div class="ds-input-group">
+          <label>占问领域</label>
+          <select>
+            <option selected>综合</option>
+            <option>事业功名</option>
+            <option>姻缘婚配</option>
+            <option>财运求财</option>
+            <option>健康疾病</option>
+            <option>出行远游</option>
+          </select>
+        </div>
+      </div>
+      <p style="font-size: 12px; color: var(--mn-ink-muted); margin: 0 0 var(--mn-space-4); text-align: center; line-height: 1.6;">
+        心中默念所求之事 · <strong>三次深呼吸</strong>后轻按启签
+      </p>
+      <div class="ds-input-actions">
+        <button class="mn-btn mn-btn-lg">启签</button>
+        <button class="mn-btn mn-btn-outline">再摇</button>
+      </div>
+    </div>
+
+    <!-- 摇签视觉（保留）-->
+    <div class="shake-section">
+      <div class="tube-wrap">
+        <div class="tube"></div>
+        <div class="tube-stick s1"></div>
+        <div class="tube-stick s2"></div>
+        <div class="tube-stick s3"></div>
+      </div>
+    </div>
+
+    <!-- 签文 -->
+    <div class="qian-card">
+      <div class="qian-top">
+        <div class="qian-number-box">
+          <span class="qian-label">第</span>
+          <span class="qian-num">45</span>
+          <span class="qian-label">签</span>
+        </div>
+        <div class="qian-meta">
+          <div class="qian-tale-name">汉高祖入关 · 古人</div>
+          <span class="qian-level up">上 · 吉</span>
+        </div>
+      </div>
+
+      <div class="qian-verse">
+        <div class="qian-verse-label">签 诗</div>
+        <div class="qian-verse-body">
+          <span class="line">阳 衰 阴 盛 百 事 吉</span>
+          <span class="line">凡 事 贵 人 相 扶 持</span>
+          <span class="line">谋 望 营 求 皆 有 益</span>
+          <span class="line">但 逢 亥 子 始 开 颐</span>
+        </div>
+      </div>
+
+      <div class="qian-tale">
+        <div class="qian-tale-label">◆ 典故</div>
+        <p class="qian-tale-body">
+          楚汉相争之时，刘邦率众先入关中，项羽后至而诸侯皆附高祖。
+          此签言时运至则万众归心，宜待机而动，切忌强求。
+        </p>
+      </div>
+    </div>
+
+    <!-- 解曰 / 仙机 双栏 -->
+    <div class="qian-two-cols">
+      <div class="mn-card qian-col">
+        <div class="qian-col-head"><span class="dot"></span>解 曰</div>
+        <p>
+          此签阳衰阴盛，实为阴阳转化之机。所求诸事虽有波折，然<strong>贵人相扶</strong>，
+          终能水落石出。宜守本分、不宜强求；遇事应<strong>顺势而为</strong>，
+          方可化险为夷。逢亥、子之时为应验之期。
+        </p>
+      </div>
+      <div class="mn-card qian-col qian-xianji">
+        <div class="qian-col-head"><span class="dot"></span>仙 机</div>
+        <p>
+          "凡事贵人相扶持"——近期有长者或德高望重者为你开路，宜多亲近、虚心请教。
+          若问官非，则宜庭外调解而非争讼；若问求财，则宜稳守不宜扩张，
+          待亥子月（农历十月、十一月）为佳。
+        </p>
+      </div>
+    </div>
+
+    <style>
+      .qian-two-cols { display: grid; grid-template-columns: 1fr 1fr; gap: var(--mn-space-5); max-width: 1000px; margin: 0 auto var(--mn-space-8); }
+      .qian-col { padding: var(--mn-space-6); }
+      .qian-col-head { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; color: var(--mn-ink); letter-spacing: 0.15em; margin-bottom: var(--mn-space-4); padding-bottom: var(--mn-space-3); border-bottom: 1px dashed var(--mn-border); }
+      .qian-col-head .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mn-accent); }
+      .qian-xianji .qian-col-head .dot { background: var(--mn-warning); }
+      .qian-xianji .qian-col-head { color: var(--mn-ink-soft); }
+      .qian-col p { margin: 0; font-size: 14px; line-height: 1.8; color: var(--mn-ink-soft); }
+      @media (max-width: 768px) { .qian-two-cols { grid-template-columns: 1fr; } }
+    </style>
+
+    <!-- 分事 -->
+    <div class="aspects">
+      <h2>◆ 分事而问 · 逐项开示</h2>
+      <div class="asp-list">
+        <div class="asp-item">
+          <div class="asp-left">
+            <div class="asp-icon">谋</div>
+            <span class="asp-title">谋 望</span>
+          </div>
+          <div class="asp-summary">
+            所谋易成，静候佳机
+            <span class="mn-badge-success mn-badge">+</span>
+            <span class="asp-arrow">→</span>
+          </div>
+        </div>
+        <div class="asp-item">
+          <div class="asp-left">
+            <div class="asp-icon">财</div>
+            <span class="asp-title">求 财</span>
+          </div>
+          <div class="asp-summary">
+            偏财有望，正财稳进
+            <span class="mn-badge-success mn-badge">+</span>
+            <span class="asp-arrow">→</span>
+          </div>
+        </div>
+        <div class="asp-item">
+          <div class="asp-left">
+            <div class="asp-icon">婚</div>
+            <span class="asp-title">婚 姻</span>
+          </div>
+          <div class="asp-summary">
+            有情人终成眷属
+            <span class="mn-badge-success mn-badge">+</span>
+            <span class="asp-arrow">→</span>
+          </div>
+        </div>
+        <div class="asp-item">
+          <div class="asp-left">
+            <div class="asp-icon">疾</div>
+            <span class="asp-title">疾 病</span>
+          </div>
+          <div class="asp-summary">
+            宜静养，渐愈
+            <span class="mn-badge-success mn-badge">+</span>
+            <span class="asp-arrow">→</span>
+          </div>
+        </div>
+        <div class="asp-item">
+          <div class="asp-left">
+            <div class="asp-icon">行</div>
+            <span class="asp-title">出 行</span>
+          </div>
+          <div class="asp-summary">
+            利远行，忌水路
+            <span class="mn-badge-warning mn-badge">±</span>
+            <span class="asp-arrow">→</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="mn-btn">生成分享卡片</button>
+      <button class="mn-btn mn-btn-outline">重新求签</button>
+    </div>
+  </main>
+
+  <footer class="mn-footer">
+    <div style="margin-bottom: var(--mn-space-3);">tt-qimen · 启门问卜</div>
+    <div>
+      <a href="#about">关于</a>
+      <a href="#disclaimer">免责声明</a>
+      <a href="#data-source">数据来源</a>
+    </div>
+    <div style="margin-top: var(--mn-space-4); font-size: 12px;">© 2026 tt-qimen</div>
+  </footer>
+</body>
+</html>

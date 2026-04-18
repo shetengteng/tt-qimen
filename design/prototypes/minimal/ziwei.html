@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tt-qimen · 紫微斗数（现代简约）</title>
+  <link rel="stylesheet" href="../assets/minimal.css">
+  <style>
+    .page-hero {
+      padding: var(--mn-space-10) 0 var(--mn-space-6);
+    }
+
+    .page-breadcrumb {
+      font-size: 13px;
+      color: var(--mn-ink-muted);
+      margin-bottom: var(--mn-space-3);
+    }
+
+    .page-breadcrumb a {
+      color: var(--mn-ink-muted);
+      text-decoration: none;
+    }
+
+    .page-breadcrumb a:hover {
+      color: var(--mn-accent);
+    }
+
+    .page-hero h1 {
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin: 0;
+    }
+
+    .page-hero p {
+      color: var(--mn-ink-soft);
+      font-size: 16px;
+      margin: var(--mn-space-3) 0 0;
+    }
+
+    /* 输入卡 — 样式来自 minimal.css 的 .ds-* 通用规范 */
+
+    /* 排盘头 */
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: var(--mn-space-4);
+      padding: var(--mn-space-5) var(--mn-space-6);
+      border-top: 1px solid var(--mn-border);
+      border-bottom: 1px solid var(--mn-border);
+      background: var(--mn-bg-elev);
+      border-radius: var(--mn-radius-md);
+      margin-bottom: var(--mn-space-8);
+    }
+
+    .chart-header-left h2 {
+      margin: 0 0 var(--mn-space-1);
+      font-size: 20px;
+      letter-spacing: -0.01em;
+    }
+
+    .chart-meta {
+      text-align: right;
+      font-size: 13px;
+      color: var(--mn-ink-muted);
+    }
+
+    .chart-meta strong {
+      color: var(--mn-ink);
+      font-weight: 600;
+    }
+
+    .chart-meta .row + .row {
+      margin-top: 2px;
+    }
+
+    /* 12 宫 · 4x4 桌面 */
+    .ziwei-chart {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(4, minmax(150px, auto));
+      gap: 1px;
+      background: var(--mn-border);
+      border: 1px solid var(--mn-border);
+      border-radius: var(--mn-radius-md);
+      overflow: hidden;
+      margin-bottom: var(--mn-space-10);
+    }
+
+    /* 三方四正连线 + 高亮 */
+    .ziwei-relations-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 3;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .ziwei-chart.show-sanfang .ziwei-relations-svg { opacity: 1; }
+
+    .ziwei-relations-svg .line-sanhe {
+      fill: none;
+      stroke: var(--mn-accent);
+      stroke-width: 1.8;
+      stroke-dasharray: 6 4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.78;
+    }
+
+    .ziwei-relations-svg .line-duigong {
+      stroke: var(--mn-warning, #c9a548);
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      opacity: 0.9;
+    }
+
+    .ziwei-relations-svg .arrow-duigong {
+      fill: var(--mn-warning, #c9a548);
+      opacity: 0.95;
+    }
+
+    .ziwei-relations-svg .dot-anchor {
+      fill: var(--mn-accent);
+      opacity: 0.92;
+    }
+
+    .ziwei-relations-svg .dot-anchor.opp {
+      fill: var(--mn-warning, #c9a548);
+    }
+
+    .ziwei-chart.show-sanfang .palace.p-ming {
+      background: var(--mn-accent-soft);
+      box-shadow: inset 0 0 0 2px var(--mn-accent);
+    }
+
+    .ziwei-chart.show-sanfang .palace.p-sanhe {
+      background: color-mix(in srgb, var(--mn-accent-soft) 60%, var(--mn-bg-elev));
+      box-shadow: inset 0 0 0 1px var(--mn-accent);
+    }
+
+    .ziwei-chart.show-sanfang .palace.p-duigong {
+      background: #fdf7e6;
+      box-shadow: inset 0 0 0 1px var(--mn-warning, #c9a548);
+    }
+
+    /* 三方四正开关 */
+    .sanfang-toggle-bar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: var(--mn-space-2);
+      margin-bottom: var(--mn-space-4);
+    }
+
+    .sanfang-hint {
+      font-size: 11px;
+      color: var(--mn-ink-muted);
+      letter-spacing: 0.05em;
+      margin-right: auto;
+    }
+
+    .sanfang-toggle {
+      padding: 6px 14px;
+      background: var(--mn-bg-elev);
+      border: 1px solid var(--mn-border);
+      border-radius: var(--mn-radius-sm);
+      color: var(--mn-ink-soft);
+      font-size: 12px;
+      font-family: inherit;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+
+    .sanfang-toggle:hover {
+      background: var(--mn-accent-soft);
+      border-color: var(--mn-accent);
+      color: var(--mn-accent);
+    }
+
+    .sanfang-toggle.active {
+      background: var(--mn-accent);
+      color: white;
+      border-color: var(--mn-accent);
+    }
+
+    .palace {
+      background: var(--mn-bg-elev);
+      padding: var(--mn-space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--mn-space-2);
+      min-height: 150px;
+      position: relative;
+      z-index: 2;
+      transition: background 0.2s ease;
+    }
+
+    .palace:hover {
+      background: #fafaff;
+    }
+
+    .palace-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .palace-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--mn-accent);
+    }
+
+    .palace-name.ming {
+      color: var(--mn-accent);
+      font-size: 15px;
+    }
+
+    .palace-gz {
+      font-size: 11px;
+      color: var(--mn-ink-muted);
+      font-family: var(--mn-font-mono);
+      letter-spacing: 0.08em;
+    }
+
+    .palace-stars {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex: 1;
+    }
+
+    .star {
+      font-size: 13px;
+      line-height: 1.5;
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .star-main {
+      color: var(--mn-ink);
+      font-weight: 600;
+    }
+
+    .star-aux {
+      color: var(--mn-ink-soft);
+      font-weight: 400;
+    }
+
+    .star-malefic {
+      color: var(--mn-danger);
+    }
+
+    .star-bright {
+      font-size: 10px;
+      color: var(--mn-ink-muted);
+      letter-spacing: 0;
+    }
+
+    .star-sihua {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      line-height: 17px;
+      text-align: center;
+      font-size: 10px;
+      font-weight: 700;
+      border-radius: 4px;
+      margin-left: 2px;
+    }
+
+    .sihua-lu   { background: var(--mn-success); color: #fff; }
+    .sihua-quan { background: var(--mn-warning); color: #fff; }
+    .sihua-ke   { background: var(--mn-info); color: #fff; }
+    .sihua-ji   { background: var(--mn-danger); color: #fff; }
+
+    .palace-foot {
+      font-size: 11px;
+      color: var(--mn-ink-muted);
+      border-top: 1px dashed var(--mn-border);
+      padding-top: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .palace-foot .liu {
+      font-family: var(--mn-font-mono);
+      color: var(--mn-accent);
+    }
+
+    /* 命宫高亮 */
+    .palace.ming-gong {
+      background: linear-gradient(180deg, var(--mn-accent-soft), #fff);
+      box-shadow: inset 0 0 0 2px var(--mn-accent);
+    }
+
+    .palace.shen-gong .palace-name.shen {
+      background: var(--mn-accent-soft);
+      color: var(--mn-accent);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    /* 中宫 */
+    .center-palace {
+      grid-column: 2 / 4;
+      grid-row: 2 / 4;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.78), rgba(232, 225, 250, 0.72));
+      padding: var(--mn-space-6);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: var(--mn-space-2);
+      border: 1px solid var(--mn-border);
+      box-shadow: inset 0 0 0 1px rgba(59, 47, 99, 0.15);
+      position: relative;
+      z-index: 1;
+    }
+
+    .center-palace > * {
+      position: relative;
+      z-index: 4;
+    }
+
+    .center-title {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--mn-ink);
+      margin-bottom: var(--mn-space-3);
+      text-align: center;
+    }
+
+    .center-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      padding: 4px 0;
+      border-bottom: 1px dashed var(--mn-border);
+    }
+
+    .center-row:last-child {
+      border-bottom: none;
+    }
+
+    .center-row .k {
+      color: var(--mn-ink-muted);
+    }
+
+    .center-row .v {
+      color: var(--mn-ink);
+      font-weight: 600;
+    }
+
+    /* 图例 */
+    .legend-bar {
+      display: flex;
+      justify-content: center;
+      gap: var(--mn-space-4);
+      flex-wrap: wrap;
+      margin-bottom: var(--mn-space-6);
+      font-size: 12px;
+      color: var(--mn-ink-muted);
+    }
+
+    .legend-bar .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* 解读区 */
+    .interpret-section {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--mn-space-5);
+      margin-bottom: var(--mn-space-10);
+    }
+
+    .interpret-card {
+      padding: var(--mn-space-6);
+      background: var(--mn-bg-elev);
+      border: 1px solid var(--mn-border);
+      border-radius: var(--mn-radius-lg);
+    }
+
+    .interpret-card h3 {
+      margin: 0 0 var(--mn-space-3);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--mn-ink);
+      letter-spacing: -0.01em;
+    }
+
+    .interpret-card p {
+      margin: 0 0 var(--mn-space-4);
+      font-size: 14px;
+      color: var(--mn-ink-soft);
+      line-height: 1.75;
+    }
+
+    .interpret-card .tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .interpret-card .tag {
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: var(--mn-bg);
+      border: 1px solid var(--mn-border);
+      color: var(--mn-ink-soft);
+    }
+
+    .interpret-card .tag.accent {
+      background: var(--mn-accent-soft);
+      color: var(--mn-accent);
+      border-color: rgba(59, 47, 99, 0.18);
+    }
+
+    .interpret-card .tag.danger {
+      background: #fef2f2;
+      color: var(--mn-danger);
+      border-color: #fee2e2;
+    }
+
+    .interpret-card .tag.success {
+      background: #f0fdf4;
+      color: var(--mn-success);
+      border-color: #dcfce7;
+    }
+
+    /* 大限 */
+    .daxian-section {
+      margin-bottom: var(--mn-space-10);
+    }
+
+    .daxian-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: var(--mn-space-3);
+      margin-bottom: var(--mn-space-5);
+    }
+
+    .daxian-header h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .daxian-meta {
+      font-size: 13px;
+      color: var(--mn-ink-muted);
+    }
+
+    .daxian-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: var(--mn-space-2);
+    }
+
+    .daxian-cell {
+      background: var(--mn-bg-elev);
+      border: 1px solid var(--mn-border);
+      border-radius: var(--mn-radius-md);
+      padding: var(--mn-space-3);
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .daxian-cell:hover {
+      transform: translateY(-2px);
+      border-color: var(--mn-accent);
+      box-shadow: var(--mn-shadow-sm);
+    }
+
+    .daxian-cell.current {
+      background: var(--mn-accent-soft);
+      border: 2px solid var(--mn-accent);
+    }
+
+    .daxian-age {
+      font-size: 11px;
+      color: var(--mn-ink-muted);
+      letter-spacing: 0.05em;
+    }
+
+    .daxian-palace {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--mn-ink);
+      margin: 2px 0;
+    }
+
+    .daxian-gz {
+      font-size: 11px;
+      color: var(--mn-accent);
+      font-family: var(--mn-font-mono);
+    }
+
+    /* 操作 */
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: var(--mn-space-3);
+      flex-wrap: wrap;
+      margin: var(--mn-space-10) 0;
+    }
+
+    /* 移动端 */
+    .ziwei-mobile {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .ziwei-chart {
+        display: none;
+      }
+
+      .ziwei-mobile {
+        display: block;
+        margin-bottom: var(--mn-space-8);
+      }
+
+      .mobile-key-palaces {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--mn-space-3);
+      }
+
+      .mobile-key-palaces .palace {
+        min-height: 130px;
+        border: 1px solid var(--mn-border);
+        border-radius: var(--mn-radius-md);
+      }
+
+      .mobile-more-list {
+        margin-top: var(--mn-space-4);
+        background: var(--mn-bg-elev);
+        border: 1px solid var(--mn-border);
+        border-radius: var(--mn-radius-md);
+        overflow: hidden;
+      }
+
+      .mobile-more-head {
+        padding: 14px 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        background: var(--mn-bg);
+      }
+
+      .mobile-more-head h4 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .mobile-more-item {
+        padding: 12px 18px;
+        border-top: 1px solid var(--mn-border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+      }
+
+      .mobile-more-item .p-name {
+        color: var(--mn-accent);
+        font-weight: 600;
+      }
+
+      .mobile-more-item .p-star {
+        color: var(--mn-ink-soft);
+      }
+
+      .interpret-section {
+        grid-template-columns: 1fr;
+      }
+
+      .daxian-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .page-hero h1 {
+        font-size: 32px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="prototype-badge">Minimal · Ziwei</div>
+
+  <div class="mn-disclaimer">内容仅供文化体验与娱乐参考，不构成专业建议</div>
+
+  <header class="mn-header">
+    <div class="mn-header-inner">
+      <a href="index.html" class="mn-logo"><span class="mn-logo-mark">启</span>tt-qimen</a>
+      <nav class="mn-nav">
+        <a href="index.html">首页</a>
+        <a href="bazi.html">八字</a>
+        <a href="ziwei.html" class="active">紫微</a>
+        <a href="chenggu.html">称骨</a>
+        <a href="liuren.html">小六壬</a>
+        <a href="lingqian.html">灵签</a>
+        <a href="xingming.html">姓名</a>
+        <a href="huangli.html">黄历</a>
+        <a href="jiemeng.html">解梦</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="mn-container">
+    <section class="page-hero">
+      <div class="page-breadcrumb">
+        <a href="index.html">首页</a> / 紫微斗数
+      </div>
+      <h1>紫微斗数</h1>
+      <p>十二宫 · 主星副星 · 四化飞星 · 大限小限</p>
+    </section>
+
+    <!-- 输入（ds-* 通用规范） -->
+    <div class="mn-card ds-input-card">
+      <h2 class="ds-card-title"><span class="ds-ornament">·</span> 录入生辰 <span class="ds-ornament">·</span></h2>
+      <div class="ds-calendar-switch">
+        <button class="ds-switch-btn active">公历</button>
+        <button class="ds-switch-btn">农历</button>
+      </div>
+      <div class="ds-input-row">
+        <div class="ds-input-group">
+          <label>出生年</label>
+          <input type="text" value="1990">
+        </div>
+        <div class="ds-input-group">
+          <label>月</label>
+          <input type="text" value="5">
+        </div>
+        <div class="ds-input-group">
+          <label>日</label>
+          <input type="text" value="20">
+        </div>
+        <div class="ds-input-group">
+          <label>时辰</label>
+          <select>
+            <option>子时 (23-1)</option>
+            <option selected>午时 (11-13)</option>
+          </select>
+        </div>
+        <div class="ds-input-group">
+          <label>性别</label>
+          <select>
+            <option selected>男</option>
+            <option>女</option>
+          </select>
+        </div>
+      </div>
+      <div class="ds-input-actions">
+        <button class="mn-btn mn-btn-lg">排紫微命盘</button>
+      </div>
+    </div>
+
+    <!-- 排盘头 -->
+    <div class="chart-header">
+      <div class="chart-header-left">
+        <h2>紫微命盘</h2>
+        <div class="mn-badge">木三局 · 命主 破军 · 身主 七杀</div>
+      </div>
+      <div class="chart-meta">
+        <div class="row">阳历 <strong>1990-05-20 午时</strong></div>
+        <div class="row">农历 <strong>庚午年 四月廿七</strong></div>
+      </div>
+    </div>
+
+    <!-- 图例 -->
+    <div class="legend-bar">
+      <span class="legend-item"><span class="star-sihua sihua-lu">禄</span> 化禄</span>
+      <span class="legend-item"><span class="star-sihua sihua-quan">权</span> 化权</span>
+      <span class="legend-item"><span class="star-sihua sihua-ke">科</span> 化科</span>
+      <span class="legend-item"><span class="star-sihua sihua-ji">忌</span> 化忌</span>
+      <span class="legend-item" style="margin-left: 12px;">庙/旺/得/平/陷 = 星曜亮度</span>
+    </div>
+
+    <!-- 三方四正切换（默认开启） -->
+    <div class="sanfang-toggle-bar">
+      <span class="sanfang-hint">命盘已显示「命宫 三方四正」——</span>
+      <button class="sanfang-toggle active" id="btnSanfang" data-target="ming">命宫 · 三方四正</button>
+      <button class="sanfang-toggle" id="btnSanfangClose">关闭连线</button>
+    </div>
+
+    <!-- 12 宫 4x4（桌面）-->
+    <div class="ziwei-chart show-sanfang" id="ziweiChart">
+      <svg class="ziwei-relations-svg" id="ziweiRelations" aria-hidden="true"></svg>
+      <div class="palace">
+        <div class="palace-head">
+          <span class="palace-name">父母宫</span>
+          <span class="palace-gz">辛巳</span>
+        </div>
+        <div class="palace-stars">
+          <div class="star"><span class="star-main">天同</span><span class="star-bright">平</span></div>
+          <div class="star"><span class="star-main">太阴</span><span class="star-bright">陷</span><span class="star-sihua sihua-ke">科</span></div>
+          <div class="star"><span class="star-aux">文昌 左辅</span></div>
+        </div>
+        <div class="palace-foot">
+          <span>博士</span><span class="liu">大限 46-55</span>
+        </div>
+      </div>
+
+      <div class="palace">
+        <div class="palace-head">
+          <span class="palace-name">福德宫</span>
+          <span class="palace-gz">壬午</span>
+        </div>
+        <div class="palace-stars">
+          <div class="star"><span class="star-main">武曲</span><span class="star-bright">庙</span><span class="star-sihua sihua-quan">权</span></div>
+          <div class="star"><span class="star-main">天府</span><span class="star-bright">旺</span></div>
+          <div class="star"><span class="star-aux">天魁</span></div>
+        </div>
+        <div class="palace-foot">
+          <span>力士</span><span class="liu">大限 56-65</span>
+        </div>
+      </div>
+
+      <div class="palace">
+        <div class="palace-head">
+          <span class="palace-name">田宅宫</span>
+          <span class="palace-gz">癸未</span>
+        </div>
+        <div class="palace-stars">
+          <div class="star"><span class="star-main">太阳</span><span class="star-bright">庙</span></div>
+          <div class="star"><span class="star-aux">右弼</span></div>
+          <div class="star"><span class="star-malefic">擎羊</span></div>
+        </div>
+        <div class="palace-foot">
+          <span>青龙</span><span class="liu">大限 66-75</span>
+        </div>
+      </div>
+
+      <div class="palace" data-palace="guanlu">
+        <div class="palace-head">
+          <span class="palace-name">事业宫</span>
+          <span class="palace-gz">甲申</span>
+        </div>
+        <div class="palace-stars">
+          <div class="star"><span class="star-main">破军</span><span class="star-bright">得</span></div>
+          <div class="star"><span class="star-aux">文曲</span></div>
+          <div class="star"><span class="star-malefic">地劫</span></div>
+        </div>
+        <div class="palace-foot">
+          <span>小耗</span><span class="liu">大限 76-85</span>
+        </div>
+      </div>
+
+      <div class="palace ming-gong" data-palace="ming">
+        <div class="palace-head">
+          <span class="palace-name ming">命宫</span>
+          <span class="palace-gz">庚辰</span>
+        </div>
+        <div class="palace-stars">
+          <div class="star"><span class="star-main">紫微</span><span class="star-bright">庙</span></div>
+          <div class="star"><span class="star-main">贪狼</span><span class="star-bright">平</span><span class="star-sihua sihua-lu">禄</span></div>
+          <div class="star"><span class="star-aux">天钺 禄存</span></div>
+        </div>
+        <div class="palace-foot">
+          <span>将军</span><span class="liu">大限 36-45</span>
+        </div>
+      </div>
+
+      <!-- 中宫 -->
+      <div class="center-palace">
+        <div class="center-title">命盘</div>
+        <div class="center-row"><span class="k">姓名</span><span class="v">某某 · 男</span></div>
+        <div class="center-row"><span class="k">阳历</span><span class="v">1990-05-20 午时</span></div>
+        <div class="center-row"><span class="k">五行局</span><span class="v">木三局 · 起运 3 岁</span></div>
+        <div class="center-row"><span class="k">命 / 身</span><span class="v">破军 · 七杀</span></div>
+        <div class="center-row"><span class="k">子年斗君</span><span class="v">正月 子时</span></div>
+      </div>
+
+      <div class="palace">
+        <div class="palace-head">
+          <span class="palace-name">交友宫</span>
+          <span class="palace-gz">乙酉</span>
+        </div>
+        <div class="palace-stars">
+          <div class="star"><span class="star-main">天机</span><span class="star-bright">旺</span></div>
+          <div class="star"><span class="star-aux">天马</span></div>
+        </div>
+        <div class="palace-foot">
+          <span>奏书</span><span class="liu">大限 86-95</span>
+        </div>
+      </div>
+
+      <div class="palace">
+        <div class="palace-head">
+          <span class="palace-name">兄弟宫</span>
+          <span class="palace-gz">己卯</span>
+        </div>
+        <div class="palace-stars">
+          <div class="star"><span class="star-main">天机</span><span class="star-bright">庙</span></div>
+          <div class="star"><span class="star-aux">天姚</span></div>
+        </div>
+        <div class="palace-foot">
+          <span>飞廉</span><span class="liu">大限 26-35</span>
+        </div>
+      </div>
+
+      <div class="palace" data-palace="qianyi">
+        <div class="palace-head">
+          <span class="palace-name">迁移宫</span>
+          <span class="palace-gz">丙戌</span>
+        </div>
+        <div class="palace-stars">
+          <div class="star"><span class="star-main">天相</span><span class="star-bright">得</span></div>
+          <div class="star"><span class="star-malefic">陀罗</span></div>
+        </div>
+        <div class="palace-foot">
+          <span>喜神</span><span class="liu">大限 96+</span>
+        </div>
+      </div>
+
+      <div class="palace">
+        <div class="palace-head">
+          <span class="palace-name">夫妻宫</span>
+          <span class="palace-gz">戊寅</span>
+        </div>
+        <div class="palace-stars">
+          <div class="star"><span class="star-main">七杀</span><span class="star-bright">庙</span></div>
+          <div class="star"><span class="star-aux">地空</span></div>
+        </div>
+        <div class="palace-foot">
+          <span>病符</span><span class="liu">大限 16-25</span>
+        </div>
+      </div>
+
+      <div class="palace">
+        <div class="palace-head">
+          <span class="palace-name">子女宫</span>
+          <span class="palace-gz">己丑</span>
+        </div>
+        <div class="palace-stars">
+          <div class="star"><span class="star-main">天梁</span><span class="star-bright">庙</span><span class="star-sihua sihua-ji">忌</span></div>
+          <div class="star"><span class="star-aux">火星</span></div>
+        </div>
+        <div class="palace-foot">
+          <span>大耗</span><span class="liu">—</span>
+        </div>
+      </div>
+
+      <div class="palace" data-palace="caibo">
+        <div class="palace-head">
+          <span class="palace-name">财帛宫</span>
+          <span class="palace-gz">戊子</span>
+        </div>
+        <div class="palace-stars">
+          <div class="star"><span class="star-main">廉贞</span><span class="star-bright">平</span></div>
+          <div class="star"><span class="star-aux">铃星</span></div>
+        </div>
+        <div class="palace-foot">
+          <span>伏兵</span><span class="liu">—</span>
+        </div>
+      </div>
+
+      <div class="palace shen-gong">
+        <div class="palace-head">
+          <span class="palace-name shen">疾厄宫 · 身</span>
+          <span class="palace-gz">丁亥</span>
+        </div>
+        <div class="palace-stars">
+          <div class="star"><span class="star-main">巨门</span><span class="star-bright">得</span></div>
+          <div class="star"><span class="star-aux">天巫</span></div>
+        </div>
+        <div class="palace-foot">
+          <span>官府</span><span class="liu">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 移动端：4 核心宫 + 可展开 -->
+    <div class="ziwei-mobile">
+      <div class="mobile-key-palaces">
+        <div class="palace ming-gong">
+          <div class="palace-head">
+            <span class="palace-name ming">命宫</span>
+            <span class="palace-gz">庚辰</span>
+          </div>
+          <div class="palace-stars">
+            <div class="star"><span class="star-main">紫微·贪狼</span><span class="star-sihua sihua-lu">禄</span></div>
+            <div class="star"><span class="star-aux">天钺 禄存</span></div>
+          </div>
+          <div class="palace-foot"><span>将军</span><span class="liu">36-45</span></div>
+        </div>
+        <div class="palace">
+          <div class="palace-head">
+            <span class="palace-name">迁移宫</span>
+            <span class="palace-gz">丙戌</span>
+          </div>
+          <div class="palace-stars">
+            <div class="star"><span class="star-main">天相</span></div>
+            <div class="star"><span class="star-malefic">陀罗</span></div>
+          </div>
+          <div class="palace-foot"><span>喜神</span><span class="liu">96+</span></div>
+        </div>
+        <div class="palace">
+          <div class="palace-head">
+            <span class="palace-name">夫妻宫</span>
+            <span class="palace-gz">戊寅</span>
+          </div>
+          <div class="palace-stars">
+            <div class="star"><span class="star-main">七杀</span></div>
+            <div class="star"><span class="star-aux">地空</span></div>
+          </div>
+          <div class="palace-foot"><span>病符</span><span class="liu">16-25</span></div>
+        </div>
+        <div class="palace">
+          <div class="palace-head">
+            <span class="palace-name">事业宫</span>
+            <span class="palace-gz">甲申</span>
+          </div>
+          <div class="palace-stars">
+            <div class="star"><span class="star-main">破军</span></div>
+            <div class="star"><span class="star-aux">文曲</span></div>
+          </div>
+          <div class="palace-foot"><span>小耗</span><span class="liu">76+</span></div>
+        </div>
+      </div>
+
+      <div class="mobile-more-list">
+        <div class="mobile-more-head">
+          <h4>其余 8 宫</h4>
+          <span style="color: var(--mn-accent);">展开 ▼</span>
+        </div>
+        <div class="mobile-more-item">
+          <span class="p-name">兄弟宫 · 己卯</span>
+          <span class="p-star">天机（庙）</span>
+        </div>
+        <div class="mobile-more-item">
+          <span class="p-name">子女宫 · 己丑</span>
+          <span class="p-star">天梁 · 化忌</span>
+        </div>
+        <div class="mobile-more-item">
+          <span class="p-name">财帛宫 · 戊子</span>
+          <span class="p-star">廉贞（平）</span>
+        </div>
+        <div class="mobile-more-item">
+          <span class="p-name">疾厄宫 · 丁亥 · 身</span>
+          <span class="p-star">巨门（得）</span>
+        </div>
+        <div class="mobile-more-item">
+          <span class="p-name">交友宫 · 乙酉</span>
+          <span class="p-star">天机（旺）</span>
+        </div>
+        <div class="mobile-more-item">
+          <span class="p-name">田宅宫 · 癸未</span>
+          <span class="p-star">太阳（庙）</span>
+        </div>
+        <div class="mobile-more-item">
+          <span class="p-name">福德宫 · 壬午</span>
+          <span class="p-star">武曲天府 · 化权</span>
+        </div>
+        <div class="mobile-more-item">
+          <span class="p-name">父母宫 · 辛巳</span>
+          <span class="p-star">天同太阴 · 化科</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 解读 -->
+    <section class="interpret-section">
+      <div class="interpret-card">
+        <h3>命宫解读</h3>
+        <p>
+          紫微贪狼同坐于辰宫庙地，贪狼化禄加持，兼具贵气与灵气。此格局利于文艺创作、
+          社交公关与经营决策，一生多贵人提携；但需节制桃花与应酬，避免浮华分散心力。
+        </p>
+        <div class="tags">
+          <span class="tag accent">贪狼化禄</span>
+          <span class="tag">紫微庙</span>
+          <span class="tag success">禄存 · 聚财</span>
+        </div>
+      </div>
+
+      <div class="interpret-card">
+        <h3>四化飞星</h3>
+        <p>
+          <strong>贪狼化禄</strong> 坐命宫 · 才气与机遇并显；
+          <strong>武曲化权</strong> 落福德宫 · 理财有主见；
+          <strong>太阴化科</strong> 入父母宫 · 利文名声誉；
+          <strong>天梁化忌</strong> 入子女宫 · 子女缘较弱，需加倍经营代际关系。
+        </p>
+        <div class="tags">
+          <span class="tag success">禄入命</span>
+          <span class="tag accent">权入福</span>
+          <span class="tag">科入父</span>
+          <span class="tag danger">忌入子</span>
+        </div>
+      </div>
+
+      <div class="interpret-card">
+        <h3>六吉六煞</h3>
+        <p>
+          左辅右弼分坐父母、田宅，贵人扶持绵长；文昌文曲交会于命财，利考学与文字事业。
+          擎羊落田宅、陀罗居迁移、火铃分于子财，皆为行运注意点，动中易生波折，
+          宜"大事静守、小事灵动"。
+        </p>
+        <div class="tags">
+          <span class="tag accent">昌曲交会</span>
+          <span class="tag danger">羊陀煞曜</span>
+          <span class="tag">火铃散作</span>
+        </div>
+      </div>
+
+      <div class="interpret-card">
+        <h3>身主 · 事业取向</h3>
+        <p>
+          身在疾厄，巨门守身，利口舌为业——讲师、媒体、律师、咨询皆宜。
+          事业宫破军坐申，主变革与开创，宜于成熟行业中另辟新局，避免盲目换行。
+        </p>
+        <div class="tags">
+          <span class="tag accent">口舌事业</span>
+          <span class="tag">破军 · 变革</span>
+          <span class="tag success">创新路线</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 大限 -->
+    <section class="daxian-section">
+      <div class="daxian-header">
+        <h2>大限 · 十年一运</h2>
+        <div class="daxian-meta">当前 36 岁 · 大限 36-45（命宫）</div>
+      </div>
+      <div class="daxian-grid">
+        <div class="daxian-cell">
+          <div class="daxian-age">6-15</div>
+          <div class="daxian-palace">父母</div>
+          <div class="daxian-gz">辛巳</div>
+        </div>
+        <div class="daxian-cell">
+          <div class="daxian-age">16-25</div>
+          <div class="daxian-palace">夫妻</div>
+          <div class="daxian-gz">戊寅</div>
+        </div>
+        <div class="daxian-cell">
+          <div class="daxian-age">26-35</div>
+          <div class="daxian-palace">兄弟</div>
+          <div class="daxian-gz">己卯</div>
+        </div>
+        <div class="daxian-cell current">
+          <div class="daxian-age">36-45</div>
+          <div class="daxian-palace">命宫</div>
+          <div class="daxian-gz">庚辰</div>
+        </div>
+        <div class="daxian-cell">
+          <div class="daxian-age">46-55</div>
+          <div class="daxian-palace">父母</div>
+          <div class="daxian-gz">辛巳</div>
+        </div>
+        <div class="daxian-cell">
+          <div class="daxian-age">56-65</div>
+          <div class="daxian-palace">福德</div>
+          <div class="daxian-gz">壬午</div>
+        </div>
+        <div class="daxian-cell">
+          <div class="daxian-age">66-75</div>
+          <div class="daxian-palace">田宅</div>
+          <div class="daxian-gz">癸未</div>
+        </div>
+        <div class="daxian-cell">
+          <div class="daxian-age">76-85</div>
+          <div class="daxian-palace">事业</div>
+          <div class="daxian-gz">甲申</div>
+        </div>
+        <div class="daxian-cell">
+          <div class="daxian-age">86-95</div>
+          <div class="daxian-palace">交友</div>
+          <div class="daxian-gz">乙酉</div>
+        </div>
+        <div class="daxian-cell">
+          <div class="daxian-age">96+</div>
+          <div class="daxian-palace">迁移</div>
+          <div class="daxian-gz">丙戌</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 小限 -->
+    <section class="daxian-section">
+      <div class="daxian-header">
+        <h2>小限 · 一岁一更</h2>
+        <div class="daxian-meta">当前 2026 丙午 · 小限在午宫 · 福德</div>
+      </div>
+      <div class="daxian-grid">
+        <div class="daxian-cell">
+          <div class="daxian-age">2024</div>
+          <div class="daxian-palace">父母</div>
+          <div class="daxian-gz">甲辰</div>
+        </div>
+        <div class="daxian-cell">
+          <div class="daxian-age">2025</div>
+          <div class="daxian-palace">命宫</div>
+          <div class="daxian-gz">乙巳</div>
+        </div>
+        <div class="daxian-cell current">
+          <div class="daxian-age">2026</div>
+          <div class="daxian-palace">福德</div>
+          <div class="daxian-gz">丙午</div>
+        </div>
+        <div class="daxian-cell">
+          <div class="daxian-age">2027</div>
+          <div class="daxian-palace">田宅</div>
+          <div class="daxian-gz">丁未</div>
+        </div>
+        <div class="daxian-cell">
+          <div class="daxian-age">2028</div>
+          <div class="daxian-palace">事业</div>
+          <div class="daxian-gz">戊申</div>
+        </div>
+        <div class="daxian-cell">
+          <div class="daxian-age">2029</div>
+          <div class="daxian-palace">交友</div>
+          <div class="daxian-gz">己酉</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 操作 -->
+    <div class="actions">
+      <button class="mn-btn">生成分享卡片</button>
+      <button class="mn-btn mn-btn-outline">保存到本地</button>
+      <button class="mn-btn mn-btn-ghost">重新排盘</button>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      var chart = document.getElementById('ziweiChart');
+      var svg = document.getElementById('ziweiRelations');
+      var btnShow = document.getElementById('btnSanfang');
+      var btnHide = document.getElementById('btnSanfangClose');
+      if (!chart || !svg) return;
+
+      function getPalace(key) {
+        return chart.querySelector('.palace[data-palace="' + key + '"]');
+      }
+
+      function drawRelations(benggongKey) {
+        while (svg.firstChild) svg.removeChild(svg.firstChild);
+        chart.querySelectorAll('.palace').forEach(function (p) {
+          p.classList.remove('p-ming', 'p-sanhe', 'p-duigong');
+        });
+
+        var W = chart.clientWidth;
+        var H = chart.clientHeight;
+        svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+        svg.setAttribute('width', W);
+        svg.setAttribute('height', H);
+        var chartRect = chart.getBoundingClientRect();
+
+        var centerEl = chart.querySelector('.center-palace');
+        var cpRect = centerEl.getBoundingClientRect();
+        var cpL = cpRect.left - chartRect.left;
+        var cpR = cpRect.right - chartRect.left;
+        var cpT = cpRect.top - chartRect.top;
+        var cpB = cpRect.bottom - chartRect.top;
+
+        var svgNS = 'http://www.w3.org/2000/svg';
+
+        function outerAnchor(el) {
+          var r = el.getBoundingClientRect();
+          var left = r.left - chartRect.left;
+          var top = r.top - chartRect.top;
+          var right = left + r.width;
+          var bottom = top + r.height;
+          var cx = (left + right) / 2;
+          var cy = (top + bottom) / 2;
+          var PAD = 10;
+
+          var isTop = top < cpT - 1;
+          var isBottom = bottom > cpB + 1;
+          var isLeft = left < cpL - 1;
+          var isRight = right > cpR + 1;
+
+          if (isTop && isLeft) return { x: left + PAD, y: top + PAD };
+          if (isTop && isRight) return { x: right - PAD, y: top + PAD };
+          if (isBottom && isLeft) return { x: left + PAD, y: bottom - PAD };
+          if (isBottom && isRight) return { x: right - PAD, y: bottom - PAD };
+          if (isTop) return { x: cx, y: top + PAD };
+          if (isBottom) return { x: cx, y: bottom - PAD };
+          if (isLeft) return { x: left + PAD, y: cy };
+          if (isRight) return { x: right - PAD, y: cy };
+          return { x: cx, y: cy };
+        }
+
+        var TRIAD = ['ming', 'caibo', 'guanlu'];
+        var triadPts = [];
+        TRIAD.forEach(function (k) {
+          var el = getPalace(k);
+          if (!el) return;
+          if (k === benggongKey) el.classList.add('p-ming');
+          else el.classList.add('p-sanhe');
+          triadPts.push(outerAnchor(el));
+        });
+        var oppEl = getPalace('qianyi');
+        if (oppEl) oppEl.classList.add('p-duigong');
+
+        if (triadPts.length === 3) {
+          var pathTri = document.createElementNS(svgNS, 'path');
+          pathTri.setAttribute('class', 'line-sanhe');
+          pathTri.setAttribute('d',
+            'M' + triadPts[0].x + ',' + triadPts[0].y +
+            ' L' + triadPts[1].x + ',' + triadPts[1].y +
+            ' L' + triadPts[2].x + ',' + triadPts[2].y +
+            ' Z'
+          );
+          svg.appendChild(pathTri);
+
+          triadPts.forEach(function (p) {
+            var dot = document.createElementNS(svgNS, 'circle');
+            dot.setAttribute('class', 'dot-anchor');
+            dot.setAttribute('cx', p.x);
+            dot.setAttribute('cy', p.y);
+            dot.setAttribute('r', 5);
+            svg.appendChild(dot);
+          });
+        }
+
+        if (oppEl) {
+          var mingEl = getPalace(benggongKey);
+          if (mingEl) {
+            function innerEdge(el) {
+              var r = el.getBoundingClientRect();
+              var left = r.left - chartRect.left;
+              var top = r.top - chartRect.top;
+              var cx = left + r.width / 2;
+              var cy = top + r.height / 2;
+              var dx = (cpL + cpR) / 2 - cx;
+              var dy = (cpT + cpB) / 2 - cy;
+              if (Math.abs(dx) > Math.abs(dy)) {
+                return { x: dx > 0 ? (left + r.width - 6) : (left + 6), y: cy };
+              }
+              return { x: cx, y: dy > 0 ? (top + r.height - 6) : (top + 6) };
+            }
+
+            var ap = innerEdge(mingEl);
+            var bp = innerEdge(oppEl);
+
+            function drawArrow(p, toward) {
+              var len = 22;
+              var dx = toward.x - p.x;
+              var dy = toward.y - p.y;
+              var dist = Math.sqrt(dx * dx + dy * dy) || 1;
+              var ux = dx / dist;
+              var uy = dy / dist;
+              var ex = p.x + ux * len;
+              var ey = p.y + uy * len;
+
+              var seg = document.createElementNS(svgNS, 'line');
+              seg.setAttribute('class', 'line-duigong');
+              seg.setAttribute('x1', p.x);
+              seg.setAttribute('y1', p.y);
+              seg.setAttribute('x2', ex);
+              seg.setAttribute('y2', ey);
+              svg.appendChild(seg);
+
+              var ah = 6, aw = 4;
+              var px = -uy, py = ux;
+              var arrow = document.createElementNS(svgNS, 'polygon');
+              arrow.setAttribute('class', 'arrow-duigong');
+              arrow.setAttribute('points',
+                ex + ',' + ey + ' ' +
+                (ex - ux * ah + px * aw) + ',' + (ey - uy * ah + py * aw) + ' ' +
+                (ex - ux * ah - px * aw) + ',' + (ey - uy * ah - py * aw)
+              );
+              svg.appendChild(arrow);
+
+              var dot = document.createElementNS(svgNS, 'circle');
+              dot.setAttribute('class', 'dot-anchor opp');
+              dot.setAttribute('cx', p.x);
+              dot.setAttribute('cy', p.y);
+              dot.setAttribute('r', 3.5);
+              svg.appendChild(dot);
+            }
+
+            drawArrow(ap, bp);
+            drawArrow(bp, ap);
+          }
+        }
+      }
+
+      if (btnShow) {
+        btnShow.addEventListener('click', function () {
+          if (chart.classList.contains('show-sanfang') && btnShow.classList.contains('active')) {
+            chart.classList.remove('show-sanfang');
+            btnShow.classList.remove('active');
+            return;
+          }
+          chart.classList.add('show-sanfang');
+          btnShow.classList.add('active');
+          drawRelations('ming');
+        });
+      }
+      if (btnHide) {
+        btnHide.addEventListener('click', function () {
+          chart.classList.remove('show-sanfang');
+          if (btnShow) btnShow.classList.remove('active');
+          while (svg.firstChild) svg.removeChild(svg.firstChild);
+          chart.querySelectorAll('.palace').forEach(function (p) {
+            p.classList.remove('p-ming', 'p-sanhe', 'p-duigong');
+          });
+        });
+      }
+
+      window.addEventListener('resize', function () {
+        if (chart.classList.contains('show-sanfang')) {
+          drawRelations('ming');
+        }
+      });
+
+      function initDraw() {
+        if (chart.classList.contains('show-sanfang')) {
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () { drawRelations('ming'); });
+          });
+        }
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initDraw);
+      } else {
+        initDraw();
+      }
+    })();
+  </script>
+
+  <footer class="mn-footer">
+    <div style="margin-bottom: var(--mn-space-3);">tt-qimen · 启门问卜</div>
+    <div>
+      <a href="#about">关于</a>
+      <a href="#disclaimer">免责声明</a>
+      <a href="#data-source">数据来源</a>
+    </div>
+    <div style="margin-top: var(--mn-space-4); font-size: 12px;">© 2026 tt-qimen</div>
+  </footer>
+</body>
+</html>

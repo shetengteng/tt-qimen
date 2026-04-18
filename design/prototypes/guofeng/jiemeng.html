@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tt-qimen · 周公解梦（国风）</title>
+  <link rel="stylesheet" href="../assets/guofeng.css">
+  <style>
+    .page-title { text-align: center; padding: var(--gf-space-xl) 0 var(--gf-space-lg); }
+    .page-title h1 { font-size: 40px; color: var(--gf-ink); margin: 0; letter-spacing: 0.1em; }
+    .page-title .subtitle { font-size: 14px; color: var(--gf-ink-soft); margin-top: var(--gf-space-sm); }
+
+    /* 搜索栏 */
+    .search-hero {
+      max-width: 720px;
+      margin: 0 auto var(--gf-space-xl);
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 18px 28px 18px 60px;
+      font-family: var(--gf-font-serif);
+      font-size: 18px;
+      background: rgba(255, 251, 240, 0.95);
+      border: 1.5px solid var(--gf-gold);
+      border-radius: 999px;
+      box-shadow: var(--gf-shadow-sm);
+      letter-spacing: 0.05em;
+      transition: all 0.2s;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--gf-cinnabar);
+      box-shadow: 0 8px 28px rgba(194, 58, 42, 0.15);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 22px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 22px;
+      color: var(--gf-cinnabar);
+    }
+
+    .search-hint {
+      margin-top: var(--gf-space-sm);
+      text-align: center;
+      font-size: 13px;
+      color: var(--gf-ink-soft);
+    }
+
+    /* 分类网格 */
+    .category-section {
+      max-width: 960px;
+      margin: 0 auto var(--gf-space-xl);
+    }
+
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: var(--gf-space-md);
+      margin-top: var(--gf-space-lg);
+    }
+
+    .cat-card {
+      background-color: rgba(255, 251, 240, 0.8);
+      border: 1px solid rgba(176, 141, 59, 0.3);
+      border-radius: var(--gf-radius-md);
+      padding: var(--gf-space-md);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .cat-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--gf-gold);
+      box-shadow: var(--gf-shadow-sm);
+    }
+
+    .cat-card.active {
+      background: linear-gradient(135deg, rgba(249, 228, 212, 0.6), rgba(246, 236, 214, 0.6));
+      border-color: var(--gf-cinnabar);
+    }
+
+    .cat-icon {
+      font-size: 40px;
+      margin-bottom: var(--gf-space-sm);
+      display: block;
+    }
+
+    .cat-name {
+      font-size: 15px;
+      color: var(--gf-ink);
+      margin-bottom: 4px;
+    }
+
+    .cat-count {
+      font-size: 12px;
+      color: var(--gf-ink-soft);
+    }
+
+    /* 搜索结果列表 */
+    .results-section {
+      max-width: 840px;
+      margin: 0 auto var(--gf-space-xl);
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--gf-space-md);
+      padding-bottom: var(--gf-space-sm);
+      border-bottom: 1px solid rgba(176, 141, 59, 0.3);
+    }
+
+    .results-title {
+      font-size: 18px;
+      color: var(--gf-ink);
+    }
+
+    .results-count {
+      font-size: 13px;
+      color: var(--gf-ink-soft);
+    }
+
+    .dream-entry {
+      background-color: rgba(255, 251, 240, 0.8);
+      border: 1px solid rgba(176, 141, 59, 0.2);
+      border-radius: var(--gf-radius-md);
+      padding: var(--gf-space-lg);
+      margin-bottom: var(--gf-space-md);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .dream-entry:hover {
+      border-color: var(--gf-gold);
+      box-shadow: var(--gf-shadow-sm);
+    }
+
+    .dream-entry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--gf-space-sm);
+    }
+
+    .dream-title {
+      font-size: 18px;
+      color: var(--gf-ink);
+      display: flex;
+      align-items: center;
+      gap: var(--gf-space-sm);
+    }
+
+    .dream-title .keyword {
+      color: var(--gf-cinnabar);
+      font-weight: 600;
+    }
+
+    .dream-category {
+      padding: 2px 10px;
+      font-size: 12px;
+      border-radius: 10px;
+      background-color: rgba(176, 141, 59, 0.15);
+      color: var(--gf-gold);
+    }
+
+    .dream-summary {
+      font-size: 14px;
+      color: var(--gf-ink-soft);
+      line-height: 1.8;
+      margin: 0 0 var(--gf-space-sm);
+    }
+
+    .dream-tags {
+      display: flex;
+      gap: var(--gf-space-sm);
+      flex-wrap: wrap;
+      margin-top: var(--gf-space-sm);
+    }
+
+    .dream-tag {
+      padding: 2px 10px;
+      font-size: 12px;
+      background-color: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(176, 141, 59, 0.25);
+      border-radius: 10px;
+      color: var(--gf-ink-soft);
+    }
+
+    /* 详情弹层（此处展开做示意）*/
+    .dream-detail {
+      max-width: 720px;
+      margin: var(--gf-space-xl) auto;
+      background:
+        linear-gradient(180deg, rgba(255, 251, 240, 0.98), rgba(246, 236, 214, 0.95)),
+        repeating-linear-gradient(0deg, transparent, transparent 30px, rgba(176, 141, 59, 0.04) 30px, rgba(176, 141, 59, 0.04) 31px);
+      border: 1.5px solid var(--gf-cinnabar);
+      border-radius: var(--gf-radius-md);
+      padding: var(--gf-space-xl);
+      box-shadow: var(--gf-shadow-md);
+    }
+
+    .detail-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--gf-space-md);
+      padding-bottom: var(--gf-space-sm);
+      border-bottom: 1px dashed rgba(194, 58, 42, 0.3);
+    }
+
+    .detail-title {
+      font-size: 24px;
+      color: var(--gf-cinnabar);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: var(--gf-space-sm);
+    }
+
+    .detail-section {
+      margin-bottom: var(--gf-space-lg);
+    }
+
+    .detail-section-title {
+      font-size: 14px;
+      color: var(--gf-gold);
+      letter-spacing: 0.3em;
+      margin-bottom: var(--gf-space-sm);
+    }
+
+    .detail-original {
+      font-size: 15px;
+      line-height: 2;
+      color: var(--gf-ink);
+      padding: var(--gf-space-md);
+      background-color: rgba(255, 255, 255, 0.5);
+      border-left: 3px solid var(--gf-gold);
+      border-radius: 0 var(--gf-radius-sm) var(--gf-radius-sm) 0;
+      font-style: italic;
+    }
+
+    .detail-modern {
+      font-size: 15px;
+      line-height: 2;
+      color: var(--gf-ink);
+      margin: 0;
+    }
+
+    .detail-warning {
+      margin-top: var(--gf-space-md);
+      padding: var(--gf-space-sm) var(--gf-space-md);
+      font-size: 13px;
+      color: var(--gf-ink-soft);
+      background: rgba(176, 141, 59, 0.08);
+      border-radius: var(--gf-radius-sm);
+      line-height: 1.7;
+    }
+
+    .action-bar {
+      max-width: 720px;
+      margin: var(--gf-space-xl) auto;
+      display: flex;
+      justify-content: center;
+      gap: var(--gf-space-md);
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="prototype-badge">国风 · 解梦</div>
+  <div class="gf-disclaimer">✦ 本站内容仅供文化体验与娱乐参考 · 不构成专业建议 ✦</div>
+
+  <header class="gf-header">
+    <div class="gf-header-inner">
+      <a href="index.html" class="gf-logo">启门问卜</a>
+      <nav class="gf-nav">
+        <a href="index.html">首页</a>
+        <a href="bazi.html">八字</a>
+        <a href="ziwei.html">紫微</a>
+        <a href="chenggu.html">称骨</a>
+        <a href="liuren.html">小六壬</a>
+        <a href="lingqian.html">灵签</a>
+        <a href="xingming.html">姓名</a>
+        <a href="huangli.html">黄历</a>
+        <a href="jiemeng.html" class="active">解梦</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="gf-container">
+    <div class="page-title">
+      <h1>周公解梦</h1>
+      <div class="subtitle">两千词条古籍 · 模糊查询 · 现代建议</div>
+    </div>
+
+    <!-- 搜索（统一 ds-input-card 规范）-->
+    <div class="gf-card ds-input-card" style="max-width: 720px;">
+      <h3 class="ds-card-title"><span class="ds-ornament">☌</span>输入所梦<span class="ds-ornament">☌</span></h3>
+      <div class="ds-input-row" style="grid-template-columns: 2fr 1fr;">
+        <div class="ds-input-group">
+          <label>梦境关键词</label>
+          <input type="text" placeholder="梦见了什么？如：梦见蛇、掉牙、飞翔…" value="梦见蛇">
+        </div>
+        <div class="ds-input-group">
+          <label>梦境分类</label>
+          <select>
+            <option selected>自动识别</option>
+            <option>动物</option>
+            <option>人物</option>
+            <option>自然</option>
+            <option>生活</option>
+            <option>情感</option>
+          </select>
+        </div>
+      </div>
+      <div class="ds-input-actions">
+        <button class="gf-btn">☌ 查询解梦</button>
+        <button class="gf-btn gf-btn-outline">✎ 输入详细梦境</button>
+      </div>
+      <p style="font-size: 12px; color: var(--gf-ink-soft); margin: var(--gf-space-md) 0 0; text-align: center; line-height: 1.7;">
+        支持模糊查询 · 两千余条《周公解梦》词条 · 古籍与现代双解
+      </p>
+    </div>
+
+    <!-- 最近搜索（localStorage 记录）-->
+    <div class="recent-search">
+      <span class="recent-label">近日所求</span>
+      <span class="recent-chip active">梦见蛇</span>
+      <span class="recent-chip">掉牙</span>
+      <span class="recent-chip">飞翔</span>
+      <span class="recent-chip">梦见死人</span>
+      <span class="recent-chip">追逐</span>
+      <a href="#" class="recent-clear">清空</a>
+    </div>
+
+    <style>
+      .recent-search { max-width: 720px; margin: 0 auto var(--gf-space-lg); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 0 var(--gf-space-md); }
+      .recent-label { font-size: 12px; color: var(--gf-ink-soft); letter-spacing: 0.2em; margin-right: 4px; }
+      .recent-chip { padding: 4px 12px; font-size: 12px; background: rgba(176, 141, 59, 0.08); border: 1px solid rgba(176, 141, 59, 0.25); border-radius: var(--gf-radius-sm); color: var(--gf-ink-soft); cursor: pointer; transition: all 0.18s; }
+      .recent-chip:hover { background: rgba(194, 58, 42, 0.1); border-color: var(--gf-cinnabar); color: var(--gf-cinnabar); }
+      .recent-chip.active { background: var(--gf-cinnabar); color: var(--gf-rice); border-color: var(--gf-cinnabar); }
+      .recent-clear { margin-left: auto; font-size: 11px; color: var(--gf-ink-soft); text-decoration: none; letter-spacing: 0.1em; }
+      .recent-clear:hover { color: var(--gf-cinnabar); }
+    </style>
+
+    <!-- 分类 -->
+    <section class="category-section">
+      <h3 style="text-align: center; color: var(--gf-ink); margin: var(--gf-space-lg) 0 var(--gf-space-sm);">◆ 按 类 浏 览 ◆</h3>
+      <p style="text-align: center; font-size: 13px; color: var(--gf-ink-soft); margin: 0;">
+        传统解梦分类 · 共收录 2380 条
+      </p>
+      <div class="category-grid">
+        <div class="cat-card active">
+          <span class="cat-icon">◉</span>
+          <div class="cat-name">动 物</div>
+          <div class="cat-count">438 条</div>
+        </div>
+        <div class="cat-card">
+          <span class="cat-icon">∞</span>
+          <div class="cat-name">人 物</div>
+          <div class="cat-count">512 条</div>
+        </div>
+        <div class="cat-card">
+          <span class="cat-icon">☷</span>
+          <div class="cat-name">自 然</div>
+          <div class="cat-count">287 条</div>
+        </div>
+        <div class="cat-card">
+          <span class="cat-icon">☯</span>
+          <div class="cat-name">身 体</div>
+          <div class="cat-count">193 条</div>
+        </div>
+        <div class="cat-card">
+          <span class="cat-icon">▤</span>
+          <div class="cat-name">生 活</div>
+          <div class="cat-count">362 条</div>
+        </div>
+        <div class="cat-card">
+          <span class="cat-icon">✦</span>
+          <div class="cat-name">神 怪</div>
+          <div class="cat-count">156 条</div>
+        </div>
+        <div class="cat-card">
+          <span class="cat-icon">▦</span>
+          <div class="cat-name">建 筑</div>
+          <div class="cat-count">112 条</div>
+        </div>
+        <div class="cat-card">
+          <span class="cat-icon">♠</span>
+          <div class="cat-name">其 他</div>
+          <div class="cat-count">320 条</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 搜索结果 -->
+    <section class="results-section">
+      <div class="results-header">
+        <span class="results-title">"蛇" · 搜索结果</span>
+        <span class="results-count">共找到 18 条相关词条</span>
+      </div>
+      <div class="dream-entry">
+        <div class="dream-entry-header">
+          <h4 class="dream-title"><span class="keyword">梦见蛇咬自己</span></h4>
+          <span class="dream-category">动物</span>
+        </div>
+        <p class="dream-summary">
+          古籍云：梦被蛇咬，主得财货。现代心理学认为多与情绪压力、人际冲突有关。
+        </p>
+        <div class="dream-tags">
+          <span class="dream-tag">多义</span>
+          <span class="dream-tag">贵人</span>
+          <span class="dream-tag">压力提示</span>
+        </div>
+      </div>
+      <div class="dream-entry">
+        <div class="dream-entry-header">
+          <h4 class="dream-title"><span class="keyword">梦见蛇吞物</span></h4>
+          <span class="dream-category">动物</span>
+        </div>
+        <p class="dream-summary">
+          古籍云：蛇吞物者，将有异变，忌出远门；现代解读为内心对未知事物的吞噬感与恐惧。
+        </p>
+        <div class="dream-tags">
+          <span class="dream-tag">变化</span>
+          <span class="dream-tag">警示</span>
+        </div>
+      </div>
+      <div class="dream-entry">
+        <div class="dream-entry-header">
+          <h4 class="dream-title"><span class="keyword">梦见白蛇</span></h4>
+          <span class="dream-category">动物</span>
+        </div>
+        <p class="dream-summary">
+          古籍云：白蛇入室，主添人口；现代视角中常象征纯净的直觉与新的契机。
+        </p>
+        <div class="dream-tags">
+          <span class="dream-tag">吉兆</span>
+          <span class="dream-tag">贵人</span>
+          <span class="dream-tag">直觉</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="gf-divider"><span>◆ 梦 · 见 · 蛇 · 咬 · 自 · 己 ◆</span></div>
+
+    <!-- 详情卡 -->
+    <div class="dream-detail">
+      <div class="detail-topbar">
+        <h3 class="detail-title">◉ 梦见蛇咬自己</h3>
+        <span class="dream-category">动物</span>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">◆ 古 籍 原 文</div>
+        <div class="detail-original">
+          "蛇咬人，主得财。蛇入怀，生贵子。蛇绕腰，主有孕。"<br>
+          — 《周公解梦》原文（公版古籍）
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">◆ 现 代 解 读</div>
+        <p class="detail-modern">
+          从传统象征看，梦见蛇咬自己是"得财"之兆，古人认为这是财运或贵人即将到来的信号。
+        </p>
+        <p class="detail-modern">
+          从现代心理学角度，蛇在梦中常代表难以处理的情绪或关系中的紧张张力。
+          被蛇咬可能提示近期的压力积累，提醒你留意身边的人际冲突或内心的焦虑。
+        </p>
+        <p class="detail-modern" style="color: var(--gf-cinnabar);">
+          <strong>建议：</strong>最近若有重要决定，可放缓一步、多咨询身边信任的人。
+          情绪紧绷时，不妨以写日记或冥想来疏导。
+        </p>
+      </div>
+
+      <div class="detail-warning">
+        ⚠ 梦境的解读因人而异，古籍仅供参考。若梦境频繁困扰现实生活，建议咨询专业心理咨询师。
+      </div>
+    </div>
+
+    <div class="action-bar">
+      <button class="gf-btn">◈ 保存到本地</button>
+      <button class="gf-btn gf-btn-outline">◐ 查其他梦境</button>
+    </div>
+  </div>
+
+  <footer class="gf-footer">
+    <div>启门问卜 · tt-qimen · 古今同道</div>
+    <div style="margin-top: 12px;">
+      <a href="#about">关于</a> · <a href="#disclaimer">免责声明</a> · <a href="#data-source">数据来源</a>
+    </div>
+    <div style="margin-top: 16px; font-size: 12px;">© 2026 tt-qimen</div>
+  </footer>
+</body>
+</html>

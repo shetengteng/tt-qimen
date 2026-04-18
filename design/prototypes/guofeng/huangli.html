@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tt-qimen · 黄历择日（国风）</title>
+  <link rel="stylesheet" href="../assets/guofeng.css">
+  <style>
+    .page-title { text-align: center; padding: var(--gf-space-xl) 0 var(--gf-space-lg); }
+    .page-title h1 { font-size: 40px; color: var(--gf-ink); margin: 0; letter-spacing: 0.1em; }
+    .page-title .subtitle { font-size: 14px; color: var(--gf-ink-soft); margin-top: var(--gf-space-sm); }
+
+    /* 顶部日期卡 */
+    .today-card {
+      max-width: 960px;
+      margin: 0 auto var(--gf-space-xl);
+      background:
+        linear-gradient(135deg, rgba(255, 251, 240, 0.95), rgba(246, 236, 214, 0.85)),
+        radial-gradient(circle at 20% 20%, rgba(194, 58, 42, 0.1), transparent 40%);
+      border: 1.5px solid var(--gf-gold);
+      border-radius: var(--gf-radius-md);
+      padding: var(--gf-space-xl);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: var(--gf-space-xl);
+      align-items: center;
+      position: relative;
+      box-shadow: var(--gf-shadow-md);
+    }
+
+    .today-date {
+      text-align: center;
+      padding-right: var(--gf-space-lg);
+      border-right: 1px solid rgba(176, 141, 59, 0.3);
+    }
+
+    .today-weekday {
+      font-size: 13px;
+      color: var(--gf-ink-soft);
+      letter-spacing: 0.2em;
+      margin-bottom: var(--gf-space-sm);
+    }
+
+    .today-day {
+      font-size: 88px;
+      color: var(--gf-cinnabar);
+      line-height: 1;
+      font-weight: 600;
+    }
+
+    .today-full {
+      font-size: 14px;
+      color: var(--gf-ink-soft);
+      margin-top: var(--gf-space-sm);
+    }
+
+    .today-lunar {
+      font-size: 16px;
+      color: var(--gf-ink);
+      margin-top: 4px;
+    }
+
+    .today-info {
+      display: flex;
+      flex-direction: column;
+      gap: var(--gf-space-sm);
+    }
+
+    .info-line {
+      display: flex;
+      gap: var(--gf-space-md);
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .info-label {
+      color: var(--gf-ink-soft);
+      min-width: 56px;
+    }
+
+    .info-value {
+      color: var(--gf-ink);
+      font-weight: 500;
+    }
+
+    .info-ganzhi {
+      font-size: 18px;
+      color: var(--gf-cinnabar);
+      letter-spacing: 0.1em;
+      font-weight: 500;
+    }
+
+    .today-big {
+      text-align: center;
+    }
+
+    .big-label {
+      font-size: 13px;
+      color: var(--gf-ink-soft);
+      margin-bottom: var(--gf-space-sm);
+      letter-spacing: 0.2em;
+    }
+
+    .big-value {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--gf-cinnabar), var(--gf-cinnabar-deep));
+      color: var(--gf-rice);
+      font-size: 32px;
+      font-weight: 600;
+      box-shadow: 0 6px 20px rgba(194, 58, 42, 0.3);
+    }
+
+    /* 宜忌大卡 */
+    .yiji-section {
+      max-width: 960px;
+      margin: 0 auto var(--gf-space-xl);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--gf-space-lg);
+    }
+
+    .yiji-card {
+      background-color: rgba(255, 251, 240, 0.7);
+      border: 1px solid;
+      border-radius: var(--gf-radius-md);
+      padding: var(--gf-space-lg);
+    }
+
+    .yiji-card.yi {
+      border-color: var(--gf-jade);
+      background: linear-gradient(135deg, rgba(74, 109, 93, 0.08), rgba(255, 251, 240, 0.9));
+    }
+
+    .yiji-card.ji {
+      border-color: var(--gf-cinnabar);
+      background: linear-gradient(135deg, rgba(194, 58, 42, 0.08), rgba(255, 251, 240, 0.9));
+    }
+
+    .yiji-header {
+      display: flex;
+      align-items: center;
+      gap: var(--gf-space-md);
+      margin-bottom: var(--gf-space-md);
+      padding-bottom: var(--gf-space-sm);
+      border-bottom: 1px dashed rgba(176, 141, 59, 0.3);
+    }
+
+    .yiji-stamp {
+      width: 52px;
+      height: 52px;
+      line-height: 52px;
+      text-align: center;
+      font-size: 28px;
+      color: var(--gf-rice);
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .yiji-stamp.yi { background-color: var(--gf-jade); }
+    .yiji-stamp.ji { background-color: var(--gf-cinnabar); }
+
+    .yiji-title {
+      font-size: 18px;
+      color: var(--gf-ink);
+    }
+
+    .yiji-subtitle {
+      font-size: 12px;
+      color: var(--gf-ink-soft);
+      margin-top: 2px;
+    }
+
+    .yiji-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--gf-space-sm);
+    }
+
+    .yiji-tag {
+      padding: 6px 12px;
+      font-size: 14px;
+      background-color: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(176, 141, 59, 0.2);
+      border-radius: var(--gf-radius-sm);
+      color: var(--gf-ink);
+    }
+
+    .yiji-card.yi .yiji-tag {
+      border-color: rgba(74, 109, 93, 0.3);
+    }
+
+    .yiji-card.ji .yiji-tag {
+      border-color: rgba(194, 58, 42, 0.3);
+    }
+
+    /* 神煞卡 */
+    .shensha-section {
+      max-width: 960px;
+      margin: 0 auto var(--gf-space-xl);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--gf-space-md);
+    }
+
+    .shensha-card {
+      background-color: rgba(255, 251, 240, 0.8);
+      border: 1px solid rgba(176, 141, 59, 0.3);
+      border-radius: var(--gf-radius-md);
+      padding: var(--gf-space-md) var(--gf-space-lg);
+    }
+
+    .shensha-label {
+      font-size: 12px;
+      color: var(--gf-ink-soft);
+      margin-bottom: 4px;
+      letter-spacing: 0.2em;
+    }
+
+    .shensha-content {
+      font-size: 15px;
+      color: var(--gf-ink);
+      line-height: 1.7;
+    }
+
+    .shensha-positive { color: var(--gf-jade); }
+    .shensha-negative { color: var(--gf-cinnabar); }
+
+    /* 事由速查 */
+    .matter-section {
+      max-width: 960px;
+      margin: 0 auto var(--gf-space-xl);
+    }
+
+    .matter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: var(--gf-space-md);
+      margin-top: var(--gf-space-lg);
+    }
+
+    .matter-card {
+      background-color: rgba(255, 251, 240, 0.8);
+      border: 1px solid rgba(176, 141, 59, 0.3);
+      border-radius: var(--gf-radius-md);
+      padding: var(--gf-space-md);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .matter-card:hover {
+      border-color: var(--gf-gold);
+      transform: translateY(-2px);
+      box-shadow: var(--gf-shadow-sm);
+    }
+
+    .matter-icon {
+      font-size: 30px;
+      margin-bottom: var(--gf-space-sm);
+      display: block;
+    }
+
+    .matter-name {
+      font-size: 14px;
+      color: var(--gf-ink);
+      margin-bottom: 4px;
+    }
+
+    .matter-verdict {
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 8px;
+      display: inline-block;
+    }
+
+    .matter-verdict.yi {
+      background-color: rgba(74, 109, 93, 0.15);
+      color: var(--gf-jade);
+    }
+
+    .matter-verdict.ji {
+      background-color: rgba(194, 58, 42, 0.15);
+      color: var(--gf-cinnabar);
+    }
+
+    .matter-verdict.ping {
+      background-color: rgba(176, 141, 59, 0.15);
+      color: var(--gf-gold);
+    }
+
+    /* 月历缩略 */
+    .mini-calendar {
+      max-width: 720px;
+      margin: 0 auto var(--gf-space-xl);
+      background-color: rgba(255, 251, 240, 0.7);
+      border: 1px solid rgba(176, 141, 59, 0.3);
+      border-radius: var(--gf-radius-md);
+      padding: var(--gf-space-lg);
+    }
+
+    .cal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--gf-space-md);
+    }
+
+    .cal-month {
+      font-size: 18px;
+      color: var(--gf-ink);
+    }
+
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+
+    .cal-weekday {
+      text-align: center;
+      padding: 6px;
+      font-size: 12px;
+      color: var(--gf-ink-soft);
+      letter-spacing: 0.2em;
+    }
+
+    .cal-day {
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.15s;
+    }
+
+    .cal-day:hover {
+      background-color: rgba(176, 141, 59, 0.1);
+    }
+
+    .cal-day.today {
+      background: radial-gradient(circle, var(--gf-cinnabar), var(--gf-cinnabar-deep));
+      color: var(--gf-rice);
+    }
+
+    .cal-day.off-month {
+      opacity: 0.3;
+    }
+
+    .cal-day.huangdao {
+      border: 1.5px solid var(--gf-jade);
+    }
+
+    .cal-day.heidao {
+      border: 1.5px solid var(--gf-cinnabar);
+    }
+
+    .cal-day-num {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .cal-day-lunar {
+      font-size: 10px;
+      color: var(--gf-ink-soft);
+      margin-top: 2px;
+    }
+
+    .cal-day.today .cal-day-lunar { color: rgba(255,255,255,0.8); }
+
+    .cal-legend {
+      margin-top: var(--gf-space-md);
+      display: flex;
+      justify-content: center;
+      gap: var(--gf-space-md);
+      font-size: 12px;
+      color: var(--gf-ink-soft);
+    }
+
+    .legend-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border: 1.5px solid;
+      border-radius: 2px;
+      margin-right: 4px;
+      vertical-align: middle;
+    }
+
+    @media (max-width: 768px) {
+      .today-card { grid-template-columns: 1fr; gap: var(--gf-space-md); text-align: center; }
+      .today-date { padding-right: 0; border-right: none; border-bottom: 1px solid rgba(176, 141, 59, 0.3); padding-bottom: var(--gf-space-md); }
+      .yiji-section { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="prototype-badge">国风 · 黄历</div>
+  <div class="gf-disclaimer">✦ 本站内容仅供文化体验与娱乐参考 · 不构成专业建议 ✦</div>
+
+  <header class="gf-header">
+    <div class="gf-header-inner">
+      <a href="index.html" class="gf-logo">启门问卜</a>
+      <nav class="gf-nav">
+        <a href="index.html">首页</a>
+        <a href="bazi.html">八字</a>
+        <a href="ziwei.html">紫微</a>
+        <a href="chenggu.html">称骨</a>
+        <a href="liuren.html">小六壬</a>
+        <a href="lingqian.html">灵签</a>
+        <a href="xingming.html">姓名</a>
+        <a href="huangli.html" class="active">黄历</a>
+        <a href="jiemeng.html">解梦</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="gf-container">
+    <div class="page-title">
+      <h1>黄历择日</h1>
+      <div class="subtitle">每日宜忌 · 吉神凶煞 · 九类事由</div>
+    </div>
+
+    <!-- 按日期查询（统一规范 ds-input-card）-->
+    <div class="gf-card ds-input-card" style="max-width: 640px;">
+      <h3 class="ds-card-title"><span class="ds-ornament">◈</span>查询日期<span class="ds-ornament">◈</span></h3>
+      <div class="ds-calendar-switch">
+        <button class="ds-switch-btn active">公历</button>
+        <button class="ds-switch-btn">农历</button>
+      </div>
+      <div class="ds-input-row">
+        <div class="ds-input-group">
+          <label>年</label>
+          <input type="text" value="2026">
+        </div>
+        <div class="ds-input-group">
+          <label>月</label>
+          <input type="text" value="4">
+        </div>
+        <div class="ds-input-group">
+          <label>日</label>
+          <input type="text" value="18">
+        </div>
+        <div class="ds-input-group">
+          <label>所求事项（可选）</label>
+          <select>
+            <option selected>全部</option>
+            <option>嫁娶</option>
+            <option>出行</option>
+            <option>签约</option>
+            <option>开市</option>
+            <option>入宅</option>
+          </select>
+        </div>
+      </div>
+      <div class="ds-input-actions">
+        <button class="gf-btn">◈ 查询</button>
+        <button class="gf-btn gf-btn-outline">↻ 今日</button>
+      </div>
+    </div>
+
+    <!-- 今日大卡 -->
+    <div class="today-card">
+      <div class="today-date">
+        <div class="today-weekday">星 · 期 · 六</div>
+        <div class="today-day">18</div>
+        <div class="today-full">2026-04-18</div>
+        <div class="today-lunar">农历 戊戌 三月初二</div>
+      </div>
+      <div class="today-info">
+        <div class="info-line">
+          <span class="info-label">干 支</span>
+          <span class="info-ganzhi">丙午年 · 壬辰月 · 辛卯日</span>
+        </div>
+        <div class="info-line">
+          <span class="info-label">值 日</span>
+          <span class="info-value">建日 · 青龙 · 黄道</span>
+        </div>
+        <div class="info-line">
+          <span class="info-label">胎 神</span>
+          <span class="info-value">厨灶门外东北方</span>
+        </div>
+        <div class="info-line">
+          <span class="info-label">冲 煞</span>
+          <span class="info-value">冲鸡 · 煞西</span>
+        </div>
+        <div class="info-line">
+          <span class="info-label">彭祖忌</span>
+          <span class="info-value">辛不合酱 · 卯不穿井</span>
+        </div>
+      </div>
+      <div class="today-big">
+        <div class="big-label">建 · 除</div>
+        <div class="big-value">建</div>
+      </div>
+    </div>
+
+    <!-- 宜忌双卡 -->
+    <div class="yiji-section">
+      <div class="yiji-card yi">
+        <div class="yiji-header">
+          <div class="yiji-stamp yi">宜</div>
+          <div>
+            <div class="yiji-title">今 · 日 · 宜</div>
+            <div class="yiji-subtitle">推荐施行之事项</div>
+          </div>
+        </div>
+        <div class="yiji-list">
+          <span class="yiji-tag">祭祀</span>
+          <span class="yiji-tag">祈福</span>
+          <span class="yiji-tag">出行</span>
+          <span class="yiji-tag">会友</span>
+          <span class="yiji-tag">签约</span>
+          <span class="yiji-tag">立券</span>
+          <span class="yiji-tag">开市</span>
+          <span class="yiji-tag">嫁娶</span>
+          <span class="yiji-tag">订盟</span>
+          <span class="yiji-tag">纳采</span>
+        </div>
+      </div>
+      <div class="yiji-card ji">
+        <div class="yiji-header">
+          <div class="yiji-stamp ji">忌</div>
+          <div>
+            <div class="yiji-title">今 · 日 · 忌</div>
+            <div class="yiji-subtitle">宜避免之事项</div>
+          </div>
+        </div>
+        <div class="yiji-list">
+          <span class="yiji-tag">动土</span>
+          <span class="yiji-tag">伐木</span>
+          <span class="yiji-tag">破土</span>
+          <span class="yiji-tag">安葬</span>
+          <span class="yiji-tag">行丧</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 神煞 -->
+    <div class="shensha-section">
+      <div class="shensha-card">
+        <div class="shensha-label">吉 · 神</div>
+        <div class="shensha-content shensha-positive">青龙 · 天恩 · 月德</div>
+      </div>
+      <div class="shensha-card">
+        <div class="shensha-label">凶 · 神</div>
+        <div class="shensha-content shensha-negative">月建 · 小时 · 土府</div>
+      </div>
+      <div class="shensha-card">
+        <div class="shensha-label">吉时 · 喜神</div>
+        <div class="shensha-content">辰时 / 巳时 · 西南</div>
+      </div>
+      <div class="shensha-card">
+        <div class="shensha-label">财神 · 福神</div>
+        <div class="shensha-content">正东 · 东南</div>
+      </div>
+    </div>
+
+    <div class="gf-divider"><span>◆ 九 事 速 查 ◆</span></div>
+
+    <!-- 事由速查 -->
+    <section class="matter-section">
+      <h3 style="text-align: center; color: var(--gf-ink); margin-bottom: var(--gf-space-sm);">点击事由，查看今日评判</h3>
+      <p style="text-align: center; font-size: 13px; color: var(--gf-ink-soft); margin: 0;">
+        欲查"合不合今日"？逐项点选便知
+      </p>
+      <div class="matter-grid">
+        <div class="matter-card">
+          <span class="matter-icon">⛩</span>
+          <div class="matter-name">祭 祀</div>
+          <span class="matter-verdict yi">宜</span>
+        </div>
+        <div class="matter-card">
+          <span class="matter-icon">♥</span>
+          <div class="matter-name">嫁 娶</div>
+          <span class="matter-verdict yi">宜</span>
+        </div>
+        <div class="matter-card">
+          <span class="matter-icon">✈</span>
+          <div class="matter-name">出 行</div>
+          <span class="matter-verdict yi">宜</span>
+        </div>
+        <div class="matter-card">
+          <span class="matter-icon">⚒</span>
+          <div class="matter-name">动 土</div>
+          <span class="matter-verdict ji">忌</span>
+        </div>
+        <div class="matter-card">
+          <span class="matter-icon">▤</span>
+          <div class="matter-name">开 市</div>
+          <span class="matter-verdict yi">宜</span>
+        </div>
+        <div class="matter-card">
+          <span class="matter-icon">✎</span>
+          <div class="matter-name">签 约</div>
+          <span class="matter-verdict yi">宜</span>
+        </div>
+        <div class="matter-card">
+          <span class="matter-icon">⌂</span>
+          <div class="matter-name">入 宅</div>
+          <span class="matter-verdict ping">平</span>
+        </div>
+        <div class="matter-card">
+          <span class="matter-icon">✈</span>
+          <div class="matter-name">远 行</div>
+          <span class="matter-verdict yi">宜</span>
+        </div>
+        <div class="matter-card">
+          <span class="matter-icon">▣</span>
+          <div class="matter-name">破 土</div>
+          <span class="matter-verdict ji">忌</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 月历 -->
+    <div class="mini-calendar">
+      <div class="cal-header">
+        <button class="gf-btn gf-btn-outline" style="padding: 6px 14px; font-size: 13px;">← 三月</button>
+        <span class="cal-month">2026 年 四 月</span>
+        <button class="gf-btn gf-btn-outline" style="padding: 6px 14px; font-size: 13px;">五月 →</button>
+      </div>
+      <div class="cal-grid">
+        <div class="cal-weekday">日</div>
+        <div class="cal-weekday">一</div>
+        <div class="cal-weekday">二</div>
+        <div class="cal-weekday">三</div>
+        <div class="cal-weekday">四</div>
+        <div class="cal-weekday">五</div>
+        <div class="cal-weekday">六</div>
+        <!-- 3 月末尾 -->
+        <div class="cal-day off-month"><span class="cal-day-num">29</span><span class="cal-day-lunar">廿十</span></div>
+        <div class="cal-day off-month"><span class="cal-day-num">30</span><span class="cal-day-lunar">廿一</span></div>
+        <div class="cal-day off-month"><span class="cal-day-num">31</span><span class="cal-day-lunar">廿二</span></div>
+        <div class="cal-day huangdao"><span class="cal-day-num">1</span><span class="cal-day-lunar">清明</span></div>
+        <div class="cal-day heidao"><span class="cal-day-num">2</span><span class="cal-day-lunar">廿四</span></div>
+        <div class="cal-day"><span class="cal-day-num">3</span><span class="cal-day-lunar">廿五</span></div>
+        <div class="cal-day huangdao"><span class="cal-day-num">4</span><span class="cal-day-lunar">廿六</span></div>
+        <!-- ... -->
+        <div class="cal-day"><span class="cal-day-num">5</span><span class="cal-day-lunar">廿七</span></div>
+        <div class="cal-day"><span class="cal-day-num">6</span><span class="cal-day-lunar">廿八</span></div>
+        <div class="cal-day huangdao"><span class="cal-day-num">7</span><span class="cal-day-lunar">廿九</span></div>
+        <div class="cal-day"><span class="cal-day-num">8</span><span class="cal-day-lunar">三十</span></div>
+        <div class="cal-day"><span class="cal-day-num">9</span><span class="cal-day-lunar">初一</span></div>
+        <div class="cal-day heidao"><span class="cal-day-num">10</span><span class="cal-day-lunar">初二</span></div>
+        <div class="cal-day"><span class="cal-day-num">11</span><span class="cal-day-lunar">初三</span></div>
+
+        <div class="cal-day"><span class="cal-day-num">12</span><span class="cal-day-lunar">初四</span></div>
+        <div class="cal-day huangdao"><span class="cal-day-num">13</span><span class="cal-day-lunar">初五</span></div>
+        <div class="cal-day"><span class="cal-day-num">14</span><span class="cal-day-lunar">初六</span></div>
+        <div class="cal-day"><span class="cal-day-num">15</span><span class="cal-day-lunar">初七</span></div>
+        <div class="cal-day"><span class="cal-day-num">16</span><span class="cal-day-lunar">初八</span></div>
+        <div class="cal-day"><span class="cal-day-num">17</span><span class="cal-day-lunar">初九</span></div>
+        <div class="cal-day today"><span class="cal-day-num">18</span><span class="cal-day-lunar">初二</span></div>
+
+        <div class="cal-day"><span class="cal-day-num">19</span><span class="cal-day-lunar">十一</span></div>
+        <div class="cal-day huangdao"><span class="cal-day-num">20</span><span class="cal-day-lunar">十二</span></div>
+        <div class="cal-day"><span class="cal-day-num">21</span><span class="cal-day-lunar">十三</span></div>
+        <div class="cal-day heidao"><span class="cal-day-num">22</span><span class="cal-day-lunar">十四</span></div>
+        <div class="cal-day"><span class="cal-day-num">23</span><span class="cal-day-lunar">十五</span></div>
+        <div class="cal-day huangdao"><span class="cal-day-num">24</span><span class="cal-day-lunar">十六</span></div>
+        <div class="cal-day"><span class="cal-day-num">25</span><span class="cal-day-lunar">十七</span></div>
+
+        <div class="cal-day"><span class="cal-day-num">26</span><span class="cal-day-lunar">十八</span></div>
+        <div class="cal-day"><span class="cal-day-num">27</span><span class="cal-day-lunar">十九</span></div>
+        <div class="cal-day huangdao"><span class="cal-day-num">28</span><span class="cal-day-lunar">二十</span></div>
+        <div class="cal-day"><span class="cal-day-num">29</span><span class="cal-day-lunar">廿一</span></div>
+        <div class="cal-day"><span class="cal-day-num">30</span><span class="cal-day-lunar">廿二</span></div>
+        <div class="cal-day off-month"><span class="cal-day-num">1</span><span class="cal-day-lunar">廿三</span></div>
+        <div class="cal-day off-month"><span class="cal-day-num">2</span><span class="cal-day-lunar">廿四</span></div>
+      </div>
+      <div class="cal-legend">
+        <span><span class="legend-dot" style="border-color: var(--gf-jade);"></span>黄道日</span>
+        <span><span class="legend-dot" style="border-color: var(--gf-cinnabar);"></span>黑道日</span>
+      </div>
+    </div>
+
+    <!-- 所选日详情卡（点击月历某日后展开）-->
+    <div class="day-detail-card">
+      <div class="day-detail-head">
+        <div>
+          <span class="day-detail-date">2026-04-25 · 周六</span>
+          <span class="day-detail-lunar">农历 三月初九 · 黄道日</span>
+        </div>
+        <button class="day-detail-close" aria-label="关闭">×</button>
+      </div>
+      <div class="day-detail-body">
+        <div class="dd-section">
+          <div class="dd-head">十二建星</div>
+          <div class="dd-content"><span class="dd-tag primary">除日</span> 主破旧立新，宜扫除、除疾、结友</div>
+        </div>
+        <div class="dd-row">
+          <div class="dd-section half">
+            <div class="dd-head">吉神</div>
+            <div class="dd-content"><span class="dd-tag good">三合</span><span class="dd-tag good">天德</span><span class="dd-tag good">月恩</span></div>
+          </div>
+          <div class="dd-section half">
+            <div class="dd-head">凶神</div>
+            <div class="dd-content"><span class="dd-tag warn">天狗</span><span class="dd-tag warn">血支</span></div>
+          </div>
+        </div>
+        <div class="dd-row">
+          <div class="dd-section half">
+            <div class="dd-head">冲煞</div>
+            <div class="dd-content">冲鼠（甲子）· 煞北</div>
+          </div>
+          <div class="dd-section half">
+            <div class="dd-head">彭祖忌</div>
+            <div class="dd-content">戊不受田田主不祥<br>午不苫盖屋主更张</div>
+          </div>
+        </div>
+        <div class="dd-row">
+          <div class="dd-section half dd-yi">
+            <div class="dd-head">宜</div>
+            <div class="dd-content"><span class="dd-tag yi">嫁娶</span><span class="dd-tag yi">签约</span><span class="dd-tag yi">开市</span><span class="dd-tag yi">除服</span></div>
+          </div>
+          <div class="dd-section half dd-ji">
+            <div class="dd-head">忌</div>
+            <div class="dd-content"><span class="dd-tag ji">动土</span><span class="dd-tag ji">破土</span><span class="dd-tag ji">伐木</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      .day-detail-card { max-width: 980px; margin: var(--gf-space-lg) auto var(--gf-space-xl); padding: 0; background: var(--gf-rice); border: 1px solid rgba(176, 141, 59, 0.35); border-radius: var(--gf-radius-md); box-shadow: var(--gf-shadow-sm); overflow: hidden; }
+      .day-detail-head { display: flex; justify-content: space-between; align-items: center; padding: var(--gf-space-md) var(--gf-space-lg); background: linear-gradient(135deg, rgba(194, 58, 42, 0.08), rgba(176, 141, 59, 0.08)); border-bottom: 1px solid rgba(176, 141, 59, 0.3); }
+      .day-detail-date { font-family: var(--gf-font-serif); font-size: 18px; color: var(--gf-ink); letter-spacing: 0.1em; }
+      .day-detail-lunar { display: block; margin-top: 4px; font-size: 12px; color: var(--gf-ink-soft); letter-spacing: 0.1em; }
+      .day-detail-close { font-size: 22px; color: var(--gf-ink-soft); background: transparent; border: none; cursor: pointer; width: 32px; height: 32px; border-radius: 50%; transition: background-color 0.2s; }
+      .day-detail-close:hover { background: rgba(176, 141, 59, 0.15); color: var(--gf-ink); }
+      .day-detail-body { padding: var(--gf-space-lg); }
+      .dd-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gf-space-md); margin-top: var(--gf-space-md); }
+      .dd-section { padding: var(--gf-space-md); background: rgba(255, 255, 255, 0.4); border: 1px dashed rgba(176, 141, 59, 0.25); border-radius: var(--gf-radius-sm); }
+      .dd-section.half { min-height: 0; }
+      .dd-section.dd-yi { border-color: rgba(74, 109, 93, 0.4); background: rgba(74, 109, 93, 0.04); }
+      .dd-section.dd-ji { border-color: rgba(194, 58, 42, 0.4); background: rgba(194, 58, 42, 0.04); }
+      .dd-head { font-size: 13px; color: var(--gf-ink-soft); letter-spacing: 0.25em; margin-bottom: 8px; font-family: var(--gf-font-kaiti); }
+      .dd-content { font-size: 14px; line-height: 1.8; color: var(--gf-ink); }
+      .dd-tag { display: inline-block; padding: 2px 10px; margin: 2px 4px 2px 0; font-size: 12px; letter-spacing: 0.1em; border-radius: var(--gf-radius-sm); border: 1px solid rgba(176, 141, 59, 0.3); background: rgba(255, 251, 240, 0.5); color: var(--gf-ink); }
+      .dd-tag.primary { background: var(--gf-gold); color: var(--gf-rice); border-color: var(--gf-gold); }
+      .dd-tag.good { border-color: rgba(74, 109, 93, 0.4); color: var(--gf-jade); background: rgba(74, 109, 93, 0.08); }
+      .dd-tag.warn { border-color: rgba(194, 58, 42, 0.4); color: var(--gf-cinnabar); background: rgba(194, 58, 42, 0.08); }
+      .dd-tag.yi { background: var(--gf-jade); color: var(--gf-rice); border-color: var(--gf-jade); }
+      .dd-tag.ji { background: var(--gf-cinnabar); color: var(--gf-rice); border-color: var(--gf-cinnabar); }
+      @media (max-width: 640px) { .dd-row { grid-template-columns: 1fr; } }
+    </style>
+  </div>
+
+  <footer class="gf-footer">
+    <div>启门问卜 · tt-qimen · 古今同道</div>
+    <div style="margin-top: 12px;">
+      <a href="#about">关于</a> · <a href="#disclaimer">免责声明</a> · <a href="#data-source">数据来源</a>
+    </div>
+    <div style="margin-top: 16px; font-size: 12px;">© 2026 tt-qimen</div>
+  </footer>
+</body>
+</html>

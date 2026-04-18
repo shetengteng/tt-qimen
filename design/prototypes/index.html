@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tt-qimen · 原型导航</title>
+  <style>
+    :root {
+      --bg: #0f0f14;
+      --surface: #1a1a22;
+      --surface-2: #222230;
+      --border: #2e2e40;
+      --ink: #f0f0f5;
+      --ink-soft: #a0a0b0;
+      --ink-muted: #70708a;
+      --accent: #b890ff;
+      --accent-hover: #a070f0;
+      --guofeng: #c23a2a;
+      --minimal: #3b2f63;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Inter", "PingFang SC", "Noto Sans SC", system-ui, sans-serif;
+      background-color: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    header h1 {
+      font-size: clamp(32px, 5vw, 48px);
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: -0.03em;
+    }
+
+    header h1 .accent {
+      background: linear-gradient(135deg, #b890ff 0%, #ff8080 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    header p {
+      color: var(--ink-soft);
+      font-size: 17px;
+      margin: 16px 0 0;
+    }
+
+    header .sub {
+      color: var(--ink-muted);
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    .style-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+      gap: 32px;
+    }
+
+    .style-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      transition: all 0.3s ease;
+    }
+
+    .style-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    .style-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .style-icon {
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+      font-size: 28px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .style-icon.guofeng {
+      background: linear-gradient(135deg, #c23a2a, #8f2116);
+    }
+
+    .style-icon.minimal {
+      background: linear-gradient(135deg, #3b2f63, #6b4a99);
+    }
+
+    .style-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: -0.02em;
+    }
+
+    .style-tag {
+      display: inline-block;
+      padding: 4px 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 12px;
+      color: var(--ink-soft);
+      margin-top: 4px;
+    }
+
+    .style-desc {
+      color: var(--ink-soft);
+      line-height: 1.7;
+      margin: 16px 0 24px;
+    }
+
+    .style-features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 28px;
+      padding: 16px;
+      background-color: var(--surface-2);
+      border-radius: 12px;
+      font-size: 13px;
+    }
+
+    .feature-label {
+      color: var(--ink-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-size: 10px;
+      margin-bottom: 2px;
+    }
+
+    .feature-value {
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .page-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+    }
+
+    .page-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 14px 10px;
+      background-color: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--ink);
+      text-decoration: none;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .page-link:hover {
+      border-color: var(--accent);
+      background-color: var(--surface);
+      transform: translateY(-2px);
+    }
+
+    .page-link .emoji {
+      font-size: 24px;
+      margin-bottom: 6px;
+    }
+
+    .page-link .name {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .page-link .sub {
+      font-size: 10px;
+      color: var(--ink-muted);
+      margin-top: 2px;
+    }
+
+    .page-link.hero {
+      grid-column: span 2;
+      background: linear-gradient(135deg, var(--surface), var(--surface-2));
+      border-color: var(--accent);
+    }
+
+    .instructions {
+      margin-top: 48px;
+      padding: 24px;
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+
+    .instructions h3 {
+      margin: 0 0 16px;
+      font-size: 18px;
+    }
+
+    .instructions ul {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--ink-soft);
+      line-height: 1.9;
+    }
+
+    .instructions ul li::marker {
+      color: var(--accent);
+    }
+
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--ink-muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 640px) {
+      .style-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .page-link.hero {
+        grid-column: span 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>tt-qimen <span class="accent">原型预览</span></h1>
+      <p>两套视觉风格 · 七个核心页面 · 等待你的选择</p>
+      <p class="sub">Design · prototypes · v1.0 · 2026-04-18</p>
+    </header>
+
+    <div class="style-grid">
+      <!-- 国风 -->
+      <div class="style-card">
+        <div class="style-header">
+          <div class="style-icon guofeng">启</div>
+          <div>
+            <h2 class="style-title">国风 · Guofeng</h2>
+            <span class="style-tag">传统文化向 · 沉浸感</span>
+          </div>
+        </div>
+        <p class="style-desc">
+          朱砂 + 鎏金 + 宣纸米的古典调色。楷体 + 衬线标题。
+          使用印章、分隔符、古代典故等文化元素加强仪式感。适合强调"文化体验"的专业定位。
+        </p>
+        <div class="style-features">
+          <div>
+            <div class="feature-label">主色</div>
+            <div class="feature-value">朱砂红 · 鎏金</div>
+          </div>
+          <div>
+            <div class="feature-label">字体</div>
+            <div class="feature-value">Kaiti / STKaiti</div>
+          </div>
+          <div>
+            <div class="feature-label">氛围</div>
+            <div class="feature-value">古雅 · 仪式感</div>
+          </div>
+          <div>
+            <div class="feature-label">用户</div>
+            <div class="feature-value">25-45 岁 · 文化爱好者</div>
+          </div>
+        </div>
+        <div class="page-list">
+          <a href="guofeng/index.html" class="page-link hero">
+            <span class="emoji">🏠</span>
+            <span class="name">首页</span>
+            <span class="sub">Home</span>
+          </a>
+          <a href="guofeng/bazi.html" class="page-link">
+            <span class="emoji">八</span>
+            <span class="name">八字</span>
+            <span class="sub">含大运流年</span>
+          </a>
+          <a href="guofeng/ziwei.html" class="page-link">
+            <span class="emoji">紫</span>
+            <span class="name">紫微</span>
+            <span class="sub">12 宫 + 四化</span>
+          </a>
+          <a href="guofeng/chenggu.html" class="page-link">
+            <span class="emoji">称</span>
+            <span class="name">称骨</span>
+            <span class="sub">古歌诀</span>
+          </a>
+          <a href="guofeng/liuren.html" class="page-link">
+            <span class="emoji">壬</span>
+            <span class="name">小六壬</span>
+            <span class="sub">六宫</span>
+          </a>
+          <a href="guofeng/lingqian.html" class="page-link">
+            <span class="emoji">签</span>
+            <span class="name">灵签</span>
+            <span class="sub">100 签</span>
+          </a>
+          <a href="guofeng/xingming.html" class="page-link">
+            <span class="emoji">名</span>
+            <span class="name">姓名</span>
+            <span class="sub">五格</span>
+          </a>
+          <a href="guofeng/huangli.html" class="page-link">
+            <span class="emoji">历</span>
+            <span class="name">黄历</span>
+            <span class="sub">择日</span>
+          </a>
+          <a href="guofeng/jiemeng.html" class="page-link">
+            <span class="emoji">梦</span>
+            <span class="name">解梦</span>
+            <span class="sub">2380 条</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- 现代简约 -->
+      <div class="style-card">
+        <div class="style-header">
+          <div class="style-icon minimal">Q</div>
+          <div>
+            <h2 class="style-title">现代简约 · Minimal</h2>
+            <span class="style-tag">专业工具向 · 清爽</span>
+          </div>
+        </div>
+        <p class="style-desc">
+          中性灰 + 深蓝紫的沉稳调色。Inter 字体现代简洁。
+          8pt 网格、圆角卡片、精细阴影。弱化文化符号，突出信息层次和可用性。适合"专业工具"定位。
+        </p>
+        <div class="style-features">
+          <div>
+            <div class="feature-label">主色</div>
+            <div class="feature-value">深蓝紫 #3b2f63</div>
+          </div>
+          <div>
+            <div class="feature-label">字体</div>
+            <div class="feature-value">Inter + PingFang</div>
+          </div>
+          <div>
+            <div class="feature-label">氛围</div>
+            <div class="feature-value">专业 · 克制</div>
+          </div>
+          <div>
+            <div class="feature-label">用户</div>
+            <div class="feature-value">18-35 岁 · 年轻专业人士</div>
+          </div>
+        </div>
+        <div class="page-list">
+          <a href="minimal/index.html" class="page-link hero">
+            <span class="emoji">🏠</span>
+            <span class="name">首页</span>
+            <span class="sub">Home</span>
+          </a>
+          <a href="minimal/bazi.html" class="page-link">
+            <span class="emoji">八</span>
+            <span class="name">八字</span>
+            <span class="sub">含大运流年</span>
+          </a>
+          <a href="minimal/ziwei.html" class="page-link">
+            <span class="emoji">紫</span>
+            <span class="name">紫微</span>
+            <span class="sub">12 宫 + 四化</span>
+          </a>
+          <a href="minimal/chenggu.html" class="page-link">
+            <span class="emoji">称</span>
+            <span class="name">称骨</span>
+            <span class="sub">古歌诀</span>
+          </a>
+          <a href="minimal/liuren.html" class="page-link">
+            <span class="emoji">壬</span>
+            <span class="name">小六壬</span>
+            <span class="sub">六宫</span>
+          </a>
+          <a href="minimal/lingqian.html" class="page-link">
+            <span class="emoji">签</span>
+            <span class="name">灵签</span>
+            <span class="sub">100 签</span>
+          </a>
+          <a href="minimal/xingming.html" class="page-link">
+            <span class="emoji">名</span>
+            <span class="name">姓名</span>
+            <span class="sub">五格</span>
+          </a>
+          <a href="minimal/huangli.html" class="page-link">
+            <span class="emoji">历</span>
+            <span class="name">黄历</span>
+            <span class="sub">择日</span>
+          </a>
+          <a href="minimal/jiemeng.html" class="page-link">
+            <span class="emoji">梦</span>
+            <span class="name">解梦</span>
+            <span class="sub">2380 条</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="instructions">
+      <h3>◆ 使用建议</h3>
+      <ul>
+        <li><strong>推荐对比顺序</strong>：先看两边的 <code>首页</code>，对比整体调性；再看 <code>八字</code>（信息密度最大的页面），对比专业场景下的可读性。</li>
+        <li><strong>两套风格共用一份信息架构</strong>，仅视觉系统不同 — 这样可以专注于视觉层面做决策。</li>
+        <li><strong>移动端体验</strong>：建议用 Chrome DevTools 切换到 iPhone SE / Pixel 6 视窗验证响应式效果。</li>
+        <li><strong>决策要点</strong>：希望产品给人的感觉是"古雅仪式感"还是"专业工具"？这直接决定风格选择。</li>
+        <li><strong>下一步</strong>：选定风格后，将作为后续 Vue 3 实现的视觉基础；不选的另一套风格可登记为"Post-MVP 主题切换"候选。</li>
+      </ul>
+    </div>
+
+    <div class="footer">
+      tt-qimen · Design prototypes · 2026-04-18
+    </div>
+  </div>
+</body>
+</html>

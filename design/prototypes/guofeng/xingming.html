@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tt-qimen · 姓名五格（国风）</title>
+  <link rel="stylesheet" href="../assets/guofeng.css">
+  <style>
+    .page-title { text-align: center; padding: var(--gf-space-xl) 0 var(--gf-space-lg); }
+    .page-title h1 { font-size: 40px; color: var(--gf-ink); margin: 0; letter-spacing: 0.1em; }
+    .page-title .subtitle { font-size: 14px; color: var(--gf-ink-soft); margin-top: var(--gf-space-sm); }
+
+    /* 输入区 */
+    .input-card {
+      max-width: 720px;
+      margin: 0 auto var(--gf-space-xl);
+      padding: var(--gf-space-lg);
+    }
+
+    .name-input-row {
+      display: flex;
+      gap: var(--gf-space-md);
+      align-items: end;
+      justify-content: center;
+    }
+
+    .name-input-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .name-input-group label {
+      font-size: 13px;
+      color: var(--gf-ink-soft);
+      margin-bottom: 6px;
+    }
+
+    .name-input {
+      padding: 12px 16px;
+      font-family: var(--gf-font-serif);
+      font-size: 20px;
+      text-align: center;
+      letter-spacing: 0.1em;
+      border: 1px solid rgba(176, 141, 59, 0.4);
+      background-color: rgba(255, 251, 240, 0.8);
+      border-radius: var(--gf-radius-sm);
+      width: 120px;
+    }
+
+    .name-input.family { width: 100px; }
+
+    /* 姓名拆解 */
+    .name-breakdown {
+      max-width: 720px;
+      margin: 0 auto var(--gf-space-xl);
+      background-color: rgba(255, 251, 240, 0.7);
+      border: 1px solid rgba(176, 141, 59, 0.3);
+      border-radius: var(--gf-radius-md);
+      padding: var(--gf-space-lg);
+    }
+
+    .chars {
+      display: flex;
+      justify-content: center;
+      gap: var(--gf-space-md);
+      margin-bottom: var(--gf-space-md);
+    }
+
+    .char-card {
+      width: 100px;
+      text-align: center;
+      padding: var(--gf-space-md);
+      background-color: rgba(255, 251, 240, 0.95);
+      border: 1px solid var(--gf-gold);
+      border-radius: var(--gf-radius-sm);
+    }
+
+    .char-char {
+      font-size: 48px;
+      color: var(--gf-ink);
+      line-height: 1;
+      margin-bottom: var(--gf-space-sm);
+      font-weight: 500;
+    }
+
+    .char-strokes {
+      font-size: 12px;
+      color: var(--gf-ink-soft);
+    }
+
+    .char-kangxi {
+      color: var(--gf-cinnabar);
+      font-weight: 500;
+    }
+
+    /* 五格图 */
+    .wuge-layout {
+      max-width: 980px;
+      margin: 0 auto var(--gf-space-xl);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--gf-space-xl);
+      align-items: start;
+    }
+
+    .wuge-visual {
+      background: linear-gradient(135deg, #fdf5db, #f6ecd6);
+      border: 1px solid var(--gf-gold);
+      border-radius: var(--gf-radius-md);
+      padding: var(--gf-space-lg);
+      position: relative;
+      min-height: 360px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .wuge-chart {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr 1fr;
+      grid-template-rows: auto auto auto;
+      gap: 4px 12px;
+      align-items: center;
+      justify-items: center;
+      width: 100%;
+      max-width: 360px;
+    }
+
+    .ge-box {
+      padding: 12px 20px;
+      border: 1.5px solid var(--gf-gold);
+      border-radius: 4px;
+      background-color: rgba(255, 251, 240, 0.95);
+      text-align: center;
+      min-width: 100px;
+    }
+
+    .ge-box.tian { background: linear-gradient(180deg, #fdf5db, #f6ecd6); }
+    .ge-box.ren { background: linear-gradient(135deg, #f9e4d4, #f5d0ba); border-color: var(--gf-cinnabar); }
+    .ge-box.di { background: linear-gradient(180deg, #f6ecd6, #eaddc0); }
+    .ge-box.wai { background: linear-gradient(135deg, rgba(74, 109, 93, 0.15), rgba(74, 109, 93, 0.08)); border-color: var(--gf-jade); }
+    .ge-box.zong { background: linear-gradient(135deg, rgba(176, 141, 59, 0.2), rgba(176, 141, 59, 0.1)); border-color: var(--gf-gold); }
+
+    .ge-name {
+      font-size: 13px;
+      color: var(--gf-ink-soft);
+      margin-bottom: 4px;
+    }
+
+    .ge-num {
+      font-size: 28px;
+      color: var(--gf-ink);
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .ge-box.ren .ge-num { color: var(--gf-cinnabar); }
+
+    .ge-element {
+      font-size: 11px;
+      margin-top: 4px;
+      padding: 1px 6px;
+      display: inline-block;
+      border-radius: 8px;
+      background-color: rgba(176, 141, 59, 0.15);
+      color: var(--gf-gold);
+    }
+
+    .ge-element.ji { background-color: rgba(74, 109, 93, 0.15); color: var(--gf-jade); }
+    .ge-element.xiong { background-color: rgba(194, 58, 42, 0.15); color: var(--gf-cinnabar); }
+
+    /* 详解 */
+    .ge-details {
+      display: flex;
+      flex-direction: column;
+      gap: var(--gf-space-md);
+    }
+
+    .ge-detail {
+      background-color: rgba(255, 251, 240, 0.8);
+      border-left: 3px solid var(--gf-gold);
+      padding: var(--gf-space-md) var(--gf-space-lg);
+      border-radius: 0 var(--gf-radius-sm) var(--gf-radius-sm) 0;
+    }
+
+    .ge-detail.ren { border-left-color: var(--gf-cinnabar); }
+
+    .ge-detail-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--gf-space-sm);
+    }
+
+    .ge-detail-title {
+      font-size: 16px;
+      color: var(--gf-ink);
+      font-weight: 500;
+    }
+
+    .ge-detail-body {
+      font-size: 13px;
+      color: var(--gf-ink-soft);
+      line-height: 1.8;
+    }
+
+    /* 综合评分 */
+    .score-card {
+      max-width: 720px;
+      margin: var(--gf-space-xl) auto;
+      padding: var(--gf-space-lg);
+      background: linear-gradient(135deg, rgba(176, 141, 59, 0.08), rgba(194, 58, 42, 0.06));
+      border: 1px solid var(--gf-gold);
+      border-radius: var(--gf-radius-md);
+      text-align: center;
+    }
+
+    .score-value {
+      font-size: 72px;
+      color: var(--gf-cinnabar);
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .score-value small {
+      font-size: 24px;
+      color: var(--gf-ink-soft);
+    }
+
+    .score-label {
+      font-size: 14px;
+      color: var(--gf-ink-soft);
+      margin: var(--gf-space-sm) 0 var(--gf-space-md);
+      letter-spacing: 0.2em;
+    }
+
+    .score-desc {
+      color: var(--gf-ink);
+      font-size: 15px;
+      line-height: 1.9;
+    }
+
+    .action-bar {
+      max-width: 720px;
+      margin: var(--gf-space-xl) auto;
+      display: flex;
+      justify-content: center;
+      gap: var(--gf-space-md);
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 768px) {
+      .wuge-layout { grid-template-columns: 1fr; }
+      .chars { gap: var(--gf-space-sm); }
+      .char-card { width: 70px; padding: var(--gf-space-sm); }
+      .char-char { font-size: 32px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="prototype-badge">国风 · 姓名</div>
+  <div class="gf-disclaimer">✦ 本站内容仅供文化体验与娱乐参考 · 不构成专业建议 ✦</div>
+
+  <header class="gf-header">
+    <div class="gf-header-inner">
+      <a href="index.html" class="gf-logo">启门问卜</a>
+      <nav class="gf-nav">
+        <a href="index.html">首页</a>
+        <a href="bazi.html">八字</a>
+        <a href="ziwei.html">紫微</a>
+        <a href="chenggu.html">称骨</a>
+        <a href="liuren.html">小六壬</a>
+        <a href="lingqian.html">灵签</a>
+        <a href="xingming.html" class="active">姓名</a>
+        <a href="huangli.html">黄历</a>
+        <a href="jiemeng.html">解梦</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="gf-container">
+    <div class="page-title">
+      <h1>姓名学五格</h1>
+      <div class="subtitle">康熙笔画 · 天人地外总格 · 八十一数理</div>
+    </div>
+
+    <!-- 姓名输入（统一 ds-input-card 规范）-->
+    <div class="gf-card ds-input-card" style="max-width: 640px;">
+      <h3 class="ds-card-title"><span class="ds-ornament">◈</span>录 入 姓 名<span class="ds-ornament">◈</span></h3>
+      <div class="ds-input-row" style="grid-template-columns: 1fr 2fr;">
+        <div class="ds-input-group">
+          <label>姓 氏</label>
+          <input type="text" value="李">
+        </div>
+        <div class="ds-input-group">
+          <label>名 字</label>
+          <input type="text" value="文轩" placeholder="单字 / 双字">
+        </div>
+      </div>
+      <div class="ds-input-row">
+        <div class="ds-input-group">
+          <label>性 别</label>
+          <select>
+            <option selected>男</option>
+            <option>女</option>
+          </select>
+        </div>
+        <div class="ds-input-group">
+          <label>出生年（辅助断吉凶）</label>
+          <input type="text" value="1990" placeholder="选填">
+        </div>
+      </div>
+      <div class="ds-input-actions">
+        <button class="gf-btn">◈ 解 名</button>
+        <button class="gf-btn gf-btn-outline">✎ 换名试算</button>
+      </div>
+    </div>
+
+    <!-- 字拆解 -->
+    <div class="name-breakdown">
+      <h3 style="margin: 0 0 var(--gf-space-md); color: var(--gf-ink); text-align: center;">◆ 字 形 · 笔 画 ◆</h3>
+      <div class="chars">
+        <div class="char-card">
+          <div class="char-char">李</div>
+          <div class="char-strokes">简 <strong class="char-kangxi">7</strong> · 康熙 <strong class="char-kangxi">7</strong></div>
+          <div style="margin-top: 6px; font-size: 11px; color: var(--gf-gold);">木</div>
+        </div>
+        <div class="char-card">
+          <div class="char-char">文</div>
+          <div class="char-strokes">简 <strong class="char-kangxi">4</strong> · 康熙 <strong class="char-kangxi">4</strong></div>
+          <div style="margin-top: 6px; font-size: 11px; color: var(--gf-gold);">水</div>
+        </div>
+        <div class="char-card">
+          <div class="char-char">轩</div>
+          <div class="char-strokes">简 <strong class="char-kangxi">7</strong> · 康熙 <strong class="char-kangxi">10</strong></div>
+          <div style="margin-top: 6px; font-size: 11px; color: var(--gf-gold);">土</div>
+        </div>
+      </div>
+      <p style="text-align: center; font-size: 12px; color: var(--gf-ink-soft); margin: 0;">
+        五格推算基于 <strong>康熙笔画</strong>（符合传统姓名学规则）
+      </p>
+    </div>
+
+    <!-- 五格布局 -->
+    <div class="wuge-layout">
+      <!-- 左：可视化 -->
+      <div class="wuge-visual">
+        <div class="wuge-chart">
+          <div></div>
+          <div class="ge-box tian">
+            <div class="ge-name">天 格</div>
+            <div class="ge-num">8</div>
+            <span class="ge-element">金 · 吉</span>
+          </div>
+          <div class="ge-box wai">
+            <div class="ge-name">外 格</div>
+            <div class="ge-num">11</div>
+            <span class="ge-element ji">木 · 吉</span>
+          </div>
+          <div></div>
+          <div class="ge-box ren">
+            <div class="ge-name">人 格</div>
+            <div class="ge-num">11</div>
+            <span class="ge-element ji">木 · 大吉</span>
+          </div>
+          <div></div>
+          <div></div>
+          <div class="ge-box di">
+            <div class="ge-name">地 格</div>
+            <div class="ge-num">14</div>
+            <span class="ge-element xiong">火 · 凶</span>
+          </div>
+          <div class="ge-box zong">
+            <div class="ge-name">总 格</div>
+            <div class="ge-num">21</div>
+            <span class="ge-element ji">木 · 大吉</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右：详解 -->
+      <div class="ge-details">
+        <div class="ge-detail">
+          <div class="ge-detail-header">
+            <span class="ge-detail-title">天格 · 8 画 · 金 · 吉</span>
+          </div>
+          <div class="ge-detail-body">
+            来自祖辈的气数。主先天基础、少年运。金气透发，先天福泽尚可，祖上有荫。
+          </div>
+        </div>
+        <div class="ge-detail ren">
+          <div class="ge-detail-header">
+            <span class="ge-detail-title">人格 · 11 画 · 木 · 大吉</span>
+          </div>
+          <div class="ge-detail-body">
+            名字的"主人翁"。数理 11 曰"旱苗逢雨"，主中年得势、事业开阔。
+            为人聪慧敏达，富有创造力，利于文艺、教育、科技领域。
+          </div>
+        </div>
+        <div class="ge-detail">
+          <div class="ge-detail-header">
+            <span class="ge-detail-title">地格 · 14 画 · 火 · 凶</span>
+          </div>
+          <div class="ge-detail-body">
+            主青年期与晚辈运。数理 14 为"破兆"，青年期多波折。
+            宜多加磨砺，中年后转运。
+          </div>
+        </div>
+        <div class="ge-detail">
+          <div class="ge-detail-header">
+            <span class="ge-detail-title">外格 · 11 画 · 木 · 吉</span>
+          </div>
+          <div class="ge-detail-body">
+            主社交与外缘。同为数理 11，社交圈广，易结善缘。
+          </div>
+        </div>
+        <div class="ge-detail">
+          <div class="ge-detail-header">
+            <span class="ge-detail-title">总格 · 21 画 · 木 · 大吉</span>
+          </div>
+          <div class="ge-detail-body">
+            总格主一生总体运数。数理 21 曰"明月中天"，格局开阔，
+            中晚年成就显著，领导力强。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 综合评分（仪表盘 + 分项分数）-->
+    <div class="score-card score-card-v2">
+      <div class="score-gauge-wrap">
+        <svg class="score-gauge" viewBox="0 0 200 120">
+          <path class="gauge-track" d="M 20 110 A 80 80 0 0 1 180 110" fill="none" />
+          <path class="gauge-fill" d="M 20 110 A 80 80 0 0 1 180 110" fill="none"
+                stroke-dasharray="251" stroke-dashoffset="45" />
+          <line class="gauge-needle" x1="100" y1="110" x2="100" y2="35" transform="rotate(57.6 100 110)" />
+          <circle class="gauge-hub" cx="100" cy="110" r="5" />
+          <text class="gauge-tick" x="20" y="125" text-anchor="middle">0</text>
+          <text class="gauge-tick" x="100" y="20" text-anchor="middle">50</text>
+          <text class="gauge-tick" x="180" y="125" text-anchor="middle">100</text>
+        </svg>
+        <div class="score-center">
+          <div class="score-value">82</div>
+          <div class="score-unit">/ 100</div>
+        </div>
+      </div>
+      <div class="score-label">综 · 合 · 评 · 分 · <span class="score-level">良</span></div>
+      <div class="score-items">
+        <div class="score-item"><span class="s-name">天格</span><span class="s-num">7</span><span class="s-tag good">吉</span></div>
+        <div class="score-item"><span class="s-name">人格</span><span class="s-num">11</span><span class="s-tag good">吉</span></div>
+        <div class="score-item"><span class="s-name">地格</span><span class="s-num">14</span><span class="s-tag warn">凶</span></div>
+        <div class="score-item"><span class="s-name">外格</span><span class="s-num">10</span><span class="s-tag mid">半吉</span></div>
+        <div class="score-item"><span class="s-name">总格</span><span class="s-num">21</span><span class="s-tag good">大吉</span></div>
+      </div>
+      <div class="score-desc">
+        "李文轩"整体五格搭配良好，木气流转通达；<br>
+        唯地格稍弱，需警觉青年期磨砺；人格、总格俱强，中晚年运势可期。
+      </div>
+    </div>
+
+    <style>
+      .score-card-v2 .score-gauge-wrap { position: relative; width: 260px; margin: 0 auto var(--gf-space-md); }
+      .score-gauge { width: 100%; height: auto; display: block; }
+      .gauge-track { stroke: rgba(176, 141, 59, 0.18); stroke-width: 14; stroke-linecap: round; }
+      .gauge-fill { stroke: url(#gaugeGrad, var(--gf-cinnabar)); stroke: var(--gf-cinnabar); stroke-width: 14; stroke-linecap: round; transition: stroke-dashoffset 0.8s ease; }
+      .gauge-needle { stroke: var(--gf-ink); stroke-width: 2.5; stroke-linecap: round; }
+      .gauge-hub { fill: var(--gf-gold); stroke: var(--gf-ink); stroke-width: 1.5; }
+      .gauge-tick { font-size: 10px; fill: var(--gf-ink-soft); font-family: var(--gf-font-serif); }
+      .score-center { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); text-align: center; }
+      .score-center .score-value { font-size: 38px; font-weight: 600; color: var(--gf-cinnabar); font-family: var(--gf-font-serif); line-height: 1; }
+      .score-center .score-unit { font-size: 11px; color: var(--gf-ink-soft); letter-spacing: 0.1em; }
+      .score-level { padding: 2px 10px; background: var(--gf-gold); color: var(--gf-rice); font-size: 13px; border-radius: var(--gf-radius-sm); margin-left: 8px; }
+      .score-items { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: var(--gf-space-md) 0; max-width: 520px; margin-left: auto; margin-right: auto; }
+      .score-item { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; background: rgba(255, 251, 240, 0.5); border: 1px solid rgba(176, 141, 59, 0.3); border-radius: var(--gf-radius-sm); }
+      .s-name { font-size: 11px; color: var(--gf-ink-soft); letter-spacing: 0.15em; }
+      .s-num { font-size: 18px; font-weight: 600; color: var(--gf-ink); font-family: var(--gf-font-serif); }
+      .s-tag { font-size: 10px; padding: 1px 6px; border-radius: var(--gf-radius-sm); letter-spacing: 0.1em; }
+      .s-tag.good { background: rgba(74, 109, 93, 0.15); color: var(--gf-jade); }
+      .s-tag.warn { background: rgba(194, 58, 42, 0.1); color: var(--gf-cinnabar); }
+      .s-tag.mid { background: rgba(176, 141, 59, 0.15); color: var(--gf-gold); }
+      @media (max-width: 640px) { .score-items { grid-template-columns: repeat(3, 1fr); } }
+    </style>
+
+    <div class="action-bar">
+      <button class="gf-btn">◈ 生成分享卡片</button>
+      <button class="gf-btn gf-btn-outline">◐ 更换名字</button>
+    </div>
+  </div>
+
+  <footer class="gf-footer">
+    <div>启门问卜 · tt-qimen · 古今同道</div>
+    <div style="margin-top: 12px;">
+      <a href="#about">关于</a> · <a href="#disclaimer">免责声明</a> · <a href="#data-source">数据来源</a>
+    </div>
+    <div style="margin-top: 16px; font-size: 12px;">© 2026 tt-qimen</div>
+  </footer>
+</body>
+</html>

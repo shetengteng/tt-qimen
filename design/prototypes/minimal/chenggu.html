@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tt-qimen · 称骨算命（现代简约）</title>
+  <link rel="stylesheet" href="../assets/minimal.css">
+  <style>
+    .page-hero { padding: var(--mn-space-10) 0 var(--mn-space-8); }
+    .page-breadcrumb { font-size: 13px; color: var(--mn-ink-muted); margin-bottom: var(--mn-space-3); }
+    .page-breadcrumb a { color: var(--mn-ink-muted); text-decoration: none; }
+    .page-hero h1 { font-size: 40px; font-weight: 700; letter-spacing: -0.03em; margin: 0; }
+    .page-hero p { color: var(--mn-ink-soft); font-size: 16px; margin: var(--mn-space-3) 0 0; }
+
+    /* 两列布局 */
+    .cg-layout {
+      max-width: 980px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: var(--mn-space-8);
+      align-items: start;
+    }
+
+    /* 天秤视觉 */
+    .balance-visual {
+      background: linear-gradient(135deg, var(--mn-bg-elev), #f8f7f2);
+      border: 1px solid var(--mn-border);
+      border-radius: var(--mn-radius-xl);
+      padding: var(--mn-space-10);
+      text-align: center;
+      min-height: 420px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .scale {
+      width: 200px;
+      height: 140px;
+      margin: 0 auto var(--mn-space-6);
+      position: relative;
+    }
+
+    .scale-base {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background: var(--mn-ink);
+      border-radius: 2px;
+    }
+
+    .scale-pole {
+      position: absolute;
+      bottom: 3px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 90px;
+      background: var(--mn-ink);
+    }
+
+    .scale-bar {
+      position: absolute;
+      top: 45px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--mn-ink);
+      transform: rotate(-3deg);
+      transform-origin: center;
+      animation: swing 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes swing {
+      0% { transform: rotate(-3deg); }
+      100% { transform: rotate(3deg); }
+    }
+
+    .scale-pan {
+      position: absolute;
+      top: 30px;
+      width: 44px;
+      height: 16px;
+      border: 1.5px solid var(--mn-accent);
+      border-top: none;
+      border-radius: 0 0 22px 22px;
+      background: var(--mn-accent-soft);
+    }
+
+    .scale-pan.left { left: 0; }
+    .scale-pan.right { right: 0; }
+
+    .weight {
+      margin-top: var(--mn-space-6);
+    }
+
+    .weight-value {
+      font-size: 56px;
+      font-weight: 700;
+      color: var(--mn-accent);
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+
+    .weight-label {
+      font-size: 13px;
+      color: var(--mn-ink-muted);
+      margin-top: var(--mn-space-3);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .weight-breakdown {
+      margin-top: var(--mn-space-5);
+      padding-top: var(--mn-space-4);
+      border-top: 1px solid var(--mn-border);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--mn-space-3);
+      font-size: 13px;
+    }
+
+    .wb-item { text-align: center; color: var(--mn-ink-soft); }
+    .wb-item strong { display: block; color: var(--mn-ink); font-size: 16px; margin-top: 2px; }
+
+    /* 输入 */
+    .input-card {
+      padding: var(--mn-space-6);
+    }
+
+    .input-card h3 {
+      margin: 0 0 var(--mn-space-5);
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: var(--mn-space-3);
+      margin-bottom: var(--mn-space-4);
+    }
+
+    .input-hint {
+      margin-top: var(--mn-space-4);
+      padding: var(--mn-space-3) var(--mn-space-4);
+      font-size: 12px;
+      line-height: 1.6;
+      background-color: var(--mn-accent-soft);
+      color: var(--mn-ink-soft);
+      border-radius: var(--mn-radius-md);
+    }
+
+    /* 歌诀卡 */
+    .poem-section {
+      max-width: 720px;
+      margin: var(--mn-space-12) auto var(--mn-space-8);
+    }
+
+    .poem-card {
+      background: linear-gradient(180deg, var(--mn-bg-elev), #f8f7f2);
+      border: 1px solid var(--mn-border);
+      border-radius: var(--mn-radius-xl);
+      padding: var(--mn-space-10) var(--mn-space-8);
+      text-align: center;
+      position: relative;
+      box-shadow: var(--mn-shadow-sm);
+    }
+
+    .poem-badge {
+      position: absolute;
+      top: var(--mn-space-4);
+      right: var(--mn-space-4);
+      padding: 4px 12px;
+      background-color: var(--mn-accent);
+      color: white;
+      font-size: 11px;
+      border-radius: 999px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+    }
+
+    .poem-eyebrow {
+      font-size: 11px;
+      color: var(--mn-ink-muted);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-bottom: var(--mn-space-5);
+    }
+
+    .poem-verse {
+      font-size: 24px;
+      line-height: 2.2;
+      color: var(--mn-ink);
+      letter-spacing: 0.1em;
+      font-weight: 500;
+      margin: 0;
+    }
+
+    .poem-verse .line { display: block; }
+
+    .poem-divider {
+      width: 40px;
+      height: 2px;
+      background-color: var(--mn-accent);
+      margin: var(--mn-space-6) auto;
+      border-radius: 1px;
+    }
+
+    .poem-meta {
+      font-size: 12px;
+      color: var(--mn-ink-muted);
+      letter-spacing: 0.1em;
+    }
+
+    /* 白话解读 */
+    .interpret {
+      max-width: 720px;
+      margin: 0 auto var(--mn-space-8);
+      padding: var(--mn-space-6) var(--mn-space-8);
+      background-color: var(--mn-bg-elev);
+      border: 1px solid var(--mn-border);
+      border-radius: var(--mn-radius-lg);
+      border-left: 3px solid var(--mn-accent);
+    }
+
+    .interpret h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0 0 var(--mn-space-4);
+      color: var(--mn-accent);
+    }
+
+    .interpret p {
+      color: var(--mn-ink-soft);
+      line-height: 1.8;
+      margin: 0 0 var(--mn-space-3);
+    }
+
+    .interpret p:last-of-type {
+      font-size: 12px;
+      color: var(--mn-ink-muted);
+      font-style: italic;
+      margin-top: var(--mn-space-4);
+      margin-bottom: 0;
+    }
+
+    .actions {
+      max-width: 720px;
+      margin: var(--mn-space-8) auto;
+      display: flex;
+      justify-content: center;
+      gap: var(--mn-space-3);
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 768px) {
+      .cg-layout { grid-template-columns: 1fr; }
+      .poem-verse { font-size: 18px; letter-spacing: 0.05em; }
+    }
+  </style>
+</head>
+<body>
+  <div class="prototype-badge">Minimal · Chenggu</div>
+  <div class="mn-disclaimer">内容仅供文化体验与娱乐参考，不构成专业建议</div>
+
+  <header class="mn-header">
+    <div class="mn-header-inner">
+      <a href="index.html" class="mn-logo">
+        <span class="mn-logo-mark">启</span>
+        tt-qimen
+      </a>
+      <nav class="mn-nav">
+        <a href="index.html">首页</a>
+        <a href="bazi.html">八字</a>
+        <a href="ziwei.html">紫微</a>
+        <a href="chenggu.html" class="active">称骨</a>
+        <a href="liuren.html">小六壬</a>
+        <a href="lingqian.html">灵签</a>
+        <a href="xingming.html">姓名</a>
+        <a href="huangli.html">黄历</a>
+        <a href="jiemeng.html">解梦</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="mn-container">
+    <section class="page-hero">
+      <div class="page-breadcrumb">
+        <a href="index.html">首页</a> / 称骨算命
+      </div>
+      <h1>称骨算命</h1>
+      <p>袁天罡古法 · 年月日时骨重相加 · 51 段命格歌诀</p>
+    </section>
+
+    <!-- 双列：输入 + 天秤 -->
+    <div class="cg-layout">
+      <!-- 输入（统一 ds-input-card 规范）-->
+      <div class="mn-card ds-input-card input-card">
+        <h3 class="ds-card-title"><span class="ds-ornament">◆</span>录入生辰</h3>
+        <div class="ds-calendar-switch">
+          <button class="ds-switch-btn active">公历</button>
+          <button class="ds-switch-btn">农历</button>
+        </div>
+        <div class="ds-input-row">
+          <div class="ds-input-group">
+            <label>出生年</label>
+            <input type="text" value="1990">
+          </div>
+          <div class="ds-input-group">
+            <label>月</label>
+            <input type="text" value="5">
+          </div>
+          <div class="ds-input-group">
+            <label>日</label>
+            <input type="text" value="20">
+          </div>
+          <div class="ds-input-group">
+            <label>时辰</label>
+            <select>
+              <option>子时 (23-1)</option>
+              <option selected>午时 (11-13)</option>
+              <option>未时 (13-15)</option>
+            </select>
+          </div>
+        </div>
+        <div class="ds-input-actions">
+          <button class="mn-btn mn-btn-lg">开始称骨</button>
+        </div>
+        <div class="input-hint" style="font-size: 12px; color: var(--mn-ink-muted); margin-top: var(--mn-space-4); text-align: center; line-height: 1.6;">
+          称骨法以年月日时四骨重相加 · 对应歌诀以推终身命运<br>
+          骨重范围 <strong>2 两 1 钱 ~ 7 两 1 钱</strong>
+        </div>
+      </div>
+
+      <!-- 天秤 -->
+      <div class="balance-visual">
+        <div class="scale">
+          <div class="scale-base"></div>
+          <div class="scale-pole"></div>
+          <div class="scale-bar">
+            <div class="scale-pan left"></div>
+            <div class="scale-pan right"></div>
+          </div>
+        </div>
+        <div class="weight">
+          <div class="weight-value">5.1 两</div>
+          <div class="weight-label">骨 · 重</div>
+          <div class="weight-breakdown">
+            <div class="wb-item">年<strong>1.2 两</strong></div>
+            <div class="wb-item">月<strong>0.9 两</strong></div>
+            <div class="wb-item">日<strong>1.6 两</strong></div>
+            <div class="wb-item">时<strong>1.4 两</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 骨重分解表 + 等级徽章 -->
+    <div class="mn-card bone-table-card">
+      <div class="bone-table">
+        <div class="bone-col">
+          <div class="bone-head">年 骨</div>
+          <div class="bone-src">庚午年</div>
+          <div class="bone-weight">1.2 两</div>
+        </div>
+        <div class="bone-col">
+          <div class="bone-head">月 骨</div>
+          <div class="bone-src">四月生</div>
+          <div class="bone-weight">0.9 两</div>
+        </div>
+        <div class="bone-col">
+          <div class="bone-head">日 骨</div>
+          <div class="bone-src">二十日</div>
+          <div class="bone-weight">1.6 两</div>
+        </div>
+        <div class="bone-col">
+          <div class="bone-head">时 骨</div>
+          <div class="bone-src">午时生</div>
+          <div class="bone-weight">1.4 两</div>
+        </div>
+      </div>
+      <div class="bone-total">
+        <span class="total-label">四 骨 相 加</span>
+        <span class="total-value">5.1 两</span>
+        <span class="rank-badge rank-high">上 · 贵显</span>
+      </div>
+    </div>
+
+    <style>
+      .bone-table-card { max-width: 1000px; margin: 0 auto var(--mn-space-8); padding: var(--mn-space-6); }
+      .bone-table { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--mn-space-3); margin-bottom: var(--mn-space-4); }
+      .bone-col { padding: var(--mn-space-4); background: var(--mn-bg); border: 1px solid var(--mn-border); border-radius: var(--mn-radius-md); text-align: center; transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s; }
+      .bone-col:hover { transform: translateY(-1px); border-color: var(--mn-accent); box-shadow: 0 6px 18px rgba(10, 10, 10, 0.05); }
+      .bone-head { font-size: 12px; color: var(--mn-ink-muted); letter-spacing: 0.2em; margin-bottom: 4px; }
+      .bone-src { font-size: 11px; color: var(--mn-ink-muted); margin-bottom: 6px; }
+      .bone-weight { font-size: 20px; font-weight: 600; color: var(--mn-accent); }
+      .bone-total { display: flex; align-items: center; justify-content: center; gap: var(--mn-space-4); padding-top: var(--mn-space-4); border-top: 1px dashed var(--mn-border); flex-wrap: wrap; }
+      .total-label { font-size: 12px; color: var(--mn-ink-muted); letter-spacing: 0.15em; }
+      .total-value { font-size: 24px; color: var(--mn-accent); font-weight: 600; }
+      .rank-badge { padding: 4px 12px; font-size: 12px; letter-spacing: 0.05em; border-radius: 999px; font-weight: 500; }
+      .rank-badge.rank-high { background: var(--mn-accent-soft); color: var(--mn-accent); }
+      .rank-badge.rank-mid { background: #ecfdf5; color: var(--mn-success); }
+      .rank-badge.rank-low { background: #fef2f2; color: var(--mn-danger); }
+      @media (max-width: 640px) { .bone-table { grid-template-columns: repeat(2, 1fr); } }
+    </style>
+
+    <hr class="mn-divider">
+
+    <!-- 歌诀 -->
+    <div class="poem-section">
+      <div class="poem-card">
+        <span class="poem-badge">5 两 1 钱</span>
+        <div class="poem-eyebrow">袁 天 罡 歌 诀</div>
+        <p class="poem-verse">
+          <span class="line">一 世 荣 华 事 事 通</span>
+          <span class="line">不 须 劳 碌 自 享 通</span>
+          <span class="line">职 位 高 显 声 名 显</span>
+          <span class="line">前 呼 后 拥 似 蛟 龙</span>
+        </p>
+        <div class="poem-divider"></div>
+        <div class="poem-meta">骨 · 贵显 · 文武</div>
+      </div>
+    </div>
+
+    <!-- 白话 -->
+    <div class="interpret">
+      <h3>◆ 歌诀释义</h3>
+      <p>
+        五两一钱之命，为古法中"贵显"之相。歌诀言"一世荣华"，并非今人所谓必然富贵，
+        而是指心性与格局较为开阔，一生多得遇合，工作上易得贵人提携。
+      </p>
+      <p>
+        "不须劳碌自享通"并非懒怠，而是说你的付出多能直达目标、少走弯路；
+        "职位高显声名显"提示你的事业上升路径较顺，宜专注长期发展而非频繁跳动。
+      </p>
+      <p>注：本段白话解读由编辑团队在公版古籍基础上整理，仅供文化参考。</p>
+    </div>
+
+    <div class="actions">
+      <button class="mn-btn">生成分享卡片</button>
+      <button class="mn-btn mn-btn-outline">保存到本地</button>
+      <button class="mn-btn mn-btn-ghost">重新称骨</button>
+    </div>
+  </main>
+
+  <footer class="mn-footer">
+    <div style="margin-bottom: var(--mn-space-3);">tt-qimen · 启门问卜</div>
+    <div>
+      <a href="#about">关于</a>
+      <a href="#disclaimer">免责声明</a>
+      <a href="#data-source">数据来源</a>
+    </div>
+    <div style="margin-top: var(--mn-space-4); font-size: 12px;">© 2026 tt-qimen</div>
+  </footer>
+</body>
+</html>

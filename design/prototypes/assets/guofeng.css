@@ -1,0 +1,484 @@
+/* ============================================
+ * 国风（Guofeng）风格共享样式
+ * 色板：朱砂红、墨黑、宣纸米、鎏金
+ * 字体：系统中文 (Kaiti/STKaiti/LXGW WenKai) + 英文 serif
+ * ============================================ */
+
+:root {
+  /* 主色 */
+  --gf-ink: #1a1613;           /* 墨黑 */
+  --gf-ink-soft: #3a322c;
+  --gf-rice: #f6ecd6;          /* 宣纸米 */
+  --gf-rice-deep: #e8d9b4;
+  --gf-cinnabar: #c23a2a;      /* 朱砂红 */
+  --gf-cinnabar-deep: #8f2116;
+  --gf-gold: #b08d3b;           /* 鎏金 */
+  --gf-gold-light: #d4a94a;
+
+  /* 辅色 */
+  --gf-seal: #a3231b;
+  --gf-jade: #4a6d5d;           /* 青瓷绿 */
+  --gf-water: #b4c5c7;          /* 水墨青 */
+
+  /* 功能 */
+  --gf-success: #4a6d5d;
+  --gf-neutral: #8a6b3a;
+  --gf-danger: #c23a2a;
+
+  /* 排版 */
+  --gf-font-serif: "Kaiti", "STKaiti", "LXGW WenKai", "华文楷体", "Noto Serif SC", serif;
+  --gf-font-sans: "Noto Sans SC", "PingFang SC", "HarmonyOS Sans", sans-serif;
+  --gf-font-en: "Cormorant Garamond", "EB Garamond", Georgia, serif;
+
+  /* 空间 */
+  --gf-space-xs: 4px;
+  --gf-space-sm: 8px;
+  --gf-space-md: 16px;
+  --gf-space-lg: 24px;
+  --gf-space-xl: 40px;
+  --gf-space-xxl: 64px;
+
+  /* 圆角 */
+  --gf-radius-sm: 2px;
+  --gf-radius-md: 4px;
+  --gf-radius-lg: 8px;
+
+  /* 阴影 */
+  --gf-shadow-sm: 0 2px 8px rgba(26, 22, 19, 0.08);
+  --gf-shadow-md: 0 6px 20px rgba(26, 22, 19, 0.12);
+  --gf-shadow-lg: 0 12px 40px rgba(26, 22, 19, 0.16);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--gf-font-serif);
+  color: var(--gf-ink);
+  background-color: var(--gf-rice);
+  line-height: 1.8;
+  min-height: 100vh;
+  background-image:
+    /* 宣纸纹理：多层重叠的轻微斑点 */
+    radial-gradient(circle at 20% 30%, rgba(176, 141, 59, 0.06) 0%, transparent 30%),
+    radial-gradient(circle at 80% 20%, rgba(194, 58, 42, 0.04) 0%, transparent 25%),
+    radial-gradient(circle at 40% 80%, rgba(26, 22, 19, 0.03) 0%, transparent 30%);
+}
+
+/* 模拟宣纸质感的纹理 */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.12;
+  z-index: 0;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 2px,
+      rgba(176, 141, 59, 0.15) 2px,
+      rgba(176, 141, 59, 0.15) 3px
+    );
+  mix-blend-mode: multiply;
+}
+
+.gf-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--gf-space-lg);
+}
+
+/* ==== 顶栏 ==== */
+.gf-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: rgba(246, 236, 214, 0.94);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(176, 141, 59, 0.2);
+}
+
+.gf-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--gf-space-md) var(--gf-space-lg);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.gf-logo {
+  font-family: var(--gf-font-serif);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--gf-cinnabar);
+  display: flex;
+  align-items: center;
+  gap: var(--gf-space-sm);
+  text-decoration: none;
+}
+
+.gf-logo::before {
+  content: "启";
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  text-align: center;
+  background-color: var(--gf-cinnabar);
+  color: var(--gf-rice);
+  border-radius: var(--gf-radius-sm);
+  font-size: 16px;
+  font-weight: 700;
+  transform: rotate(-2deg);
+  box-shadow: var(--gf-shadow-sm);
+}
+
+.gf-nav {
+  display: flex;
+  gap: var(--gf-space-lg);
+}
+
+.gf-nav a {
+  color: var(--gf-ink-soft);
+  text-decoration: none;
+  font-size: 15px;
+  position: relative;
+  padding: 4px 0;
+  transition: color 0.2s;
+}
+
+.gf-nav a:hover,
+.gf-nav a.active {
+  color: var(--gf-cinnabar);
+}
+
+.gf-nav a.active::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--gf-cinnabar);
+  border-radius: 1px;
+}
+
+/* ==== 免责声明 ==== */
+.gf-disclaimer {
+  background: linear-gradient(90deg, rgba(176, 141, 59, 0.08), rgba(194, 58, 42, 0.05));
+  border-left: 3px solid var(--gf-gold);
+  padding: var(--gf-space-sm) var(--gf-space-lg);
+  font-size: 13px;
+  color: var(--gf-ink-soft);
+  text-align: center;
+}
+
+/* ==== 按钮 ==== */
+.gf-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gf-space-sm);
+  padding: 12px 28px;
+  font-family: var(--gf-font-serif);
+  font-size: 16px;
+  color: var(--gf-rice);
+  background-color: var(--gf-cinnabar);
+  border: none;
+  border-radius: var(--gf-radius-sm);
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: var(--gf-shadow-sm);
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.gf-btn:hover {
+  background-color: var(--gf-cinnabar-deep);
+  transform: translateY(-2px);
+  box-shadow: var(--gf-shadow-md);
+}
+
+.gf-btn:active {
+  transform: translateY(0);
+}
+
+.gf-btn-outline {
+  background-color: transparent;
+  color: var(--gf-ink);
+  border: 1px solid var(--gf-gold);
+}
+
+.gf-btn-outline:hover {
+  background-color: var(--gf-gold);
+  color: var(--gf-rice);
+}
+
+.gf-btn-gold {
+  background-color: var(--gf-gold);
+  color: var(--gf-ink);
+}
+
+.gf-btn-gold:hover {
+  background-color: var(--gf-gold-light);
+}
+
+/* ==== 卡片 ==== */
+.gf-card {
+  background-color: rgba(255, 251, 240, 0.85);
+  border: 1px solid rgba(176, 141, 59, 0.2);
+  border-radius: var(--gf-radius-md);
+  padding: var(--gf-space-lg);
+  box-shadow: var(--gf-shadow-sm);
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.gf-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--gf-shadow-md);
+  border-color: var(--gf-gold);
+}
+
+.gf-card-title {
+  font-size: 20px;
+  color: var(--gf-ink);
+  margin: 0 0 var(--gf-space-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--gf-space-sm);
+}
+
+.gf-card-desc {
+  font-size: 14px;
+  color: var(--gf-ink-soft);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ==== 印章 ==== */
+.gf-seal {
+  display: inline-block;
+  padding: 6px 10px;
+  font-family: var(--gf-font-serif);
+  font-size: 14px;
+  color: var(--gf-rice);
+  background-color: var(--gf-seal);
+  border-radius: 2px;
+  transform: rotate(-4deg);
+  box-shadow: 0 2px 4px rgba(163, 35, 27, 0.3);
+  letter-spacing: 2px;
+  position: relative;
+}
+
+.gf-seal::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 1px;
+  pointer-events: none;
+}
+
+/* ==== 分隔线 ==== */
+.gf-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--gf-space-md);
+  color: var(--gf-gold);
+  margin: var(--gf-space-xl) 0;
+  font-size: 14px;
+}
+
+.gf-divider::before,
+.gf-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gf-gold), transparent);
+}
+
+/* ==== 页脚 ==== */
+.gf-footer {
+  margin-top: var(--gf-space-xxl);
+  padding: var(--gf-space-xl) var(--gf-space-lg);
+  border-top: 1px solid rgba(176, 141, 59, 0.2);
+  background-color: rgba(26, 22, 19, 0.04);
+  text-align: center;
+  font-size: 13px;
+  color: var(--gf-ink-soft);
+  line-height: 1.8;
+}
+
+.gf-footer a {
+  color: var(--gf-cinnabar);
+  text-decoration: none;
+  margin: 0 var(--gf-space-sm);
+}
+
+/* ==== 响应式 ==== */
+@media (max-width: 768px) {
+  .gf-container {
+    padding: 0 var(--gf-space-md);
+  }
+
+  .gf-nav {
+    display: none;
+  }
+
+  .gf-logo {
+    font-size: 20px;
+  }
+}
+
+/* ==== 回到顶部 ==== */
+.gf-origin-mark {
+  position: fixed;
+  bottom: var(--gf-space-lg);
+  right: var(--gf-space-lg);
+  padding: 8px 14px;
+  background-color: rgba(26, 22, 19, 0.85);
+  color: var(--gf-rice);
+  font-size: 12px;
+  border-radius: var(--gf-radius-md);
+  z-index: 1000;
+}
+
+/* 样式示例页用的标签 */
+.prototype-badge {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  padding: 6px 12px;
+  background-color: var(--gf-cinnabar);
+  color: var(--gf-rice);
+  font-size: 12px;
+  font-family: var(--gf-font-sans);
+  border-radius: var(--gf-radius-sm);
+  z-index: 1000;
+  box-shadow: var(--gf-shadow-sm);
+}
+
+/* ============================================
+ * 通用"生辰/日期"输入卡规范（ds-* 前缀）
+ * 所有模块公用，从八字输入卡抽离
+ * ============================================ */
+
+.ds-input-card {
+  max-width: 720px;
+  margin: 0 auto var(--gf-space-xl);
+  padding: var(--gf-space-lg);
+}
+
+.ds-input-card .ds-card-title {
+  margin: 0 0 var(--gf-space-md);
+  font-family: var(--gf-font-serif);
+  font-size: 20px;
+  color: var(--gf-ink);
+  letter-spacing: 0.1em;
+  text-align: center;
+}
+
+.ds-input-card .ds-card-title .ds-ornament {
+  color: var(--gf-gold);
+  margin: 0 8px;
+  font-size: 14px;
+}
+
+.ds-calendar-switch {
+  display: flex;
+  justify-content: center;
+  gap: var(--gf-space-sm);
+  margin-bottom: var(--gf-space-md);
+}
+
+.ds-switch-btn {
+  padding: 6px 16px;
+  font-family: var(--gf-font-serif);
+  font-size: 14px;
+  background: transparent;
+  color: var(--gf-ink-soft);
+  border: 1px solid rgba(176, 141, 59, 0.3);
+  cursor: pointer;
+  border-radius: var(--gf-radius-sm);
+  transition: all 0.2s;
+}
+
+.ds-switch-btn.active {
+  background-color: var(--gf-cinnabar);
+  color: var(--gf-rice);
+  border-color: var(--gf-cinnabar);
+}
+
+.ds-input-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--gf-space-md);
+  margin-bottom: var(--gf-space-md);
+}
+
+.ds-input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.ds-input-group label {
+  font-size: 13px;
+  color: var(--gf-ink-soft);
+  margin-bottom: 6px;
+  letter-spacing: 0.05em;
+}
+
+.ds-input-group input,
+.ds-input-group select,
+.ds-input-group textarea {
+  padding: 10px 14px;
+  border: 1px solid rgba(176, 141, 59, 0.4);
+  background-color: rgba(255, 251, 240, 0.8);
+  font-family: var(--gf-font-serif);
+  font-size: 15px;
+  color: var(--gf-ink);
+  border-radius: var(--gf-radius-sm);
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+
+.ds-input-group textarea {
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.6;
+}
+
+.ds-input-group input:focus,
+.ds-input-group select:focus,
+.ds-input-group textarea:focus {
+  outline: none;
+  border-color: var(--gf-cinnabar);
+  box-shadow: 0 0 0 3px rgba(194, 58, 42, 0.1);
+}
+
+.ds-input-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--gf-space-md);
+  margin-top: var(--gf-space-md);
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .ds-input-card { padding: var(--gf-space-md); }
+  .ds-input-row { grid-template-columns: repeat(2, 1fr); gap: var(--gf-space-sm); }
+  .ds-input-group input,
+  .ds-input-group select { font-size: 14px; padding: 8px 12px; }
+}
