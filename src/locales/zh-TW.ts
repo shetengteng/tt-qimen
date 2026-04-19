@@ -137,7 +137,149 @@ export default {
     copyrightMn: '© 2026 tt-qimen. 僅供文化體驗，不構成專業建議。',
   },
 
-  bazi: { title: '八字', subtitle: '四柱推命 · 五行相生' },
+  bazi: {
+    title: '八字',
+    subtitle: '四柱推命 · 五行相生',
+    pageTitle: '八字命盤',
+    pageSubtitle: '四柱推演 · 五行強弱 · 十神格局 · 大運流年',
+    breadcrumbHome: '首頁',
+    breadcrumbCurrent: '八字命盤',
+
+    inputCardTitle: '錄入生辰',
+    calendar: { solar: '公曆', lunar: '農曆' },
+    field: {
+      year: '出生年',
+      month: '月',
+      day: '日',
+      hour: '時辰',
+      gender: '性別',
+    },
+    gender: { male: '男', female: '女' },
+    hours: [
+      '子時 (23-1)', '丑時 (1-3)', '寅時 (3-5)', '卯時 (5-7)',
+      '辰時 (7-9)', '巳時 (9-11)', '午時 (11-13)', '未時 (13-15)',
+      '申時 (15-17)', '酉時 (17-19)', '戌時 (19-21)', '亥時 (21-23)',
+    ],
+    btn: {
+      paipan: '開始排盤',
+      paipanIcon: '◉',
+      repaipan: '重新排盤',
+      repaipanIcon: '◑',
+      share: '生成分享卡片',
+      shareIcon: '◈',
+      save: '保存到本地',
+      saveIcon: '◐',
+      moreYears: '查看更多年份 →',
+      shishenDetail: '查看詳細十神解讀 ▾',
+    },
+
+    resultBanner: { title: '排盤結果', subtitle: '四柱 · 五行 · 十神 · 大運 · 流年' },
+    resultZoneHint: '請在上方輸入生辰 · 點擊「開始排盤」以觀命盤',
+
+    skeleton: {
+      title: '推演中',
+      subtitle: '取用神、配大運、繫流年',
+    },
+
+    chartTitle: '排盤 · 乾造',
+    chartMeta: { solarLabel: '公曆', lunarLabel: '農曆' },
+
+    pillars: { year: '年柱', month: '月柱', day: '日柱 · 我', hour: '時柱' },
+    rowLabel: { gan: '天 干', zhi: '地 支', canggan: '藏 干', shishen: '十 神', nayin: '納 音' },
+    rizhuTag: '日 主',
+    canggangHint: '本氣',
+
+    relations: {
+      chong: '子午相沖',
+      zixing: '午午自刑',
+      anhe: '巳午暗合',
+      chongDescMn: '年支 ↔ 日支，主動盪',
+      zixingDescMn: '年支 ↔ 時支，主自耗',
+      anheDescMn: '月支 ↔ 時支，主暗助',
+    },
+
+    shishen: {
+      sectionTitle: '十神結構',
+      sectionTag: '官印 · 財官格',
+      moreShown: '查看詳細十神解讀',
+      items: [
+        {
+          pillar: '年干',
+          gan: '庚',
+          shishen: '偏財',
+          desc: '代表父親、意外之財、外在機遇。年干偏財透，早年得長輩提攜，可因外出或多元收入起家。',
+          descMn: '代表父親、外在財富與機遇。主動求財而得，對外出、投資敏感。',
+        },
+        {
+          pillar: '月干',
+          gan: '辛',
+          shishen: '正財',
+          desc: '代表固定資產、妻宮、穩定回報。月干正財與年干偏財雙透，宜防「財多身弱」，合作重於獨幹。',
+          descMn: '代表正職薪資、配偶。財星雙透需防「浮財」與勞碌，宜穩中求進。',
+        },
+        {
+          pillar: '時干',
+          gan: '甲',
+          shishen: '偏印',
+          desc: '代表才藝、繼母、靈感、宗教傾向。時干偏印透出，文思敏捷，晚年得才藝傍身，亦主子女聰明。',
+          descMn: '代表才藝、學術、子女。文思敏捷，有靈感，適合創作與規劃。',
+        },
+        {
+          pillar: '日主',
+          gan: '丙',
+          shishen: '日主',
+          desc: '本命之主，為陽火丙。性格開朗、熱情、領導力強；取用神水木以潤澤，忌火土再旺。',
+          descMn: '日主丙火，性格開朗、熱情、領導力強；用神水木以潤澤。',
+        },
+      ],
+    },
+
+    radar: {
+      title: '五行強弱',
+      desc: '火氣當令三勢，金兩透有根，木、水、土各有一勢。日主丙火坐子水、甲木生扶，身強能任財官，唯木弱、水淺，宜以水潤、木疏為上策。',
+      descMn: '火氣當令三勢，金兩透有根，木、水、土各佔一勢。日主丙火坐子水、甲木生扶，身強能任財官；木弱水淺為短板，宜水潤、木疏為上策。',
+      labels: { mu: '木', huo: '火', tu: '土', jin: '金', shui: '水' },
+    },
+
+    fiveElementsLabel: { strong: '偏旺', weak: '偏弱', balanced: '平' },
+
+    interpret: {
+      title: '命盤簡析',
+      p1: '日主丙火生於巳月火旺之時，火氣當令，身強有力。天干庚辛金透出為財星，地支子水為官，有財有官而有用。唯獨木氣偏弱，年支午火過旺，宜以水潤之、以木疏之。',
+      p2: '格局上偏印（甲）配日主，文思敏捷；財星雙透（庚辛），事業上宜與貴人合作。子水為官星，利於求職、升遷之事。',
+      tags: ['身 · 強', '格 · 財官相濟', '用神 · 水木', '忌神 · 火土'],
+      tagsMn: ['身強', '財官相濟', '用神 · 水木', '忌神 · 火土'],
+    },
+
+    fortune: {
+      title: '大運 · 十年一變',
+      titleMn: '大運時間軸',
+      subtitle: '起運 5 歲 · 一生十運 · 蛇形鋪陳',
+      subtitleMn1: '起運 5 歲 · 十年一運',
+      subtitleMn2: '一生十運 · 蛇形鋪陳',
+      currentDetailTitle: '當前大運 · 35 - 44 歲',
+      currentDetailTitleMn: '當前大運 · 印財相生',
+      currentDetailSubtitle: '天干乙木為正印，地支酉金為正財 · 印財相生 · 吉',
+      currentDetailSubtitleMn: '天干乙木為正印 · 地支酉金為正財 · 吉運',
+      currentDetailHint: '此十年走正印配正財之運，印主學識、正氣與名聲；財主財富、務實與收獲。印星有利於進修、轉型、獲得資格認證；財星則提示在本行業深耕能得實利。總體是「長期投入 · 穩健回報」的階段。',
+      yi: '宜',
+      yiContent: '學習進修、拿證書、跟隨師長、處理文書、適度投資房產或長線資產',
+      ji: '忌',
+      jiContent: '頻繁跳槽、投機冒險、與女性長輩衝突、過度消費',
+      currentBadge: '吉運',
+      verdictJi: '吉',
+      verdictZhong: '中',
+      verdictXiong: '凶',
+    },
+
+    flow: {
+      title: '流年 · 一歲一更',
+      titleMn: '流年運勢',
+      subtitle: '當年運勢與大運共振，取其要領而觀之',
+      subtitleMn: '一歲一更 · 與大運共振',
+      currentSuffix: '今年',
+    },
+  },
   ziwei: { title: '紫微斗數', subtitle: '十二宮垣 · 三方四正' },
   liuren: { title: '小六壬', subtitle: '掐指一算 · 應事即時' },
   chenggu: { title: '秤骨論命', subtitle: '袁天罡之訣 · 一斤一兩' },

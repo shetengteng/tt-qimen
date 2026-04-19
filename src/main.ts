@@ -6,6 +6,7 @@ import { router } from './router'
 import { i18n } from './locales'
 import { applyUrlBootstrap } from './composables/useUrlBootstrap'
 
+import './themes/_shared/tailwind.css'
 import './themes/_shared/contracts.css'
 import './themes/_shared/base.css'
 

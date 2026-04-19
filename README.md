@@ -19,7 +19,7 @@
 | 模块 | Vue 化 | i18n 完整 | 备注 |
 |---|---|---|---|
 | Home | ✅ | ✅ zh-CN/zh-TW/en | 与原型对齐 |
-| 八字 | ⏳ 占位页 | 仅基础 | Sprint 3 |
+| 八字 | ✅ | ✅ zh-CN/zh-TW/en | 双主题完整还原：BirthForm（**shadcn-vue Select × 4 + RadioGroup**）+ 四柱表 + 关系 SVG + 十神结构 + 五行雷达 + 命盘简析 + 大运时间轴（subway 连接线）+ 流年 |
 | 紫微 | ⏳ 占位页 | 仅基础 | Sprint 4 |
 | 称骨 | ⏳ 占位页 | 仅基础 | Sprint 5 |
 | 小六壬 | ⏳ 占位页 | 仅基础 | Sprint 5 |
@@ -57,6 +57,8 @@
 | 工具库 | `@vueuse/core` + `@vueuse/router` |
 | 类型 | TypeScript 严格模式 |
 | 农历 | lunar-typescript |
+| UI 基件 | **shadcn-vue** + Tailwind CSS v4 + reka-ui（Select/Button/Label/RadioGroup） |
+| 主题适配 | `themes/{guofeng,minimal}/shadcn.css` 通过覆盖 `--background`/`--primary`/`--border`/`--ring` 等 token 实现一套组件双风格 |
 
 ---
 
@@ -76,9 +78,11 @@ tt-qimen/
 │   ├── router/index.ts
 │   ├── stores/                   Pinia
 │   ├── themes/
-│   │   ├── _shared/{contracts,base}.css
-│   │   ├── guofeng/{tokens,components,decorations,meta}
-│   │   └── minimal/{tokens,components,decorations,meta}
+│   │   ├── _shared/{contracts,base,tailwind}.css   含 shadcn-vue Tailwind v4 base 层
+│   │   ├── guofeng/{tokens,components,decorations,shadcn,meta}
+│   │   └── minimal/{tokens,components,decorations,shadcn,meta}
+│   ├── components/ui/                shadcn-vue 组件（select/button/label/radio-group）
+│   ├── lib/utils.ts                  cn() / clsx + tailwind-merge
 │   ├── locales/
 │   │   ├── index.ts              setupI18n + loadLocale
 │   │   ├── {zh-CN,zh-TW,en}.ts
@@ -88,7 +92,12 @@ tt-qimen/
 │   │   └── layout/{AppHeader,AppFooter,ThemeSwitch,LangSwitch}.vue
 │   └── modules/
 │       ├── home/HomePage.vue     ✅ 已还原（双主题）
-│       └── ...                   8 模块（其他为占位页）
+│       ├── bazi/                 ✅ 已还原（双主题）
+│       │   ├── BaziPage.vue
+│       │   ├── components/       BirthForm / FourPillarsTable / ShishenStructure / ElementsRadar / InterpretBlock / DayunTimeline
+│       │   ├── composables/      useBaziDrawings（关系/连接 SVG）
+│       │   └── data/             mockBazi（mock 数据 × 三语）
+│       └── ...                   6 模块占位页（紫微/称骨/小六壬/灵签/姓名/黄历/解梦）
 ├── index.html
 ├── package.json
 ├── vite.config.ts

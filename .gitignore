@@ -18,4 +18,8 @@ src/components.d.ts
 
 # 临时截图与构建产物
 sprint*.png
+sprint*.jpg
 *.tmp.png
+
+# 用户交互轮询脚本（本地工具）
+userinput.py

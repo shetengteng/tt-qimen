@@ -1,0 +1,292 @@
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useThemeStore } from '@/stores/theme'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Label } from '@/components/ui/label'
+
+interface Props {
+  /** Optional title override; falls back to bazi.inputCardTitle */
+  title?: string
+  /** Localised primary button label override */
+  primaryLabel?: string
+}
+
+withDefaults(defineProps<Props>(), {
+  title: '',
+  primaryLabel: '',
+})
+
+const emit = defineEmits<{
+  paipan: []
+}>()
+
+const { t, tm } = useI18n()
+const themeStore = useThemeStore()
+const isGuofeng = computed(() => themeStore.id === 'guofeng')
+
+const calendar = ref<'solar' | 'lunar'>('solar')
+const year = ref('1990')
+const month = ref('5')
+const day = ref('20')
+const hourIdx = ref('6')
+const gender = ref<'male' | 'female'>('male')
+
+const hours = computed(() => (tm('bazi.hours') as string[]) ?? [])
+
+const currentYear = new Date().getFullYear()
+
+/** 年份候选：当前年 → 1900（倒序，常用年份在上） */
+const yearOptions = computed<string[]>(() => {
+  const list: string[] = []
+  for (let y = currentYear; y >= 1900; y--) list.push(String(y))
+  return list
+})
+
+const monthOptions = computed<string[]>(() => Array.from({ length: 12 }, (_, i) => String(i + 1)))
+
+/** 日的天数随年/月/历法变化 —— 阳历按公历闰年计算；阴历统一 30（mock） */
+const dayOptions = computed<string[]>(() => {
+  const yNum = Number(year.value)
+  const mNum = Number(month.value)
+  let count = 31
+  if (calendar.value === 'lunar') {
+    count = 30
+  } else if ([4, 6, 9, 11].includes(mNum)) {
+    count = 30
+  } else if (mNum === 2) {
+    const leap = (yNum % 4 === 0 && yNum % 100 !== 0) || yNum % 400 === 0
+    count = leap ? 29 : 28
+  }
+  return Array.from({ length: count }, (_, i) => String(i + 1))
+})
+
+/** 当年/月切换时，若当前 day 超出新月份天数，则收敛到末日 */
+watch(dayOptions, (opts) => {
+  if (!opts.includes(day.value)) day.value = opts[opts.length - 1]
+})
+
+function setCalendar(v: 'solar' | 'lunar') {
+  calendar.value = v
+}
+
+function onPaipan() {
+  emit('paipan')
+}
+
+function genderLabel(v: 'male' | 'female') {
+  return t(`bazi.gender.${v}`)
+}
+</script>
+
+<template>
+  <!-- 国风 -->
+  <div v-if="isGuofeng" class="gf-card ds-input-card">
+    <h2 class="ds-card-title">
+      <span class="ds-ornament">◈</span>
+      {{ title || t('bazi.inputCardTitle') }}
+      <span class="ds-ornament">◈</span>
+    </h2>
+    <div class="ds-calendar-switch">
+      <button
+        :class="['ds-switch-btn', { active: calendar === 'solar' }]"
+        type="button"
+        @click="setCalendar('solar')"
+      >
+        {{ t('bazi.calendar.solar') }}
+      </button>
+      <button
+        :class="['ds-switch-btn', { active: calendar === 'lunar' }]"
+        type="button"
+        @click="setCalendar('lunar')"
+      >
+        {{ t('bazi.calendar.lunar') }}
+      </button>
+    </div>
+    <div class="ds-input-row">
+      <div class="ds-input-group">
+        <Label>{{ t('bazi.field.year') }}</Label>
+        <Select v-model="year">
+          <SelectTrigger>
+            <SelectValue :placeholder="t('common.placeholder.year')" />
+          </SelectTrigger>
+          <SelectContent class="max-h-72">
+            <SelectItem v-for="y in yearOptions" :key="y" :value="y">{{ y }}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div class="ds-input-group">
+        <Label>{{ t('bazi.field.month') }}</Label>
+        <Select v-model="month">
+          <SelectTrigger>
+            <SelectValue :placeholder="t('common.placeholder.month')" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="m in monthOptions" :key="m" :value="m">{{ m }}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div class="ds-input-group">
+        <Label>{{ t('bazi.field.day') }}</Label>
+        <Select v-model="day">
+          <SelectTrigger>
+            <SelectValue :placeholder="t('common.placeholder.day')" />
+          </SelectTrigger>
+          <SelectContent class="max-h-72">
+            <SelectItem v-for="d in dayOptions" :key="d" :value="d">{{ d }}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div class="ds-input-group">
+        <Label>{{ t('bazi.field.hour') }}</Label>
+        <Select v-model="hourIdx">
+          <SelectTrigger>
+            <SelectValue :placeholder="t('common.placeholder.hour')" />
+          </SelectTrigger>
+          <SelectContent class="max-h-72">
+            <SelectItem v-for="(h, i) in hours" :key="h" :value="String(i)">{{ h }}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div class="ds-input-group">
+        <Label>{{ t('bazi.field.gender') }}</Label>
+        <RadioGroup v-model="gender" class="ds-gender-group">
+          <label
+            v-for="g in (['male', 'female'] as const)"
+            :key="g"
+            class="ds-gender-item"
+          >
+            <RadioGroupItem :value="g" />
+            <span>{{ genderLabel(g) }}</span>
+          </label>
+        </RadioGroup>
+      </div>
+    </div>
+    <div class="ds-input-actions">
+      <button class="gf-btn" type="button" @click="onPaipan">
+        <span>{{ t('bazi.btn.paipanIcon') }}</span> {{ primaryLabel || t('bazi.btn.paipan') }}
+      </button>
+    </div>
+  </div>
+
+  <!-- 简约 -->
+  <div v-else class="mn-card ds-input-card">
+    <h2 class="ds-card-title">
+      <span class="ds-ornament">·</span>
+      {{ title || t('bazi.inputCardTitle') }}
+      <span class="ds-ornament">·</span>
+    </h2>
+    <div class="ds-calendar-switch">
+      <button
+        :class="['ds-switch-btn', { active: calendar === 'solar' }]"
+        type="button"
+        @click="setCalendar('solar')"
+      >
+        {{ t('bazi.calendar.solar') }}
+      </button>
+      <button
+        :class="['ds-switch-btn', { active: calendar === 'lunar' }]"
+        type="button"
+        @click="setCalendar('lunar')"
+      >
+        {{ t('bazi.calendar.lunar') }}
+      </button>
+    </div>
+    <div class="ds-input-row">
+      <div class="ds-input-group">
+        <Label>{{ t('bazi.field.year') }}</Label>
+        <Select v-model="year">
+          <SelectTrigger>
+            <SelectValue :placeholder="t('common.placeholder.year')" />
+          </SelectTrigger>
+          <SelectContent class="max-h-72">
+            <SelectItem v-for="y in yearOptions" :key="y" :value="y">{{ y }}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div class="ds-input-group">
+        <Label>{{ t('bazi.field.month') }}</Label>
+        <Select v-model="month">
+          <SelectTrigger>
+            <SelectValue :placeholder="t('common.placeholder.month')" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="m in monthOptions" :key="m" :value="m">{{ m }}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div class="ds-input-group">
+        <Label>{{ t('bazi.field.day') }}</Label>
+        <Select v-model="day">
+          <SelectTrigger>
+            <SelectValue :placeholder="t('common.placeholder.day')" />
+          </SelectTrigger>
+          <SelectContent class="max-h-72">
+            <SelectItem v-for="d in dayOptions" :key="d" :value="d">{{ d }}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div class="ds-input-group">
+        <Label>{{ t('bazi.field.hour') }}</Label>
+        <Select v-model="hourIdx">
+          <SelectTrigger>
+            <SelectValue :placeholder="t('common.placeholder.hour')" />
+          </SelectTrigger>
+          <SelectContent class="max-h-72">
+            <SelectItem v-for="(h, i) in hours" :key="h" :value="String(i)">{{ h }}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div class="ds-input-group">
+        <Label>{{ t('bazi.field.gender') }}</Label>
+        <RadioGroup v-model="gender" class="ds-gender-group">
+          <label
+            v-for="g in (['male', 'female'] as const)"
+            :key="g"
+            class="ds-gender-item"
+          >
+            <RadioGroupItem :value="g" />
+            <span>{{ genderLabel(g) }}</span>
+          </label>
+        </RadioGroup>
+      </div>
+    </div>
+    <div class="ds-input-actions">
+      <button class="mn-btn mn-btn-lg" type="button" @click="onPaipan">
+        {{ primaryLabel || t('bazi.btn.paipan') }}
+      </button>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+/* 性别 RadioGroup 横向排列 + label-radio 间距 */
+.ds-gender-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  height: 42px;
+  padding-inline: 4px;
+}
+
+.ds-gender-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--color-ink);
+}
+
+.ds-gender-item span {
+  user-select: none;
+}
+</style>

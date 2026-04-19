@@ -137,7 +137,152 @@ export default {
     copyrightMn: '© 2026 tt-qimen. Cultural content for entertainment only.',
   },
 
-  bazi: { title: 'Bazi (Eight Characters)', subtitle: 'Four Pillars · Five Phases' },
+  bazi: {
+    title: 'Bazi (Eight Characters)',
+    subtitle: 'Four Pillars · Five Phases',
+    pageTitle: 'Bazi Chart',
+    pageSubtitle: 'Four Pillars · Phase strengths · Ten Gods · Major & Annual fortunes',
+    breadcrumbHome: 'Home',
+    breadcrumbCurrent: 'Bazi Chart',
+
+    inputCardTitle: 'Enter birth time',
+    calendar: { solar: 'Solar', lunar: 'Lunar' },
+    field: {
+      year: 'Birth year',
+      month: 'Month',
+      day: 'Day',
+      hour: 'Hour',
+      gender: 'Gender',
+    },
+    gender: { male: 'Male', female: 'Female' },
+    hours: [
+      'Zi (23–1)', 'Chou (1–3)', 'Yin (3–5)', 'Mao (5–7)',
+      'Chen (7–9)', 'Si (9–11)', 'Wu (11–13)', 'Wei (13–15)',
+      'Shen (15–17)', 'You (17–19)', 'Xu (19–21)', 'Hai (21–23)',
+    ],
+    btn: {
+      paipan: 'Compute chart',
+      paipanIcon: '◉',
+      repaipan: 'Recompute',
+      repaipanIcon: '◑',
+      share: 'Share card',
+      shareIcon: '◈',
+      save: 'Save locally',
+      saveIcon: '◐',
+      moreYears: 'More years →',
+      shishenDetail: 'Detailed Ten Gods reading ▾',
+    },
+
+    resultBanner: {
+      title: 'Your Bazi reading',
+      subtitle: 'Pillars · Phases · Ten Gods · Major fortune · Annual fortune',
+    },
+    resultZoneHint: 'Enter birth time above and tap "Compute chart" to view',
+
+    skeleton: {
+      title: 'Calculating',
+      subtitle: 'Selecting useful god, mapping major fortunes, threading annual fortunes',
+    },
+
+    chartTitle: 'Chart · Male nativity',
+    chartMeta: { solarLabel: 'Solar', lunarLabel: 'Lunar' },
+
+    pillars: { year: 'Year', month: 'Month', day: 'Day · Self', hour: 'Hour' },
+    rowLabel: { gan: 'Gan', zhi: 'Zhi', canggan: 'Hidden', shishen: 'Ten Gods', nayin: 'Nayin' },
+    rizhuTag: 'Day Master',
+    canggangHint: 'Primary',
+
+    relations: {
+      chong: 'Zi-Wu Clash',
+      zixing: 'Wu-Wu Self-punishment',
+      anhe: 'Si-Wu Hidden Union',
+      chongDescMn: 'Year-branch ↔ Day-branch — instability',
+      zixingDescMn: 'Year-branch ↔ Hour-branch — self-drain',
+      anheDescMn: 'Month-branch ↔ Hour-branch — hidden support',
+    },
+
+    shishen: {
+      sectionTitle: 'Ten Gods Structure',
+      sectionTag: 'Officer-Seal · Wealth-Officer pattern',
+      moreShown: 'View detailed Ten Gods reading',
+      items: [
+        {
+          pillar: 'Year stem',
+          gan: 'Geng',
+          shishen: 'Indirect Wealth',
+          desc: 'Represents father, unexpected gains, external opportunities. Year-stem Indirect Wealth indicates early support from elders; income from travel or diversified streams.',
+          descMn: 'Father, external wealth and opportunity. Active wealth-seeking; sensitive to travel and investment.',
+        },
+        {
+          pillar: 'Month stem',
+          gan: 'Xin',
+          shishen: 'Direct Wealth',
+          desc: 'Represents fixed assets, spouse palace, stable returns. With Indirect Wealth on the year, beware "wealth heavy, body weak"; collaboration over solo work.',
+          descMn: 'Fixed salary, spouse. Double wealth stems require steady steps over showy moves.',
+        },
+        {
+          pillar: 'Hour stem',
+          gan: 'Jia',
+          shishen: 'Indirect Resource',
+          desc: 'Represents talent, stepmother, inspiration, spirituality. Hour-stem Indirect Resource indicates quick wits, late-life talents, and bright children.',
+          descMn: 'Talent, scholarship, children. Quick wits, suited to creation and planning.',
+        },
+        {
+          pillar: 'Day master',
+          gan: 'Bing',
+          shishen: 'Day Master',
+          desc: 'The self of the chart — Yang Fire Bing. Outgoing, passionate, leading; uses Water and Wood to moderate; avoid more Fire or Earth.',
+          descMn: 'Day master Bing Fire — outgoing, passionate, leading; uses Water and Wood.',
+        },
+      ],
+    },
+
+    radar: {
+      title: 'Five-Phase Strength',
+      desc: 'Fire dominates with three counts. Metal has two with roots. Wood, Water and Earth have one each. Day master Bing Fire sits over Zi water with Jia wood support — strong enough to take on Wealth and Officer; only Wood is weak and Water shallow, so use Water-moisture and Wood-spread as the optimal strategy.',
+      descMn: 'Fire dominates (3); Metal (2) rooted; Wood, Water, Earth one each. Day master Bing Fire over Zi water with Jia wood support — strong enough; Wood-weak and Water-shallow are the gaps, treat with Water and Wood.',
+      labels: { mu: 'Wood', huo: 'Fire', tu: 'Earth', jin: 'Metal', shui: 'Water' },
+    },
+
+    fiveElementsLabel: { strong: 'Strong', weak: 'Weak', balanced: 'Balanced' },
+
+    interpret: {
+      title: 'Chart synopsis',
+      p1: 'Day master Bing Fire is born in Si month at the height of Fire — strong and capable. Geng and Xin Metal stems are Wealth, while Zi Water in the day branch is the Officer; both Wealth and Officer are present and useful. Only Wood is weak and Year-branch Wu Fire is excessive — moisten with Water and dredge with Wood.',
+      p2: 'Pattern-wise, Indirect Resource (Jia) supports the Day Master, lending quick wit; double Wealth stems (Geng, Xin) suggest career thrives with allies. Zi Water as the Officer favors job-hunting and promotions.',
+      tags: ['Body · Strong', 'Pattern · Wealth-Officer', 'Useful · Water + Wood', 'Avoid · Fire + Earth'],
+      tagsMn: ['Strong body', 'Wealth-Officer', 'Useful · Water + Wood', 'Avoid · Fire + Earth'],
+    },
+
+    fortune: {
+      title: 'Major fortunes · Decade by decade',
+      titleMn: 'Major fortune timeline',
+      subtitle: 'Starts at age 5 · Ten decades over a lifetime · Snake layout',
+      subtitleMn1: 'Starts at age 5 · One decade per fortune',
+      subtitleMn2: 'Ten fortunes total · Snake layout',
+      currentDetailTitle: 'Current major fortune · Ages 35–44',
+      currentDetailTitleMn: 'Current fortune · Resource-Wealth synergy',
+      currentDetailSubtitle: 'Yi Wood as Direct Resource, You Metal as Direct Wealth · Resource–Wealth synergy · Auspicious',
+      currentDetailSubtitleMn: 'Yi Wood = Direct Resource · You Metal = Direct Wealth · Auspicious',
+      currentDetailHint: 'This decade walks Direct Resource paired with Direct Wealth — Resource brings learning, integrity and reputation; Wealth brings income, pragmatism and harvest. Resource favors further study, role transition and certification; Wealth signals deep cultivation in your field. Overall, this is a phase of "long-term investment, steady returns".',
+      yi: 'Do',
+      yiContent: 'Study, certify, follow mentors, handle documents, moderate property or long-term investments',
+      ji: 'Avoid',
+      jiContent: 'Frequent job-hopping, speculation, conflict with female elders, overspending',
+      currentBadge: 'Auspicious',
+      verdictJi: 'Lucky',
+      verdictZhong: 'Mid',
+      verdictXiong: 'Adverse',
+    },
+
+    flow: {
+      title: 'Annual fortunes · Year by year',
+      titleMn: 'Annual fortune',
+      subtitle: 'The year resonates with the major fortune — pick the essentials',
+      subtitleMn: 'One change per year · Resonates with major fortune',
+      currentSuffix: 'This year',
+    },
+  },
   ziwei: { title: 'Ziwei Dou Shu', subtitle: 'Twelve Palaces · Triple harmony & opposition' },
   liuren: { title: 'Xiao Liu Ren', subtitle: 'Snap of fingers · instant answer' },
   chenggu: { title: 'Cheng Gu', subtitle: 'Yuan Tiangang craft · ounce by ounce' },

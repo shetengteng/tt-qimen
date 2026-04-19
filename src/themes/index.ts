@@ -16,11 +16,13 @@ export const themeLoaders: Record<ThemeId, () => Promise<unknown>> = {
     import('./guofeng/tokens.css'),
     import('./guofeng/components.css'),
     import('./guofeng/decorations.css'),
+    import('./guofeng/shadcn.css'),
   ]),
   minimal: () => Promise.all([
     import('./minimal/tokens.css'),
     import('./minimal/components.css'),
     import('./minimal/decorations.css'),
+    import('./minimal/shadcn.css'),
   ]),
 }
 

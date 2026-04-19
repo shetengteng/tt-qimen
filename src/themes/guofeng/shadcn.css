@@ -1,0 +1,137 @@
+/* ============================================================================
+ * shadcn-vue 国风主题覆盖
+ *
+ * 策略：
+ * 1. 在 :root[data-theme='guofeng'] 上重定义 shadcn-vue 默认 token
+ *    （--background / --foreground / --primary / --border / --ring 等），
+ *    使所有 shadcn-vue 组件（含 SelectPortal 弹层）自动套国风颜色。
+ * 2. 仅在国风主题下追加针对组件的"细节装饰"（边框双线、衬线字体），
+ *    简约主题保持 shadcn-vue 原版。
+ *
+ * Token 来自 themes/guofeng/tokens.css，与原型一致：
+ *   主色 #c23a2a（火朱）/ 次色 #b08d3b（金）/ 背景 #f6ecd6（米黄）。
+ * ========================================================================== */
+
+:root[data-theme='guofeng'] {
+  /* 基础表面 */
+  --background: #fffbf0;
+  --foreground: #1a1613;
+  --card: #fffbf0;
+  --card-foreground: #1a1613;
+  --popover: #fffbf0;
+  --popover-foreground: #1a1613;
+
+  /* 主色（按钮、激活态） */
+  --primary: #c23a2a;
+  --primary-foreground: #fffbf0;
+
+  /* 次色 / 中性 */
+  --secondary: #f6ecd6;
+  --secondary-foreground: #1a1613;
+  --muted: #f3e8c8;
+  --muted-foreground: #8a7a5a;
+  --accent: #f3d9d4;
+  --accent-foreground: #8f2116;
+  --destructive: #c23a2a;
+  --destructive-foreground: #fffbf0;
+
+  /* 描边、输入、ring */
+  --border: rgba(176, 141, 59, 0.4);
+  --input: rgba(176, 141, 59, 0.5);
+  --ring: rgba(194, 58, 42, 0.4);
+
+  /* 圆角：国风偏方 */
+  --radius: 4px;
+}
+
+/* ----------------------------------------------------------------------------
+ * SelectTrigger：国风衬线字体 + 米黄背景
+ * -------------------------------------------------------------------------- */
+:root[data-theme='guofeng'] [data-slot='select-trigger'] {
+  font-family: var(--font-display);
+  background-color: rgba(255, 251, 240, 0.8);
+  color: var(--color-ink);
+  height: 42px;
+  padding-inline: 14px;
+  font-size: 15px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(176, 141, 59, 0.4);
+  width: 100%;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+
+:root[data-theme='guofeng'] [data-slot='select-trigger']:hover {
+  border-color: var(--color-accent);
+}
+
+:root[data-theme='guofeng'] [data-slot='select-trigger'][data-state='open'],
+:root[data-theme='guofeng'] [data-slot='select-trigger']:focus-visible {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(194, 58, 42, 0.1);
+}
+
+/* ----------------------------------------------------------------------------
+ * SelectContent (Portal)：弹层用米黄底 + 朱描边
+ * -------------------------------------------------------------------------- */
+:root[data-theme='guofeng'] [data-slot='select-content'] {
+  font-family: var(--font-display);
+  background-color: #fffbf0;
+  border: 1px solid rgba(176, 141, 59, 0.5);
+  box-shadow: 0 6px 20px rgba(26, 22, 19, 0.15);
+  border-radius: var(--radius-md);
+}
+
+:root[data-theme='guofeng'] [data-slot='select-item'] {
+  font-size: 15px;
+  color: var(--color-ink);
+  padding-inline: 12px;
+  padding-block: 8px;
+}
+
+:root[data-theme='guofeng'] [data-slot='select-item'][data-highlighted] {
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent-hover);
+}
+
+:root[data-theme='guofeng'] [data-slot='select-item'][data-state='checked'] {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+/* ----------------------------------------------------------------------------
+ * Button (国风主按钮已有 .gf-btn，shadcn Button 仅作 fallback)
+ * -------------------------------------------------------------------------- */
+:root[data-theme='guofeng'] [data-slot='button'][data-variant='default'] {
+  font-family: var(--font-display);
+  letter-spacing: 0.05em;
+  border-radius: var(--radius-sm);
+}
+
+/* ----------------------------------------------------------------------------
+ * RadioGroup：性别单选
+ * -------------------------------------------------------------------------- */
+:root[data-theme='guofeng'] [data-slot='radio-group'] {
+  display: flex;
+  gap: var(--space-4);
+}
+
+:root[data-theme='guofeng'] [data-slot='radio-group-item'] {
+  border-color: rgba(176, 141, 59, 0.5);
+  width: 18px;
+  height: 18px;
+}
+
+:root[data-theme='guofeng'] [data-slot='radio-group-item'][data-state='checked'] {
+  border-color: var(--color-accent);
+  background-color: var(--color-accent);
+}
+
+/* ----------------------------------------------------------------------------
+ * Label
+ * -------------------------------------------------------------------------- */
+:root[data-theme='guofeng'] [data-slot='label'] {
+  font-family: var(--font-display);
+  font-size: 13px;
+  color: var(--color-ink-soft);
+  letter-spacing: 0.05em;
+}
