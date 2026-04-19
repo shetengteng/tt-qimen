@@ -1,15 +1,10 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap');
-/*
- ---break---
- */
 /*
  * Tailwind CSS v4 + shadcn-vue base layer.
  *
  * 仅作用于 shadcn-vue 自带组件的 utility class，不影响业务/原型 CSS。
- * 主题切换由 data-theme 属性配合 themes/guofeng/shadcn.css 完成。
+ * 主题切换由 data-theme 属性配合 themes/{guofeng,minimal}/shadcn.css 完成。
  *
- * 不引入远程 Geist 字体（保持纯静态、可离线、隐私友好）。
+ * 不引入远程字体（纯静态、可离线、隐私友好）；
  * 字体由 themes/_shared/base.css 通过 var(--font-body) 控制。
  */
 @import "tailwindcss";
@@ -151,23 +146,13 @@
 /*
  ---break---
  */
-/* 关键：保持 shadcn-vue 默认 border/outline 全局基础层（其组件依赖此）。
- * 但移除 body 字体/背景覆盖，避免覆盖原型 CSS。
- * 我们的 themes/_shared/base.css 在此之后加载，body 颜色/字体仍由它控制。
- */
+/* shadcn-vue 组件依赖 border-color/outline-color 的默认值。
+ * 仅作用于带 [data-slot] 标记的 shadcn-vue 元素及其子树，
+ * 避免 * 选择器覆盖业务/原型 CSS 的 border-color。
+ * 不在此声明 body 的 background / color，由 base.css + decorations.css 控制。 */
 @layer base {
-  * {
+  [data-slot],
+  [data-slot] * {
     @apply border-border outline-ring/50;
-  }
-}
-/*
- ---break---
- */
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
   }
 }

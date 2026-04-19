@@ -14,6 +14,10 @@ body {
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  /* 永久预留滚动条位置：避免 reka-ui Select / Dialog 等组件
+   * 在打开/关闭瞬间锁定 body overflow 时，页面宽度抖动；
+   * 同时确保 macOS 用户在任何主题下都能看到稳定的滚动通道。 */
+  scrollbar-gutter: stable;
 }
 
 body {
