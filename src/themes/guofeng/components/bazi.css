@@ -528,6 +528,18 @@
   color: var(--gf-ink);
   margin-bottom: var(--gf-space-sm);
 }
+:root[data-theme='guofeng'] .fortune-section .section-title .gender-badge {
+  display: inline-block;
+  margin-left: 12px;
+  padding: 2px 10px;
+  font-size: 13px;
+  vertical-align: middle;
+  color: var(--gf-gold);
+  border: 1px solid var(--gf-gold);
+  border-radius: 999px;
+  letter-spacing: 1px;
+  cursor: help;
+}
 :root[data-theme='guofeng'] .fortune-section .section-subtitle {
   text-align: center;
   color: var(--gf-ink-soft);

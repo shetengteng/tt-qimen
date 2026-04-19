@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, shallowRef, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
@@ -70,6 +70,21 @@ function onRepaipan() {
 function go(name: 'home') {
   router.push({ name })
 }
+
+onMounted(() => {
+  if (!userStore.isDefault) {
+    onPaipan()
+  }
+})
+
+watch(
+  () => userStore.birth.gender,
+  () => {
+    if (chart.value) {
+      onPaipan()
+    }
+  },
+)
 </script>
 
 <template>

@@ -154,7 +154,7 @@ export default {
       hour: '时辰',
       gender: '性别',
     },
-    gender: { male: '男', female: '女' },
+    gender: { male: '男', female: '女', maleTitle: '乾造', femaleTitle: '坤造' },
     hours: [
       '子时 (23-1)', '丑时 (1-3)', '寅时 (3-5)', '卯时 (5-7)',
       '辰时 (7-9)', '巳时 (9-11)', '午时 (11-13)', '未时 (13-15)',
@@ -182,6 +182,7 @@ export default {
     },
 
     chartTitle: '排盘 · 乾造',
+    chartTitlePrefix: '排盘',
     chartMeta: { solarLabel: '公历', lunarLabel: '农历' },
 
     pillars: { year: '年柱', month: '月柱', day: '日柱 · 我', hour: '时柱' },
@@ -257,6 +258,9 @@ export default {
       subtitle: '起运 5 岁 · 一生十运 · 蛇形铺陈',
       subtitleMn1: '起运 5 岁 · 十年一运',
       subtitleMn2: '一生十运 · 蛇形铺陈',
+      genderBadgeMale: '乾造 · 顺行',
+      genderBadgeFemale: '坤造 · 逆行',
+      genderBadgeHint: '此模块按性别展开（四柱五行十神不受性别影响）',
       currentDetailTitle: '当前大运 · 35 - 44 岁',
       currentDetailTitleMn: '当前大运 · 印财相生',
       currentDetailSubtitle: '天干乙木为正印，地支酉金为正财 · 印财相生 · 吉',
@@ -420,6 +424,9 @@ export default {
       title: '大限 · 十年一运',
       titleMn: '大限时间轴',
       currentFmt: '当前 {age} 岁 · 大限 {range}（{palace}）',
+      genderBadgeMale: '男命 · 大限按性别展开',
+      genderBadgeFemale: '女命 · 大限按性别展开',
+      genderBadgeHint: '紫微大限按「阳男阴女顺行、阴男阳女逆行」分流（十二宫与四化不变）',
     },
     xiaoxian: {
       title: '小限 · 一岁一更',

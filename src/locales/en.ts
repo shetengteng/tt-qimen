@@ -154,7 +154,7 @@ export default {
       hour: 'Hour',
       gender: 'Gender',
     },
-    gender: { male: 'Male', female: 'Female' },
+    gender: { male: 'Male', female: 'Female', maleTitle: 'Male nativity', femaleTitle: 'Female nativity' },
     hours: [
       'Zi (23–1)', 'Chou (1–3)', 'Yin (3–5)', 'Mao (5–7)',
       'Chen (7–9)', 'Si (9–11)', 'Wu (11–13)', 'Wei (13–15)',
@@ -185,6 +185,7 @@ export default {
     },
 
     chartTitle: 'Chart · Male nativity',
+    chartTitlePrefix: 'Chart',
     chartMeta: { solarLabel: 'Solar', lunarLabel: 'Lunar' },
 
     pillars: { year: 'Year', month: 'Month', day: 'Day · Self', hour: 'Hour' },
@@ -260,6 +261,9 @@ export default {
       subtitle: 'Starts at age 5 · Ten decades over a lifetime · Snake layout',
       subtitleMn1: 'Starts at age 5 · One decade per fortune',
       subtitleMn2: 'Ten fortunes total · Snake layout',
+      genderBadgeMale: 'Male nativity · Forward',
+      genderBadgeFemale: 'Female nativity · Reverse',
+      genderBadgeHint: 'This section is gender-aware (the four pillars / five elements / ten gods are not)',
       currentDetailTitle: 'Current major fortune · Ages 35–44',
       currentDetailTitleMn: 'Current fortune · Resource-Wealth synergy',
       currentDetailSubtitle: 'Yi Wood as Direct Resource, You Metal as Direct Wealth · Resource–Wealth synergy · Auspicious',

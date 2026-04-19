@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, shallowRef, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
@@ -75,10 +75,15 @@ const pillarsLocalized = computed(() => {
 })
 
 const meta = computed(() => {
-  if (chart.value) return { solar: chart.value.meta.solar, lunar: chart.value.meta.lunar }
+  if (chart.value) return {
+    solar: chart.value.meta.solar,
+    lunar: chart.value.meta.lunar,
+    genderTitle: chart.value.meta.genderTitle,
+  }
   return {
     solar: locale.value === 'en' ? baziMeta.solarEn : baziMeta.solar,
     lunar: locale.value === 'en' ? baziMeta.lunarEn : baziMeta.lunar,
+    genderTitle: userStore.birth.gender === 'female' ? '坤造' as const : '乾造' as const,
   }
 })
 
@@ -149,6 +154,21 @@ function onRepaipan() {
 function go(name: 'home') {
   router.push({ name })
 }
+
+onMounted(() => {
+  if (!userStore.isDefault) {
+    onPaipan()
+  }
+})
+
+watch(
+  () => userStore.birth.gender,
+  () => {
+    if (chart.value) {
+      onPaipan()
+    }
+  },
+)
 </script>
 
 <template>

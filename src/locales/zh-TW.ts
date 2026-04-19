@@ -154,7 +154,7 @@ export default {
       hour: '時辰',
       gender: '性別',
     },
-    gender: { male: '男', female: '女' },
+    gender: { male: '男', female: '女', maleTitle: '乾造', femaleTitle: '坤造' },
     hours: [
       '子時 (23-1)', '丑時 (1-3)', '寅時 (3-5)', '卯時 (5-7)',
       '辰時 (7-9)', '巳時 (9-11)', '午時 (11-13)', '未時 (13-15)',
@@ -182,6 +182,7 @@ export default {
     },
 
     chartTitle: '排盤 · 乾造',
+    chartTitlePrefix: '排盤',
     chartMeta: { solarLabel: '公曆', lunarLabel: '農曆' },
 
     pillars: { year: '年柱', month: '月柱', day: '日柱 · 我', hour: '時柱' },
@@ -257,6 +258,9 @@ export default {
       subtitle: '起運 5 歲 · 一生十運 · 蛇形鋪陳',
       subtitleMn1: '起運 5 歲 · 十年一運',
       subtitleMn2: '一生十運 · 蛇形鋪陳',
+      genderBadgeMale: '乾造 · 順行',
+      genderBadgeFemale: '坤造 · 逆行',
+      genderBadgeHint: '此模組按性別展開（四柱五行十神不受性別影響）',
       currentDetailTitle: '當前大運 · 35 - 44 歲',
       currentDetailTitleMn: '當前大運 · 印財相生',
       currentDetailSubtitle: '天干乙木為正印，地支酉金為正財 · 印財相生 · 吉',

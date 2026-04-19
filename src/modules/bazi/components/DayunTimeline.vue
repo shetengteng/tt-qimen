@@ -30,6 +30,13 @@ const verdictLabel = (v: 'ji' | 'zhong' | 'xiong') => {
 
 const flowFortune = computed(() => tm('bazi.fortune') as Record<string, string>)
 
+const genderBadgeText = computed(() => {
+  const title = props.chart?.meta.genderTitle
+  if (title === '坤造') return flowFortune.value.genderBadgeFemale
+  if (title === '乾造') return flowFortune.value.genderBadgeMale
+  return ''
+})
+
 /** Tendency → 旧的 ji/zhong/xiong 颜色枚举（仅用于 CSS class） */
 function tendencyClass(t: Tendency): 'ji' | 'zhong' | 'xiong' {
   if (t === 'favorable') return 'ji'
@@ -79,7 +86,14 @@ const currentDetail = computed(() => {
 <template>
   <!-- 国风 -->
   <section v-if="isGuofeng" class="fortune-section">
-    <div class="section-title">{{ flowFortune.title }}</div>
+    <div class="section-title">
+      {{ flowFortune.title }}
+      <span
+        v-if="genderBadgeText"
+        class="gender-badge"
+        :title="flowFortune.genderBadgeHint"
+      >{{ genderBadgeText }}</span>
+    </div>
     <div class="section-subtitle">{{ flowFortune.subtitle }}</div>
 
     <div class="fortune-timeline">
@@ -126,6 +140,11 @@ const currentDetail = computed(() => {
     <div class="fortune-header">
       <div class="meta">{{ flowFortune.subtitleMn1 }}</div>
       <div class="meta">{{ flowFortune.subtitleMn2 }}</div>
+      <span
+        v-if="genderBadgeText"
+        class="gender-badge"
+        :title="flowFortune.genderBadgeHint"
+      >{{ genderBadgeText }}</span>
     </div>
 
     <div class="fortune-timeline">

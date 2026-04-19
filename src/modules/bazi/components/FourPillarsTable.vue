@@ -13,7 +13,7 @@ interface PillarHeader {
 
 interface Props {
   pillars: PillarCell[]
-  meta: { solar: string; lunar: string }
+  meta: { solar: string; lunar: string; genderTitle?: '乾造' | '坤造' }
   /** Headings displayed in the chart-meta row. */
   metaLabels: { solar: string; lunar: string }
   /** Arcs already localised — pushed straight to the SVG drawer. */
@@ -39,6 +39,14 @@ const svgEl = ref<SVGElement | null>(null)
 
 const pillarsLabels = computed(() => tm('bazi.pillars') as Record<string, string>)
 const rowLabels = computed(() => tm('bazi.rowLabel') as Record<string, string>)
+
+const chartTitle = computed(() => {
+  const prefix = t('bazi.chartTitlePrefix')
+  const gt = props.meta.genderTitle
+  if (!gt) return t('bazi.chartTitle')
+  const titleKey = gt === '乾造' ? 'bazi.gender.maleTitle' : 'bazi.gender.femaleTitle'
+  return `${prefix} · ${t(titleKey)}`
+})
 
 const headers = computed(() => {
   const subMap: Record<PillarHeader['key'], string>
@@ -66,7 +74,7 @@ function highlight(rel: string | null) {
   <!-- 国风 -->
   <div v-if="isGuofeng" class="chart-section">
     <div class="chart-header">
-      <h2 style="margin: 0; font-size: 22px; color: var(--gf-ink);">{{ t('bazi.chartTitle') }}</h2>
+      <h2 style="margin: 0; font-size: 22px; color: var(--gf-ink);">{{ chartTitle }}</h2>
       <div class="chart-meta">
         {{ metaLabels.solar }} <strong>{{ meta.solar }}</strong>
         {{ metaLabels.lunar }} <strong>{{ meta.lunar }}</strong>
@@ -160,7 +168,7 @@ function highlight(rel: string | null) {
   <div v-else>
     <div class="chart-header">
       <div>
-        <h2 style="margin: 0; font-size: 22px;">{{ t('bazi.chartTitle') }}</h2>
+        <h2 style="margin: 0; font-size: 22px;">{{ chartTitle }}</h2>
       </div>
       <div class="chart-meta">
         <div>{{ metaLabels.solar }} <strong>{{ meta.solar }}</strong></div>

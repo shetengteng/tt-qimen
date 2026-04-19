@@ -603,6 +603,19 @@
   margin: 0;
   font-weight: 600;
 }
+:root[data-theme='minimal'] .ziwei-daxian-header h2 .gender-badge {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 2px 8px;
+  font-size: 11px;
+  vertical-align: middle;
+  color: var(--mn-ink-light, #555);
+  background: var(--mn-bg-soft, #f4f4f4);
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  font-weight: 400;
+  cursor: help;
+}
 
 :root[data-theme='minimal'] .ziwei-daxian-meta {
   font-size: 13px;

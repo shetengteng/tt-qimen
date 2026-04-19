@@ -577,6 +577,19 @@
   gap: var(--gf-space-sm);
 }
 
+:root[data-theme='guofeng'] .ziwei-daxian-header h2 .gender-badge {
+  display: inline-block;
+  margin-left: 12px;
+  padding: 2px 10px;
+  font-size: 12px;
+  font-family: inherit;
+  vertical-align: middle;
+  color: var(--gf-gold);
+  border: 1px solid var(--gf-gold);
+  border-radius: 999px;
+  letter-spacing: 1px;
+  cursor: help;
+}
 :root[data-theme='guofeng'] .ziwei-daxian-header h2 {
   font-family: var(--gf-font-kaiti);
   font-size: 22px;

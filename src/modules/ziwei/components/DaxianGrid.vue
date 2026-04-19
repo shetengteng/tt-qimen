@@ -15,7 +15,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const { t } = useI18n()
+const { t, te } = useI18n()
 const themeStore = useThemeStore()
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
@@ -45,12 +45,28 @@ const xiaoxianCurrentText = computed(() => {
     palace: t(`ziwei.palaceNamesShort.${cur.palaceKey}`),
   })
 })
+
+const genderBadgeText = computed(() => {
+  if (!props.chart) return ''
+  const g = meta.value.gender
+  const key = g === '女' ? 'ziwei.daxian.genderBadgeFemale' : g === '男' ? 'ziwei.daxian.genderBadgeMale' : ''
+  if (!key || !te(key)) return ''
+  return t(key)
+})
+const genderBadgeHint = computed(() => te('ziwei.daxian.genderBadgeHint') ? t('ziwei.daxian.genderBadgeHint') : '')
 </script>
 
 <template>
   <section class="ziwei-daxian-section">
     <div class="ziwei-daxian-header">
-      <h2>{{ isGuofeng ? t('ziwei.daxian.title') : t('ziwei.daxian.titleMn') }}</h2>
+      <h2>
+        {{ isGuofeng ? t('ziwei.daxian.title') : t('ziwei.daxian.titleMn') }}
+        <span
+          v-if="genderBadgeText"
+          class="gender-badge"
+          :title="genderBadgeHint"
+        >{{ genderBadgeText }}</span>
+      </h2>
       <div class="ziwei-daxian-meta">{{ daxianCurrentText }}</div>
     </div>
     <div class="ziwei-daxian-grid">

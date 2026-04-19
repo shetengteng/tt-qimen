@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { useStorage } from '@vueuse/core'
+import { computed } from 'vue'
 
 export interface BirthInput {
   calendar: 'solar' | 'lunar'
@@ -13,7 +14,7 @@ export interface BirthInput {
   birthplace?: string
 }
 
-const DEFAULT: BirthInput = {
+export const DEFAULT_BIRTH: BirthInput = {
   calendar: 'solar',
   year: 1990,
   month: 5,
@@ -23,8 +24,24 @@ const DEFAULT: BirthInput = {
   gender: 'male',
 }
 
+/**
+ * 判定 birth 是否仍处于初始默认值（用于决定首屏要不要自动排盘）。
+ * 仅比对参与排盘计算的字段；longitude / birthplace 不影响。
+ */
+export function isDefaultBirth(b: BirthInput): boolean {
+  return (
+    b.calendar === DEFAULT_BIRTH.calendar
+    && b.year === DEFAULT_BIRTH.year
+    && b.month === DEFAULT_BIRTH.month
+    && b.day === DEFAULT_BIRTH.day
+    && b.hour === DEFAULT_BIRTH.hour
+    && b.minute === DEFAULT_BIRTH.minute
+    && b.gender === DEFAULT_BIRTH.gender
+  )
+}
+
 export const useUserStore = defineStore('user', () => {
-  const birth = useStorage<BirthInput>('tt-qimen:birth', { ...DEFAULT }, undefined, {
+  const birth = useStorage<BirthInput>('tt-qimen:birth', { ...DEFAULT_BIRTH }, undefined, {
     mergeDefaults: true,
   })
 
@@ -33,8 +50,10 @@ export const useUserStore = defineStore('user', () => {
   }
 
   function reset() {
-    birth.value = { ...DEFAULT }
+    birth.value = { ...DEFAULT_BIRTH }
   }
 
-  return { birth, update, reset }
+  const isDefault = computed(() => isDefaultBirth(birth.value))
+
+  return { birth, update, reset, isDefault }
 })
