@@ -142,7 +142,7 @@
       position: relative;
       max-width: 1000px;
       margin: 0 auto var(--mn-space-8);
-      padding: 56px var(--mn-space-5) 96px;
+      padding: var(--mn-space-5);
       background-color: var(--mn-bg-elev);
       border: 1px solid var(--mn-border);
       border-radius: var(--mn-radius-lg);
@@ -1880,6 +1880,9 @@
           var r = el.getBoundingClientRect();
           return {
             cx: r.left - hostRect.left + r.width / 2,
+            cy: r.top - hostRect.top + r.height / 2,
+            left: r.left - hostRect.left,
+            right: r.right - hostRect.left,
             top: r.top - hostRect.top,
             bottom: r.bottom - hostRect.top
           };
@@ -1899,16 +1902,14 @@
           { type: 'anhe',   from: 1, to: 3, label: '巳午暗合', dir: 'down' }
         ];
 
-        // 设计：弧线连接（仅在 grid 之外的安全区绘制）
-        // 弧两端朝地支字符方向"下沉"，弧顶向远离表格方向凸起
-        // 完全不穿过任何文字行；端点用小圆点强调对应地支列
-        var STACK_GAP = 38;
-        var FIRST_OFFSET_UP = 16;
-        var FIRST_OFFSET_DOWN = 16;
-        var DOT_R = 3.5;
+        // 设计：弧线直接锚定到对应地支字符（端点贴字符侧边）
+        // 弧顶在两字符之间向上/向下凸，落入地支与天干/藏干的窄行间隙
+        // 标签 paint-order stroke 描边，确保覆盖任何遮挡
+        var STACK_GAP = 14;
+        var SIDE_PAD = 4;
+        var DOT_R = 3.2;
         var LABEL_OUT = 8;
-        var ARC_BUMP = 12;
-        var END_DROP = 10;
+        var BASE_BUMP = 14;
         var upStack = 0;
         var downStack = 0;
 
@@ -1918,38 +1919,37 @@
           if (!a || !b) return;
           var L = a.cx < b.cx ? a : b;
           var R = a.cx < b.cx ? b : a;
-          var x1 = L.cx;
-          var x2 = R.cx;
-          var midX = (x1 + x2) / 2;
+          var startX = L.right + SIDE_PAD;
+          var endX = R.left - SIDE_PAD;
+          var midX = (startX + endX) / 2;
+          var startY = L.cy;
+          var endY = R.cy;
+          var midCy = (startY + endY) / 2;
 
-          var endY, ctrlY, labelY;
+          var ctrlY, labelY;
           if (arc.dir === 'up') {
-            var baseY = gridTop - FIRST_OFFSET_UP - upStack;
-            endY = baseY + END_DROP;
-            ctrlY = baseY - ARC_BUMP;
+            ctrlY = midCy - BASE_BUMP - upStack;
             labelY = ctrlY - LABEL_OUT + 1;
             upStack += STACK_GAP;
           } else {
-            var baseY = gridBottom + FIRST_OFFSET_DOWN + downStack;
-            endY = baseY - END_DROP;
-            ctrlY = baseY + ARC_BUMP;
+            ctrlY = midCy + BASE_BUMP + downStack;
             labelY = ctrlY + LABEL_OUT - 1;
             downStack += STACK_GAP;
           }
 
-          var d = 'M' + x1 + ',' + endY +
-                  ' Q' + midX + ',' + ctrlY + ' ' + x2 + ',' + endY;
+          var d = 'M' + startX + ',' + startY +
+                  ' Q' + midX + ',' + ctrlY + ' ' + endX + ',' + endY;
           svg.appendChild(node('path', {
             'class': 'bazi-relation-line ' + arc.type,
             d: d
           }));
           svg.appendChild(node('circle', {
             'class': 'bazi-relation-dot ' + arc.type,
-            cx: x1, cy: endY, r: DOT_R
+            cx: startX, cy: startY, r: DOT_R
           }));
           svg.appendChild(node('circle', {
             'class': 'bazi-relation-dot ' + arc.type,
-            cx: x2, cy: endY, r: DOT_R
+            cx: endX, cy: endY, r: DOT_R
           }));
           svg.appendChild(node('text', {
             'class': 'bazi-relation-label ' + arc.type,

@@ -58,7 +58,7 @@
       border: 2px solid var(--gf-ink);
       border-radius: var(--gf-radius-md);
       box-shadow: var(--gf-shadow-md);
-      padding: 56px var(--gf-space-lg) 96px;
+      padding: var(--gf-space-lg);
       margin-bottom: var(--gf-space-xl);
       overflow: visible;
     }
@@ -1842,22 +1842,16 @@
           { type: 'anhe',   from: 1, to: 3, label: '巳午暗合', dir: 'down' }
         ];
 
-        // 设计：弧线连接（仅在 grid 之外的安全区绘制）
-        // up 方向：弧顶在 grid 顶部上方，弧两端朝下指向地支字符
-        // down 方向：弧顶在 grid 底部下方，弧两端朝上指向地支字符
-        // 完全不穿过任何文字行；端点用小圆点强调对应地支列
-        var grid = table.querySelector('.bazi-table-grid');
-        var gridRect = grid ? grid.getBoundingClientRect() : null;
-        var gridTop = gridRect ? (gridRect.top - hostRect.top) : 0;
-        var gridBottom = gridRect ? (gridRect.bottom - hostRect.top) : H;
-
-        var STACK_GAP = 38;
-        var FIRST_OFFSET_UP = 16;
-        var FIRST_OFFSET_DOWN = 16;
-        var DOT_R = 3.5;
+        // 设计：弧线直接锚定到对应地支字符
+        // - 端点：地支字符的左/右侧边中点（cy 高度），用小圆点强调
+        // - 弧顶：在两字符之间向下/向上凸出，落入"地支与藏干"的窄行间隙
+        // - 标签：紧贴弧顶外侧，paint-order stroke 描边覆盖任何遮挡
+        // - 多条同向弧错开堆叠，避免重叠
+        var STACK_GAP = 14;
+        var SIDE_PAD = 4;        // 端点离地支字符侧边的距离
+        var DOT_R = 3.2;
         var LABEL_OUT = 8;
-        var ARC_BUMP = 12;     // 弧顶离基准线的高度（弧度感强弱）
-        var END_DROP = 10;     // 弧端点下沉距离（向地支方向延伸的"小尾巴"）
+        var BASE_BUMP = 14;      // 第一条弧的弧顶离地支字符 cy 的距离
         var upStack = 0;
         var downStack = 0;
 
@@ -1867,44 +1861,44 @@
           if (!a || !b) return;
           var L = a.cx < b.cx ? a : b;
           var R = a.cx < b.cx ? b : a;
-          var x1 = L.cx;
-          var x2 = R.cx;
-          var midX = (x1 + x2) / 2;
+          // 端点：相邻字符的内侧边缘 → 弧从字符内侧出发
+          var startX = L.right + SIDE_PAD;
+          var endX = R.left - SIDE_PAD;
+          var midX = (startX + endX) / 2;
+          // 端点 y：地支字符 cy（中心）
+          var startY = L.cy;
+          var endY = R.cy;
+          var midCy = (startY + endY) / 2;
 
-          var endY, ctrlY, labelY;
+          var ctrlY, labelY;
           if (arc.dir === 'up') {
-            // 端点 y = 基准线 + END_DROP（朝下，靠近地支）
-            // 弧顶 y = 基准线 - ARC_BUMP（朝上凸起）
-            var baseY = gridTop - FIRST_OFFSET_UP - upStack;
-            endY = baseY + END_DROP;
-            ctrlY = baseY - ARC_BUMP;
+            // 弧顶向上凸（朝向天干字符方向）
+            ctrlY = midCy - BASE_BUMP - upStack;
             labelY = ctrlY - LABEL_OUT + 1;
             upStack += STACK_GAP;
           } else {
-            var baseY = gridBottom + FIRST_OFFSET_DOWN + downStack;
-            endY = baseY - END_DROP;
-            ctrlY = baseY + ARC_BUMP;
+            // 弧顶向下凸（朝向藏干字符方向）
+            ctrlY = midCy + BASE_BUMP + downStack;
             labelY = ctrlY + LABEL_OUT - 1;
             downStack += STACK_GAP;
           }
 
-          // 二次贝塞尔弧（圆润饱满）
-          var d = 'M' + x1 + ',' + endY +
-                  ' Q' + midX + ',' + ctrlY + ' ' + x2 + ',' + endY;
+          var d = 'M' + startX + ',' + startY +
+                  ' Q' + midX + ',' + ctrlY + ' ' + endX + ',' + endY;
           svg.appendChild(node('path', {
             'class': 'bazi-relation-line ' + arc.type,
             d: d
           }));
-          // 端点小圆点（fill 颜色 = 关系色）
+          // 端点小圆点（紧贴地支字符两侧，让"哪两个字符相关"一目了然）
           svg.appendChild(node('circle', {
             'class': 'bazi-relation-dot ' + arc.type,
-            cx: x1, cy: endY, r: DOT_R
+            cx: startX, cy: startY, r: DOT_R
           }));
           svg.appendChild(node('circle', {
             'class': 'bazi-relation-dot ' + arc.type,
-            cx: x2, cy: endY, r: DOT_R
+            cx: endX, cy: endY, r: DOT_R
           }));
-          // 标签放在弧顶一侧（更外侧）
+          // 标签紧贴弧顶外侧
           svg.appendChild(node('text', {
             'class': 'bazi-relation-label ' + arc.type,
             x: midX,
