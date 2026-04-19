@@ -107,28 +107,25 @@
     .ziwei-relations-svg .line-sanhe {
       fill: none;
       stroke: var(--mn-accent);
-      stroke-width: 1.8;
-      stroke-dasharray: 6 4;
+      stroke-width: 2;
+      stroke-dasharray: 7 5;
       stroke-linecap: round;
       stroke-linejoin: round;
-      opacity: 0.78;
+      opacity: 0.7;
     }
 
     .ziwei-relations-svg .line-duigong {
+      fill: none;
       stroke: var(--mn-warning, #c9a548);
-      stroke-width: 2.2;
+      stroke-width: 2;
+      stroke-dasharray: 3 5;
       stroke-linecap: round;
-      opacity: 0.9;
-    }
-
-    .ziwei-relations-svg .arrow-duigong {
-      fill: var(--mn-warning, #c9a548);
-      opacity: 0.95;
+      opacity: 0.7;
     }
 
     .ziwei-relations-svg .dot-anchor {
       fill: var(--mn-accent);
-      opacity: 0.92;
+      opacity: 0.9;
     }
 
     .ziwei-relations-svg .dot-anchor.opp {
@@ -1170,62 +1167,52 @@
         svg.setAttribute('width', W);
         svg.setAttribute('height', H);
         var chartRect = chart.getBoundingClientRect();
+        var chartCx = W / 2;
+        var chartCy = H / 2;
 
-        var centerEl = chart.querySelector('.center-palace');
-        var cpRect = centerEl.getBoundingClientRect();
-        var cpL = cpRect.left - chartRect.left;
-        var cpR = cpRect.right - chartRect.left;
-        var cpT = cpRect.top - chartRect.top;
-        var cpB = cpRect.bottom - chartRect.top;
-
-        var svgNS = 'http://www.w3.org/2000/svg';
-
-        function outerAnchor(el) {
+        function innerEdgePoint(el) {
           var r = el.getBoundingClientRect();
           var left = r.left - chartRect.left;
           var top = r.top - chartRect.top;
-          var right = left + r.width;
-          var bottom = top + r.height;
-          var cx = (left + right) / 2;
-          var cy = (top + bottom) / 2;
-          var PAD = 10;
-
-          var isTop = top < cpT - 1;
-          var isBottom = bottom > cpB + 1;
-          var isLeft = left < cpL - 1;
-          var isRight = right > cpR + 1;
-
-          if (isTop && isLeft) return { x: left + PAD, y: top + PAD };
-          if (isTop && isRight) return { x: right - PAD, y: top + PAD };
-          if (isBottom && isLeft) return { x: left + PAD, y: bottom - PAD };
-          if (isBottom && isRight) return { x: right - PAD, y: bottom - PAD };
-          if (isTop) return { x: cx, y: top + PAD };
-          if (isBottom) return { x: cx, y: bottom - PAD };
-          if (isLeft) return { x: left + PAD, y: cy };
-          if (isRight) return { x: right - PAD, y: cy };
-          return { x: cx, y: cy };
+          var cx = left + r.width / 2;
+          var cy = top + r.height / 2;
+          var dx = chartCx - cx;
+          var dy = chartCy - cy;
+          var PAD = 8;
+          if (Math.abs(dx) > Math.abs(dy)) {
+            return { x: dx > 0 ? (left + r.width - PAD) : (left + PAD), y: cy };
+          }
+          return { x: cx, y: dy > 0 ? (top + r.height - PAD) : (top + PAD) };
         }
 
         var TRIAD = ['ming', 'caibo', 'guanlu'];
+        var svgNS = 'http://www.w3.org/2000/svg';
         var triadPts = [];
         TRIAD.forEach(function (k) {
           var el = getPalace(k);
           if (!el) return;
           if (k === benggongKey) el.classList.add('p-ming');
           else el.classList.add('p-sanhe');
-          triadPts.push(outerAnchor(el));
+          triadPts.push(innerEdgePoint(el));
         });
         var oppEl = getPalace('qianyi');
         if (oppEl) oppEl.classList.add('p-duigong');
 
         if (triadPts.length === 3) {
+          function bendOutward(p1, p2) {
+            var mx = (p1.x + p2.x) / 2;
+            var my = (p1.y + p2.y) / 2;
+            var cpx = mx - (chartCx - mx) * 0.12;
+            var cpy = my - (chartCy - my) * 0.12;
+            return 'Q' + cpx + ',' + cpy + ' ' + p2.x + ',' + p2.y;
+          }
           var pathTri = document.createElementNS(svgNS, 'path');
           pathTri.setAttribute('class', 'line-sanhe');
           pathTri.setAttribute('d',
-            'M' + triadPts[0].x + ',' + triadPts[0].y +
-            ' L' + triadPts[1].x + ',' + triadPts[1].y +
-            ' L' + triadPts[2].x + ',' + triadPts[2].y +
-            ' Z'
+            'M' + triadPts[0].x + ',' + triadPts[0].y + ' ' +
+            bendOutward(triadPts[0], triadPts[1]) + ' ' +
+            bendOutward(triadPts[1], triadPts[2]) + ' ' +
+            bendOutward(triadPts[2], triadPts[0])
           );
           svg.appendChild(pathTri);
 
@@ -1234,7 +1221,7 @@
             dot.setAttribute('class', 'dot-anchor');
             dot.setAttribute('cx', p.x);
             dot.setAttribute('cy', p.y);
-            dot.setAttribute('r', 5);
+            dot.setAttribute('r', 4);
             svg.appendChild(dot);
           });
         }
@@ -1242,62 +1229,21 @@
         if (oppEl) {
           var mingEl = getPalace(benggongKey);
           if (mingEl) {
-            function innerEdge(el) {
-              var r = el.getBoundingClientRect();
-              var left = r.left - chartRect.left;
-              var top = r.top - chartRect.top;
-              var cx = left + r.width / 2;
-              var cy = top + r.height / 2;
-              var dx = (cpL + cpR) / 2 - cx;
-              var dy = (cpT + cpB) / 2 - cy;
-              if (Math.abs(dx) > Math.abs(dy)) {
-                return { x: dx > 0 ? (left + r.width - 6) : (left + 6), y: cy };
-              }
-              return { x: cx, y: dy > 0 ? (top + r.height - 6) : (top + 6) };
-            }
+            var a = innerEdgePoint(mingEl);
+            var b = innerEdgePoint(oppEl);
+            var line = document.createElementNS(svgNS, 'path');
+            line.setAttribute('class', 'line-duigong');
+            line.setAttribute('d', 'M' + a.x + ',' + a.y + ' L' + b.x + ',' + b.y);
+            svg.appendChild(line);
 
-            var ap = innerEdge(mingEl);
-            var bp = innerEdge(oppEl);
-
-            function drawArrow(p, toward) {
-              var len = 22;
-              var dx = toward.x - p.x;
-              var dy = toward.y - p.y;
-              var dist = Math.sqrt(dx * dx + dy * dy) || 1;
-              var ux = dx / dist;
-              var uy = dy / dist;
-              var ex = p.x + ux * len;
-              var ey = p.y + uy * len;
-
-              var seg = document.createElementNS(svgNS, 'line');
-              seg.setAttribute('class', 'line-duigong');
-              seg.setAttribute('x1', p.x);
-              seg.setAttribute('y1', p.y);
-              seg.setAttribute('x2', ex);
-              seg.setAttribute('y2', ey);
-              svg.appendChild(seg);
-
-              var ah = 6, aw = 4;
-              var px = -uy, py = ux;
-              var arrow = document.createElementNS(svgNS, 'polygon');
-              arrow.setAttribute('class', 'arrow-duigong');
-              arrow.setAttribute('points',
-                ex + ',' + ey + ' ' +
-                (ex - ux * ah + px * aw) + ',' + (ey - uy * ah + py * aw) + ' ' +
-                (ex - ux * ah - px * aw) + ',' + (ey - uy * ah - py * aw)
-              );
-              svg.appendChild(arrow);
-
+            [a, b].forEach(function (p) {
               var dot = document.createElementNS(svgNS, 'circle');
               dot.setAttribute('class', 'dot-anchor opp');
               dot.setAttribute('cx', p.x);
               dot.setAttribute('cy', p.y);
               dot.setAttribute('r', 3.5);
               svg.appendChild(dot);
-            }
-
-            drawArrow(ap, bp);
-            drawArrow(bp, ap);
+            });
           }
         }
       }

@@ -58,7 +58,7 @@
       border: 2px solid var(--gf-ink);
       border-radius: var(--gf-radius-md);
       box-shadow: var(--gf-shadow-md);
-      padding: var(--gf-space-lg);
+      padding: 60px var(--gf-space-lg) 64px;
       margin-bottom: var(--gf-space-xl);
       overflow: visible;
     }
@@ -251,33 +251,68 @@
       z-index: 3;
     }
 
-    .bazi-relation-line {
-      stroke-width: 1.5;
-      fill: none;
-      stroke-dasharray: 4 4;
-      opacity: 0.55;
+    .bazi-relation-line,
+    .bazi-relation-label {
       transition: opacity 0.25s ease, stroke-width 0.25s ease;
     }
 
-    .bazi-relation-line.liuhe   { stroke: var(--gf-jade);   }
-    .bazi-relation-line.sanhe   { stroke: var(--gf-gold);   }
-    .bazi-relation-line.chong   { stroke: var(--gf-cinnabar); stroke-dasharray: 2 3; }
-    .bazi-relation-line.hai     { stroke: var(--gf-seal);   stroke-dasharray: 8 2; }
-
-    /* 交互：hover 命盘或图例时高亮对应线 */
-    .bazi-table.focus-liuhe .bazi-relation-line:not(.liuhe),
-    .bazi-table.focus-sanhe .bazi-relation-line:not(.sanhe),
-    .bazi-table.focus-chong .bazi-relation-line:not(.chong),
-    .bazi-table.focus-hai .bazi-relation-line:not(.hai) {
-      opacity: 0.08;
+    .bazi-relation-line {
+      stroke-width: 1.6;
+      fill: none;
+      stroke-linecap: round;
+      stroke-dasharray: 5 4;
+      opacity: 0.6;
     }
 
-    .bazi-table.focus-liuhe .bazi-relation-line.liuhe,
-    .bazi-table.focus-sanhe .bazi-relation-line.sanhe,
+    .bazi-relation-line.chong   { stroke: var(--gf-cinnabar); stroke-dasharray: 6 4; }
+    .bazi-relation-line.zixing  { stroke: var(--gf-seal);     stroke-dasharray: 3 4; }
+    .bazi-relation-line.anhe    { stroke: var(--gf-jade);     stroke-dasharray: 4 4; }
+
+    .bazi-relation-dot {
+      transition: opacity 0.25s ease;
+      opacity: 0.85;
+    }
+    .bazi-relation-dot.chong  { fill: var(--gf-cinnabar); }
+    .bazi-relation-dot.zixing { fill: var(--gf-seal); }
+    .bazi-relation-dot.anhe   { fill: var(--gf-jade); }
+
+    .bazi-relation-label {
+      fill: var(--gf-ink-soft);
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      opacity: 0.95;
+      paint-order: stroke;
+      stroke: rgba(255, 251, 240, 0.96);
+      stroke-width: 4px;
+      stroke-linejoin: round;
+    }
+    .bazi-relation-label.chong  { fill: var(--gf-cinnabar); }
+    .bazi-relation-label.zixing { fill: var(--gf-seal); }
+    .bazi-relation-label.anhe   { fill: var(--gf-jade); }
+
+    /* 交互：hover 图例时高亮对应线 */
+    .bazi-table.focus-chong .bazi-relation-line:not(.chong),
+    .bazi-table.focus-chong .bazi-relation-label:not(.chong),
+    .bazi-table.focus-chong .bazi-relation-dot:not(.chong),
+    .bazi-table.focus-zixing .bazi-relation-line:not(.zixing),
+    .bazi-table.focus-zixing .bazi-relation-label:not(.zixing),
+    .bazi-table.focus-zixing .bazi-relation-dot:not(.zixing),
+    .bazi-table.focus-anhe .bazi-relation-line:not(.anhe),
+    .bazi-table.focus-anhe .bazi-relation-label:not(.anhe),
+    .bazi-table.focus-anhe .bazi-relation-dot:not(.anhe) {
+      opacity: 0.1;
+    }
+
     .bazi-table.focus-chong .bazi-relation-line.chong,
-    .bazi-table.focus-hai .bazi-relation-line.hai {
+    .bazi-table.focus-zixing .bazi-relation-line.zixing,
+    .bazi-table.focus-anhe .bazi-relation-line.anhe {
       opacity: 1;
-      stroke-width: 2;
+      stroke-width: 2.2;
+    }
+    .bazi-table.focus-chong .bazi-relation-dot.chong,
+    .bazi-table.focus-zixing .bazi-relation-dot.zixing,
+    .bazi-table.focus-anhe .bazi-relation-dot.anhe {
+      opacity: 1;
     }
 
     .bazi-relations-legend span {
@@ -310,10 +345,9 @@
       font-weight: 700;
     }
 
-    .bazi-relations-legend .r-liuhe::before { color: var(--gf-jade); }
-    .bazi-relations-legend .r-sanhe::before { color: var(--gf-gold); }
-    .bazi-relations-legend .r-chong::before { color: var(--gf-cinnabar); }
-    .bazi-relations-legend .r-hai::before   { color: var(--gf-seal); }
+    .bazi-relations-legend .r-chong::before  { color: var(--gf-cinnabar); }
+    .bazi-relations-legend .r-zixing::before { color: var(--gf-seal); }
+    .bazi-relations-legend .r-anhe::before   { color: var(--gf-jade); }
 
     /* 十神结构详解 */
     .shishen-structure {
@@ -1329,22 +1363,14 @@
           </div>
         </div>
 
-        <!-- 关系斜线 overlay（示例：年支午 冲 日支子；月支巳 合 年支申/酉 等，示意）-->
-        <svg class="bazi-relations-svg" viewBox="0 0 1000 600" preserveAspectRatio="none">
-          <!-- 年支(午) <-> 日支(子) 冲 -->
-          <line class="bazi-relation-line chong" x1="290" y1="360" x2="685" y2="360" />
-          <!-- 年支 三合 日支 时支 (午-戌-寅 虚线) -->
-          <line class="bazi-relation-line sanhe" x1="290" y1="340" x2="880" y2="340" />
-          <!-- 月支 六合 时支 (巳-申 示意) -->
-          <line class="bazi-relation-line liuhe" x1="490" y1="380" x2="880" y2="380" />
-        </svg>
+        <!-- 关系斜线 overlay：由 JS 根据真实地支位置动态绘制 -->
+        <svg id="baziRelationsSvg" class="bazi-relations-svg" preserveAspectRatio="none"></svg>
       </div>
 
       <div class="bazi-relations-legend">
-        <span class="r-liuhe" data-rel="liuhe">六合</span>
-        <span class="r-sanhe" data-rel="sanhe">三合</span>
-        <span class="r-chong" data-rel="chong">相冲</span>
-        <span class="r-hai" data-rel="hai">相害</span>
+        <span class="r-chong" data-rel="chong">子午相冲</span>
+        <span class="r-zixing" data-rel="zixing">午午自刑</span>
+        <span class="r-anhe" data-rel="anhe">巳午暗合</span>
       </div>
 
       <!-- 十神结构详解 -->
@@ -1752,19 +1778,136 @@
         });
       });
 
-      // 关系图例 hover/点击 → 高亮对应斜线
+      // 关系图例 hover → 高亮对应斜线
       var baziTable = resultZone.querySelector('.bazi-table');
       var legendItems = resultZone.querySelectorAll('.bazi-relations-legend [data-rel]');
+      var FOCUS_CLASSES = ['focus-chong', 'focus-zixing', 'focus-anhe'];
       if (baziTable && legendItems.length) {
         legendItems.forEach(function (item) {
           var rel = item.getAttribute('data-rel');
           item.addEventListener('mouseenter', function () {
-            baziTable.classList.remove('focus-liuhe', 'focus-sanhe', 'focus-chong', 'focus-hai');
+            FOCUS_CLASSES.forEach(function (c) { baziTable.classList.remove(c); });
             baziTable.classList.add('focus-' + rel);
           });
           item.addEventListener('mouseleave', function () {
-            baziTable.classList.remove('focus-liuhe', 'focus-sanhe', 'focus-chong', 'focus-hai');
+            FOCUS_CLASSES.forEach(function (c) { baziTable.classList.remove(c); });
           });
+        });
+      }
+
+      // 八字命盘关系斜线 — 根据真实地支位置动态绘制
+      function drawBaziRelations() {
+        var svg = document.getElementById('baziRelationsSvg');
+        var table = baziTable;
+        if (!svg || !table) return;
+        var host = svg.parentNode;
+        var hostRect = host.getBoundingClientRect();
+        var W = host.clientWidth;
+        var H = host.clientHeight;
+        svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+        svg.setAttribute('width', W);
+        svg.setAttribute('height', H);
+        while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+        var zhiCells = table.querySelectorAll('.bazi-table-grid .bazi-cell .bazi-cell-zhi');
+        if (zhiCells.length < 4) return;
+        var zhiPos = Array.prototype.map.call(zhiCells, function (el) {
+          var r = el.getBoundingClientRect();
+          return {
+            cx: r.left - hostRect.left + r.width / 2,
+            cy: r.top - hostRect.top + r.height / 2,
+            left: r.left - hostRect.left,
+            right: r.right - hostRect.left,
+            top: r.top - hostRect.top,
+            bottom: r.bottom - hostRect.top
+          };
+        });
+
+        var svgNS = 'http://www.w3.org/2000/svg';
+        function node(name, attrs, text) {
+          var n = document.createElementNS(svgNS, name);
+          Object.keys(attrs).forEach(function (k) { n.setAttribute(k, attrs[k]); });
+          if (text != null) n.textContent = text;
+          return n;
+        }
+
+        // 命盘示例：年月日时 = 午-巳-子-午
+        // 真实关系：
+        //  - 子午相冲：年支(0)午 ↔ 日支(2)子，弧线向上
+        //  - 午午自刑：年支(0)午 ↔ 时支(3)午，弧线向下
+        //  - 巳午暗合：月支(1)巳 ↔ 日支(2)子（其实月-时是巳-午暗合，这里画 1 ↔ 3 巳-午）
+        var arcs = [
+          { type: 'chong',  from: 0, to: 2, label: '子午相冲', dir: 'up' },
+          { type: 'zixing', from: 0, to: 3, label: '午午自刑', dir: 'down' },
+          { type: 'anhe',   from: 1, to: 3, label: '巳午暗合', dir: 'down' }
+        ];
+
+        // 设计：水平直线连接（仅在 grid 之外的安全区绘制）
+        // up 方向：水平虚线在 grid 顶部之外（柱头行上方），两端用小圆点标记起止地支
+        // down 方向：同理在 grid 底部之外
+        // 完全不穿过任何文字行；用小圆点 + 同色文字提示对应地支
+        var grid = table.querySelector('.bazi-table-grid');
+        var gridRect = grid ? grid.getBoundingClientRect() : null;
+        var gridTop = gridRect ? (gridRect.top - hostRect.top) : 0;
+        var gridBottom = gridRect ? (gridRect.bottom - hostRect.top) : H;
+
+        var STACK_GAP = 22;
+        var FIRST_OFFSET_UP = 18;
+        var FIRST_OFFSET_DOWN = 18;
+        var DOT_R = 3.5;
+        var LABEL_OUT = 9;
+        var upStack = 0;
+        var downStack = 0;
+
+        arcs.forEach(function (arc) {
+          var a = zhiPos[arc.from];
+          var b = zhiPos[arc.to];
+          if (!a || !b) return;
+          var L = a.cx < b.cx ? a : b;
+          var R = a.cx < b.cx ? b : a;
+          var x1 = L.cx;
+          var x2 = R.cx;
+          var midX = (x1 + x2) / 2;
+
+          var hY, labelY, dotFill;
+          if (arc.dir === 'up') {
+            hY = gridTop - FIRST_OFFSET_UP - upStack;
+            labelY = hY - LABEL_OUT;
+            upStack += STACK_GAP;
+          } else {
+            hY = gridBottom + FIRST_OFFSET_DOWN + downStack;
+            labelY = hY + LABEL_OUT;
+            downStack += STACK_GAP;
+          }
+
+          // 水平虚线
+          svg.appendChild(node('line', {
+            'class': 'bazi-relation-line ' + arc.type,
+            x1: x1, y1: hY, x2: x2, y2: hY
+          }));
+          // 两端小圆点（用 fill 同色，需要单独类）
+          svg.appendChild(node('circle', {
+            'class': 'bazi-relation-dot ' + arc.type,
+            cx: x1, cy: hY, r: DOT_R
+          }));
+          svg.appendChild(node('circle', {
+            'class': 'bazi-relation-dot ' + arc.type,
+            cx: x2, cy: hY, r: DOT_R
+          }));
+          // 标签（贴在水平段一侧）
+          svg.appendChild(node('text', {
+            'class': 'bazi-relation-label ' + arc.type,
+            x: midX,
+            y: labelY,
+            'text-anchor': 'middle',
+            'dominant-baseline': 'middle'
+          }, arc.label));
+        });
+      }
+
+      function scheduleDrawBaziRelations() {
+        requestAnimationFrame(function () {
+          requestAnimationFrame(drawBaziRelations);
         });
       }
 
@@ -1890,31 +2033,36 @@
         });
       }
 
+      function scheduleAllDraws() {
+        scheduleDrawConnectors();
+        scheduleDrawBaziRelations();
+      }
+
       if (btnPaipan) {
         btnPaipan.addEventListener('click', function () {
-          setTimeout(scheduleDrawConnectors, 1650);
-          setTimeout(scheduleDrawConnectors, 2200);
+          setTimeout(scheduleAllDraws, 1650);
+          setTimeout(scheduleAllDraws, 2200);
         });
       }
 
       if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', scheduleDrawConnectors);
+        document.addEventListener('DOMContentLoaded', scheduleAllDraws);
       } else {
-        scheduleDrawConnectors();
+        scheduleAllDraws();
       }
 
       if ('ResizeObserver' in window) {
-        var ro = new ResizeObserver(scheduleDrawConnectors);
+        var ro = new ResizeObserver(scheduleAllDraws);
         var trackEl = document.getElementById('fortuneTrack');
         if (trackEl) ro.observe(trackEl);
+        if (baziTable) ro.observe(baziTable);
       }
 
-      // 窗口尺寸变化时重算
       window.addEventListener('resize', function () {
         resultZone.querySelectorAll('.collapsible-body:not(.collapsed)').forEach(function (el) {
           el.style.maxHeight = el.scrollHeight + 'px';
         });
-        scheduleDrawConnectors();
+        scheduleAllDraws();
       });
     })();
   </script>
