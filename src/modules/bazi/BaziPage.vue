@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
@@ -55,6 +55,14 @@ const drawings = useBaziDrawings({
   relationsArcs: () => arcs.value,
   getConnectorsSvg: () => dayunEl.value?.svgRef() ?? null,
   getConnectorsTrack: () => dayunEl.value?.trackRef() ?? null,
+})
+
+watch(isGuofeng, () => {
+  nextTick(() => {
+    drawings.schedule()
+    window.setTimeout(drawings.schedule, 250)
+    window.setTimeout(drawings.schedule, 700)
+  })
 })
 
 const skeleton = useSkeletonReveal({

@@ -222,25 +222,55 @@ export interface UseBaziDrawingsOptions {
 
 export function useBaziDrawings(opts: UseBaziDrawingsOptions) {
   let ro: ResizeObserver | null = null
+  let observedRelations = false
+  let observedConnectors = false
+
+  function ensureObservers() {
+    if (!ro) return
+    if (!observedRelations) {
+      const t = opts.getRelationsTable()
+      if (t) {
+        ro.observe(t)
+        observedRelations = true
+      }
+    }
+    if (!observedConnectors) {
+      const c = opts.getConnectorsTrack()
+      if (c) {
+        ro.observe(c)
+        observedConnectors = true
+      }
+    }
+  }
 
   function drawAll() {
     drawBaziRelations(opts.getRelationsSvg(), opts.getRelationsTable(), { arcs: opts.relationsArcs() })
     drawFortuneConnectors(opts.getConnectorsSvg(), opts.getConnectorsTrack())
+    ensureObservers()
   }
 
   function schedule() {
     scheduleDoubleRaf(drawAll)
   }
 
-  onMounted(() => {
+  /**
+   * 初始 mount 之后，refs / layout / 字体 / CollapsibleSection 的 max-height
+   * 计算需要时间收敛。仅靠一次 doubleRaf 在生产构建里偶发画不出（dayun connector
+   * 的 SVG 留空、relations 弧线跟不上)。这里追加三个 setTimeout 兜底重画，
+   * 时机参考 useSkeletonReveal 中 onReveal 的 150ms / 700ms 节奏，
+   * 再加一次更靠后的兜底 (1400ms) 处理慢速字体加载。 */
+  function bootstrapDraw() {
     schedule()
+    window.setTimeout(schedule, 150)
+    window.setTimeout(schedule, 700)
+    window.setTimeout(schedule, 1400)
+  }
+
+  onMounted(() => {
     if (typeof ResizeObserver !== 'undefined') {
       ro = new ResizeObserver(schedule)
-      const t = opts.getRelationsTable()
-      const c = opts.getConnectorsTrack()
-      if (t) ro.observe(t)
-      if (c) ro.observe(c)
     }
+    bootstrapDraw()
     window.addEventListener('resize', schedule)
   })
 
