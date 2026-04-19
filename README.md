@@ -8,8 +8,25 @@
 ## 项目状态
 
 - **设计阶段** ✅ 已完成 8 个模块 × 2 套风格的 HTML 原型 + 完整技术架构方案
-- **Sprint 1（骨架）** 🚧 本次交付：Vue 3 + Vite SPA 主框架、主题系统、i18n、路由、状态管理
-- **Sprint 2/3（业务模块）** ⏳ 待启动
+- **Sprint 1（骨架）** ✅ Vue 3 + Vite SPA 主框架、主题系统、i18n、路由、状态管理
+- **Sprint 2（首页）** ✅ Home 完整还原（与原型 ~90% 神似），国风/简约 × 中/繁/英 6 组合可用
+- **Sprint 3（八字）** ⏳ 待启动 — 计算 + Four Pillars + Dayun + 关系线 SVG
+- **Sprint 4（紫微）** ⏳ 待启动 — 12 宫盘 + 三方四正 SVG
+- **Sprint 5（其余 6 模块）** ⏳ 待启动 — 称骨/六壬/灵签/姓名/黄历/解梦
+
+### Vue 化进度表
+
+| 模块 | Vue 化 | i18n 完整 | 备注 |
+|---|---|---|---|
+| Home | ✅ | ✅ zh-CN/zh-TW/en | 与原型对齐 |
+| 八字 | ⏳ 占位页 | 仅基础 | Sprint 3 |
+| 紫微 | ⏳ 占位页 | 仅基础 | Sprint 4 |
+| 称骨 | ⏳ 占位页 | 仅基础 | Sprint 5 |
+| 小六壬 | ⏳ 占位页 | 仅基础 | Sprint 5 |
+| 灵签 | ⏳ 占位页 | 仅基础 | Sprint 5 |
+| 姓名 | ⏳ 占位页 | 仅基础 | Sprint 5 |
+| 黄历 | ⏳ 占位页 | 仅基础 | Sprint 5 |
+| 解梦 | ⏳ 占位页 | 仅基础 | Sprint 5 |
 
 ---
 
@@ -68,8 +85,10 @@ tt-qimen/
 │   │   └── divination-terms.{zh-CN,zh-TW,en}.ts
 │   ├── composables/{useTheme,useLocale,useUrlSync}.ts
 │   ├── components/
-│   │   └── layout/{AppHeader,ThemeSwitch,LangSwitch}.vue
-│   └── modules/                  8 模块（当前为占位页）
+│   │   └── layout/{AppHeader,AppFooter,ThemeSwitch,LangSwitch}.vue
+│   └── modules/
+│       ├── home/HomePage.vue     ✅ 已还原（双主题）
+│       └── ...                   8 模块（其他为占位页）
 ├── index.html
 ├── package.json
 ├── vite.config.ts
