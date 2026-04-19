@@ -142,7 +142,7 @@
       position: relative;
       max-width: 1000px;
       margin: 0 auto var(--mn-space-8);
-      padding: 60px var(--mn-space-5) 64px;
+      padding: 56px var(--mn-space-5) 96px;
       background-color: var(--mn-bg-elev);
       border: 1px solid var(--mn-border);
       border-radius: var(--mn-radius-lg);
@@ -784,24 +784,24 @@
     .fortune-track-connectors .track-line {
       fill: none;
       stroke: var(--mn-accent);
-      stroke-width: 1.8;
+      stroke-width: 2;
       stroke-dasharray: 5 4;
       stroke-linecap: round;
-      opacity: 0.7;
+      opacity: 0.55;
     }
 
     .fortune-track-connectors .track-wrap {
       fill: none;
       stroke: var(--mn-accent);
-      stroke-width: 1.8;
-      stroke-dasharray: 4 4;
+      stroke-width: 2;
+      stroke-dasharray: 5 4;
       stroke-linecap: round;
-      opacity: 0.7;
+      opacity: 0.55;
     }
 
     .fortune-track-connectors .track-arrow {
       fill: var(--mn-accent);
-      opacity: 0.9;
+      opacity: 0.85;
     }
 
     .decade {
@@ -1899,13 +1899,16 @@
           { type: 'anhe',   from: 1, to: 3, label: '巳午暗合', dir: 'down' }
         ];
 
-        // 设计：水平虚线在表格外侧的安全区，两端用小圆点标记起止地支
-        // 完全不穿过任何文字行；多条同向线错开堆叠
-        var STACK_GAP = 22;
-        var FIRST_OFFSET_UP = 18;
-        var FIRST_OFFSET_DOWN = 18;
+        // 设计：弧线连接（仅在 grid 之外的安全区绘制）
+        // 弧两端朝地支字符方向"下沉"，弧顶向远离表格方向凸起
+        // 完全不穿过任何文字行；端点用小圆点强调对应地支列
+        var STACK_GAP = 38;
+        var FIRST_OFFSET_UP = 16;
+        var FIRST_OFFSET_DOWN = 16;
         var DOT_R = 3.5;
-        var LABEL_OUT = 9;
+        var LABEL_OUT = 8;
+        var ARC_BUMP = 12;
+        var END_DROP = 10;
         var upStack = 0;
         var downStack = 0;
 
@@ -1919,28 +1922,34 @@
           var x2 = R.cx;
           var midX = (x1 + x2) / 2;
 
-          var hY, labelY;
+          var endY, ctrlY, labelY;
           if (arc.dir === 'up') {
-            hY = gridTop - FIRST_OFFSET_UP - upStack;
-            labelY = hY - LABEL_OUT;
+            var baseY = gridTop - FIRST_OFFSET_UP - upStack;
+            endY = baseY + END_DROP;
+            ctrlY = baseY - ARC_BUMP;
+            labelY = ctrlY - LABEL_OUT + 1;
             upStack += STACK_GAP;
           } else {
-            hY = gridBottom + FIRST_OFFSET_DOWN + downStack;
-            labelY = hY + LABEL_OUT;
+            var baseY = gridBottom + FIRST_OFFSET_DOWN + downStack;
+            endY = baseY - END_DROP;
+            ctrlY = baseY + ARC_BUMP;
+            labelY = ctrlY + LABEL_OUT - 1;
             downStack += STACK_GAP;
           }
 
-          svg.appendChild(node('line', {
+          var d = 'M' + x1 + ',' + endY +
+                  ' Q' + midX + ',' + ctrlY + ' ' + x2 + ',' + endY;
+          svg.appendChild(node('path', {
             'class': 'bazi-relation-line ' + arc.type,
-            x1: x1, y1: hY, x2: x2, y2: hY
+            d: d
           }));
           svg.appendChild(node('circle', {
             'class': 'bazi-relation-dot ' + arc.type,
-            cx: x1, cy: hY, r: DOT_R
+            cx: x1, cy: endY, r: DOT_R
           }));
           svg.appendChild(node('circle', {
             'class': 'bazi-relation-dot ' + arc.type,
-            cx: x2, cy: hY, r: DOT_R
+            cx: x2, cy: endY, r: DOT_R
           }));
           svg.appendChild(node('text', {
             'class': 'bazi-relation-label ' + arc.type,
@@ -2026,29 +2035,28 @@
               'class': 'track-line'
             }));
           } else {
+            // 跨行：完整 U 型路径，横向贯穿到行首卡正上方
             var aBottom = a.bottom + 4;
             var bTop = b.top - 4;
             var midY = (aBottom + bTop) / 2;
+            var R = 10;
+            var goLeft = b.cx < a.cx;
+            var hStartX = goLeft ? a.cx - R : a.cx + R;
+            var hEndX   = goLeft ? b.cx + R : b.cx - R;
 
+            var d = [
+              'M', a.cx, aBottom,
+              'L', a.cx, midY - R,
+              'Q', a.cx, midY, hStartX, midY,
+              'L', hEndX, midY,
+              'Q', b.cx, midY, b.cx, midY + R,
+              'L', b.cx, bTop
+            ].join(' ');
             svg.appendChild(node('path', {
-              d: 'M' + a.cx + ',' + aBottom +
-                 ' L' + a.cx + ',' + (midY - 8) +
-                 ' Q' + a.cx + ',' + midY + ' ' + (a.cx - 14) + ',' + midY,
+              d: d,
               'class': 'track-wrap'
             }));
-            svg.appendChild(node('polygon', {
-              points: (a.cx - 14) + ',' + (midY - 5) + ' ' +
-                      (a.cx - 14) + ',' + (midY + 5) + ' ' +
-                      (a.cx - 22) + ',' + midY,
-              'class': 'track-arrow'
-            }));
 
-            svg.appendChild(node('path', {
-              d: 'M' + (b.cx + 14) + ',' + midY +
-                 ' Q' + b.cx + ',' + midY + ' ' + b.cx + ',' + (midY + 8) +
-                 ' L' + b.cx + ',' + bTop,
-              'class': 'track-wrap'
-            }));
             svg.appendChild(node('polygon', {
               points: (b.cx - 5) + ',' + (bTop - 2) + ' ' +
                       (b.cx + 5) + ',' + (bTop - 2) + ' ' +

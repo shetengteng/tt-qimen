@@ -58,7 +58,7 @@
       border: 2px solid var(--gf-ink);
       border-radius: var(--gf-radius-md);
       box-shadow: var(--gf-shadow-md);
-      padding: 60px var(--gf-space-lg) 64px;
+      padding: 56px var(--gf-space-lg) 96px;
       margin-bottom: var(--gf-space-xl);
       overflow: visible;
     }
@@ -629,25 +629,25 @@
 
     .fortune-track-connectors .track-line {
       fill: none;
-      stroke: var(--gf-gold);
-      stroke-width: 1.8;
+      stroke: var(--gf-cinnabar);
+      stroke-width: 2;
       stroke-dasharray: 5 4;
       stroke-linecap: round;
-      opacity: 0.72;
+      opacity: 0.55;
     }
 
     .fortune-track-connectors .track-wrap {
       fill: none;
-      stroke: var(--gf-gold);
-      stroke-width: 1.8;
-      stroke-dasharray: 4 4;
+      stroke: var(--gf-cinnabar);
+      stroke-width: 2;
+      stroke-dasharray: 5 4;
       stroke-linecap: round;
-      opacity: 0.72;
+      opacity: 0.55;
     }
 
     .fortune-track-connectors .track-arrow {
-      fill: var(--gf-gold);
-      opacity: 0.9;
+      fill: var(--gf-cinnabar);
+      opacity: 0.85;
     }
 
     .decade {
@@ -1842,20 +1842,22 @@
           { type: 'anhe',   from: 1, to: 3, label: '巳午暗合', dir: 'down' }
         ];
 
-        // 设计：水平直线连接（仅在 grid 之外的安全区绘制）
-        // up 方向：水平虚线在 grid 顶部之外（柱头行上方），两端用小圆点标记起止地支
-        // down 方向：同理在 grid 底部之外
-        // 完全不穿过任何文字行；用小圆点 + 同色文字提示对应地支
+        // 设计：弧线连接（仅在 grid 之外的安全区绘制）
+        // up 方向：弧顶在 grid 顶部上方，弧两端朝下指向地支字符
+        // down 方向：弧顶在 grid 底部下方，弧两端朝上指向地支字符
+        // 完全不穿过任何文字行；端点用小圆点强调对应地支列
         var grid = table.querySelector('.bazi-table-grid');
         var gridRect = grid ? grid.getBoundingClientRect() : null;
         var gridTop = gridRect ? (gridRect.top - hostRect.top) : 0;
         var gridBottom = gridRect ? (gridRect.bottom - hostRect.top) : H;
 
-        var STACK_GAP = 22;
-        var FIRST_OFFSET_UP = 18;
-        var FIRST_OFFSET_DOWN = 18;
+        var STACK_GAP = 38;
+        var FIRST_OFFSET_UP = 16;
+        var FIRST_OFFSET_DOWN = 16;
         var DOT_R = 3.5;
-        var LABEL_OUT = 9;
+        var LABEL_OUT = 8;
+        var ARC_BUMP = 12;     // 弧顶离基准线的高度（弧度感强弱）
+        var END_DROP = 10;     // 弧端点下沉距离（向地支方向延伸的"小尾巴"）
         var upStack = 0;
         var downStack = 0;
 
@@ -1869,32 +1871,40 @@
           var x2 = R.cx;
           var midX = (x1 + x2) / 2;
 
-          var hY, labelY, dotFill;
+          var endY, ctrlY, labelY;
           if (arc.dir === 'up') {
-            hY = gridTop - FIRST_OFFSET_UP - upStack;
-            labelY = hY - LABEL_OUT;
+            // 端点 y = 基准线 + END_DROP（朝下，靠近地支）
+            // 弧顶 y = 基准线 - ARC_BUMP（朝上凸起）
+            var baseY = gridTop - FIRST_OFFSET_UP - upStack;
+            endY = baseY + END_DROP;
+            ctrlY = baseY - ARC_BUMP;
+            labelY = ctrlY - LABEL_OUT + 1;
             upStack += STACK_GAP;
           } else {
-            hY = gridBottom + FIRST_OFFSET_DOWN + downStack;
-            labelY = hY + LABEL_OUT;
+            var baseY = gridBottom + FIRST_OFFSET_DOWN + downStack;
+            endY = baseY - END_DROP;
+            ctrlY = baseY + ARC_BUMP;
+            labelY = ctrlY + LABEL_OUT - 1;
             downStack += STACK_GAP;
           }
 
-          // 水平虚线
-          svg.appendChild(node('line', {
+          // 二次贝塞尔弧（圆润饱满）
+          var d = 'M' + x1 + ',' + endY +
+                  ' Q' + midX + ',' + ctrlY + ' ' + x2 + ',' + endY;
+          svg.appendChild(node('path', {
             'class': 'bazi-relation-line ' + arc.type,
-            x1: x1, y1: hY, x2: x2, y2: hY
+            d: d
           }));
-          // 两端小圆点（用 fill 同色，需要单独类）
+          // 端点小圆点（fill 颜色 = 关系色）
           svg.appendChild(node('circle', {
             'class': 'bazi-relation-dot ' + arc.type,
-            cx: x1, cy: hY, r: DOT_R
+            cx: x1, cy: endY, r: DOT_R
           }));
           svg.appendChild(node('circle', {
             'class': 'bazi-relation-dot ' + arc.type,
-            cx: x2, cy: hY, r: DOT_R
+            cx: x2, cy: endY, r: DOT_R
           }));
-          // 标签（贴在水平段一侧）
+          // 标签放在弧顶一侧（更外侧）
           svg.appendChild(node('text', {
             'class': 'bazi-relation-label ' + arc.type,
             x: midX,
@@ -1988,34 +1998,39 @@
               'class': 'track-line'
             }));
           } else {
-            // 跨行：在行尾卡下方画弧形下行指示 + 下一行卡上方画下行箭头
-            var aY = rowCenterY[a.rowKey];
-            var bY = rowCenterY[b.rowKey];
+            // 跨行：完整 U 型路径——
+            // 1) 从行尾卡底部中心 a.cx 向下垂直走到 midY
+            // 2) 沿 midY 横向贯穿到行首卡正上方 b.cx
+            // 3) 从 midY 向下垂直走到行首卡顶部 bTop
+            // 末端附箭头指向行首卡（提示阅读方向）
             var aBottom = a.bottom + 4;
             var bTop = b.top - 4;
             var midY = (aBottom + bTop) / 2;
+            var R = 10; // 折角圆角半径
 
-            // 行尾卡：底部中心向下伸出一小弧 + 左转 + 箭头（示意此行结束）
+            // 横向方向：行首在左侧（b.cx < a.cx）→ 横线从右往左走
+            var goLeft = b.cx < a.cx;
+            var hStartX, hEndX, cornerSign;
+            if (goLeft) {
+              hStartX = a.cx - R; hEndX = b.cx + R; cornerSign = -1;
+            } else {
+              hStartX = a.cx + R; hEndX = b.cx - R; cornerSign = 1;
+            }
+
+            var d = [
+              'M', a.cx, aBottom,
+              'L', a.cx, midY - R,
+              'Q', a.cx, midY, hStartX, midY,
+              'L', hEndX, midY,
+              'Q', b.cx, midY, b.cx, midY + R,
+              'L', b.cx, bTop
+            ].join(' ');
             svg.appendChild(createNode('path', {
-              d: 'M' + a.cx + ',' + aBottom +
-                 ' L' + a.cx + ',' + (midY - 8) +
-                 ' Q' + a.cx + ',' + midY + ' ' + (a.cx - 14) + ',' + midY,
+              d: d,
               'class': 'track-wrap'
             }));
-            svg.appendChild(createNode('polygon', {
-              points: (a.cx - 14) + ',' + (midY - 5) + ' ' +
-                      (a.cx - 14) + ',' + (midY + 5) + ' ' +
-                      (a.cx - 22) + ',' + midY,
-              'class': 'track-arrow'
-            }));
 
-            // 下行首卡：上方画下行箭头（示意从此处续接）
-            svg.appendChild(createNode('path', {
-              d: 'M' + (b.cx + 14) + ',' + midY +
-                 ' Q' + b.cx + ',' + midY + ' ' + b.cx + ',' + (midY + 8) +
-                 ' L' + b.cx + ',' + bTop,
-              'class': 'track-wrap'
-            }));
+            // 箭头（指向行首卡顶部）
             svg.appendChild(createNode('polygon', {
               points: (b.cx - 5) + ',' + (bTop - 2) + ' ' +
                       (b.cx + 5) + ',' + (bTop - 2) + ' ' +
