@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
+import { useUserStore } from '@/stores/user'
 import {
   Select,
   SelectContent,
@@ -32,12 +33,30 @@ const { t, tm } = useI18n()
 const themeStore = useThemeStore()
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
-const calendar = ref<'solar' | 'lunar'>('solar')
-const year = ref('1990')
-const month = ref('5')
-const day = ref('20')
-const hourIdx = ref('6')
-const gender = ref<'male' | 'female'>('male')
+const userStore = useUserStore()
+
+/**
+ * 时辰索引（0..12）↔ 小时（0..23）映射
+ * bazi.hours i18n 顺序：早子(0) 丑(1) 寅(2) 卯(3) 辰(4) 巳(5) 午(6) 未(7) 申(8) 酉(9) 戌(10) 亥(11) 晚子(12)
+ * 早子 = 0:30 平均，晚子 = 23:30 平均（命理通用规则）
+ */
+function hourIdxToHour(idx: number): number {
+  if (idx === 0) return 0      // 早子 0:00-1:00
+  if (idx === 12) return 23    // 晚子 23:00-24:00
+  return idx * 2 - 1           // 1→1(丑1-3), 2→3(寅3-5)...
+}
+function hourToIdx(h: number): number {
+  if (h === 23) return 12
+  if (h === 0) return 0
+  return Math.floor((h + 1) / 2)
+}
+
+const calendar = ref<'solar' | 'lunar'>(userStore.birth.calendar)
+const year = ref(String(userStore.birth.year))
+const month = ref(String(userStore.birth.month))
+const day = ref(String(userStore.birth.day))
+const hourIdx = ref(String(hourToIdx(userStore.birth.hour)))
+const gender = ref<'male' | 'female'>(userStore.birth.gender)
 
 const hours = computed(() => (tm('bazi.hours') as string[]) ?? [])
 
@@ -78,6 +97,15 @@ function setCalendar(v: 'solar' | 'lunar') {
 }
 
 function onPaipan() {
+  userStore.update({
+    calendar: calendar.value,
+    year: Number(year.value),
+    month: Number(month.value),
+    day: Number(day.value),
+    hour: hourIdxToHour(Number(hourIdx.value)),
+    minute: 0,
+    gender: gender.value,
+  })
   emit('paipan')
 }
 

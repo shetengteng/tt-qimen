@@ -296,6 +296,154 @@ export default {
   ziwei: {
     title: '紫微斗数',
     subtitle: '十二宫垣 · 三方四正',
+    pageTitle: '紫 微 斗 數',
+    pageSubtitle: '十二宫推演 · 主星副星 · 四化飞星 · 大限小限',
+    breadcrumbHome: '首页',
+    breadcrumbCurrent: '紫微斗数',
+
+    inputCardTitle: '录入生辰',
+    btn: {
+      paipan: '排紫微命盘',
+      paipanIcon: '◉',
+      repaipan: '重新排盘',
+      repaipanIcon: '◑',
+      share: '生成分享卡片',
+      shareIcon: '◈',
+      save: '保存到本地',
+      saveIcon: '◐',
+    },
+
+    resultBanner: {
+      title: '紫微命盘',
+      subtitle: '十二宫 · 三方四正 · 四化 · 大限小限',
+    },
+
+    skeleton: {
+      title: '排盘中',
+      subtitle: '安星、起命宫、定四化',
+    },
+
+    chartMeta: {
+      solarLabel: '阳历',
+      lunarLabel: '农历',
+      fiveElementsLabel: '五行局',
+      mingShenLabel: '命主 / 身主',
+      qiyunFmt: '{n} 岁起运',
+    },
+
+    palaceNames: {
+      ming: '命宫',
+      xiongdi: '兄弟宫',
+      fuqi: '夫妻宫',
+      zinv: '子女宫',
+      caibo: '财帛宫',
+      jie: '疾厄宫',
+      qianyi: '迁移宫',
+      jiaoyou: '交友宫',
+      guanlu: '事业宫',
+      tianzhai: '田宅宫',
+      fude: '福德宫',
+      fumu: '父母宫',
+    },
+    palaceNamesShort: {
+      ming: '命宫',
+      xiongdi: '兄弟',
+      fuqi: '夫妻',
+      zinv: '子女',
+      caibo: '财帛',
+      jie: '疾厄',
+      qianyi: '迁移',
+      jiaoyou: '交友',
+      guanlu: '事业',
+      tianzhai: '田宅',
+      fude: '福德',
+      fumu: '父母',
+    },
+    shenSuffix: '· 身',
+    daxianPrefix: '大限',
+
+    sihuaLegend: {
+      lu: '化禄',
+      quan: '化权',
+      ke: '化科',
+      ji: '化忌',
+      brightness: '庙/旺/得/平/陷 = 星曜亮度',
+    },
+    sihuaShort: { lu: '禄', quan: '权', ke: '科', ji: '忌' },
+
+    sanfang: {
+      hint: '命盘已显示「命宫 三方四正」 ——',
+      toggleOn: '◐ 命宫 · 三方四正',
+      toggleOnMn: '命宫 · 三方四正',
+      toggleOff: '× 关闭连线',
+      toggleOffMn: '关闭连线',
+      reopen: '◐ 显示三方四正',
+      reopenMn: '显示三方四正',
+    },
+
+    centerPalace: {
+      title: '命 盤',
+      titleMn: '命盘',
+      ownerLabel: '姓名',
+      ownerFmt: '{name} · {gender}',
+      solarLabel: '阳历',
+      fiveLabel: '五行局',
+      fiveFmt: '{name} · 起运 {age} 岁',
+      mingShenLabel: '命 / 身',
+      mingShenFmt: '{ming} · {shen}',
+      doujunLabel: '子年斗君',
+      hint: '※ 点击外圈任一宫位，可查看详细解读',
+    },
+
+    interpret: {
+      cards: {
+        mingPalace: {
+          title: '命宫解读',
+          text: '紫微贪狼同坐于辰宫庙地，贪狼化禄加持，兼具贵气与灵气。此格局利于文艺创作、社交公关与经营决策，一生多贵人提携；但需节制桃花与应酬，避免浮华分散心力。',
+        },
+        sihua: {
+          title: '四化飞星',
+          text: '贪狼化禄坐命宫 · 才气与机遇并显；武曲化权落福德宫 · 理财有主见；太阴化科入父母宫 · 利文名声誉；天梁化忌入子女宫 · 子女缘较弱，需加倍经营代际关系。',
+        },
+        minorStars: {
+          title: '六吉六煞',
+          text: '左辅右弼分坐父母、田宅，贵人扶持绵长；文昌文曲交会于命财，利考学与文字事业。擎羊落田宅、陀罗居迁移、火铃分于子财，皆为行运注意点，动中易生波折，宜「大事静守、小事灵动」。',
+        },
+        shenZhu: {
+          title: '身主 · 事业取向',
+          text: '身在疾厄，巨门守身，利口舌为业 —— 讲师、媒体、律师、咨询皆宜。事业宫破军坐申，主变革与开创，宜于成熟行业中另辟新局，避免盲目换行。',
+        },
+      },
+    },
+
+    daxian: {
+      title: '大限 · 十年一运',
+      titleMn: '大限时间轴',
+      currentFmt: '当前 {age} 岁 · 大限 {range}（{palace}）',
+    },
+    xiaoxian: {
+      title: '小限 · 一岁一更',
+      titleMn: '小限',
+      currentFmt: '当前 {year} {ganzhi} · 小限在{palace}',
+    },
+
+    mobile: {
+      keyPalacesTitle: '主要 4 宫',
+      moreTitle: '其余 8 宫',
+      expand: '展开 ▼',
+      collapse: '收起 ▲',
+    },
+
+    collapse: {
+      sectionMeta: '◎ 元信息',
+      sectionChart: '◎ 十二宫',
+      sectionInterpret: '◎ 命盘解读',
+      sectionDaxian: '◎ 大限 · 小限',
+      sectionMetaMn: '元信息',
+      sectionChartMn: '十二宫',
+      sectionInterpretMn: '命盘解读',
+      sectionDaxianMn: '大限 · 小限',
+    },
   },
   liuren: {
     title: '小六壬',

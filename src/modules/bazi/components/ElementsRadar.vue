@@ -2,7 +2,14 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
-import { fiveElements, radarPolygonPoints, radarDataPoints } from '../data/mockBazi'
+import { fiveElements, radarPolygonPoints as fallbackPoly, radarDataPoints as fallbackPoints } from '../data/mockBazi'
+import type { BaziChart, ElementCell, ElementName } from '../types'
+
+interface Props {
+  /** 真实命盘；不传则回退到 mock */
+  chart?: BaziChart | null
+}
+const props = defineProps<Props>()
 
 const { t, tm } = useI18n()
 const themeStore = useThemeStore()
@@ -11,18 +18,99 @@ const isGuofeng = computed(() => themeStore.id === 'guofeng')
 const labels = computed(() => tm('bazi.radar.labels') as Record<string, string>)
 const fiveElementLabel = computed(() => tm('bazi.fiveElementsLabel') as Record<string, string>)
 
-const elemDisplay = computed(() => {
-  const order: Array<keyof typeof labels.value> = ['jin', 'mu', 'shui', 'huo', 'tu']
-  return order.map((key) => {
-    const cell = fiveElements.find((e) => e.key === key)!
+/** 视觉顺序（与 SVG 五角对齐）：上=木，右上=火，右下=土，左下=金，左上=水 */
+const RADAR_ORDER: ElementName[] = ['木', '火', '土', '金', '水']
+
+/** 五行 ↔ pinyin key（旧 i18n 表用 pinyin） */
+const ELEMENT_KEY: Record<ElementName, 'mu' | 'huo' | 'tu' | 'jin' | 'shui'> = {
+  木: 'mu', 火: 'huo', 土: 'tu', 金: 'jin', 水: 'shui',
+}
+
+/**
+ * 五个角的「外端坐标」（半径 120 = SVG 中外环）。
+ * 顺序与 RADAR_ORDER 保持一致，等价于 SVG 中的 5 条 axis。
+ */
+const RADAR_AXES: Array<readonly [number, number]> = [
+  [0, -120],            // 木 上
+  [114.13, -37.08],     // 火 右上
+  [70.53, 97.08],       // 土 右下
+  [-70.53, 97.08],      // 金 左下
+  [-114.13, -37.08],    // 水 左上
+]
+
+interface RadarItem {
+  key: 'mu' | 'huo' | 'tu' | 'jin' | 'shui'
+  name: string
+  /** 雷达点的归一化半径 0..1（用于绘制） */
+  ratio: number
+  /** 显示用的整数计数（取分数四舍五入） */
+  count: number
+  /** 显示用的百分比 0..100 */
+  percent: number
+  status: 'strong' | 'weak' | 'balanced'
+  statusLabel: string
+}
+
+const radarItems = computed<RadarItem[]>(() => {
+  if (!props.chart) {
+    return RADAR_ORDER.map((el) => {
+      const key = ELEMENT_KEY[el]
+      const cell = fiveElements.find(e => e.key === key)!
+      return {
+        key,
+        name: labels.value[key],
+        ratio: cell.count / 5,
+        count: cell.count,
+        percent: cell.percent,
+        status: cell.status,
+        statusLabel: fiveElementLabel.value[cell.status],
+      }
+    })
+  }
+
+  const cellMap: Record<ElementName, ElementCell> = props.chart.elementCells
+    .reduce((acc, c) => { acc[c.name] = c; return acc }, {} as Record<ElementName, ElementCell>)
+  const maxScore = Math.max(...props.chart.elementCells.map(c => c.score), 0.01)
+
+  return RADAR_ORDER.map((el) => {
+    const key = ELEMENT_KEY[el]
+    const cell = cellMap[el]
     return {
       key,
       name: labels.value[key],
-      count: cell.count,
-      percent: cell.percent,
+      ratio: Math.min(1, cell.score / maxScore),
+      count: Math.round(cell.score),
+      percent: Math.round(cell.percent * 100),
       status: cell.status,
       statusLabel: fiveElementLabel.value[cell.status],
     }
+  })
+})
+
+/** 根据 radarItems 重新生成多边形 + 数据点 */
+const radarDataPoints = computed<ReadonlyArray<readonly [number, number]>>(() => {
+  if (!props.chart) return fallbackPoints
+  return radarItems.value.map((it, i) => {
+    const [x, y] = RADAR_AXES[i]
+    return [x * it.ratio, y * it.ratio] as const
+  })
+})
+const radarPolygonPoints = computed(() => {
+  if (!props.chart) return fallbackPoly
+  return radarDataPoints.value.map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`).join(' ')
+})
+
+/** 用于 5 个轴标签下方的数字（按 RADAR_ORDER 索引取） */
+function axisCount(idx: number): number {
+  return radarItems.value[idx]?.count ?? 0
+}
+
+/** 给「五行强弱条」用的展示顺序：金木水火土（与旧 mock 对齐） */
+const elemDisplay = computed(() => {
+  const order: Array<'jin' | 'mu' | 'shui' | 'huo' | 'tu'> = ['jin', 'mu', 'shui', 'huo', 'tu']
+  return order.map((key) => {
+    const it = radarItems.value.find(r => r.key === key)!
+    return it
   })
 })
 
@@ -57,15 +145,15 @@ const description = computed(() => (isGuofeng.value ? t('bazi.radar.desc') : t('
         r="4"
       />
       <text class="radar-label" x="0" y="-135" text-anchor="middle">{{ labels.mu }}</text>
-      <text class="radar-label-num" x="0" y="-122" text-anchor="middle">1</text>
+      <text class="radar-label-num" x="0" y="-122" text-anchor="middle">{{ axisCount(0) }}</text>
       <text class="radar-label" x="125" y="-38" text-anchor="start">{{ labels.huo }}</text>
-      <text class="radar-label-num" x="125" y="-26" text-anchor="start">3</text>
+      <text class="radar-label-num" x="125" y="-26" text-anchor="start">{{ axisCount(1) }}</text>
       <text class="radar-label" x="80" y="112" text-anchor="start">{{ labels.tu }}</text>
-      <text class="radar-label-num" x="80" y="124" text-anchor="start">1</text>
+      <text class="radar-label-num" x="80" y="124" text-anchor="start">{{ axisCount(2) }}</text>
       <text class="radar-label" x="-80" y="112" text-anchor="end">{{ labels.jin }}</text>
-      <text class="radar-label-num" x="-80" y="124" text-anchor="end">2</text>
+      <text class="radar-label-num" x="-80" y="124" text-anchor="end">{{ axisCount(3) }}</text>
       <text class="radar-label" x="-125" y="-38" text-anchor="end">{{ labels.shui }}</text>
-      <text class="radar-label-num" x="-125" y="-26" text-anchor="end">1</text>
+      <text class="radar-label-num" x="-125" y="-26" text-anchor="end">{{ axisCount(4) }}</text>
     </svg>
 
     <div class="radar-meta">

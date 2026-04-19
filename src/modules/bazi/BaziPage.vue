@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, nextTick, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
+import { useUserStore } from '@/stores/user'
 import BirthForm from './components/BirthForm.vue'
 import FourPillarsTable from './components/FourPillarsTable.vue'
 import ShishenStructure from './components/ShishenStructure.vue'
@@ -11,13 +12,17 @@ import InterpretBlock from './components/InterpretBlock.vue'
 import DayunTimeline from './components/DayunTimeline.vue'
 import FlowYears from './components/FlowYears.vue'
 import CollapsibleSection from '@/components/common/CollapsibleSection.vue'
-import { meta as baziMeta, pillarsByLocale } from './data/mockBazi'
+import { meta as baziMeta, pillarsByLocale, type PillarCell } from './data/mockBazi'
 import { useBaziDrawings, type BaziArc } from './composables/useBaziDrawings'
 import { useSkeletonReveal } from '@/composables/useSkeletonReveal'
+import { calculateBazi } from './core/bazi'
+import { detectZhiRelations } from './core/zhiRelations'
+import type { BaziChart, PillarInfo } from './types'
 
 const { t, tm, locale } = useI18n()
 const router = useRouter()
 const themeStore = useThemeStore()
+const userStore = useUserStore()
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
 const inputCardEl = ref<HTMLElement | null>(null)
@@ -25,7 +30,28 @@ const resultBannerEl = ref<HTMLElement | null>(null)
 const fourPillarsEl = ref<InstanceType<typeof FourPillarsTable> | null>(null)
 const dayunEl = ref<InstanceType<typeof DayunTimeline> | null>(null)
 
+const chart = shallowRef<BaziChart | null>(null)
+
+/** 把 PillarInfo 转换为 UI 用的 PillarCell（兼容旧 FourPillarsTable 模板） */
+function toPillarCell(p: PillarInfo, isDay: boolean): PillarCell {
+  return {
+    gan: p.gan,
+    zhi: p.zhi,
+    ganAttr: isDay ? `${p.ganYinYang}${p.ganElement} · 日主` : `${p.ganYinYang}${p.ganElement}`,
+    zhiAttr: `${p.zhiYinYang}${p.zhiElement}`,
+    shishen: p.tenGod,
+    nayin: p.nayin,
+    canggang: p.hideStems.map(h => h.gan),
+    cangganSingle: p.hideStemSingle,
+  }
+}
+
 const arcs = computed<BaziArc[]>(() => {
+  if (chart.value) {
+    const p = chart.value.pillars
+    return detectZhiRelations(p.year, p.month, p.day, p.hour)
+  }
+  // 未排盘前回退到 i18n 中的示意文案，保持视觉占位
   const r = tm('bazi.relations') as Record<string, string>
   return [
     { type: 'chong', from: 0, to: 2, label: r.chong, desc: r.chongDescMn, dir: 'up' },
@@ -35,19 +61,51 @@ const arcs = computed<BaziArc[]>(() => {
 })
 
 const pillarsLocalized = computed(() => {
+  if (chart.value) {
+    const c = chart.value.pillars
+    return [
+      toPillarCell(c.year, false),
+      toPillarCell(c.month, false),
+      toPillarCell(c.day, true),
+      toPillarCell(c.hour, false),
+    ]
+  }
   const map = pillarsByLocale as Record<string, typeof pillarsByLocale['zh-CN']>
   return map[locale.value] ?? pillarsByLocale['zh-CN']
 })
 
-const meta = computed(() => ({
-  solar: locale.value === 'en' ? baziMeta.solarEn : baziMeta.solar,
-  lunar: locale.value === 'en' ? baziMeta.lunarEn : baziMeta.lunar,
-}))
+const meta = computed(() => {
+  if (chart.value) return { solar: chart.value.meta.solar, lunar: chart.value.meta.lunar }
+  return {
+    solar: locale.value === 'en' ? baziMeta.solarEn : baziMeta.solar,
+    lunar: locale.value === 'en' ? baziMeta.lunarEn : baziMeta.lunar,
+  }
+})
 
 const metaLabels = computed(() => {
   const m = tm('bazi.chartMeta') as Record<string, string>
   return { solar: m.solarLabel, lunar: m.lunarLabel }
 })
+
+/** 四柱表头副标题 */
+const headerSubs = computed(() => {
+  if (!chart.value) return undefined
+  const b = userStore.birth
+  return [
+    { key: 'year' as const, sub: String(b.year) },
+    { key: 'month' as const, sub: String(b.month) },
+    { key: 'day' as const, sub: String(b.day) },
+    { key: 'hour' as const, sub: hourLabelOf(b.hour) },
+  ]
+})
+
+function hourLabelOf(hour: number): string {
+  const labels = (tm('bazi.hours') as string[]) ?? []
+  let idx = Math.floor((hour + 1) / 2) % 12
+  if (hour === 23) idx = 12
+  if (hour === 0) idx = 0
+  return labels[idx] ?? `${hour}`
+}
 
 const drawings = useBaziDrawings({
   getRelationsSvg: () => fourPillarsEl.value?.svgRef() ?? null,
@@ -76,9 +134,16 @@ const skeleton = useSkeletonReveal({
 })
 
 function onPaipan() {
+  try {
+    chart.value = calculateBazi(userStore.birth)
+  } catch (err) {
+    console.error('[bazi] calculate failed:', err)
+    chart.value = null
+  }
   skeleton.start(() => resultBannerEl.value)
 }
 function onRepaipan() {
+  chart.value = null
   skeleton.reset(() => inputCardEl.value)
 }
 function go(name: 'home') {
@@ -110,34 +175,33 @@ function go(name: 'home') {
     </div>
 
     <div :class="['result-zone', { revealed: skeleton.revealed.value }]">
-      <div class="gf-container" style="padding-top: 0;">
-        <CollapsibleSection :label="t('bazi.collapse.sectionChart')">
-          <FourPillarsTable
-            ref="fourPillarsEl"
-            :pillars="pillarsLocalized"
-            :meta="meta"
-            :meta-labels="metaLabels"
-            :arcs="arcs"
-          />
-          <ShishenStructure />
-          <ElementsRadar />
-        </CollapsibleSection>
+      <CollapsibleSection :label="t('bazi.collapse.sectionChart')">
+        <FourPillarsTable
+          ref="fourPillarsEl"
+          :pillars="pillarsLocalized"
+          :meta="meta"
+          :meta-labels="metaLabels"
+          :arcs="arcs"
+          :header-subs="headerSubs"
+        />
+        <ShishenStructure :chart="chart" />
+        <ElementsRadar :chart="chart" />
+      </CollapsibleSection>
 
-        <CollapsibleSection :label="t('bazi.collapse.sectionInterpret')">
-          <InterpretBlock />
-        </CollapsibleSection>
-      </div>
+      <CollapsibleSection :label="t('bazi.collapse.sectionInterpret')">
+        <InterpretBlock :chart="chart" />
+      </CollapsibleSection>
 
       <div class="gf-divider">
         <span>◆ {{ t('bazi.fortune.title') }} ◆</span>
       </div>
 
       <CollapsibleSection :label="t('bazi.collapse.sectionFortune')">
-        <DayunTimeline ref="dayunEl" />
+        <DayunTimeline ref="dayunEl" :chart="chart" />
       </CollapsibleSection>
 
       <CollapsibleSection :label="t('bazi.collapse.sectionFlow')">
-        <FlowYears />
+        <FlowYears :chart="chart" />
       </CollapsibleSection>
 
       <div class="action-bar">
@@ -182,13 +246,14 @@ function go(name: 'home') {
             :meta="meta"
             :meta-labels="metaLabels"
             :arcs="arcs"
+            :header-subs="headerSubs"
           />
-          <ShishenStructure />
-          <ElementsRadar />
+          <ShishenStructure :chart="chart" />
+          <ElementsRadar :chart="chart" />
         </CollapsibleSection>
 
         <CollapsibleSection :label="t('bazi.collapse.sectionInterpretMn')">
-          <InterpretBlock />
+          <InterpretBlock :chart="chart" />
         </CollapsibleSection>
       </main>
 
@@ -196,11 +261,11 @@ function go(name: 'home') {
 
       <main class="mn-container" style="padding-top: 0;">
         <CollapsibleSection :label="t('bazi.collapse.sectionFortuneMn')">
-          <DayunTimeline ref="dayunEl" />
+          <DayunTimeline ref="dayunEl" :chart="chart" />
         </CollapsibleSection>
 
         <CollapsibleSection :label="t('bazi.collapse.sectionFlowMn')">
-          <FlowYears />
+          <FlowYears :chart="chart" />
         </CollapsibleSection>
       </main>
 

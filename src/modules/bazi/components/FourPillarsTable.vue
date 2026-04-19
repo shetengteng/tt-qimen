@@ -5,6 +5,12 @@ import { useThemeStore } from '@/stores/theme'
 import type { BaziArc } from '../composables/useBaziDrawings'
 import type { PillarCell } from '../data/mockBazi'
 
+interface PillarHeader {
+  key: 'year' | 'month' | 'day' | 'hour'
+  /** 副标题：年份 / 月 / 日 / 时辰名 */
+  sub: string
+}
+
 interface Props {
   pillars: PillarCell[]
   meta: { solar: string; lunar: string }
@@ -12,6 +18,8 @@ interface Props {
   metaLabels: { solar: string; lunar: string }
   /** Arcs already localised — pushed straight to the SVG drawer. */
   arcs: BaziArc[]
+  /** 可选：四柱表头副标题（来自真实生辰）；未传则回退到固定示例 1990/5/20/午时 */
+  headerSubs?: PillarHeader[]
 }
 
 const props = defineProps<Props>()
@@ -32,12 +40,19 @@ const svgEl = ref<SVGElement | null>(null)
 const pillarsLabels = computed(() => tm('bazi.pillars') as Record<string, string>)
 const rowLabels = computed(() => tm('bazi.rowLabel') as Record<string, string>)
 
-const headers = computed(() => [
-  { key: 'year', label: pillarsLabels.value.year, sub: '1990', dayMaster: false },
-  { key: 'month', label: pillarsLabels.value.month, sub: '5', dayMaster: false },
-  { key: 'day', label: pillarsLabels.value.day, sub: '20', dayMaster: true },
-  { key: 'hour', label: pillarsLabels.value.hour, sub: t('bazi.hours.6'), dayMaster: false },
-])
+const headers = computed(() => {
+  const subMap: Record<PillarHeader['key'], string>
+    = props.headerSubs
+      ? Object.fromEntries(props.headerSubs.map(h => [h.key, h.sub])) as Record<PillarHeader['key'], string>
+      : { year: '1990', month: '5', day: '20', hour: t('bazi.hours.6') }
+
+  return [
+    { key: 'year', label: pillarsLabels.value.year, sub: subMap.year, dayMaster: false },
+    { key: 'month', label: pillarsLabels.value.month, sub: subMap.month, dayMaster: false },
+    { key: 'day', label: pillarsLabels.value.day, sub: subMap.day, dayMaster: true },
+    { key: 'hour', label: pillarsLabels.value.hour, sub: subMap.hour, dayMaster: false },
+  ]
+})
 
 function highlight(rel: string | null) {
   if (!tableEl.value) return

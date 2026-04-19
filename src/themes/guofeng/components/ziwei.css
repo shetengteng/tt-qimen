@@ -1,0 +1,649 @@
+/* ============================================
+ * Guofeng Theme — 紫微斗数模块样式
+ * Migrated from design/prototypes/guofeng/ziwei.html
+ * ============================================ */
+
+/* ============ 排盘元信息条 ============ */
+:root[data-theme='guofeng'] .ziwei-meta-bar {
+  max-width: 1200px;
+  margin: 0 auto var(--gf-space-lg);
+  padding: var(--gf-space-md) var(--gf-space-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--gf-space-md);
+  background: linear-gradient(90deg, rgba(176, 141, 59, 0.08), rgba(194, 58, 42, 0.05));
+  border-top: 1px solid rgba(176, 141, 59, 0.35);
+  border-bottom: 1px solid rgba(176, 141, 59, 0.35);
+}
+
+:root[data-theme='guofeng'] .ziwei-meta-bar .meta-item {
+  font-size: 14px;
+  color: var(--gf-ink-soft);
+  letter-spacing: 0.08em;
+}
+
+:root[data-theme='guofeng'] .ziwei-meta-bar .meta-item strong {
+  color: var(--gf-ink);
+  font-family: var(--gf-font-kaiti);
+  font-weight: 500;
+  margin: 0 4px;
+}
+
+/* ============ 图例 ============ */
+:root[data-theme='guofeng'] .sihua-legend {
+  max-width: 1200px;
+  margin: 0 auto var(--gf-space-md);
+  padding: var(--gf-space-sm) var(--gf-space-md);
+  display: flex;
+  justify-content: center;
+  gap: var(--gf-space-md);
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--gf-ink-soft);
+  letter-spacing: 0.06em;
+}
+
+:root[data-theme='guofeng'] .sihua-legend .legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ============ 三方四正切换 ============ */
+:root[data-theme='guofeng'] .sanfang-toggle-bar {
+  max-width: 1200px;
+  margin: 0 auto var(--gf-space-md);
+  padding: 0 var(--gf-space-md);
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--gf-space-sm);
+  font-family: var(--gf-font-serif);
+}
+
+:root[data-theme='guofeng'] .sanfang-hint {
+  font-size: 12px;
+  color: var(--gf-ink-muted);
+  letter-spacing: 0.08em;
+  margin-right: auto;
+}
+
+:root[data-theme='guofeng'] .sanfang-toggle {
+  padding: 6px 14px;
+  background: rgba(255, 251, 240, 0.8);
+  border: 1px solid rgba(176, 141, 59, 0.4);
+  border-radius: var(--gf-radius-sm);
+  color: var(--gf-ink);
+  font-family: var(--gf-font-serif);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+:root[data-theme='guofeng'] .sanfang-toggle:hover {
+  background: rgba(254, 240, 210, 0.9);
+  border-color: var(--gf-cinnabar);
+}
+
+:root[data-theme='guofeng'] .sanfang-toggle.active {
+  background: var(--gf-cinnabar);
+  color: var(--gf-rice);
+  border-color: var(--gf-cinnabar);
+}
+
+/* ============ 12 宫盘 4×4 ============ */
+:root[data-theme='guofeng'] .ziwei-chart {
+  max-width: 1200px;
+  margin: 0 auto var(--gf-space-xl);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, minmax(140px, auto));
+  gap: 2px;
+  background: rgba(176, 141, 59, 0.4);
+  border: 2px solid var(--gf-ink);
+  box-shadow: var(--gf-shadow-md);
+  position: relative;
+}
+
+:root[data-theme='guofeng'] .ziwei-chart .palace {
+  background: rgba(255, 251, 240, 0.92);
+  padding: 10px 12px;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 140px;
+}
+
+:root[data-theme='guofeng'] .ziwei-chart .palace-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px dashed rgba(176, 141, 59, 0.45);
+  padding-bottom: 4px;
+}
+
+:root[data-theme='guofeng'] .ziwei-chart .palace-name {
+  font-family: var(--gf-font-kaiti);
+  font-size: 14px;
+  color: var(--gf-cinnabar);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+}
+
+:root[data-theme='guofeng'] .ziwei-chart .palace-name.ming {
+  color: var(--gf-cinnabar-deep);
+  font-size: 15px;
+  background: rgba(194, 58, 42, 0.08);
+  padding: 1px 8px;
+  border-radius: 3px;
+}
+
+:root[data-theme='guofeng'] .ziwei-chart .palace-name.shen {
+  color: var(--gf-gold);
+  background: rgba(176, 141, 59, 0.1);
+  padding: 1px 8px;
+  border-radius: 3px;
+  font-size: 14px;
+}
+
+:root[data-theme='guofeng'] .ziwei-chart .palace-gz {
+  font-size: 12px;
+  color: var(--gf-gold);
+  font-family: var(--gf-font-en);
+  letter-spacing: 0.06em;
+}
+
+:root[data-theme='guofeng'] .ziwei-chart .palace-stars {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+:root[data-theme='guofeng'] .ziwei-chart .star {
+  font-size: 13px;
+  line-height: 1.55;
+  font-family: var(--gf-font-serif);
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+:root[data-theme='guofeng'] .ziwei-chart .star-main {
+  color: var(--gf-ink);
+  font-weight: 500;
+}
+
+:root[data-theme='guofeng'] .ziwei-chart .star-aux {
+  color: var(--gf-ink-soft);
+}
+
+:root[data-theme='guofeng'] .ziwei-chart .star-malefic {
+  color: var(--gf-cinnabar);
+}
+
+:root[data-theme='guofeng'] .ziwei-chart .star-bright {
+  font-size: 10px;
+  color: var(--gf-gold);
+  letter-spacing: 0;
+}
+
+:root[data-theme='guofeng'] .ziwei-chart .palace-foot {
+  font-size: 11px;
+  color: var(--gf-ink-soft);
+  border-top: 1px dashed rgba(176, 141, 59, 0.3);
+  padding-top: 4px;
+  display: flex;
+  justify-content: space-between;
+  letter-spacing: 0.08em;
+}
+
+:root[data-theme='guofeng'] .ziwei-chart .palace-foot .liu {
+  color: var(--gf-gold);
+  font-size: 10px;
+}
+
+/* 四化标记（共用） */
+:root[data-theme='guofeng'] .star-sihua {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  line-height: 15px;
+  text-align: center;
+  font-size: 10px;
+  border-radius: 3px;
+  font-family: var(--gf-font-en);
+  margin-left: 2px;
+  color: #fff;
+}
+
+:root[data-theme='guofeng'] .sihua-lu   { background: rgba(74, 109, 93, 0.9); }
+:root[data-theme='guofeng'] .sihua-quan { background: rgba(176, 141, 59, 0.9); }
+:root[data-theme='guofeng'] .sihua-ke   { background: rgba(74, 109, 157, 0.9); }
+:root[data-theme='guofeng'] .sihua-ji   { background: rgba(194, 58, 42, 0.9); }
+
+/* ============ 中宫 ============ */
+:root[data-theme='guofeng'] .ziwei-chart .center-palace {
+  grid-column: 2 / 4;
+  grid-row: 2 / 4;
+  background: linear-gradient(135deg, rgba(255, 251, 240, 0.82) 0%, rgba(232, 217, 180, 0.5) 100%);
+  padding: var(--gf-space-lg);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-left: 1px solid rgba(176, 141, 59, 0.25);
+  border-right: 1px solid rgba(176, 141, 59, 0.25);
+  position: relative;
+  z-index: 1;
+}
+
+:root[data-theme='guofeng'] .ziwei-chart .center-palace > * {
+  position: relative;
+  z-index: 4;
+}
+
+:root[data-theme='guofeng'] .ziwei-chart .center-title {
+  font-family: var(--gf-font-kaiti);
+  font-size: 28px;
+  color: var(--gf-cinnabar);
+  letter-spacing: 0.3em;
+  margin-bottom: var(--gf-space-md);
+}
+
+:root[data-theme='guofeng'] .ziwei-chart .center-item {
+  font-size: 13px;
+  color: var(--gf-ink-soft);
+  margin: 4px 0;
+}
+
+:root[data-theme='guofeng'] .ziwei-chart .center-item strong {
+  color: var(--gf-ink);
+  font-family: var(--gf-font-kaiti);
+  letter-spacing: 0.08em;
+}
+
+:root[data-theme='guofeng'] .ziwei-chart .center-hint {
+  margin-top: var(--gf-space-md);
+  font-size: 12px;
+  color: var(--gf-cinnabar);
+}
+
+/* ============ 命宫 / 身宫高亮 ============ */
+:root[data-theme='guofeng'] .ziwei-chart .palace.ming-gong {
+  background: linear-gradient(180deg, rgba(194, 58, 42, 0.06), rgba(255, 251, 240, 0.95));
+  outline: 2px solid var(--gf-cinnabar);
+  outline-offset: -2px;
+  z-index: 2;
+}
+
+:root[data-theme='guofeng'] .ziwei-chart .palace.shen-gong {
+  background: linear-gradient(180deg, rgba(176, 141, 59, 0.06), rgba(255, 251, 240, 0.95));
+}
+
+/* ============ 三方四正 SVG 连线 + 高亮 ============ */
+:root[data-theme='guofeng'] .ziwei-chart .ziwei-relations-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+  overflow: visible;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+:root[data-theme='guofeng'] .ziwei-chart.show-sanfang .ziwei-relations-svg {
+  opacity: 1;
+}
+
+:root[data-theme='guofeng'] .ziwei-chart .line-sanhe {
+  fill: none;
+  stroke: var(--gf-cinnabar);
+  stroke-width: 2;
+  stroke-dasharray: 7 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.72;
+}
+
+:root[data-theme='guofeng'] .ziwei-chart .line-duigong {
+  fill: none;
+  stroke: var(--gf-gold);
+  stroke-width: 2;
+  stroke-dasharray: 3 5;
+  stroke-linecap: round;
+  opacity: 0.7;
+}
+
+:root[data-theme='guofeng'] .ziwei-chart .dot-anchor {
+  fill: var(--gf-cinnabar);
+  opacity: 0.9;
+}
+
+:root[data-theme='guofeng'] .ziwei-chart .dot-anchor.opp {
+  fill: var(--gf-gold);
+}
+
+:root[data-theme='guofeng'] .ziwei-chart.show-sanfang .palace.p-ming {
+  background: linear-gradient(180deg, rgba(249, 228, 212, 0.95), rgba(245, 208, 186, 0.9));
+  box-shadow: inset 0 0 0 2px var(--gf-cinnabar);
+}
+
+:root[data-theme='guofeng'] .ziwei-chart.show-sanfang .palace.p-sanhe {
+  background: linear-gradient(180deg, rgba(255, 246, 227, 0.95), rgba(249, 228, 212, 0.85));
+  box-shadow: inset 0 0 0 1px var(--gf-cinnabar);
+}
+
+:root[data-theme='guofeng'] .ziwei-chart.show-sanfang .palace.p-duigong {
+  background: linear-gradient(180deg, rgba(254, 250, 227, 0.95), rgba(241, 219, 162, 0.85));
+  box-shadow: inset 0 0 0 1px var(--gf-gold);
+}
+
+/* ============ 移动端 ============ */
+:root[data-theme='guofeng'] .ziwei-mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  :root[data-theme='guofeng'] .ziwei-chart {
+    display: none;
+  }
+
+  :root[data-theme='guofeng'] .ziwei-mobile {
+    display: block;
+    max-width: 100%;
+    margin: 0 auto var(--gf-space-lg);
+  }
+
+  :root[data-theme='guofeng'] .mobile-key-palaces {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--gf-space-sm);
+  }
+
+  :root[data-theme='guofeng'] .mobile-key-palaces .palace {
+    background: rgba(255, 251, 240, 0.92);
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 120px;
+    border: 1px solid rgba(176, 141, 59, 0.3);
+    border-radius: var(--gf-radius-md);
+  }
+
+  :root[data-theme='guofeng'] .mobile-key-palaces .palace .palace-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px dashed rgba(176, 141, 59, 0.45);
+    padding-bottom: 4px;
+  }
+
+  :root[data-theme='guofeng'] .mobile-key-palaces .palace .palace-name {
+    font-family: var(--gf-font-kaiti);
+    font-size: 14px;
+    color: var(--gf-cinnabar);
+    letter-spacing: 0.1em;
+  }
+
+  :root[data-theme='guofeng'] .mobile-key-palaces .palace .palace-gz {
+    font-size: 12px;
+    color: var(--gf-gold);
+    font-family: var(--gf-font-en);
+  }
+
+  :root[data-theme='guofeng'] .mobile-key-palaces .palace .star {
+    font-size: 13px;
+    line-height: 1.55;
+    font-family: var(--gf-font-serif);
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+
+  :root[data-theme='guofeng'] .mobile-key-palaces .palace .star-main { color: var(--gf-ink); font-weight: 500; }
+  :root[data-theme='guofeng'] .mobile-key-palaces .palace .star-aux { color: var(--gf-ink-soft); }
+  :root[data-theme='guofeng'] .mobile-key-palaces .palace .star-malefic { color: var(--gf-cinnabar); }
+  :root[data-theme='guofeng'] .mobile-key-palaces .palace .star-bright { font-size: 10px; color: var(--gf-gold); }
+
+  :root[data-theme='guofeng'] .mobile-key-palaces .palace .palace-foot {
+    font-size: 11px;
+    color: var(--gf-ink-soft);
+    border-top: 1px dashed rgba(176, 141, 59, 0.3);
+    padding-top: 4px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  :root[data-theme='guofeng'] .mobile-key-palaces .palace .palace-foot .liu {
+    color: var(--gf-gold);
+    font-size: 10px;
+  }
+
+  :root[data-theme='guofeng'] .mobile-more-list {
+    margin-top: var(--gf-space-md);
+    border: 1px solid rgba(176, 141, 59, 0.3);
+    border-radius: var(--gf-radius-md);
+    overflow: hidden;
+  }
+
+  :root[data-theme='guofeng'] .mobile-more-head {
+    width: 100%;
+    padding: 12px 14px;
+    background: rgba(176, 141, 59, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+  }
+
+  :root[data-theme='guofeng'] .mobile-more-head h4 {
+    margin: 0;
+    font-family: var(--gf-font-kaiti);
+    font-size: 15px;
+    color: var(--gf-ink);
+    letter-spacing: 0.1em;
+  }
+
+  :root[data-theme='guofeng'] .mobile-more-toggle {
+    color: var(--gf-gold);
+    font-size: 13px;
+  }
+
+  :root[data-theme='guofeng'] .mobile-more-body {
+    background: rgba(255, 251, 240, 0.9);
+  }
+
+  :root[data-theme='guofeng'] .mobile-more-item {
+    padding: 10px 14px;
+    border-top: 1px dashed rgba(176, 141, 59, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+  }
+
+  :root[data-theme='guofeng'] .mobile-more-item .p-name {
+    color: var(--gf-cinnabar);
+    font-family: var(--gf-font-kaiti);
+  }
+
+  :root[data-theme='guofeng'] .mobile-more-item .p-star {
+    color: var(--gf-ink-soft);
+  }
+}
+
+/* ============ 解读区 ============ */
+:root[data-theme='guofeng'] .ziwei-interpret-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--gf-space-md);
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--gf-space-lg);
+}
+
+:root[data-theme='guofeng'] .ziwei-interpret-card {
+  background: rgba(255, 251, 240, 0.95);
+  border: 1px solid rgba(176, 141, 59, 0.3);
+  border-radius: var(--gf-radius-lg);
+  padding: var(--gf-space-lg);
+  box-shadow: var(--gf-shadow-sm);
+}
+
+:root[data-theme='guofeng'] .ziwei-interpret-card h3 {
+  font-family: var(--gf-font-kaiti);
+  font-size: 20px;
+  color: var(--gf-cinnabar);
+  margin: 0 0 var(--gf-space-md);
+  letter-spacing: 0.15em;
+  border-bottom: 1px solid rgba(176, 141, 59, 0.35);
+  padding-bottom: 8px;
+}
+
+:root[data-theme='guofeng'] .ziwei-interpret-card p {
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--gf-ink);
+  margin: 0 0 var(--gf-space-sm);
+}
+
+:root[data-theme='guofeng'] .ziwei-interpret-card .tags {
+  margin-top: var(--gf-space-md);
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+:root[data-theme='guofeng'] .ziwei-interpret-card .tag {
+  padding: 3px 10px;
+  background: rgba(194, 58, 42, 0.08);
+  color: var(--gf-cinnabar);
+  border: 1px solid rgba(194, 58, 42, 0.25);
+  font-size: 12px;
+  border-radius: 999px;
+  letter-spacing: 0.05em;
+}
+
+:root[data-theme='guofeng'] .ziwei-interpret-card .tag.gold {
+  background: rgba(176, 141, 59, 0.1);
+  color: var(--gf-gold);
+  border-color: rgba(176, 141, 59, 0.35);
+}
+
+:root[data-theme='guofeng'] .ziwei-interpret-card .tag.jade,
+:root[data-theme='guofeng'] .ziwei-interpret-card .tag.success {
+  background: rgba(74, 109, 93, 0.08);
+  color: var(--gf-jade);
+  border-color: rgba(74, 109, 93, 0.3);
+}
+
+:root[data-theme='guofeng'] .ziwei-interpret-card .tag.danger {
+  background: rgba(194, 58, 42, 0.12);
+  color: var(--gf-cinnabar-deep);
+  border-color: rgba(194, 58, 42, 0.35);
+}
+
+:root[data-theme='guofeng'] .ziwei-interpret-card .tag.plain {
+  background: rgba(58, 50, 44, 0.06);
+  color: var(--gf-ink-soft);
+  border-color: rgba(58, 50, 44, 0.2);
+}
+
+/* ============ 大限 / 小限 ============ */
+:root[data-theme='guofeng'] .ziwei-daxian-section {
+  max-width: 1200px;
+  margin: var(--gf-space-xl) auto;
+  padding: 0 var(--gf-space-md);
+}
+
+:root[data-theme='guofeng'] .ziwei-daxian-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--gf-space-md);
+  flex-wrap: wrap;
+  gap: var(--gf-space-sm);
+}
+
+:root[data-theme='guofeng'] .ziwei-daxian-header h2 {
+  font-family: var(--gf-font-kaiti);
+  font-size: 22px;
+  color: var(--gf-ink);
+  margin: 0;
+  letter-spacing: 0.15em;
+}
+
+:root[data-theme='guofeng'] .ziwei-daxian-meta {
+  font-size: 13px;
+  color: var(--gf-ink-soft);
+}
+
+:root[data-theme='guofeng'] .ziwei-daxian-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--gf-space-sm);
+}
+
+:root[data-theme='guofeng'] .ziwei-daxian-cell {
+  background: rgba(255, 251, 240, 0.9);
+  border: 1px solid rgba(176, 141, 59, 0.3);
+  border-radius: var(--gf-radius-md);
+  padding: var(--gf-space-sm);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+:root[data-theme='guofeng'] .ziwei-daxian-cell:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--gf-shadow-sm);
+  border-color: var(--gf-gold);
+}
+
+:root[data-theme='guofeng'] .ziwei-daxian-cell.current {
+  background: linear-gradient(180deg, rgba(194, 58, 42, 0.1), rgba(255, 251, 240, 0.95));
+  border: 2px solid var(--gf-cinnabar);
+}
+
+:root[data-theme='guofeng'] .ziwei-daxian-age {
+  font-size: 11px;
+  color: var(--gf-ink-soft);
+  letter-spacing: 0.08em;
+}
+
+:root[data-theme='guofeng'] .ziwei-daxian-palace {
+  font-family: var(--gf-font-kaiti);
+  font-size: 15px;
+  color: var(--gf-cinnabar);
+  margin: 4px 0 2px;
+  letter-spacing: 0.1em;
+}
+
+:root[data-theme='guofeng'] .ziwei-daxian-gz {
+  font-size: 11px;
+  color: var(--gf-gold);
+  font-family: var(--gf-font-en);
+}
+
+@media (max-width: 768px) {
+  :root[data-theme='guofeng'] .ziwei-interpret-section {
+    grid-template-columns: 1fr;
+  }
+  :root[data-theme='guofeng'] .ziwei-daxian-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  :root[data-theme='guofeng'] .ziwei-meta-bar {
+    padding: var(--gf-space-sm) var(--gf-space-md);
+  }
+}

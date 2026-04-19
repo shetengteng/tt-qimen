@@ -2,7 +2,13 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
-import { decades } from '../data/mockBazi'
+import { decades as fallbackDecades, type DecadeCell } from '../data/mockBazi'
+import type { BaziChart, Tendency } from '../types'
+
+interface Props {
+  chart?: BaziChart | null
+}
+const props = defineProps<Props>()
 
 const { t, tm } = useI18n()
 const themeStore = useThemeStore()
@@ -23,6 +29,51 @@ const verdictLabel = (v: 'ji' | 'zhong' | 'xiong') => {
 }
 
 const flowFortune = computed(() => tm('bazi.fortune') as Record<string, string>)
+
+/** Tendency → 旧的 ji/zhong/xiong 颜色枚举（仅用于 CSS class） */
+function tendencyClass(t: Tendency): 'ji' | 'zhong' | 'xiong' {
+  if (t === 'favorable') return 'ji'
+  if (t === 'unfavorable') return 'xiong'
+  return 'zhong'
+}
+
+const decades = computed<DecadeCell[]>(() => {
+  if (!props.chart) return fallbackDecades
+  return props.chart.decades.map(d => ({
+    age: `${d.startAge} - ${d.endAge}`,
+    ganzhi: d.ganzhi,
+    shishen: d.tenGod,
+    shishenMn: d.tenGod.replace(' · ', '·'),
+    verdict: tendencyClass(d.tendency),
+    current: d.current,
+  }))
+})
+
+/** 当前大运（找不到时取第一段，避免空白） */
+const currentDecade = computed(() => {
+  if (!props.chart) return null
+  const idx = props.chart.currentDecadeIdx
+  return idx >= 0 ? props.chart.decades[idx] : props.chart.decades[0]
+})
+
+/** 当前详情 ganzhi + range 文案（无 chart 时回退原型示例 "乙酉 / 35-44 / 2025-2034"） */
+const currentDetail = computed(() => {
+  if (!currentDecade.value) {
+    return {
+      ganzhi: '乙酉',
+      ageRange: '35 - 44',
+      yearRange: '2025 - 2034',
+      hint: flowFortune.value.currentDetailHint,
+    }
+  }
+  const cd = currentDecade.value
+  return {
+    ganzhi: cd.ganzhi,
+    ageRange: `${cd.startAge} - ${cd.endAge}`,
+    yearRange: `${cd.startYear} - ${cd.endYear}`,
+    hint: cd.hint,
+  }
+})
 </script>
 
 <template>
@@ -49,14 +100,14 @@ const flowFortune = computed(() => tm('bazi.fortune') as Record<string, string>)
 
     <div class="current-fortune-detail">
       <div class="detail-header">
-        <div class="detail-ganzhi">乙酉</div>
+        <div class="detail-ganzhi">{{ currentDetail.ganzhi }}</div>
         <div class="detail-meta">
           <div class="detail-title">{{ flowFortune.currentDetailTitle }}</div>
-          <div class="detail-subtitle">{{ flowFortune.currentDetailSubtitle }}</div>
+          <div class="detail-subtitle">{{ currentDetail.ageRange }} {{ '岁' }} · {{ currentDetail.yearRange }}</div>
         </div>
         <div class="decade-label ji">{{ flowFortune.currentBadge }}</div>
       </div>
-      <p class="detail-hint">{{ flowFortune.currentDetailHint }}</p>
+      <p class="detail-hint">{{ currentDetail.hint }}</p>
       <div class="hint-list">
         <div class="hint-item">
           <span class="hint-label">{{ flowFortune.yi }}</span>
@@ -95,13 +146,13 @@ const flowFortune = computed(() => tm('bazi.fortune') as Record<string, string>)
 
     <div class="current-detail">
       <div class="detail-lead">
-        <div class="detail-lead-gz">乙酉</div>
-        <div class="detail-lead-range">35 - 44 {{ '岁' }}<br>2025 - 2034</div>
+        <div class="detail-lead-gz">{{ currentDetail.ganzhi }}</div>
+        <div class="detail-lead-range">{{ currentDetail.ageRange }} {{ '岁' }}<br>{{ currentDetail.yearRange }}</div>
       </div>
       <div class="detail-body">
         <h3>{{ flowFortune.currentDetailTitleMn }}</h3>
         <p class="sub">{{ flowFortune.currentDetailSubtitleMn }}</p>
-        <p>{{ flowFortune.currentDetailHint }}</p>
+        <p>{{ currentDetail.hint }}</p>
         <div class="detail-hints">
           <div class="hint yi">
             <strong>◎ {{ flowFortune.yi }}</strong>

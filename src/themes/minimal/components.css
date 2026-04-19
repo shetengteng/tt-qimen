@@ -10,6 +10,7 @@
  *   home         — 首页 Hero / 模块卡片 / 黄历条 / Features
  *   birth-form   — 通用「生辰/日期」输入卡 (ds-* prefix)
  *   bazi         — 八字命盘所有内容（四柱/十神/雷达/五行/解读/大运/流年/skeleton）
+ *   ziwei        — 紫微斗数所有内容（12 宫盘/中宫/三方四正/解读/大限/小限）
  *   scrollbar    — 全局滚动条配色（结构在 _shared/base.css）
  *   collapsible  — 可折叠区块
  * ============================================ */
@@ -18,5 +19,6 @@
 @import './components/home.css';
 @import './components/birth-form.css';
 @import './components/bazi.css';
+@import './components/ziwei.css';
 @import './components/scrollbar.css';
 @import './components/collapsible.css';

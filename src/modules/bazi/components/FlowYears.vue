@@ -8,31 +8,73 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
-import { flowYears } from '../data/mockBazi'
+import { flowYears as fallbackFlow, type FlowYearCell } from '../data/mockBazi'
+import type { BaziChart } from '../types'
+
+interface Props {
+  chart?: BaziChart | null
+}
+const props = defineProps<Props>()
 
 const { t, locale } = useI18n()
 const themeStore = useThemeStore()
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
+/** 真实命盘下的流年映射（不分多语言，只展示中文模板） */
+interface FlowYearVm {
+  year: number
+  ganzhi: string
+  shishen: string
+  hint: string
+  tags: string[]
+  current?: boolean
+}
+
+const flowYears = computed<FlowYearVm[]>(() => {
+  if (!props.chart) {
+    return fallbackFlow.map<FlowYearVm>(fy => ({
+      year: fy.year,
+      ganzhi: fy.ganzhi,
+      shishen: fy.shishen,
+      hint: fy.hint,
+      tags: fy.tags,
+      current: fy.current,
+    }))
+  }
+  return props.chart.flowYears.map<FlowYearVm>(fy => ({
+    year: fy.year,
+    ganzhi: fy.ganzhi,
+    shishen: fy.tenGod,
+    hint: fy.hint,
+    tags: fy.tags,
+    current: fy.current,
+  }))
+})
+
 const flowHint = (idx: number) => {
-  const fy = flowYears[idx]
+  if (props.chart) return flowYears.value[idx].hint
+  // mock：保留原多语言行为
+  const fy = fallbackFlow[idx] as FlowYearCell | undefined
+  if (!fy) return ''
   if (locale.value === 'zh-TW') return fy.hintTw
   if (locale.value === 'en') return fy.hintEn
   return fy.hint
 }
 const flowTags = (idx: number) => {
-  const fy = flowYears[idx]
+  if (props.chart) return flowYears.value[idx].tags
+  const fy = fallbackFlow[idx] as FlowYearCell | undefined
+  if (!fy) return []
   if (locale.value === 'zh-TW') return fy.tagsTw
   if (locale.value === 'en') return fy.tagsEn
   return fy.tags
 }
 type FlowTagMn = { label: string; tone?: 'warning' | 'success' | 'danger' }
 const flowTagsMn = (idx: number): FlowTagMn[] => {
-  // 简约主题：tone 取自 tagsMn（与 zh-CN tags 对齐）
-  // 其他语言降级为纯文本 tag
-  const fy = flowYears[idx]
+  if (props.chart) return flowYears.value[idx].tags.map<FlowTagMn>(label => ({ label }))
+  const fy = fallbackFlow[idx] as FlowYearCell | undefined
+  if (!fy) return []
   if (locale.value === 'zh-CN' && fy.tagsMn?.length) return fy.tagsMn
-  return flowTags(idx).map<FlowTagMn>((label) => ({ label }))
+  return flowTags(idx).map<FlowTagMn>((label: string) => ({ label }))
 }
 </script>
 

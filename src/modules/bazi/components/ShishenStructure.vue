@@ -2,6 +2,8 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
+import type { BaziChart } from '../types'
+import { TEN_GOD_INFO } from '../data/tenGods'
 
 interface ShishenItem {
   pillar: string
@@ -11,11 +13,40 @@ interface ShishenItem {
   descMn: string
 }
 
+interface Props {
+  /** 真实命盘；不传则回退到 i18n mock */
+  chart?: BaziChart | null
+}
+const props = defineProps<Props>()
+
 const { t, tm } = useI18n()
 const themeStore = useThemeStore()
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
-const items = computed(() => (tm('bazi.shishen.items') as ShishenItem[]) ?? [])
+const fallbackItems = computed(() => (tm('bazi.shishen.items') as ShishenItem[]) ?? [])
+
+const items = computed<ShishenItem[]>(() => {
+  if (!props.chart) return fallbackItems.value
+  const pillarLabels = tm('bazi.pillars') as Record<string, string>
+  const list: ShishenItem[] = []
+  const cfgs: Array<{ key: 'year' | 'month' | 'hour'; label: string }> = [
+    { key: 'year', label: pillarLabels.year },
+    { key: 'month', label: pillarLabels.month },
+    { key: 'hour', label: pillarLabels.hour },
+  ]
+  for (const c of cfgs) {
+    const p = props.chart.pillars[c.key]
+    const info = TEN_GOD_INFO[p.tenGod]
+    list.push({
+      pillar: c.label,
+      gan: p.gan,
+      shishen: p.tenGod,
+      desc: info.desc,
+      descMn: info.descMn,
+    })
+  }
+  return list
+})
 </script>
 
 <template>
