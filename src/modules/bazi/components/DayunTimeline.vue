@@ -2,9 +2,9 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
-import { decades, flowYears } from '../data/mockBazi'
+import { decades } from '../data/mockBazi'
 
-const { t, tm, locale } = useI18n()
+const { t, tm } = useI18n()
 const themeStore = useThemeStore()
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
@@ -22,26 +22,6 @@ const verdictLabel = (v: 'ji' | 'zhong' | 'xiong') => {
   return t('bazi.fortune.verdictZhong')
 }
 
-const flowHint = (idx: number) => {
-  const fy = flowYears[idx]
-  if (locale.value === 'zh-TW') return fy.hintTw
-  if (locale.value === 'en') return fy.hintEn
-  return fy.hint
-}
-const flowTags = (idx: number) => {
-  const fy = flowYears[idx]
-  if (locale.value === 'zh-TW') return fy.tagsTw
-  if (locale.value === 'en') return fy.tagsEn
-  return fy.tags
-}
-type FlowTagMn = { label: string; tone?: 'warning' | 'success' | 'danger' }
-const flowTagsMn = (idx: number): FlowTagMn[] => {
-  // Minimal theme: tones come from `tagsMn` (already aligned with zh-CN tags).
-  // For other locales we degrade gracefully to flat tags.
-  const fy = flowYears[idx]
-  if (locale.value === 'zh-CN' && fy.tagsMn?.length) return fy.tagsMn
-  return flowTags(idx).map<FlowTagMn>((label) => ({ label }))
-}
 const flowFortune = computed(() => tm('bazi.fortune') as Record<string, string>)
 </script>
 
@@ -139,80 +119,4 @@ const flowFortune = computed(() => tm('bazi.fortune') as Record<string, string>)
     </div>
   </section>
 
-  <!-- 流年 -->
-  <section v-if="isGuofeng" class="flow-years">
-    <div
-      class="section-title"
-      style="text-align: center; font-size: 28px; color: var(--gf-ink); margin-bottom: var(--gf-space-sm);"
-    >{{ t('bazi.flow.title') }}</div>
-    <div style="text-align: center; color: var(--gf-ink-soft); font-size: 14px;">
-      {{ t('bazi.flow.subtitle') }}
-    </div>
-
-    <div class="flow-year-grid">
-      <div
-        v-for="(fy, idx) in flowYears"
-        :key="fy.year"
-        :class="['flow-year', { current: fy.current }]"
-      >
-        <div class="flow-year-header">
-          <div class="flow-year-year">{{ fy.year }}</div>
-          <div class="flow-year-ganzhi">{{ fy.ganzhi }}</div>
-        </div>
-        <div class="flow-year-shishen">
-          {{ fy.shishen }}<template v-if="fy.current"> | {{ t('bazi.flow.currentSuffix') }}</template>
-        </div>
-        <p class="flow-year-hint">{{ flowHint(idx) }}</p>
-        <div class="flow-year-tags">
-          <span v-for="tag in flowTags(idx)" :key="tag" class="flow-year-tag">{{ tag }}</span>
-        </div>
-      </div>
-    </div>
-
-    <div style="text-align: center; margin-top: var(--gf-space-lg);">
-      <button class="gf-btn gf-btn-outline">{{ t('bazi.btn.moreYears') }}</button>
-    </div>
-  </section>
-
-  <section v-else class="flow-section">
-    <div class="fortune-header">
-      <div>
-        <h2>{{ t('bazi.flow.titleMn') }}</h2>
-        <div class="meta" style="margin-top: 4px;">{{ t('bazi.flow.subtitleMn') }}</div>
-      </div>
-    </div>
-
-    <div class="flow-grid">
-      <div
-        v-for="(fy, idx) in flowYears"
-        :key="fy.year"
-        :class="['flow-card', { current: fy.current }]"
-      >
-        <div class="flow-head">
-          <span class="flow-year">
-            {{ fy.year }}<template v-if="fy.current"> · {{ t('bazi.flow.currentSuffix') }}</template>
-          </span>
-          <span class="flow-gz">{{ fy.ganzhi }}</span>
-        </div>
-        <div class="flow-ss">{{ fy.shishen }}</div>
-        <p class="flow-hint">{{ flowHint(idx) }}</p>
-        <div class="flow-tags">
-          <span
-            v-for="(tag, i) in flowTagsMn(idx)"
-            :key="i"
-            :class="[
-              'mn-badge',
-              tag.tone === 'warning' ? 'mn-badge-warning' : '',
-              tag.tone === 'success' ? 'mn-badge-success' : '',
-              tag.tone === 'danger' ? 'mn-badge-danger' : '',
-            ]"
-          >{{ tag.label }}</span>
-        </div>
-      </div>
-    </div>
-
-    <div style="text-align: center; margin-top: var(--mn-space-6);">
-      <button class="mn-btn mn-btn-outline">{{ t('bazi.btn.moreYears') }}</button>
-    </div>
-  </section>
 </template>

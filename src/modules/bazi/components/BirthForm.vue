@@ -13,9 +13,9 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 
 interface Props {
-  /** Optional title override; falls back to bazi.inputCardTitle */
+  /** 标题文案覆盖；为空时回退到 bazi.inputCardTitle */
   title?: string
-  /** Localised primary button label override */
+  /** 主按钮文案覆盖（已经过 i18n 处理） */
   primaryLabel?: string
 }
 

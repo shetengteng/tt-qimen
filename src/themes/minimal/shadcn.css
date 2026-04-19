@@ -67,6 +67,45 @@
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-md);
   border-radius: var(--radius-md);
+  /* 限定弹出层最高 320px：年份 127 项时默认会撑到 viewport 高度，
+   * 此处显式收紧并打开滚动，避免下拉吞掉整个屏幕。
+   * 必须用 !important：reka-ui 在打开瞬间会写 inline style="max-height: 100%"，
+   * 普通选择器会被 inline style 覆盖。 */
+  max-height: 320px !important;
+  overflow-y: auto;
+}
+
+/* popper 模式下隐藏 reka-ui 内置的上/下滚动箭头，
+ * 让用户直接看到原生滚动条，符合现代下拉的交互直觉。 */
+:root[data-theme='minimal'] [data-slot='select-content']:not([data-align-trigger='true']) [data-slot='select-scroll-up-button'],
+:root[data-theme='minimal'] [data-slot='select-content']:not([data-align-trigger='true']) [data-slot='select-scroll-down-button'] {
+  display: none;
+}
+
+/* 自定义滚动条：与简约紫色配色协调。
+ * 注：popper 模式下真正的滚动容器是 SelectViewport（data-position 属性所在元素），
+ * 不是 SelectContent；同时给两者都加样式以兼容 popper / item-aligned 两种模式。
+ * scrollbar-width:thin 让 Firefox 显示窄滚动条；
+ * webkit 浏览器通过 ::-webkit-scrollbar 强制显示，避免 macOS overlay 滚动条仅在滚动时短暂出现。 */
+:root[data-theme='minimal'] [data-slot='select-content'],
+:root[data-theme='minimal'] [data-slot='select-content'] [data-position] {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(59, 47, 99, 0.4) transparent;
+}
+:root[data-theme='minimal'] [data-slot='select-content']::-webkit-scrollbar,
+:root[data-theme='minimal'] [data-slot='select-content'] [data-position]::-webkit-scrollbar {
+  width: 8px;
+  background-color: transparent;
+}
+:root[data-theme='minimal'] [data-slot='select-content']::-webkit-scrollbar-thumb,
+:root[data-theme='minimal'] [data-slot='select-content'] [data-position]::-webkit-scrollbar-thumb {
+  background-color: rgba(59, 47, 99, 0.4);
+  border-radius: 999px;
+  min-height: 24px;
+}
+:root[data-theme='minimal'] [data-slot='select-content']::-webkit-scrollbar-thumb:hover,
+:root[data-theme='minimal'] [data-slot='select-content'] [data-position]::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(59, 47, 99, 0.6);
 }
 
 :root[data-theme='minimal'] [data-slot='select-item'] {

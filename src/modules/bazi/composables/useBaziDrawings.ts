@@ -12,11 +12,11 @@ export interface BaziArc {
   from: number
   to: number
   label: string
-  /** Optional descriptive suffix shown beside `label` in the legend.
-   * The minimal prototype renders e.g. "子午相冲（年支 ↔ 日支，主动荡）",
-   * the guofeng prototype keeps the legend short with just `label`. */
+  /** 关系图例中跟在 `label` 后的可选描述。
+   * 简约原型用括号补充上下文（如 "子午相冲（年支 ↔ 日支，主动荡）"），
+   * 国风原型则只显示简短的 `label`。 */
   desc?: string
-  /** 'up' = bow toward 天干 row · 'down' = bow toward 藏干 row */
+  /** 'up' = 弧线向上拱（向天干行）· 'down' = 弧线向下拱（向藏干行） */
   dir: 'up' | 'down'
 }
 

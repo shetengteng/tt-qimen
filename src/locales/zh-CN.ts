@@ -279,6 +279,19 @@ export default {
       subtitleMn: '一岁一更 · 与大运共振',
       currentSuffix: '今年',
     },
+
+    collapse: {
+      collapseLabel: '收起',
+      expandLabel: '展开',
+      sectionChart: '◎ 命盘',
+      sectionInterpret: '◎ 命盘简析',
+      sectionFortune: '◎ 大运时间轴',
+      sectionFlow: '◎ 流年',
+      sectionChartMn: '命盘',
+      sectionInterpretMn: '命盘简析',
+      sectionFortuneMn: '大运时间轴',
+      sectionFlowMn: '流年',
+    },
   },
   ziwei: {
     title: '紫微斗数',

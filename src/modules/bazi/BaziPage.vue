@@ -9,6 +9,8 @@ import ShishenStructure from './components/ShishenStructure.vue'
 import ElementsRadar from './components/ElementsRadar.vue'
 import InterpretBlock from './components/InterpretBlock.vue'
 import DayunTimeline from './components/DayunTimeline.vue'
+import FlowYears from './components/FlowYears.vue'
+import CollapsibleSection from '@/components/common/CollapsibleSection.vue'
 import { meta as baziMeta, pillarsByLocale } from './data/mockBazi'
 import { useBaziDrawings, type BaziArc } from './composables/useBaziDrawings'
 import { useSkeletonReveal } from '@/composables/useSkeletonReveal'
@@ -101,23 +103,34 @@ function go(name: 'home') {
 
     <div :class="['result-zone', { revealed: skeleton.revealed.value }]">
       <div class="gf-container" style="padding-top: 0;">
-        <FourPillarsTable
-          ref="fourPillarsEl"
-          :pillars="pillarsLocalized"
-          :meta="meta"
-          :meta-labels="metaLabels"
-          :arcs="arcs"
-        />
-        <ShishenStructure />
-        <ElementsRadar />
-        <InterpretBlock />
+        <CollapsibleSection :label="t('bazi.collapse.sectionChart')">
+          <FourPillarsTable
+            ref="fourPillarsEl"
+            :pillars="pillarsLocalized"
+            :meta="meta"
+            :meta-labels="metaLabels"
+            :arcs="arcs"
+          />
+          <ShishenStructure />
+          <ElementsRadar />
+        </CollapsibleSection>
+
+        <CollapsibleSection :label="t('bazi.collapse.sectionInterpret')">
+          <InterpretBlock />
+        </CollapsibleSection>
       </div>
 
       <div class="gf-divider">
         <span>◆ {{ t('bazi.fortune.title') }} ◆</span>
       </div>
 
-      <DayunTimeline ref="dayunEl" />
+      <CollapsibleSection :label="t('bazi.collapse.sectionFortune')">
+        <DayunTimeline ref="dayunEl" />
+      </CollapsibleSection>
+
+      <CollapsibleSection :label="t('bazi.collapse.sectionFlow')">
+        <FlowYears />
+      </CollapsibleSection>
 
       <div class="action-bar">
         <button class="gf-btn">{{ t('bazi.btn.shareIcon') }} {{ t('bazi.btn.share') }}</button>
@@ -154,21 +167,34 @@ function go(name: 'home') {
 
     <div :class="['result-zone', { revealed: skeleton.revealed.value }]">
       <main class="mn-container" style="padding-top: 0;">
-        <FourPillarsTable
-          ref="fourPillarsEl"
-          :pillars="pillarsLocalized"
-          :meta="meta"
-          :meta-labels="metaLabels"
-          :arcs="arcs"
-        />
-        <ShishenStructure />
-        <ElementsRadar />
-        <InterpretBlock />
+        <CollapsibleSection :label="t('bazi.collapse.sectionChartMn')">
+          <FourPillarsTable
+            ref="fourPillarsEl"
+            :pillars="pillarsLocalized"
+            :meta="meta"
+            :meta-labels="metaLabels"
+            :arcs="arcs"
+          />
+          <ShishenStructure />
+          <ElementsRadar />
+        </CollapsibleSection>
+
+        <CollapsibleSection :label="t('bazi.collapse.sectionInterpretMn')">
+          <InterpretBlock />
+        </CollapsibleSection>
       </main>
 
       <hr class="mn-divider">
 
-      <DayunTimeline ref="dayunEl" />
+      <main class="mn-container" style="padding-top: 0;">
+        <CollapsibleSection :label="t('bazi.collapse.sectionFortuneMn')">
+          <DayunTimeline ref="dayunEl" />
+        </CollapsibleSection>
+
+        <CollapsibleSection :label="t('bazi.collapse.sectionFlowMn')">
+          <FlowYears />
+        </CollapsibleSection>
+      </main>
 
       <div class="actions mn-container">
         <button class="mn-btn">{{ t('bazi.btn.share') }}</button>

@@ -18,7 +18,12 @@ defineOptions({
 const props = withDefaults(
   defineProps<SelectContentProps & { class?: HTMLAttributes['class'] }>(),
   {
-    position: 'item-aligned',
+    // 默认改为 popper 模式：
+    // - item-aligned 模式会用上下箭头按钮替代滚动条，长列表（年份 127 项）
+    //   滚动手感差，且与原生 select 习惯不一致；
+    // - popper 模式直接显示原生滚动条，配合 themes 下 shadcn.css 的
+    //   max-height + ::-webkit-scrollbar 自定义，得到稳定可见的滚动体验。
+    position: 'popper',
     align: 'center',
   },
 )
