@@ -12,6 +12,10 @@ export interface BaziArc {
   from: number
   to: number
   label: string
+  /** Optional descriptive suffix shown beside `label` in the legend.
+   * The minimal prototype renders e.g. "子午相冲（年支 ↔ 日支，主动荡）",
+   * the guofeng prototype keeps the legend short with just `label`. */
+  desc?: string
   /** 'up' = bow toward 天干 row · 'down' = bow toward 藏干 row */
   dir: 'up' | 'down'
 }

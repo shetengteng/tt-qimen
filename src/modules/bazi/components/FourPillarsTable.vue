@@ -20,9 +20,11 @@ defineExpose<{ tableRef: () => HTMLElement | null; svgRef: () => SVGElement | nu
   svgRef: () => svgEl.value,
 })
 
-const { t, tm } = useI18n()
+const { t, tm, locale } = useI18n()
 const themeStore = useThemeStore()
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
+
+const bracket = computed(() => (locale.value === 'en' ? { open: ' (', close: ')' } : { open: '（', close: '）' }))
 
 const tableEl = ref<HTMLElement | null>(null)
 const svgEl = ref<SVGElement | null>(null)
@@ -135,7 +137,7 @@ function highlight(rel: string | null) {
         :data-rel="arc.type"
         @mouseenter="highlight(arc.type)"
         @mouseleave="highlight(null)"
-      >{{ arc.label }}</span>
+      >{{ arc.label }}<template v-if="arc.desc">{{ bracket.open }}{{ arc.desc }}{{ bracket.close }}</template></span>
     </div>
   </div>
 
@@ -226,7 +228,7 @@ function highlight(rel: string | null) {
         @mouseleave="highlight(null)"
       >
         <i :class="['dot', arc.type]" />
-        {{ arc.label }}
+        {{ arc.label }}<template v-if="arc.desc">{{ bracket.open }}{{ arc.desc }}{{ bracket.close }}</template>
       </span>
     </div>
   </div>

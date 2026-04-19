@@ -26,9 +26,9 @@ const dayunEl = ref<InstanceType<typeof DayunTimeline> | null>(null)
 const arcs = computed<BaziArc[]>(() => {
   const r = tm('bazi.relations') as Record<string, string>
   return [
-    { type: 'chong', from: 0, to: 2, label: r.chong, dir: 'up' },
-    { type: 'zixing', from: 0, to: 3, label: r.zixing, dir: 'down' },
-    { type: 'anhe', from: 1, to: 3, label: r.anhe, dir: 'down' },
+    { type: 'chong', from: 0, to: 2, label: r.chong, desc: r.chongDescMn, dir: 'up' },
+    { type: 'zixing', from: 0, to: 3, label: r.zixing, desc: r.zixingDescMn, dir: 'down' },
+    { type: 'anhe', from: 1, to: 3, label: r.anhe, desc: r.anheDescMn, dir: 'down' },
   ]
 })
 
