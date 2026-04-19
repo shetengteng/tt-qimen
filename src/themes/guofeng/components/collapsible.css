@@ -1,0 +1,52 @@
+/* ========================================================================
+ * 可折叠区块（命盘 / 命盘简析 / 大运时间轴 / 流年）
+ * 移植自 design/prototypes/guofeng/bazi.html line 1135-1171
+ * ====================================================================== */
+:root[data-theme='guofeng'] .collapsible-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+  /* 与原型 inline style 一致：按 1200 容器约束、大段间距 */
+  max-width: 1200px;
+  margin: 0 auto var(--gf-space-sm);
+  padding: 0 var(--gf-space-lg);
+}
+
+:root[data-theme='guofeng'] .collapsible-head h3 {
+  margin: 0;
+  font-family: var(--gf-font-kaiti);
+  font-size: 20px;
+  color: var(--gf-ink);
+  letter-spacing: 0.1em;
+}
+
+:root[data-theme='guofeng'] .collapse-toggle {
+  font-size: 13px;
+  color: var(--gf-ink-soft);
+  padding: 4px 12px;
+  border: 1px solid rgba(176, 141, 59, 0.3);
+  border-radius: 14px;
+  background: transparent;
+  transition: all 0.2s;
+  cursor: pointer;
+  font-family: var(--gf-font-kaiti);
+}
+
+:root[data-theme='guofeng'] .collapse-toggle:hover {
+  border-color: var(--gf-gold);
+  color: var(--gf-ink);
+  background-color: rgba(176, 141, 59, 0.08);
+}
+
+:root[data-theme='guofeng'] .collapsible-body {
+  overflow: hidden;
+  transition: max-height 0.5s ease, opacity 0.35s ease, margin-top 0.35s ease;
+}
+
+:root[data-theme='guofeng'] .collapsible-body.collapsed {
+  max-height: 0 !important;
+  opacity: 0;
+  margin-top: 0;
+}

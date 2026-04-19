@@ -76,14 +76,23 @@ body {
   scrollbar-width: thin;
 }
 
+/* 整个滚动条区域：宽 10px、纵横向通用，不要任何背景。
+   显式 background:transparent 避免某些 Chromium 版本默认浅灰底。 */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
-  background-color: transparent;
+  background: transparent;
 }
 
-::-webkit-scrollbar-track {
-  background-color: transparent;
+/* track / track-piece / corner / button：四层"槽"统一透明，
+   防止 Chromium 在不同操作系统上偶发显示浅色滑槽。 */
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-track-piece,
+::-webkit-scrollbar-corner,
+::-webkit-scrollbar-button {
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -97,8 +106,4 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background-color: rgba(0, 0, 0, 0.35);
-}
-
-::-webkit-scrollbar-corner {
-  background-color: transparent;
 }

@@ -1,0 +1,272 @@
+/* ============================================
+ * Guofeng Theme — Layout / Header / Buttons / Card / Footer
+ * Migrated from design/prototypes/assets/guofeng.css
+ * 全部以 :root[data-theme='guofeng'] 作用域包裹
+ * ============================================ */
+
+/* ============ Container ============ */
+:root[data-theme='guofeng'] .gf-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+}
+
+/* ============ Header ============ */
+:root[data-theme='guofeng'] .gf-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: rgba(246, 236, 214, 0.94);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(176, 141, 59, 0.2);
+}
+
+:root[data-theme='guofeng'] .gf-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-6);
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+:root[data-theme='guofeng'] .gf-logo {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-accent);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  text-decoration: none;
+}
+
+:root[data-theme='guofeng'] .gf-logo .gf-logo-mark {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  text-align: center;
+  background-color: var(--color-accent);
+  color: var(--color-ink-inverse);
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-weight: 700;
+  transform: rotate(-2deg);
+  box-shadow: var(--shadow-sm);
+}
+
+:root[data-theme='guofeng'] .gf-nav {
+  display: flex;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+}
+
+:root[data-theme='guofeng'] .gf-nav a {
+  color: var(--color-ink-soft);
+  text-decoration: none;
+  font-size: 15px;
+  position: relative;
+  padding: 4px 0;
+  transition: color var(--transition-fast);
+}
+
+:root[data-theme='guofeng'] .gf-nav a:hover,
+:root[data-theme='guofeng'] .gf-nav a.active {
+  color: var(--color-accent);
+}
+
+:root[data-theme='guofeng'] .gf-nav a.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--color-accent);
+  border-radius: 1px;
+}
+
+/* ============ Toolbar in Header (Theme/Lang switch) ============ */
+:root[data-theme='guofeng'] .gf-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* ============ Disclaimer ============ */
+:root[data-theme='guofeng'] .gf-disclaimer {
+  background: linear-gradient(90deg, rgba(176, 141, 59, 0.08), rgba(194, 58, 42, 0.05));
+  border-left: 3px solid var(--color-warning);
+  padding: var(--space-2) var(--space-6);
+  font-size: 13px;
+  color: var(--color-ink-soft);
+  text-align: center;
+}
+
+/* ============ Buttons ============ */
+:root[data-theme='guofeng'] .gf-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 12px 28px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--color-ink-inverse);
+  background-color: var(--color-accent);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+:root[data-theme='guofeng'] .gf-btn:hover {
+  background-color: var(--color-accent-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  color: var(--color-ink-inverse);
+}
+
+:root[data-theme='guofeng'] .gf-btn:active {
+  transform: translateY(0);
+}
+
+:root[data-theme='guofeng'] .gf-btn-outline {
+  background-color: transparent;
+  color: var(--color-ink);
+  border: 1px solid var(--color-warning);
+}
+
+:root[data-theme='guofeng'] .gf-btn-outline:hover {
+  background-color: var(--color-warning);
+  color: var(--color-ink-inverse);
+}
+
+:root[data-theme='guofeng'] .gf-btn-gold {
+  background-color: var(--color-warning);
+  color: var(--color-ink);
+}
+
+:root[data-theme='guofeng'] .gf-btn-gold:hover {
+  background-color: #d4a94a;
+  color: var(--color-ink);
+}
+
+/* ============ Card ============ */
+:root[data-theme='guofeng'] .gf-card {
+  background-color: rgba(255, 251, 240, 0.85);
+  border: 1px solid rgba(176, 141, 59, 0.2);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+:root[data-theme='guofeng'] .gf-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-warning);
+  color: inherit;
+}
+
+:root[data-theme='guofeng'] .gf-card-title {
+  font-size: 20px;
+  color: var(--color-ink);
+  margin: 0 0 var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+:root[data-theme='guofeng'] .gf-card-desc {
+  font-size: 14px;
+  color: var(--color-ink-soft);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ============ Seal ============ */
+:root[data-theme='guofeng'] .gf-seal {
+  display: inline-block;
+  padding: 6px 10px;
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--color-ink-inverse);
+  background-color: #a3231b;
+  border-radius: 2px;
+  transform: rotate(-4deg);
+  box-shadow: 0 2px 4px rgba(163, 35, 27, 0.3);
+  letter-spacing: 2px;
+  position: relative;
+}
+
+:root[data-theme='guofeng'] .gf-seal::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 1px;
+  pointer-events: none;
+}
+
+/* ============ Divider ============ */
+:root[data-theme='guofeng'] .gf-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  color: var(--color-warning);
+  margin: var(--space-10) 0;
+  font-size: 14px;
+}
+
+:root[data-theme='guofeng'] .gf-divider::before,
+:root[data-theme='guofeng'] .gf-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-warning), transparent);
+}
+
+/* ============ Footer ============ */
+:root[data-theme='guofeng'] .gf-footer {
+  margin-top: var(--space-16);
+  padding: var(--space-10) var(--space-6);
+  border-top: 1px solid rgba(176, 141, 59, 0.2);
+  background-color: rgba(26, 22, 19, 0.04);
+  text-align: center;
+  font-size: 13px;
+  color: var(--color-ink-soft);
+  line-height: 1.8;
+}
+
+:root[data-theme='guofeng'] .gf-footer a {
+  color: var(--color-accent);
+  text-decoration: none;
+  margin: 0 var(--space-2);
+}
+
+/* ============ Responsive ============ */
+@media (max-width: 768px) {
+  :root[data-theme='guofeng'] .gf-container {
+    padding: 0 var(--space-4);
+  }
+  :root[data-theme='guofeng'] .gf-nav {
+    display: none;
+  }
+  :root[data-theme='guofeng'] .gf-logo {
+    font-size: 20px;
+  }
+}
