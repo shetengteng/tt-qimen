@@ -1,4 +1,5 @@
-import { onBeforeUnmount, onMounted, watch, type Ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, watch, type Ref, type WatchSource } from 'vue'
+import { useThemeStore } from '@/stores/theme'
 import {
   clearSvg,
   fitSvg,
@@ -120,13 +121,31 @@ export function drawZiweiRelations(
 export interface UseZiweiRelationsOptions {
   getChart: () => HTMLElement | null
   getSvg: () => SVGElement | null
-  getConfig: () => ZiweiRelationsConfig
+  /**
+   * 配置（命宫 / 三合 / 对宫）—— 接受 WatchSource，
+   * 内部会 deep watch，命宫变化（例如重新排盘）将自动重画。
+   */
+  config: WatchSource<ZiweiRelationsConfig>
   /** 是否启用绘制 */
   enabled: Ref<boolean>
 }
 
+/** 把 WatchSource<T> 同步取值（支持 ref/getter/普通值，与 vue 内部一致的读法） */
+function unwrap<T>(src: WatchSource<T>): T {
+  if (typeof src === 'function') return (src as () => T)()
+  const obj = src as unknown
+  if (obj && typeof obj === 'object' && 'value' in (obj as Record<string, unknown>)) {
+    return (obj as { value: T }).value
+  }
+  return src as T
+}
+
 export function useZiweiRelations(opts: UseZiweiRelationsOptions) {
   let ro: ResizeObserver | null = null
+
+  // 主题切换需要重画 —— 国风 / 简约 SVG 样式不同，且布局尺寸可能微调
+  const themeStore = useThemeStore()
+  const themeId = computed(() => themeStore.id)
 
   function drawNow() {
     if (!opts.enabled.value) {
@@ -140,7 +159,7 @@ export function useZiweiRelations(opts: UseZiweiRelationsOptions) {
       }
       return
     }
-    drawZiweiRelations(opts.getChart(), opts.getSvg(), opts.getConfig())
+    drawZiweiRelations(opts.getChart(), opts.getSvg(), unwrap(opts.config))
   }
 
   function schedule() {
@@ -176,6 +195,16 @@ export function useZiweiRelations(opts: UseZiweiRelationsOptions) {
 
   watch(opts.enabled, () => {
     schedule()
+  })
+
+  // 配置变化（命宫 / 三合 / 对宫）→ 重画
+  watch(opts.config, () => {
+    bootstrapDraw()
+  }, { deep: true })
+
+  // 主题切换 → 重画（带兜底节奏，等待 CSS 变量 / 字号渲染完）
+  watch(themeId, () => {
+    bootstrapDraw()
   })
 
   return { schedule, drawNow, bootstrapDraw }

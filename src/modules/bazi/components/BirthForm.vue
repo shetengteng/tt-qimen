@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
-import { useUserStore } from '@/stores/user'
+import { useBirthStore } from '@/composables/useBirthStore'
 import {
   Select,
   SelectContent,
@@ -33,7 +33,7 @@ const { t, tm } = useI18n()
 const themeStore = useThemeStore()
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
-const userStore = useUserStore()
+const userStore = useBirthStore()
 
 /**
  * 时辰索引（0..12）↔ 小时（0..23）映射
@@ -90,6 +90,12 @@ const dayOptions = computed<string[]>(() => {
 /** 当年/月切换时，若当前 day 超出新月份天数，则收敛到末日 */
 watch(dayOptions, (opts) => {
   if (!opts.includes(day.value)) day.value = opts[opts.length - 1]
+})
+
+watch(gender, (v) => {
+  if (userStore.birth.gender !== v) {
+    userStore.update({ gender: v })
+  }
 })
 
 function setCalendar(v: 'solar' | 'lunar') {

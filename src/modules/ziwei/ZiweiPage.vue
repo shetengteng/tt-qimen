@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, shallowRef, watch } from 'vue'
+import { computed, onMounted, provide, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
-import { useUserStore } from '@/stores/user'
+import { BIRTH_STORE_KEY } from '@/composables/useBirthStore'
 import BirthForm from '@/modules/bazi/components/BirthForm.vue'
 import CollapsibleSection from '@/components/common/CollapsibleSection.vue'
 import { useSkeletonReveal } from '@/composables/useSkeletonReveal'
@@ -15,12 +15,14 @@ import ZiweiMobile from './components/ZiweiMobile.vue'
 import InterpretCards from './components/InterpretCards.vue'
 import DaxianGrid from './components/DaxianGrid.vue'
 import { buildZiweiChart } from './core/ziwei'
+import { useZiweiStore } from './stores/ziweiStore'
 import type { ZiweiChart } from './types'
 
 const { t } = useI18n()
 const router = useRouter()
 const themeStore = useThemeStore()
-const userStore = useUserStore()
+const ziweiStore = useZiweiStore()
+provide(BIRTH_STORE_KEY, ziweiStore)
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
 const inputCardEl = ref<HTMLElement | null>(null)
@@ -40,21 +42,9 @@ const skeleton = useSkeletonReveal({
   },
 })
 
-watch(isGuofeng, () => {
-  nextTick(() => {
-    chartRef.value?.schedule()
-    window.setTimeout(() => chartRef.value?.schedule(), 250)
-    window.setTimeout(() => chartRef.value?.schedule(), 700)
-  })
-})
-
-watch(showSanfang, () => {
-  nextTick(() => chartRef.value?.schedule())
-})
-
 function onPaipan() {
   try {
-    chart.value = buildZiweiChart(userStore.birth)
+    chart.value = buildZiweiChart(ziweiStore.birth)
   } catch (err) {
     console.error('[ziwei] calculate failed:', err)
     chart.value = null
@@ -72,13 +62,13 @@ function go(name: 'home') {
 }
 
 onMounted(() => {
-  if (!userStore.isDefault) {
+  if (!ziweiStore.isDefault) {
     onPaipan()
   }
 })
 
 watch(
-  () => userStore.birth.gender,
+  () => ziweiStore.birth.gender,
   () => {
     if (chart.value) {
       onPaipan()

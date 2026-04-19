@@ -31,14 +31,16 @@ const svgEl = ref<SVGElement | null>(null)
 
 const enabled = computed(() => props.showSanfang)
 
+const config = computed(() => ({
+  benming: sanfang.value.benming,
+  triad: [...sanfang.value.triad],
+  duigong: sanfang.value.duigong,
+}))
+
 const { schedule } = useZiweiRelations({
   getChart: () => chartEl.value,
   getSvg: () => svgEl.value,
-  getConfig: () => ({
-    benming: sanfang.value.benming,
-    triad: [...sanfang.value.triad],
-    duigong: sanfang.value.duigong,
-  }),
+  config,
   enabled,
 })
 
