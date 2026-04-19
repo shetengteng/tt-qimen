@@ -1,0 +1,62 @@
+/**
+ * 语义变量契约 — 任何主题必须实现下列变量。
+ * 业务组件 / Ds* 原子组件只能引用本文件列出的语义名，禁止使用 --gf-* / --mn-* 等内部前缀。
+ *
+ * 见 design/2026-04-18-04-技术架构.md §4.2
+ *
+ * 本文件不设默认值，仅作为人类与编辑器约定文档。
+ */
+
+:root {
+  /* ============ 颜色 ============ */
+  /* --color-bg            页面底色 */
+  /* --color-bg-elev       浮起表面（卡片）背景 */
+  /* --color-surface       同层表面 */
+  /* --color-border        细边线 */
+  /* --color-border-strong 强调边线（focus、选中） */
+
+  /* --color-ink           主文字 */
+  /* --color-ink-soft      次文字 */
+  /* --color-ink-muted     辅助文字 / placeholder */
+  /* --color-ink-inverse   反色（accent 表面上的文字） */
+
+  /* --color-accent        品牌色 / 交互主色 */
+  /* --color-accent-hover  hover 态 */
+  /* --color-accent-soft   accent 浅色（选中底） */
+  /* --color-accent-on     accent 表面上的文字色 */
+
+  /* --color-success / --color-warning / --color-danger / --color-info */
+
+  /* 五行专色 */
+  /* --color-element-wood / --color-element-fire / --color-element-earth
+     --color-element-metal / --color-element-water */
+
+  /* 关系线专色 */
+  /* --color-relation-chong / --color-relation-he / --color-relation-xing / --color-relation-anhe */
+
+  /* ============ 字体 ============ */
+  /* --font-display  标题/装饰 */
+  /* --font-body     正文 */
+  /* --font-mono     数字/代码 */
+  /* --font-en       英文专用 */
+
+  /* ============ 间距（统一 8pt 网格） ============ */
+  /* --space-1..16 */
+
+  /* ============ 圆角 ============ */
+  /* --radius-sm/md/lg/xl */
+
+  /* ============ 阴影 ============ */
+  /* --shadow-sm/md/lg */
+
+  /* ============ 装饰 token ============ */
+  /* --ornament-h-prefix  标题前缀符（"◈ " / "· " / "") */
+  /* --ornament-h-suffix  标题后缀符 */
+  /* --ornament-divider   分隔线背景 */
+  /* --ornament-corner    卡片角装饰 */
+  /* --texture-bg         背景纹理（宣纸） */
+  /* --seal-image         印章图 */
+
+  /* ============ 动效 ============ */
+  /* --transition-fast/base/slow */
+}

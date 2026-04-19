@@ -1,0 +1,66 @@
+:root[data-theme='guofeng'] .ds-card {
+  background: var(--color-bg-elev);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-6);
+  position: relative;
+}
+
+:root[data-theme='guofeng'] .ds-card::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px dashed rgba(176, 141, 59, 0.4);
+  border-radius: calc(var(--radius-lg) - 4px);
+  pointer-events: none;
+}
+
+:root[data-theme='guofeng'] .ds-button {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  padding: var(--space-2) var(--space-5);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  background: var(--color-accent);
+  color: var(--color-accent-on);
+  letter-spacing: 0.08em;
+  transition: var(--transition-fast);
+}
+
+:root[data-theme='guofeng'] .ds-button:hover {
+  background: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
+}
+
+:root[data-theme='guofeng'] .ds-button--ghost {
+  background: transparent;
+  color: var(--color-accent);
+}
+
+:root[data-theme='guofeng'] .ds-button--ghost:hover {
+  background: var(--color-accent-soft);
+  color: var(--color-accent-hover);
+}
+
+:root[data-theme='guofeng'] .ds-input {
+  font-family: var(--font-body);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-elev);
+  color: var(--color-ink);
+  transition: var(--transition-fast);
+}
+
+:root[data-theme='guofeng'] .ds-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px var(--color-accent-soft);
+}
+
+:root[data-theme='guofeng'] .ds-container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-6);
+}

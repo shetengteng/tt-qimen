@@ -8,3 +8,14 @@ dist/
 
 prompts.txt
 .cursor/
+
+# pnpm 锁文件不入库（个人项目；如需团队协作请删除此规则）
+pnpm-lock.yaml
+
+# 自动生成的类型声明
+src/auto-imports.d.ts
+src/components.d.ts
+
+# 临时截图与构建产物
+sprint*.png
+*.tmp.png

@@ -1,0 +1,37 @@
+export default {
+  shishen: {
+    zhengcai: 'Direct Wealth (Zheng Cai)',
+    piancai: 'Indirect Wealth (Pian Cai)',
+    zhengguan: 'Direct Officer (Zheng Guan)',
+    pianguan: 'Seven Killings (Qi Sha)',
+    zhengyin: 'Direct Resource (Zheng Yin)',
+    pianyin: 'Indirect Resource (Pian Yin)',
+    shishen: 'Eating God (Shi Shen)',
+    shanguan: 'Hurting Officer (Shang Guan)',
+    bijian: 'Friend (Bi Jian)',
+    jiecai: 'Rob Wealth (Jie Cai)',
+    rizhu: 'Day Master',
+  },
+  wuxing: { wood: 'Wood', fire: 'Fire', earth: 'Earth', metal: 'Metal', water: 'Water' },
+  tiangan: ['Jia', 'Yi', 'Bing', 'Ding', 'Wu', 'Ji', 'Geng', 'Xin', 'Ren', 'Gui'],
+  dizhi:   ['Zi', 'Chou', 'Yin', 'Mao', 'Chen', 'Si', 'Wu', 'Wei', 'Shen', 'You', 'Xu', 'Hai'],
+  relation: {
+    chong: 'Clash',
+    he: 'Combine',
+    xing: 'Punish',
+    anhe: 'Hidden Combine',
+    zixing: 'Self-Punish',
+  },
+  pillar: {
+    year: 'Year Pillar',
+    month: 'Month Pillar',
+    day: 'Day Pillar',
+    hour: 'Hour Pillar',
+  },
+  layer: {
+    tiangan: 'Heavenly Stem',
+    dizhi: 'Earthly Branch',
+    canggan: 'Hidden Stems',
+    nayin: 'Nayin Element',
+  },
+}

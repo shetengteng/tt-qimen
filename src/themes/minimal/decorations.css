@@ -1,0 +1,3 @@
+:root[data-theme='minimal'] body {
+  background-color: var(--color-bg);
+}

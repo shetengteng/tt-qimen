@@ -1,0 +1,23 @@
+:root[data-theme='guofeng'] body {
+  background-color: var(--color-bg);
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(176, 141, 59, 0.08) 0, transparent 50%),
+    radial-gradient(circle at 80% 90%, rgba(194, 58, 42, 0.06) 0, transparent 60%);
+}
+
+:root[data-theme='guofeng'] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      transparent 0,
+      transparent 24px,
+      rgba(176, 141, 59, 0.025) 24px,
+      rgba(176, 141, 59, 0.025) 25px
+    );
+  mix-blend-mode: multiply;
+}

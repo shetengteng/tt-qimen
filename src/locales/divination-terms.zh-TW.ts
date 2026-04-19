@@ -1,0 +1,37 @@
+export default {
+  shishen: {
+    zhengcai: '正財',
+    piancai: '偏財',
+    zhengguan: '正官',
+    pianguan: '偏官',
+    zhengyin: '正印',
+    pianyin: '偏印',
+    shishen: '食神',
+    shanguan: '傷官',
+    bijian: '比肩',
+    jiecai: '劫財',
+    rizhu: '日主',
+  },
+  wuxing: { wood: '木', fire: '火', earth: '土', metal: '金', water: '水' },
+  tiangan: ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'],
+  dizhi:   ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'],
+  relation: {
+    chong: '相沖',
+    he: '相合',
+    xing: '相刑',
+    anhe: '暗合',
+    zixing: '自刑',
+  },
+  pillar: {
+    year: '年柱',
+    month: '月柱',
+    day: '日柱',
+    hour: '時柱',
+  },
+  layer: {
+    tiangan: '天干',
+    dizhi: '地支',
+    canggan: '藏幹',
+    nayin: '納音',
+  },
+}

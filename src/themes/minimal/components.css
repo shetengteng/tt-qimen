@@ -1,0 +1,60 @@
+:root[data-theme='minimal'] .ds-card {
+  background: var(--color-bg-elev);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-6);
+  transition: box-shadow var(--transition-base);
+}
+
+:root[data-theme='minimal'] .ds-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+:root[data-theme='minimal'] .ds-button {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: var(--space-2) var(--space-5);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  background: var(--color-accent);
+  color: var(--color-accent-on);
+  transition: var(--transition-fast);
+}
+
+:root[data-theme='minimal'] .ds-button:hover {
+  background: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
+}
+
+:root[data-theme='minimal'] .ds-button--ghost {
+  background: transparent;
+  color: var(--color-accent);
+}
+
+:root[data-theme='minimal'] .ds-button--ghost:hover {
+  background: var(--color-accent-soft);
+}
+
+:root[data-theme='minimal'] .ds-input {
+  font-family: var(--font-body);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-elev);
+  color: var(--color-ink);
+  transition: var(--transition-fast);
+}
+
+:root[data-theme='minimal'] .ds-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
+}
+
+:root[data-theme='minimal'] .ds-container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-6);
+}
