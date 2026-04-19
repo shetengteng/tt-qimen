@@ -73,10 +73,7 @@ const flowFortune = computed(() => tm('bazi.fortune') as Record<string, string>)
   <!-- 简约 -->
   <section v-else class="fortune-section">
     <div class="fortune-header">
-      <div>
-        <h2>{{ flowFortune.titleMn }}</h2>
-        <div class="meta" style="margin-top: 4px;">{{ flowFortune.subtitleMn1 }}</div>
-      </div>
+      <div class="meta">{{ flowFortune.subtitleMn1 }}</div>
       <div class="meta">{{ flowFortune.subtitleMn2 }}</div>
     </div>
 

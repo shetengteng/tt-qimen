@@ -424,8 +424,13 @@
 :root[data-theme='guofeng'] .radar-chip.jin   { background: rgba(176, 141, 59, 0.06); color: #b08d3b; }
 :root[data-theme='guofeng'] .radar-chip.shui  { background: rgba(180, 197, 199, 0.2); color: #6b8a8d; }
 
-/* 五行分布 */
+/* 五行分布
+   原型里 .five-elements 是 .chart-section 的子元素，被父级 max-width:980 卡住。
+   Vue 实现里把它放在了 CollapsibleSection 中作为兄弟节点，需要显式锁定同样的宽度，
+   保持与四柱表 / 十神结构 / 雷达卡的左右对齐。 */
 :root[data-theme='guofeng'] .five-elements {
+  max-width: 980px;
+  margin: 0 auto var(--gf-space-xl);
   background: rgba(255, 251, 240, 0.7);
   border: 1px solid rgba(176, 141, 59, 0.3);
   border-radius: var(--gf-radius-md);
@@ -433,7 +438,6 @@
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: var(--gf-space-md);
-  margin-bottom: var(--gf-space-xl);
 }
 :root[data-theme='guofeng'] .element {
   text-align: center;

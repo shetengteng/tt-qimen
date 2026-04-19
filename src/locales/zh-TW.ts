@@ -290,7 +290,7 @@ export default {
       sectionChartMn: '命盤',
       sectionInterpretMn: '命盤簡析',
       sectionFortuneMn: '大運時間軸',
-      sectionFlowMn: '流年',
+      sectionFlowMn: '流年運勢',
     },
   },
   ziwei: { title: '紫微斗數', subtitle: '十二宮垣 · 三方四正' },

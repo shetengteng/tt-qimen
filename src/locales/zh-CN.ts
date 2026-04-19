@@ -290,7 +290,7 @@ export default {
       sectionChartMn: '命盘',
       sectionInterpretMn: '命盘简析',
       sectionFortuneMn: '大运时间轴',
-      sectionFlowMn: '流年',
+      sectionFlowMn: '流年运势',
     },
   },
   ziwei: {

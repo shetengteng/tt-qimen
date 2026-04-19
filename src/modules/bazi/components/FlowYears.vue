@@ -75,10 +75,7 @@ const flowTagsMn = (idx: number): FlowTagMn[] => {
   <!-- 简约 -->
   <section v-else class="flow-section">
     <div class="fortune-header">
-      <div>
-        <h2>{{ t('bazi.flow.titleMn') }}</h2>
-        <div class="meta" style="margin-top: 4px;">{{ t('bazi.flow.subtitleMn') }}</div>
-      </div>
+      <div class="meta">{{ t('bazi.flow.subtitleMn') }}</div>
     </div>
 
     <div class="flow-grid">
