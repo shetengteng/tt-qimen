@@ -1,4 +1,54 @@
 :root[data-theme='guofeng'] {
+  /* ==============================================================
+   * 国风原型变量别名（--gf-*）
+   *
+   * components.css 直接搬自 design/prototypes/guofeng/bazi.html，
+   * 大量使用原型 --gf-* 命名，需在此一次性定义，否则 188 处声明
+   * 会因变量未解析而被 CSS 引擎丢弃，导致 max-width / margin / padding
+   * 同时失效（典型表现：fortune-section 应居中却 margin: 0 0）。
+   *
+   * 同时仍保留下方 `--color-*` / `--space-*` 标准 token，供 BaziPage
+   * 之外的页面以 design system 的方式使用。
+   * ============================================================== */
+  --gf-ink:           #1a1613;
+  --gf-ink-soft:      #3a322c;
+  --gf-ink-muted:     #888888;
+  --gf-ink-primary:   #1a1613;
+  --gf-rice:          #f6ecd6;
+  --gf-rice-deep:     #e8d9b4;
+  --gf-cinnabar:      #c23a2a;
+  --gf-cinnabar-deep: #8f2116;
+  --gf-gold:          #b08d3b;
+  --gf-gold-light:    #d4a94a;
+  --gf-seal:          #a3231b;
+  --gf-jade:          #4a6d5d;
+  --gf-water:         #b4c5c7;
+
+  --gf-success:       #4a6d5d;
+  --gf-neutral:       #8a6b3a;
+  --gf-danger:        #c23a2a;
+
+  --gf-font-serif: 'Kaiti', 'STKaiti', 'LXGW WenKai', '华文楷体', 'Noto Serif SC', serif;
+  --gf-font-kaiti: 'Kaiti', 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
+  --gf-font-sans:  'Noto Sans SC', 'PingFang SC', 'HarmonyOS Sans', sans-serif;
+  --gf-font-en:    'Cormorant Garamond', 'EB Garamond', Georgia, serif;
+
+  --gf-space-xs:  4px;
+  --gf-space-sm:  8px;
+  --gf-space-md:  16px;
+  --gf-space-lg:  24px;
+  --gf-space-xl:  40px;
+  --gf-space-xxl: 64px;
+
+  --gf-radius-sm: 2px;
+  --gf-radius-md: 4px;
+  --gf-radius-lg: 8px;
+
+  --gf-shadow-sm: 0 2px 8px rgba(26, 22, 19, 0.08);
+  --gf-shadow-md: 0 6px 20px rgba(26, 22, 19, 0.12);
+  --gf-shadow-lg: 0 12px 40px rgba(26, 22, 19, 0.16);
+
+  /* ============= 标准 token（供其他页面/未来 design system 使用）============= */
   --color-bg:           #f6ecd6;
   --color-bg-elev:      #fffbf0;
   --color-surface:      #f6ecd6;

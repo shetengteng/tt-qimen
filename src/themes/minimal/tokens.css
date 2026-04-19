@@ -1,4 +1,55 @@
 :root[data-theme='minimal'] {
+  /* ==============================================================
+   * 简约原型变量别名（--mn-*）
+   *
+   * components.css 直接搬自 design/prototypes/minimal/*.html，
+   * 大量使用原型 --mn-* 命名，需在此一次性定义，否则 228 处声明
+   * 会因变量未解析而被 CSS 引擎丢弃，导致 max-width / margin / padding
+   * 同时失效（典型表现：fortune-section 应居中却 margin: 0 0）。
+   * ============================================================== */
+  --mn-bg:            #fafaf9;
+  --mn-bg-elev:       #ffffff;
+  --mn-border:        #e5e5e4;
+  --mn-border-strong: #d4d4d3;
+
+  --mn-ink:           #0a0a0a;
+  --mn-ink-soft:      #525252;
+  --mn-ink-muted:     #a3a3a3;
+
+  --mn-accent:        #3b2f63;
+  --mn-accent-hover:  #2d2349;
+  --mn-accent-soft:   #e7e3f1;
+
+  --mn-success:       #16a34a;
+  --mn-warning:       #ca8a04;
+  --mn-danger:        #dc2626;
+  --mn-info:          #0284c7;
+
+  --mn-font-sans: 'Inter', 'PingFang SC', 'HarmonyOS Sans', 'Noto Sans SC', system-ui, sans-serif;
+  --mn-font-mono: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
+
+  --mn-space-1:  4px;
+  --mn-space-2:  8px;
+  --mn-space-3:  12px;
+  --mn-space-4:  16px;
+  --mn-space-5:  20px;
+  --mn-space-6:  24px;
+  --mn-space-8:  32px;
+  --mn-space-10: 40px;
+  --mn-space-12: 48px;
+  --mn-space-16: 64px;
+
+  --mn-radius-sm: 6px;
+  --mn-radius-md: 10px;
+  --mn-radius-lg: 16px;
+  --mn-radius-xl: 24px;
+
+  --mn-shadow-xs: 0 1px 2px rgba(10, 10, 10, 0.04);
+  --mn-shadow-sm: 0 2px 6px rgba(10, 10, 10, 0.06);
+  --mn-shadow-md: 0 8px 24px rgba(10, 10, 10, 0.08);
+  --mn-shadow-lg: 0 20px 48px rgba(10, 10, 10, 0.1);
+
+  /* ============= 标准 token（供其他页面/未来 design system 使用）============= */
   --color-bg:           #fafafa;
   --color-bg-elev:      #ffffff;
   --color-surface:      #f4f4f6;
