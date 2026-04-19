@@ -556,18 +556,18 @@
 :root[data-theme='guofeng'] .fortune-track-connectors .track-line {
   fill: none;
   stroke: var(--gf-cinnabar);
-  stroke-width: 2;
-  stroke-dasharray: 5 4;
+  stroke-width: 2.5;
+  stroke-dasharray: 6 4;
   stroke-linecap: round;
-  opacity: 0.55;
+  opacity: 0.85;
 }
 :root[data-theme='guofeng'] .fortune-track-connectors .track-wrap {
   fill: none;
   stroke: var(--gf-cinnabar);
-  stroke-width: 2;
-  stroke-dasharray: 5 4;
+  stroke-width: 2.5;
+  stroke-dasharray: 6 4;
   stroke-linecap: round;
-  opacity: 0.55;
+  opacity: 0.85;
 }
 :root[data-theme='guofeng'] .fortune-track-connectors .track-arrow {
   fill: var(--gf-cinnabar);
