@@ -1734,6 +1734,22 @@
 }
 
 /* ========================================================================
+ * 全局滚动条配色（简约：紫色 thumb，与 --mn-accent #3b2f63 协调）
+ * ====================================================================== */
+:root[data-theme='minimal'],
+:root[data-theme='minimal'] body {
+  scrollbar-color: rgba(59, 47, 99, 0.45) transparent;
+}
+
+:root[data-theme='minimal'] ::-webkit-scrollbar-thumb {
+  background-color: rgba(59, 47, 99, 0.4);
+}
+
+:root[data-theme='minimal'] ::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(59, 47, 99, 0.6);
+}
+
+/* ========================================================================
  * 可折叠区块（命盘 / 命盘简析 / 大运时间轴 / 流年）
  * 移植自 design/prototypes/minimal/bazi.html line 1250-1292
  * ====================================================================== */

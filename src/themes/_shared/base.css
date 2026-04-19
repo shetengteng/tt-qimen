@@ -63,3 +63,42 @@ a:hover {
   outline: 2px solid var(--color-border-strong);
   outline-offset: 2px;
 }
+
+/* ============================================================================
+ * 全局自定义滚动条（结构层）
+ * - 仅定义尺寸 / 形状 / 行为；具体颜色由各主题在 components.css 覆盖。
+ * - 同时支持 webkit (Chrome/Safari) 与 Firefox（scrollbar-width/-color）。
+ * - 系统级 macOS overlay 滚动条会被 ::-webkit-scrollbar 强制替换为常驻样式。
+ * ========================================================================== */
+html,
+body {
+  /* Firefox：thin 让滚动条比默认窄；颜色在主题层覆盖。 */
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background-color: rgba(0, 0, 0, 0.2);
+  /* 与 track 之间留 2px 间距，让滚动条显得不贴边 */
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  min-height: 32px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.35);
+}
+
+::-webkit-scrollbar-corner {
+  background-color: transparent;
+}

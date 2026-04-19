@@ -1618,6 +1618,22 @@
 }
 
 /* ========================================================================
+ * 全局滚动条配色（国风：金色 thumb + 米色 track，与 --gf-rice/--gf-gold 协调）
+ * ====================================================================== */
+:root[data-theme='guofeng'],
+:root[data-theme='guofeng'] body {
+  scrollbar-color: rgba(176, 141, 59, 0.55) transparent;
+}
+
+:root[data-theme='guofeng'] ::-webkit-scrollbar-thumb {
+  background-color: rgba(176, 141, 59, 0.55);
+}
+
+:root[data-theme='guofeng'] ::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(176, 141, 59, 0.75);
+}
+
+/* ========================================================================
  * 可折叠区块（命盘 / 命盘简析 / 大运时间轴 / 流年）
  * 移植自 design/prototypes/guofeng/bazi.html line 1135-1171
  * ====================================================================== */
