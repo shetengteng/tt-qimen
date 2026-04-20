@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, shallowRef, watch } from 'vue'
+import { computed, nextTick, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
@@ -9,6 +9,7 @@ import FourPillarsTable from './components/FourPillarsTable.vue'
 import ShishenStructure from './components/ShishenStructure.vue'
 import ElementsRadar from './components/ElementsRadar.vue'
 import InterpretBlock from './components/InterpretBlock.vue'
+import ShenshaBlock from './components/ShenshaBlock.vue'
 import DayunTimeline from './components/DayunTimeline.vue'
 import FlowYears from './components/FlowYears.vue'
 import CollapsibleSection from '@/components/common/CollapsibleSection.vue'
@@ -154,21 +155,6 @@ function onRepaipan() {
 function go(name: 'home') {
   router.push({ name })
 }
-
-onMounted(() => {
-  if (!userStore.isDefault) {
-    onPaipan()
-  }
-})
-
-watch(
-  () => userStore.birth.gender,
-  () => {
-    if (chart.value) {
-      onPaipan()
-    }
-  },
-)
 </script>
 
 <template>
@@ -210,6 +196,10 @@ watch(
 
       <CollapsibleSection :label="t('bazi.collapse.sectionInterpret')">
         <InterpretBlock :chart="chart" />
+      </CollapsibleSection>
+
+      <CollapsibleSection :label="t('bazi.collapse.sectionShensha')">
+        <ShenshaBlock :chart="chart" />
       </CollapsibleSection>
 
       <div class="gf-divider">
@@ -274,6 +264,10 @@ watch(
 
         <CollapsibleSection :label="t('bazi.collapse.sectionInterpretMn')">
           <InterpretBlock :chart="chart" />
+        </CollapsibleSection>
+
+        <CollapsibleSection :label="t('bazi.collapse.sectionShenshaMn')">
+          <ShenshaBlock :chart="chart" />
         </CollapsibleSection>
       </main>
 

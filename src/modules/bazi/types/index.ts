@@ -177,6 +177,23 @@ export interface PatternInfo {
   comment: string
 }
 
+/** 神煞吉凶分类（吉/中/凶） */
+export type ShenshaCategory = 'auspicious' | 'neutral' | 'inauspicious'
+
+/** 神煞命中项 */
+export interface ShenshaHit {
+  /** 神煞名（已做繁→简转换） */
+  name: string
+  /** 神煞 key（英文，与 data/shenshaMeaning.ts 对齐，用于查短/长说明） */
+  key: string
+  /** 命中的柱位 */
+  pillar: 'year' | 'month' | 'day' | 'hour'
+  /** 吉凶分类 */
+  category: ShenshaCategory
+  /** 一句话短说明（20 字内，用于 chip 下方显示） */
+  short: string
+}
+
 /** 排盘元信息（用于卡片头部） */
 export interface ChartMeta {
   /** 公历日期字符串（"1990-05-20 午时"） */
@@ -222,6 +239,8 @@ export interface BaziChart {
   interpret: InterpretSummary
   /** 命局格局信息 */
   pattern: PatternInfo
+  /** 四柱神煞命中列表（按吉→中→凶排序，同柱同煞会去重） */
+  shensha: ShenshaHit[]
   /** 起运信息 */
   startAge: { year: number; months: number }
   /** 大运（10 段） */

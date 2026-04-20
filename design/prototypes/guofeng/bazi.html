@@ -583,6 +583,130 @@
       font-size: 13px;
     }
 
+    /* 神煞 */
+    .shensha-section {
+      width: calc(100% - 2 * var(--gf-space-lg));
+      max-width: 1152px;
+      margin: 0 auto var(--gf-space-xl);
+      padding: var(--gf-space-lg);
+      background: linear-gradient(180deg, rgba(255, 251, 240, 0.95), rgba(246, 236, 214, 0.6));
+      border: 1px solid rgba(176, 141, 59, 0.3);
+      border-radius: var(--gf-radius-md);
+    }
+
+    .shensha-section h3 {
+      margin: 0 0 var(--gf-space-md);
+      font-family: var(--gf-font-kaiti);
+      font-size: 22px;
+      color: var(--gf-cinnabar);
+      letter-spacing: 0.15em;
+      text-align: center;
+      padding-bottom: var(--gf-space-sm);
+      border-bottom: 1px dashed rgba(176, 141, 59, 0.35);
+    }
+
+    .shensha-group {
+      margin-bottom: var(--gf-space-lg);
+    }
+
+    .shensha-group:last-of-type {
+      margin-bottom: 0;
+    }
+
+    .shensha-group-title {
+      display: flex;
+      align-items: center;
+      gap: var(--gf-space-sm);
+      margin-bottom: var(--gf-space-sm);
+      font-family: var(--gf-font-kaiti);
+      font-size: 16px;
+      color: var(--gf-ink);
+    }
+
+    .shensha-group-title .shensha-group-icon {
+      font-size: 18px;
+    }
+
+    .shensha-group.auspicious .shensha-group-icon { color: var(--gf-gold); }
+    .shensha-group.neutral    .shensha-group-icon { color: var(--gf-ink-soft); }
+    .shensha-group.inauspicious .shensha-group-icon { color: var(--gf-cinnabar); }
+
+    .shensha-group-sub {
+      font-size: 13px;
+      color: var(--gf-ink-muted);
+      font-family: var(--gf-font-sans);
+    }
+
+    .shensha-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: var(--gf-space-sm);
+    }
+
+    .shensha-chip {
+      position: relative;
+      padding: 10px 12px 10px 40px;
+      background: rgba(255, 251, 240, 0.7);
+      border: 1px solid rgba(176, 141, 59, 0.2);
+      border-radius: var(--gf-radius-sm);
+      font-family: var(--gf-font-kaiti);
+    }
+
+    .shensha-group.auspicious   .shensha-chip { border-color: rgba(176, 141, 59, 0.35); background: rgba(253, 245, 221, 0.85); }
+    .shensha-group.inauspicious .shensha-chip { border-color: rgba(194, 58, 42, 0.28); background: rgba(253, 235, 232, 0.75); }
+
+    .shensha-chip .pillar-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      width: 24px;
+      height: 24px;
+      line-height: 24px;
+      text-align: center;
+      background: var(--gf-ink);
+      color: var(--gf-rice);
+      border-radius: 50%;
+      font-family: var(--gf-font-kaiti);
+      font-size: 13px;
+    }
+
+    .shensha-group.auspicious   .shensha-chip .pillar-badge { background: var(--gf-gold); }
+    .shensha-group.inauspicious .shensha-chip .pillar-badge { background: var(--gf-cinnabar); }
+
+    .shensha-chip .chip-name {
+      display: block;
+      font-size: 15px;
+      color: var(--gf-ink);
+      line-height: 1.2;
+    }
+
+    .shensha-chip .chip-desc {
+      display: block;
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--gf-ink-soft);
+      font-family: var(--gf-font-sans);
+      line-height: 1.5;
+    }
+
+    .shensha-footer {
+      margin-top: var(--gf-space-md);
+      padding-top: var(--gf-space-sm);
+      border-top: 1px dashed rgba(176, 141, 59, 0.2);
+      font-size: 12px;
+      color: var(--gf-ink-muted);
+      font-family: var(--gf-font-sans);
+      text-align: center;
+    }
+
+    .shensha-empty {
+      padding: var(--gf-space-md);
+      font-size: 14px;
+      color: var(--gf-ink-muted);
+      text-align: center;
+      font-family: var(--gf-font-sans);
+    }
+
     /* 大运时间轴 */
     .fortune-section {
       max-width: 1200px;
@@ -1513,6 +1637,73 @@
         <span class="interpret-tag">忌神 · 火土</span>
       </div>
     </div>
+
+    <!-- 神煞 -->
+    <div class="shensha-section">
+      <h3>◈ 神煞 ◈</h3>
+
+      <div class="shensha-group auspicious">
+        <div class="shensha-group-title">
+          <span class="shensha-group-icon">◈</span>
+          <span>吉神</span>
+          <span class="shensha-group-sub">· 贵气扶助</span>
+        </div>
+        <div class="shensha-list">
+          <div class="shensha-chip">
+            <span class="pillar-badge">年</span>
+            <span class="chip-name">天乙贵人</span>
+            <span class="chip-desc">贵人扶持 · 逢凶化吉</span>
+          </div>
+          <div class="shensha-chip">
+            <span class="pillar-badge">月</span>
+            <span class="chip-name">文昌贵人</span>
+            <span class="chip-desc">聪慧文秀 · 利学业</span>
+          </div>
+          <div class="shensha-chip">
+            <span class="pillar-badge">日</span>
+            <span class="chip-name">天厨贵人</span>
+            <span class="chip-desc">食禄不缺 · 衣食丰足</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="shensha-group neutral">
+        <div class="shensha-group-title">
+          <span class="shensha-group-icon">◇</span>
+          <span>中性</span>
+          <span class="shensha-group-sub">· 助力与课题并存</span>
+        </div>
+        <div class="shensha-list">
+          <div class="shensha-chip">
+            <span class="pillar-badge">日</span>
+            <span class="chip-name">桃花</span>
+            <span class="chip-desc">人缘桃花 · 异性缘浓</span>
+          </div>
+          <div class="shensha-chip">
+            <span class="pillar-badge">时</span>
+            <span class="chip-name">驿马</span>
+            <span class="chip-desc">变动迁移 · 利远行</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="shensha-group inauspicious">
+        <div class="shensha-group-title">
+          <span class="shensha-group-icon">✦</span>
+          <span>凶煞</span>
+          <span class="shensha-group-sub">· 宜留意</span>
+        </div>
+        <div class="shensha-list">
+          <div class="shensha-chip">
+            <span class="pillar-badge">月</span>
+            <span class="chip-name">劫煞</span>
+            <span class="chip-desc">小心破耗 · 防意外</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="shensha-footer">神煞仅作性格与趋势参考，不代表绝对吉凶</div>
+    </div>
   </div>
 
   <div class="gf-divider">
@@ -1743,6 +1934,7 @@
       var collapsibleTargets = [
         { selector: '.chart-section', label: '命盘' },
         { selector: '.interpret-section', label: '命盘简析' },
+        { selector: '.shensha-section', label: '神煞' },
         { selector: '.fortune-section', label: '大运时间轴' },
         { selector: '.flow-years', label: '流年' }
       ];

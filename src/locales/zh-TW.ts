@@ -252,6 +252,18 @@ export default {
       tagsMn: ['身強', '財官相濟', '用神 · 水木', '忌神 · 火土'],
     },
 
+    shensha: {
+      title: '神煞',
+      pillarAbbr: { year: '年', month: '月', day: '日', hour: '時' },
+      category: {
+        auspicious:   { title: '吉神', sub: '貴氣扶助' },
+        neutral:      { title: '中性', sub: '助力與課題並存' },
+        inauspicious: { title: '凶煞', sub: '宜留意' },
+      },
+      footerTip: '神煞僅作性格與趨勢參考，不代表絕對吉凶',
+      empty: '本命四柱未命中常見神煞',
+    },
+
     fortune: {
       title: '大運 · 十年一變',
       titleMn: '大運時間軸',
@@ -289,10 +301,12 @@ export default {
       expandLabel: '展開',
       sectionChart: '◎ 命盤',
       sectionInterpret: '◎ 命盤簡析',
+      sectionShensha: '◎ 神煞',
       sectionFortune: '◎ 大運時間軸',
       sectionFlow: '◎ 流年',
       sectionChartMn: '命盤',
       sectionInterpretMn: '命盤簡析',
+      sectionShenshaMn: '神煞',
       sectionFortuneMn: '大運時間軸',
       sectionFlowMn: '流年運勢',
     },

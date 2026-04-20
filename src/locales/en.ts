@@ -255,6 +255,18 @@ export default {
       tagsMn: ['Strong body', 'Wealth-Officer', 'Useful · Water + Wood', 'Avoid · Fire + Earth'],
     },
 
+    shensha: {
+      title: 'Spiritual Stars',
+      pillarAbbr: { year: 'Y', month: 'M', day: 'D', hour: 'H' },
+      category: {
+        auspicious:   { title: 'Auspicious', sub: 'noble support' },
+        neutral:      { title: 'Neutral',    sub: 'help & challenge coexist' },
+        inauspicious: { title: 'Inauspicious', sub: 'stay mindful' },
+      },
+      footerTip: 'Spiritual stars reflect tendencies, not absolute fate.',
+      empty: 'No common spiritual stars detected in the four pillars.',
+    },
+
     fortune: {
       title: 'Major fortunes · Decade by decade',
       titleMn: 'Major fortune timeline',
@@ -292,10 +304,12 @@ export default {
       expandLabel: 'Expand',
       sectionChart: '◎ Chart',
       sectionInterpret: '◎ Interpretation',
+      sectionShensha: '◎ Spiritual Stars',
       sectionFortune: '◎ Major Fortune',
       sectionFlow: '◎ Annual Fortune',
       sectionChartMn: 'Chart',
       sectionInterpretMn: 'Interpretation',
+      sectionShenshaMn: 'Spiritual Stars',
       sectionFortuneMn: 'Major Fortune',
       sectionFlowMn: 'Annual Fortune',
     },

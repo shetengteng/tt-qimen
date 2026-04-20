@@ -539,6 +539,122 @@
   margin-top: var(--mn-space-5);
 }
 
+/* 神煞 */
+:root[data-theme='minimal'] .shensha-section {
+  max-width: 1000px;
+  margin: 0 auto var(--mn-space-8);
+  padding: var(--mn-space-6);
+  background-color: var(--mn-bg-elev);
+  border: 1px solid var(--mn-border);
+  border-radius: var(--mn-radius-lg);
+}
+:root[data-theme='minimal'] .shensha-section h4 {
+  margin: 0 0 var(--mn-space-5);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--mn-ink);
+  letter-spacing: 0.05em;
+}
+:root[data-theme='minimal'] .shensha-group {
+  margin-bottom: var(--mn-space-5);
+}
+:root[data-theme='minimal'] .shensha-group:last-of-type {
+  margin-bottom: 0;
+}
+:root[data-theme='minimal'] .shensha-group-title {
+  display: flex;
+  align-items: center;
+  gap: var(--mn-space-2);
+  margin-bottom: var(--mn-space-3);
+  font-size: 13px;
+  color: var(--mn-ink-soft);
+}
+:root[data-theme='minimal'] .shensha-group-title strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--mn-ink);
+}
+:root[data-theme='minimal'] .shensha-group-title .shensha-group-sub {
+  color: var(--mn-ink-muted);
+  font-size: 12px;
+}
+:root[data-theme='minimal'] .shensha-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--mn-space-3);
+}
+:root[data-theme='minimal'] .shensha-chip {
+  position: relative;
+  padding: var(--mn-space-3) var(--mn-space-3) var(--mn-space-3) 56px;
+  background-color: var(--mn-bg);
+  border: 1px solid var(--mn-border);
+  border-radius: var(--mn-radius-md);
+  transition: border-color 0.18s ease;
+}
+:root[data-theme='minimal'] .shensha-chip:hover {
+  border-color: var(--mn-border-strong);
+}
+:root[data-theme='minimal'] .shensha-group.auspicious .shensha-chip {
+  background-color: rgba(22, 163, 74, 0.04);
+  border-color: rgba(22, 163, 74, 0.2);
+}
+:root[data-theme='minimal'] .shensha-group.inauspicious .shensha-chip {
+  background-color: rgba(220, 38, 38, 0.04);
+  border-color: rgba(220, 38, 38, 0.2);
+}
+:root[data-theme='minimal'] .shensha-chip .pillar-badge {
+  position: absolute;
+  top: var(--mn-space-3);
+  left: var(--mn-space-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 22px;
+  padding: 0 8px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 999px;
+  background-color: var(--mn-accent-soft);
+  color: var(--mn-accent);
+}
+:root[data-theme='minimal'] .shensha-group.auspicious .shensha-chip .pillar-badge {
+  background-color: rgba(22, 163, 74, 0.12);
+  color: var(--mn-success);
+}
+:root[data-theme='minimal'] .shensha-group.inauspicious .shensha-chip .pillar-badge {
+  background-color: rgba(220, 38, 38, 0.12);
+  color: var(--mn-danger);
+}
+:root[data-theme='minimal'] .shensha-chip .chip-name {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--mn-ink);
+  line-height: 1.2;
+}
+:root[data-theme='minimal'] .shensha-chip .chip-desc {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--mn-ink-soft);
+  line-height: 1.5;
+}
+:root[data-theme='minimal'] .shensha-footer {
+  margin-top: var(--mn-space-5);
+  padding-top: var(--mn-space-3);
+  border-top: 1px solid var(--mn-border);
+  font-size: 11px;
+  color: var(--mn-ink-muted);
+  text-align: center;
+}
+:root[data-theme='minimal'] .shensha-empty {
+  padding: var(--mn-space-4);
+  font-size: 13px;
+  color: var(--mn-ink-muted);
+  text-align: center;
+}
+
 /* 大运 */
 :root[data-theme='minimal'] .fortune-section {
   max-width: 1200px;

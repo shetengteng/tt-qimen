@@ -52,6 +52,7 @@ import type {
 import type { BirthInput } from '@/stores/user'
 
 import { detectPattern } from './pattern'
+import { detectShensha } from './shensha'
 import { getDecadeHint } from '../data/fortuneHints'
 import { getFlowYearHint } from '../data/flowYearHints'
 import {
@@ -153,14 +154,17 @@ export function calculateBazi(birth: BirthInput): BaziChart {
   const flowYears = buildFlowYears(currentSolarYear, dayMasterStem, favorable, unfavorable)
   const currentFlowYearIdx = 0
 
+  const pillarsObj = {
+    year: yearPillar,
+    month: monthPillar,
+    day: dayPillar,
+    hour: hourPillar,
+  }
+  const shensha = detectShensha(birth)
+
   return {
     meta,
-    pillars: {
-      year: yearPillar,
-      month: monthPillar,
-      day: dayPillar,
-      hour: hourPillar,
-    },
+    pillars: pillarsObj,
     dayMaster,
     dayMasterElement,
     dayMasterYinYang,
@@ -171,6 +175,7 @@ export function calculateBazi(birth: BirthInput): BaziChart {
     unfavorableElements: unfavorable,
     interpret,
     pattern,
+    shensha,
     startAge,
     decades,
     flowYears,
