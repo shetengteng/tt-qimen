@@ -3,15 +3,25 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
 import type { BaziChart, ShenshaCategory, ShenshaHit } from '../types'
+import { getShenshaMeaning } from '../data/shenshaMeaning'
 
 interface Props {
   chart?: BaziChart | null
 }
 const props = defineProps<Props>()
 
-const { t, tm } = useI18n()
+const { t, tm, locale } = useI18n()
 const themeStore = useThemeStore()
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
+
+function chipTooltip(item: ShenshaHit): string {
+  if (locale.value === 'en') return ''
+  const m = getShenshaMeaning(item.key)
+  const parts: string[] = []
+  if (item.short) parts.push(item.short)
+  if (m.long) parts.push(m.long)
+  return parts.join('\n')
+}
 
 interface Group {
   category: ShenshaCategory
@@ -73,6 +83,7 @@ function categorySub(cat: ShenshaCategory): string {
             v-for="(item, idx) in g.items"
             :key="`${item.key}-${item.pillar}-${idx}`"
             class="shensha-chip"
+            :title="chipTooltip(item)"
           >
             <span class="pillar-badge">{{ pillarLabels[item.pillar] }}</span>
             <span class="chip-name">{{ item.name }}</span>
@@ -106,6 +117,7 @@ function categorySub(cat: ShenshaCategory): string {
             v-for="(item, idx) in g.items"
             :key="`${item.key}-${item.pillar}-${idx}`"
             class="shensha-chip"
+            :title="chipTooltip(item)"
           >
             <span class="pillar-badge">{{ pillarLabels[item.pillar] }}</span>
             <span class="chip-name">{{ item.name }}</span>
