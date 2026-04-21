@@ -1424,6 +1424,194 @@
       opacity: 0;
       margin-top: 0;
     }
+
+    /* ================================================================
+     * v3.1 · 注释交互：section 尾部聚合展开（简约主题）
+     * 对应 design/bazi/2026-04-21-03-注释交互设计方案.md §10 (v3.1)
+     * 模型：点击锚点 → 在 section 尾部 .inline-annots-bar 内追加该条展开项，
+     *       不推挤任何原子项。再点同一锚点 → 移除该条。
+     *       每个 section 右侧 actions 有一个「展开注释 / 收起注释」toggle 按钮。
+     * 布局：展开项容器跟随各 section 原子项节奏——Nayin 4 列、tag flex-wrap、
+     *       chip auto-fill 200px grid。每条展开项顶部显示"柱位 · 名称"标题。
+     * ================================================================ */
+
+    /* 锚点按钮基础 */
+    .annot-trigger {
+      appearance: none;
+      -webkit-appearance: none;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+      transition: background 150ms ease, box-shadow 150ms ease, color 150ms ease, border-color 150ms ease;
+    }
+    .annot-trigger:focus-visible {
+      outline: 2px solid var(--mn-accent);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    /* Nayin：保留原视觉 + 点线下划线 */
+    .bazi-cell-nayin.annot-trigger {
+      border: none;
+      padding: 3px 8px;
+      text-decoration: underline dotted var(--mn-border);
+      text-underline-offset: 3px;
+      text-decoration-thickness: 1px;
+      min-height: 30px;
+      border-radius: 4px;
+      color: var(--mn-ink-soft);
+    }
+    .bazi-cell-nayin.annot-trigger:hover,
+    .bazi-cell-nayin.annot-trigger[aria-expanded="true"] {
+      background: var(--mn-accent-soft, rgba(99, 102, 241, 0.08));
+      color: var(--mn-ink);
+    }
+
+    /* mn-badge（格局） */
+    .mn-badge.annot-trigger {
+      border: 1px solid var(--mn-border);
+      cursor: pointer;
+    }
+    .mn-badge.annot-trigger:hover,
+    .mn-badge.annot-trigger[aria-expanded="true"] {
+      border-color: var(--mn-accent);
+      color: var(--mn-accent);
+    }
+
+    /* shensha-chip */
+    .shensha-chip.annot-trigger {
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid var(--mn-border);
+    }
+    .shensha-chip.annot-trigger:hover,
+    .shensha-chip.annot-trigger[aria-expanded="true"] {
+      border-color: var(--mn-accent);
+      background: var(--mn-accent-soft, rgba(99, 102, 241, 0.06));
+    }
+
+    /* "展开注释 / 收起注释" toggle 按钮（放到 .collapsible-head 右侧） */
+    .collapsible-head-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .annot-toggle-all {
+      appearance: none;
+      -webkit-appearance: none;
+      font-size: 12px;
+      color: var(--mn-ink-muted);
+      padding: 4px 12px;
+      border: 1px solid var(--mn-border, rgba(0, 0, 0, 0.1));
+      border-radius: 999px;
+      background: transparent;
+      line-height: 1.4;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+    .annot-toggle-all:hover {
+      border-color: var(--mn-accent);
+      color: var(--mn-accent);
+    }
+    .annot-toggle-all:focus-visible {
+      outline: 2px solid var(--mn-accent);
+      outline-offset: 2px;
+    }
+    .annot-toggle-all[aria-pressed="true"] {
+      border-color: var(--mn-accent);
+      color: var(--mn-accent);
+      background-color: var(--mn-accent-soft, rgba(99, 102, 241, 0.12));
+    }
+
+    /* section 尾部注释条 */
+    .inline-annots-bar {
+      margin: var(--mn-space-4, 16px) 0 0;
+      padding: 12px 14px 10px;
+      border-top: 1px dashed var(--mn-border);
+      display: grid;
+      gap: 10px;
+      animation: inline-annots-bar-open 220ms cubic-bezier(0.22, 0.9, 0.24, 1);
+    }
+    .inline-annots-bar[hidden] { display: none !important; }
+
+    /* 三种布局跟随原子项节奏 */
+    .inline-annots-bar.is-nayin {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    .inline-annots-bar.is-tag {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .inline-annots-bar.is-chip {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+
+    .inline-annot-item {
+      padding: 10px 12px 10px 14px;
+      border-left: 2px solid var(--mn-accent);
+      background: var(--mn-surface-soft, rgba(244, 244, 245, 0.6));
+      border-radius: 0 var(--mn-radius, 6px) var(--mn-radius, 6px) 0;
+      animation: inline-annot-item-open 220ms cubic-bezier(0.22, 0.9, 0.24, 1);
+    }
+    .inline-annots-bar.is-tag .inline-annot-item {
+      flex: 1 1 calc(50% - 10px);
+      min-width: 280px;
+    }
+    @media (max-width: 640px) {
+      .inline-annots-bar.is-nayin {
+        grid-template-columns: 1fr;
+      }
+      .inline-annots-bar.is-tag .inline-annot-item {
+        flex-basis: 100%;
+      }
+    }
+
+    .inline-annot-item-title {
+      font-weight: 600;
+      color: var(--mn-accent);
+      font-size: 14px;
+      letter-spacing: 0.03em;
+      margin-bottom: 4px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--mn-border);
+    }
+    .inline-annot-item-body {
+      margin: 0;
+      color: var(--mn-ink);
+      font-size: 13px;
+      line-height: 1.75;
+    }
+    .inline-annot-item-body-short {
+      color: var(--mn-accent);
+      font-weight: 500;
+    }
+
+    @media (max-width: 420px) {
+      .inline-annots-bar { padding: 10px 12px 8px; }
+      .inline-annot-item { padding: 8px 10px 8px 12px; }
+    }
+
+    @keyframes inline-annots-bar-open {
+      from { opacity: 0; transform: translateY(-4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes inline-annot-item-open {
+      from { opacity: 0; transform: translateY(-2px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .inline-annots-bar, .inline-annot-item { animation: none; }
+      .annot-trigger, .annot-toggle-all { transition: none; }
+    }
   </style>
 </head>
 <body>
@@ -1555,10 +1743,34 @@
         <div class="bazi-cell"><span class="bazi-cell-shishen">偏印</span></div>
 
         <div class="bazi-row-label">纳 音</div>
-        <div class="bazi-cell"><div class="bazi-cell-nayin">路旁土</div></div>
-        <div class="bazi-cell"><div class="bazi-cell-nayin">白腊金</div></div>
-        <div class="bazi-cell day"><div class="bazi-cell-nayin">涧下水</div></div>
-        <div class="bazi-cell"><div class="bazi-cell-nayin">沙中金</div></div>
+        <div class="bazi-cell"><button type="button" class="bazi-cell-nayin annot-trigger"
+          data-annot-type="nayin" data-annot-key="路旁土"
+          data-annot-target="annot-card-nayin"
+          data-annot-focus="路旁土"
+          data-annot-label="年柱 · 路旁土"
+          data-annot-short="庚午辛未路旁土 · 承载长养"
+          data-annot-long="像田埂村道边的厚土：养万物不挑肥瘦，耐踩耐踏。性格多半踏实顾家，适合做&quot;基础型、流量型&quot;的工作，起手未必惊艳，但越做越稳。">路旁土</button></div>
+        <div class="bazi-cell"><button type="button" class="bazi-cell-nayin annot-trigger"
+          data-annot-type="nayin" data-annot-key="白腊金"
+          data-annot-target="annot-card-nayin"
+          data-annot-focus="白腊金"
+          data-annot-label="月柱 · 白蜡金"
+          data-annot-short="庚辰辛巳白蜡金 · 柔亮未锻"
+          data-annot-long="半成品的金：质地温润但还没回火。人机灵、审美在线，作品常常&quot;灵一下&quot;，但缺火候就容易虎头蛇尾，需要耐住磨炼才能真金。">白腊金</button></div>
+        <div class="bazi-cell day"><button type="button" class="bazi-cell-nayin annot-trigger"
+          data-annot-type="nayin" data-annot-key="涧下水"
+          data-annot-target="annot-card-nayin"
+          data-annot-focus="涧下水"
+          data-annot-label="日柱 · 涧下水"
+          data-annot-short="丙子丁丑涧下水 · 清冽自持"
+          data-annot-long="山涧里的一湾清水：流量不大却清得见底。想法清透、不愿将就，偏内敛；遇贵人则活水长流，憋屈在原地则易停滞。">涧下水</button></div>
+        <div class="bazi-cell"><button type="button" class="bazi-cell-nayin annot-trigger"
+          data-annot-type="nayin" data-annot-key="沙中金"
+          data-annot-target="annot-card-nayin"
+          data-annot-focus="沙中金"
+          data-annot-label="时柱 · 沙中金"
+          data-annot-short="甲午乙未沙中金 · 潜埋待淘"
+          data-annot-long="沙里淘金：资源真有，但得筛得淘。年轻时常常感到&quot;才华被埋没&quot;，中年以后有贵人、有机会筛沙见金，大器晚成。">沙中金</button></div>
       </div>
       <!-- 关系斜线 overlay：JS 动态绘制 -->
       <svg id="baziRelationsSvg" class="bazi-relations-svg"></svg>
@@ -1697,10 +1909,34 @@
         格局上偏印（甲）配日主，文思敏捷；财星双透（庚辛），事业上宜与贵人合作。
       </p>
       <div class="interpret-tags">
-        <span class="mn-badge">身强</span>
-        <span class="mn-badge">财官相济</span>
-        <span class="mn-badge-success mn-badge">用神 · 水木</span>
-        <span class="mn-badge-danger mn-badge">忌神 · 火土</span>
+        <button type="button" class="mn-badge annot-trigger"
+                data-annot-type="pattern" data-annot-key="身强"
+                data-annot-target="annot-card-pattern"
+                data-annot-focus="身强"
+                data-annot-label="身 · 强"
+                data-annot-short="身强 · 自身能量充足"
+                data-annot-long="日主在月令和周围五行里&quot;吃得饱、站得稳&quot;。此时&quot;能挑担&quot;，反而要的是化泄与调候，太顺反易骄惰；遇到得力的用神，就会把能力真正用在点上。">身强</button>
+        <button type="button" class="mn-badge annot-trigger"
+                data-annot-type="pattern" data-annot-key="财官相济"
+                data-annot-target="annot-card-pattern"
+                data-annot-focus="财官相济"
+                data-annot-label="格 · 财官相济"
+                data-annot-short="财官相济 · 名利皆可"
+                data-annot-long="命里既有管钱的&quot;财&quot;，也有立规矩的&quot;官&quot;，两者互相成全。适合在&quot;制度+市场&quot;的组织里施展，比如外企、国企的新业务线，进退有据，能谋能做。">财官相济</button>
+        <button type="button" class="mn-badge-success mn-badge annot-trigger"
+                data-annot-type="pattern" data-annot-key="用神-水木"
+                data-annot-target="annot-card-pattern"
+                data-annot-focus="用神-水木"
+                data-annot-label="用神 · 水木"
+                data-annot-short="水木 · 调候生机"
+                data-annot-long="命局&quot;偏热需润、偏燥需生&quot;。水能降温、木能疏导，给日主一个清爽有活力的工作场。方位喜东北，颜色偏蓝绿，行业亲水木如教育、文创、绿色能源。">用神 · 水木</button>
+        <button type="button" class="mn-badge-danger mn-badge annot-trigger"
+                data-annot-type="pattern" data-annot-key="忌神-火土"
+                data-annot-target="annot-card-pattern"
+                data-annot-focus="忌神-火土"
+                data-annot-label="忌神 · 火土"
+                data-annot-short="火土 · 过旺则燥"
+                data-annot-long="一旦火土再添一把：人容易急、脾气冲、肠胃也跟着抗议。大运或流年若再见火土强旺，需主动降速，避免高速+高压并行，注意心血管与情绪调适。">忌神 · 火土</button>
       </div>
     </div>
 
@@ -1714,21 +1950,39 @@
           <span class="shensha-group-sub">贵气扶助</span>
         </div>
         <div class="shensha-list">
-          <div class="shensha-chip">
+          <button type="button" class="shensha-chip annot-trigger"
+                  data-annot-type="shensha" data-annot-key="天乙贵人"
+                  data-annot-target="annot-card-shensha"
+                  data-annot-focus="天乙贵人"
+                  data-annot-label="年柱 · 天乙贵人"
+                  data-annot-short="贵人扶持 · 逢凶化吉"
+                  data-annot-long="神煞里的&quot;吉神之首&quot;。遇难常有人拉一把，关键节点容易被领导、长辈注意到。别只等，主动靠近&quot;能做决定的人&quot;，帮助会顺势到位。">
             <span class="pillar-badge">年</span>
             <span class="chip-name">天乙贵人</span>
             <span class="chip-desc">贵人扶持 · 逢凶化吉</span>
-          </div>
-          <div class="shensha-chip">
+          </button>
+          <button type="button" class="shensha-chip annot-trigger"
+                  data-annot-type="shensha" data-annot-key="文昌贵人"
+                  data-annot-target="annot-card-shensha"
+                  data-annot-focus="文昌贵人"
+                  data-annot-label="月柱 · 文昌贵人"
+                  data-annot-short="聪慧文秀 · 利学业"
+                  data-annot-long="主文思、语言表达、学习与考试。做输出类工作有加成——写作、演讲、直播、教学都容易出彩。把&quot;表达&quot;练成技能而非爱好，更能兑现这颗贵人的红利。">
             <span class="pillar-badge">月</span>
             <span class="chip-name">文昌贵人</span>
             <span class="chip-desc">聪慧文秀 · 利学业</span>
-          </div>
-          <div class="shensha-chip">
+          </button>
+          <button type="button" class="shensha-chip annot-trigger"
+                  data-annot-type="shensha" data-annot-key="天厨贵人"
+                  data-annot-target="annot-card-shensha"
+                  data-annot-focus="天厨贵人"
+                  data-annot-label="日柱 · 天厨贵人"
+                  data-annot-short="食禄不缺 · 衣食丰足"
+                  data-annot-long="主饮食、生活资源充裕。人很会&quot;把日子过好&quot;——做饭、理家、款待朋友都在行。适合发展与&quot;吃、住、体验&quot;相关的副业或主业，容易做出口碑。">
             <span class="pillar-badge">日</span>
             <span class="chip-name">天厨贵人</span>
             <span class="chip-desc">食禄不缺 · 衣食丰足</span>
-          </div>
+          </button>
         </div>
       </div>
 
@@ -1738,16 +1992,28 @@
           <span class="shensha-group-sub">助力与课题并存</span>
         </div>
         <div class="shensha-list">
-          <div class="shensha-chip">
+          <button type="button" class="shensha-chip annot-trigger"
+                  data-annot-type="shensha" data-annot-key="桃花"
+                  data-annot-target="annot-card-shensha"
+                  data-annot-focus="桃花"
+                  data-annot-label="日柱 · 桃花"
+                  data-annot-short="人缘桃花 · 异性缘浓"
+                  data-annot-long="不是&quot;花心&quot;，是&quot;有镜头感&quot;——颜值、气场、共情力都容易被放大。对前台、销售、品牌、内容类工作是加分项；感情上要警惕&quot;被追得太快又凉得太快&quot;，节奏自己把握。">
             <span class="pillar-badge">日</span>
             <span class="chip-name">桃花</span>
             <span class="chip-desc">人缘桃花 · 异性缘浓</span>
-          </div>
-          <div class="shensha-chip">
+          </button>
+          <button type="button" class="shensha-chip annot-trigger"
+                  data-annot-type="shensha" data-annot-key="驿马"
+                  data-annot-target="annot-card-shensha"
+                  data-annot-focus="驿马"
+                  data-annot-label="时柱 · 驿马"
+                  data-annot-short="变动迁移 · 利远行"
+                  data-annot-long="主奔波、出差、迁移、换行。适合&quot;动&quot;起来做事——跨区域、跨公司、跨文化的项目都对你有利；反过来，长期坐冷板凳会被磨掉活力，要主动给自己&quot;马&quot;一个方向。">
             <span class="pillar-badge">时</span>
             <span class="chip-name">驿马</span>
             <span class="chip-desc">变动迁移 · 利远行</span>
-          </div>
+          </button>
         </div>
       </div>
 
@@ -1757,11 +2023,17 @@
           <span class="shensha-group-sub">宜留意</span>
         </div>
         <div class="shensha-list">
-          <div class="shensha-chip">
+          <button type="button" class="shensha-chip annot-trigger"
+                  data-annot-type="shensha" data-annot-key="劫煞"
+                  data-annot-target="annot-card-shensha"
+                  data-annot-focus="劫煞"
+                  data-annot-label="月柱 · 劫煞"
+                  data-annot-short="小心破耗 · 防意外"
+                  data-annot-long="主意外破财、合作分歧、小人暗算。不是&quot;必踩雷&quot;，而是&quot;决策节点要慢一拍&quot;——合同、借贷、合伙前多核一遍细节，就能把&quot;劫煞&quot;的力量转成&quot;严谨&quot;。">
             <span class="pillar-badge">月</span>
             <span class="chip-name">劫煞</span>
             <span class="chip-desc">小心破耗 · 防意外</span>
-          </div>
+          </button>
         </div>
       </div>
 
@@ -2001,6 +2273,7 @@
 
       // 可折叠块
       var collapsibleTargets = [
+        { selector: '.bazi-table', label: '命盘' },
         { selector: '.interpret', label: '命盘简析' },
         { selector: '.shensha-section', label: '神煞' },
         { selector: '.fortune-section', label: '大运时间轴' },
@@ -2036,6 +2309,11 @@
           }
         });
       });
+
+      // 折叠头生成完毕后，注入每个 section 的"注释"按钮 + 合集卡
+      if (typeof window.__initAnnotCards === 'function') {
+        window.__initAnnotCards();
+      }
 
       // 关系图例 hover → 高亮对应斜线
       var baziTable = resultZone.querySelector('.bazi-table');
@@ -2315,5 +2593,251 @@
     </div>
     <div style="margin-top: var(--mn-space-4); font-size: 12px;">© 2026 tt-qimen</div>
   </footer>
+
+  <!-- v3.1 · 注释交互脚本（section 尾部聚合 + 展开全部 toggle，简约主题） -->
+  <script>
+    (function () {
+      'use strict';
+
+      /** 每个 section 的配置元数据 */
+      var SECTIONS = [
+        { sel: '.bazi-table',      label: '纳音注释', barClass: 'is-nayin', barId: 'inline-annots-bar-nayin' },
+        { sel: '.interpret',       label: '格局注释', barClass: 'is-tag',   barId: 'inline-annots-bar-pattern' },
+        { sel: '.shensha-section', label: '神煞注释', barClass: 'is-chip',  barId: 'inline-annots-bar-shensha' }
+      ];
+
+      function findCollapsibleHead(sectionEl) {
+        var prev = sectionEl.previousElementSibling;
+        while (prev && !prev.classList.contains('collapsible-head')) prev = prev.previousElementSibling;
+        return prev;
+      }
+
+      function syncCollapsibleHeight(host) {
+        if (!host) return;
+        if (!host.classList.contains('collapsible-body')) return;
+        if (host.classList.contains('collapsed')) return;
+        host.style.maxHeight = 'none';
+        var h = host.scrollHeight;
+        host.style.maxHeight = h + 'px';
+      }
+
+      function buildItem(triggerBtn) {
+        var focus = triggerBtn.getAttribute('data-annot-focus') ||
+                    triggerBtn.getAttribute('data-annot-key') || '';
+        var label = triggerBtn.getAttribute('data-annot-label') || triggerBtn.textContent.trim();
+        var shortText = triggerBtn.getAttribute('data-annot-short') || '';
+        var longText = triggerBtn.getAttribute('data-annot-long') || '';
+
+        var item = document.createElement('div');
+        item.className = 'inline-annot-item';
+        item.setAttribute('role', 'region');
+        item.setAttribute('aria-label', label);
+        item.setAttribute('data-annot-for', focus);
+
+        var titleHtml = '<div class="inline-annot-item-title">' + label + '</div>';
+        var bodyInner = '';
+        if (shortText) {
+          bodyInner += '<span class="inline-annot-item-body-short">' + shortText + '</span>';
+          if (longText) bodyInner += '　' + longText;
+        } else {
+          bodyInner = longText || '（详细解释待接入运行时数据）';
+        }
+        var bodyHtml = '<p class="inline-annot-item-body">' + bodyInner + '</p>';
+
+        item.innerHTML = titleHtml + bodyHtml;
+        return item;
+      }
+
+      function getOrCreateBar(sectionEl, meta) {
+        var bar = sectionEl.querySelector(':scope > #' + meta.barId);
+        if (bar) return bar;
+        bar = document.createElement('div');
+        bar.id = meta.barId;
+        bar.className = 'inline-annots-bar ' + meta.barClass;
+        bar.setAttribute('role', 'list');
+        bar.setAttribute('aria-label', meta.label);
+        bar.hidden = true;
+        sectionEl.appendChild(bar);
+        return bar;
+      }
+
+      function syncToggleAllLabel(sectionEl, meta) {
+        var head = findCollapsibleHead(sectionEl);
+        if (!head) return;
+        var btn = head.querySelector('.annot-toggle-all[data-for-section="' + meta.sel + '"]');
+        if (!btn) return;
+        var bar = sectionEl.querySelector(':scope > #' + meta.barId);
+        var anyOpen = !!(bar && !bar.hidden && bar.children.length > 0);
+        btn.setAttribute('aria-pressed', anyOpen ? 'true' : 'false');
+        btn.innerHTML = '<span aria-hidden="true">◎</span> ' + (anyOpen ? '收起注释' : '展开注释');
+      }
+
+      function matchMeta(triggerBtn) {
+        for (var i = 0; i < SECTIONS.length; i++) {
+          var sel = SECTIONS[i].sel;
+          if (triggerBtn.closest(sel)) return SECTIONS[i];
+        }
+        return null;
+      }
+
+      function toggleOne(triggerBtn) {
+        var meta = matchMeta(triggerBtn);
+        if (!meta) return;
+        var sectionEl = document.querySelector(meta.sel);
+        if (!sectionEl) return;
+
+        var focus = triggerBtn.getAttribute('data-annot-focus') ||
+                    triggerBtn.getAttribute('data-annot-key') || '';
+        if (!focus) return;
+
+        var bar = getOrCreateBar(sectionEl, meta);
+        var existing = bar.querySelector('.inline-annot-item[data-annot-for="' + cssEscape(focus) + '"]');
+
+        if (existing) {
+          existing.parentNode.removeChild(existing);
+          triggerBtn.setAttribute('aria-expanded', 'false');
+          if (bar.children.length === 0) bar.hidden = true;
+        } else {
+          var item = buildItem(triggerBtn);
+          bar.appendChild(item);
+          bar.hidden = false;
+          triggerBtn.setAttribute('aria-expanded', 'true');
+        }
+
+        syncToggleAllLabel(sectionEl, meta);
+        syncCollapsibleHeight(sectionEl);
+      }
+
+      function toggleAll(sectionEl, meta) {
+        var bar = getOrCreateBar(sectionEl, meta);
+        var triggers = sectionEl.querySelectorAll('.annot-trigger');
+        var anyOpen = !!(!bar.hidden && bar.children.length > 0);
+
+        if (anyOpen) {
+          bar.innerHTML = '';
+          bar.hidden = true;
+          Array.prototype.forEach.call(triggers, function (t) {
+            t.setAttribute('aria-expanded', 'false');
+          });
+        } else {
+          Array.prototype.forEach.call(triggers, function (t) {
+            var focus = t.getAttribute('data-annot-focus') ||
+                        t.getAttribute('data-annot-key') || '';
+            if (!focus) return;
+            var existing = bar.querySelector('.inline-annot-item[data-annot-for="' + cssEscape(focus) + '"]');
+            if (existing) return;
+            bar.appendChild(buildItem(t));
+            t.setAttribute('aria-expanded', 'true');
+          });
+          if (bar.children.length > 0) bar.hidden = false;
+        }
+
+        syncToggleAllLabel(sectionEl, meta);
+        syncCollapsibleHeight(sectionEl);
+      }
+
+      function injectToggleAllButtons() {
+        SECTIONS.forEach(function (meta) {
+          var sectionEl = document.querySelector(meta.sel);
+          if (!sectionEl) return;
+          var head = findCollapsibleHead(sectionEl);
+          if (!head) return;
+
+          var collapseBtn = head.querySelector('.collapse-toggle');
+          if (!collapseBtn) return;
+
+          var actions = head.querySelector('.collapsible-head-actions');
+          if (!actions) {
+            actions = document.createElement('div');
+            actions.className = 'collapsible-head-actions';
+            collapseBtn.parentNode.insertBefore(actions, collapseBtn);
+            actions.appendChild(collapseBtn);
+          }
+
+          if (actions.querySelector('.annot-toggle-all[data-for-section="' + meta.sel + '"]')) return;
+
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'annot-toggle-all';
+          btn.setAttribute('data-for-section', meta.sel);
+          btn.setAttribute('aria-pressed', 'false');
+          btn.setAttribute('aria-label', '展开' + meta.label + ' / 收起');
+          btn.innerHTML = '<span aria-hidden="true">◎</span> 展开注释';
+
+          btn.addEventListener('click', function () {
+            toggleAll(sectionEl, meta);
+          });
+
+          actions.insertBefore(btn, collapseBtn);
+        });
+      }
+
+      function bindTriggerClicks() {
+        document.addEventListener('click', function (e) {
+          var btn = e.target.closest && e.target.closest('.annot-trigger');
+          if (!btn) return;
+          e.preventDefault();
+          toggleOne(btn);
+        });
+      }
+
+      function bindKeyboard() {
+        document.addEventListener('keydown', function (e) {
+          if (e.key !== 'Escape') return;
+          var focused = document.activeElement;
+          if (!focused || !focused.closest) return;
+
+          var trigger = focused.closest('.annot-trigger');
+          if (trigger && trigger.getAttribute('aria-expanded') === 'true') {
+            e.preventDefault();
+            toggleOne(trigger);
+            trigger.focus();
+            return;
+          }
+
+          var item = focused.closest('.inline-annot-item');
+          if (item) {
+            var focus = item.getAttribute('data-annot-for');
+            if (!focus) return;
+            var meta = null;
+            for (var i = 0; i < SECTIONS.length; i++) {
+              if (item.closest(SECTIONS[i].sel)) { meta = SECTIONS[i]; break; }
+            }
+            if (!meta) return;
+            var sectionEl = document.querySelector(meta.sel);
+            if (!sectionEl) return;
+            var t = sectionEl.querySelector('.annot-trigger[data-annot-focus="' + cssEscape(focus) + '"]') ||
+                    sectionEl.querySelector('.annot-trigger[data-annot-key="' + cssEscape(focus) + '"]');
+            e.preventDefault();
+            if (t) {
+              toggleOne(t);
+              t.focus();
+            }
+          }
+        });
+      }
+
+      function cssEscape(v) {
+        if (window.CSS && typeof window.CSS.escape === 'function') return window.CSS.escape(v);
+        return String(v).replace(/["\\]/g, '\\$&');
+      }
+
+      window.__initAnnotCards = function () {
+        if (window.__initAnnotCards.__bound) return;
+        window.__initAnnotCards.__bound = true;
+        injectToggleAllButtons();
+        bindTriggerClicks();
+        bindKeyboard();
+      };
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () {
+          window.__initAnnotCards();
+        });
+      } else {
+        window.__initAnnotCards();
+      }
+    })();
+  </script>
 </body>
 </html>
