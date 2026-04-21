@@ -58,7 +58,7 @@ export const meta = {
 /** order: 年柱 → 月柱 → 日柱 → 时柱 */
 export const pillars: PillarCell[] = [
   { gan: '庚', zhi: '午', ganAttr: '阳金', zhiAttr: '阳火', shishen: '偏财', nayin: '路旁土', canggang: ['丁', '己'] },
-  { gan: '辛', zhi: '巳', ganAttr: '阴金', zhiAttr: '阴火', shishen: '正财', nayin: '白腊金', canggang: ['丙', '庚', '戊'] },
+  { gan: '辛', zhi: '巳', ganAttr: '阴金', zhiAttr: '阴火', shishen: '正财', nayin: '白蜡金', canggang: ['丙', '庚', '戊'] },
   { gan: '丙', zhi: '子', ganAttr: '阳火 · 日主', zhiAttr: '阳水', shishen: '日主', nayin: '涧下水', canggang: ['癸'], cangganSingle: true },
   { gan: '甲', zhi: '午', ganAttr: '阳木', zhiAttr: '阳火', shishen: '偏印', nayin: '沙中金', canggang: ['丁', '己'] },
 ]
@@ -90,7 +90,7 @@ export const pillarsByLocale = {
     } as Record<string, string>)[p.shishen] ?? p.shishen,
     nayin: ({
       路旁土: 'Roadside Earth',
-      白腊金: 'Wax Metal',
+      白蜡金: 'Wax Metal',
       涧下水: 'Stream Water',
       沙中金: 'Sand Metal',
     } as Record<string, string>)[p.nayin] ?? p.nayin,

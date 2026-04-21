@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
 import type { BaziArc } from '../composables/useBaziDrawings'
+import { getNayinMeaning } from '../data/nayin'
 import type { PillarCell } from '../data/mockBazi'
 
 interface PillarHeader {
@@ -67,6 +68,17 @@ function highlight(rel: string | null) {
   const FOCUS = ['focus-chong', 'focus-zixing', 'focus-anhe']
   FOCUS.forEach((c) => tableEl.value!.classList.remove(c))
   if (rel) tableEl.value.classList.add(`focus-${rel}`)
+}
+
+/**
+ * 仅在中文环境下对纳音单元返回原生 title 提示：short 一行 + long 详解。
+ * 英文版暂未提供纳音白话释义，返回空字符串即回退到仅显示原 key。
+ */
+function nayinTooltip(nayin: string): string {
+  if (locale.value === 'en') return ''
+  const m = getNayinMeaning(nayin)
+  if (!m) return ''
+  return `${m.short}\n\n${m.long}`
 }
 </script>
 
@@ -146,7 +158,10 @@ function highlight(rel: string | null) {
           :key="`ny-${idx}`"
           :class="['bazi-cell', { day: idx === 2 }]"
         >
-          <div class="bazi-cell-nayin">{{ p.nayin }}</div>
+          <div
+            class="bazi-cell-nayin"
+            :title="nayinTooltip(p.nayin)"
+          >{{ p.nayin }}</div>
         </div>
       </div>
       <svg ref="svgEl" class="bazi-relations-svg" preserveAspectRatio="none" />
@@ -236,7 +251,10 @@ function highlight(rel: string | null) {
           :key="`ny-${idx}`"
           :class="['bazi-cell', { day: idx === 2 }]"
         >
-          <div class="bazi-cell-nayin">{{ p.nayin }}</div>
+          <div
+            class="bazi-cell-nayin"
+            :title="nayinTooltip(p.nayin)"
+          >{{ p.nayin }}</div>
         </div>
       </div>
       <svg ref="svgEl" class="bazi-relations-svg" />

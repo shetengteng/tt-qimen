@@ -41,7 +41,7 @@ export interface PillarInfo {
   ganYinYang: '阴' | '阳'
   /** 支的阴阳 */
   zhiYinYang: '阴' | '阳'
-  /** 纳音（路旁土、白腊金…） */
+  /** 纳音（路旁土、白蜡金…） */
   nayin: string
   /** 此柱天干相对日主的十神（年/月/时柱），日柱固定为 '日主' */
   tenGod: TenGodType
