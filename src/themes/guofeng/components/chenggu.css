@@ -1,0 +1,304 @@
+/* ============================================
+ * Guofeng Theme — Chenggu (称骨算命)
+ *
+ * 对齐 design/prototypes/guofeng/chenggu.html，复刻金红古朴风格。
+ * 与 minimal 使用同一套 class 名（cg-*），保证 Vue 组件可复用。
+ *
+ * Class 体系：
+ *   cg-layout              两列（输入 + 天秤）
+ *   cg-balance-scene       天秤场景卡
+ *   cg-scale / cg-scale-*  天秤几何：底座/杆/横梁/秤盘
+ *   cg-weight-*            总重 / 标签 / 分骨重
+ *   cg-bone-table-card     分骨重分解卡
+ *   cg-bone-col / .*       4 列（年/月/日/时）
+ *   cg-poem-card           歌诀卡（金线边 + 印章）
+ *   cg-interpret-card      白话解读（朱色侧边）
+ * ============================================ */
+
+/* ---- 两列布局（左输入 / 右天秤） ---- */
+:root[data-theme='guofeng'] .cg-layout {
+  max-width: 960px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gf-space-xl);
+  align-items: start;
+}
+
+/* ---- 天秤场景卡 ---- */
+:root[data-theme='guofeng'] .cg-balance-scene {
+  background: linear-gradient(135deg, #fdf5db, #f6ecd6);
+  border: 1px solid var(--gf-gold);
+  border-radius: var(--gf-radius-md);
+  padding: var(--gf-space-xl);
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+:root[data-theme='guofeng'] .cg-scale {
+  width: 240px;
+  height: 160px;
+  position: relative;
+  margin: 0 auto;
+}
+
+:root[data-theme='guofeng'] .cg-scale-pole {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  width: 1px;
+  height: 80px;
+  background: var(--gf-ink);
+  transform: translateX(-50%);
+}
+
+:root[data-theme='guofeng'] .cg-scale-bar {
+  position: absolute;
+  top: 30px;
+  left: 20px;
+  right: 20px;
+  height: 3px;
+  background: var(--gf-ink);
+  transform: rotate(-4deg);
+  transform-origin: center;
+  animation: cg-swing-gf 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes cg-swing-gf {
+  0%   { transform: rotate(-4deg); }
+  100% { transform: rotate(4deg); }
+}
+
+:root[data-theme='guofeng'] .cg-scale-pan {
+  position: absolute;
+  top: 60px;
+  width: 50px;
+  height: 20px;
+  border: 1.5px solid var(--gf-cinnabar);
+  border-top: none;
+  border-radius: 0 0 25px 25px;
+  background: linear-gradient(180deg, rgba(194, 58, 42, 0.1), rgba(194, 58, 42, 0.05));
+}
+:root[data-theme='guofeng'] .cg-scale-pan.left  { left: 20px; }
+:root[data-theme='guofeng'] .cg-scale-pan.right { right: 20px; }
+
+:root[data-theme='guofeng'] .cg-weight {
+  margin-top: var(--gf-space-xl);
+  text-align: center;
+}
+
+:root[data-theme='guofeng'] .cg-weight-value {
+  font-family: var(--gf-font-serif);
+  font-size: 56px;
+  color: var(--gf-cinnabar);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.05em;
+}
+
+:root[data-theme='guofeng'] .cg-weight-label {
+  font-size: 13px;
+  color: var(--gf-ink-soft);
+  margin-top: var(--gf-space-sm);
+  letter-spacing: 0.2em;
+}
+
+:root[data-theme='guofeng'] .cg-weight-breakdown {
+  margin-top: var(--gf-space-md);
+  display: flex;
+  justify-content: center;
+  gap: var(--gf-space-md);
+  font-size: 13px;
+  color: var(--gf-ink-soft);
+  flex-wrap: wrap;
+}
+:root[data-theme='guofeng'] .cg-weight-breakdown span strong {
+  color: var(--gf-ink);
+  font-size: 14px;
+  margin-left: 4px;
+  font-family: var(--gf-font-serif);
+}
+
+/* ---- 分骨重分解 ---- */
+:root[data-theme='guofeng'] .cg-bone-table-card {
+  max-width: 980px;
+  margin: 0 auto var(--gf-space-xl);
+  padding: var(--gf-space-lg);
+}
+
+:root[data-theme='guofeng'] .cg-bone-table {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--gf-space-md);
+  margin-bottom: var(--gf-space-md);
+}
+
+:root[data-theme='guofeng'] .cg-bone-col {
+  padding: var(--gf-space-md);
+  background: rgba(255, 251, 240, 0.5);
+  border: 1px solid rgba(176, 141, 59, 0.3);
+  border-radius: var(--gf-radius-sm);
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+:root[data-theme='guofeng'] .cg-bone-col:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--gf-shadow-sm);
+}
+
+:root[data-theme='guofeng'] .cg-bone-head {
+  font-size: 13px;
+  color: var(--gf-ink-soft);
+  letter-spacing: 0.3em;
+  margin-bottom: 6px;
+}
+:root[data-theme='guofeng'] .cg-bone-src {
+  font-size: 12px;
+  color: var(--gf-ink-soft);
+  font-family: var(--gf-font-kaiti);
+  margin-bottom: 8px;
+}
+:root[data-theme='guofeng'] .cg-bone-weight {
+  font-family: var(--gf-font-serif);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--gf-cinnabar);
+}
+
+:root[data-theme='guofeng'] .cg-bone-total {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gf-space-lg);
+  padding-top: var(--gf-space-md);
+  border-top: 1px dashed rgba(176, 141, 59, 0.4);
+  flex-wrap: wrap;
+}
+:root[data-theme='guofeng'] .cg-total-label {
+  font-size: 14px;
+  color: var(--gf-ink-soft);
+  letter-spacing: 0.2em;
+}
+:root[data-theme='guofeng'] .cg-total-value {
+  font-family: var(--gf-font-serif);
+  font-size: 28px;
+  color: var(--gf-cinnabar);
+  font-weight: 600;
+}
+
+:root[data-theme='guofeng'] .cg-rank-badge {
+  padding: 4px 14px;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  border-radius: var(--gf-radius-sm);
+}
+:root[data-theme='guofeng'] .cg-rank-badge.rank-top,
+:root[data-theme='guofeng'] .cg-rank-badge.rank-high {
+  background: linear-gradient(135deg, #f4c46c, #c89648);
+  color: var(--gf-ink);
+  border: 1px solid rgba(176, 141, 59, 0.5);
+}
+:root[data-theme='guofeng'] .cg-rank-badge.rank-mid {
+  background: rgba(74, 109, 93, 0.12);
+  color: var(--gf-jade);
+  border: 1px solid rgba(74, 109, 93, 0.3);
+}
+:root[data-theme='guofeng'] .cg-rank-badge.rank-low,
+:root[data-theme='guofeng'] .cg-rank-badge.rank-bottom {
+  background: rgba(194, 58, 42, 0.08);
+  color: var(--gf-cinnabar);
+  border: 1px solid rgba(194, 58, 42, 0.2);
+}
+
+/* ---- 歌诀卡 ---- */
+:root[data-theme='guofeng'] .cg-poem-section {
+  max-width: 720px;
+  margin: var(--gf-space-xxl) auto var(--gf-space-xl);
+  text-align: center;
+  position: relative;
+}
+
+:root[data-theme='guofeng'] .cg-poem-card {
+  background:
+    linear-gradient(135deg, rgba(255, 251, 240, 0.95), rgba(246, 236, 214, 0.9)),
+    repeating-linear-gradient(0deg, transparent, transparent 30px, rgba(176, 141, 59, 0.04) 30px, rgba(176, 141, 59, 0.04) 31px);
+  border: 1.5px solid var(--gf-gold);
+  padding: var(--gf-space-xxl) var(--gf-space-xl);
+  border-radius: var(--gf-radius-md);
+  position: relative;
+  box-shadow: var(--gf-shadow-md);
+}
+
+:root[data-theme='guofeng'] .cg-poem-card::before,
+:root[data-theme='guofeng'] .cg-poem-card::after {
+  content: "✦";
+  position: absolute;
+  color: var(--gf-gold);
+  font-size: 16px;
+}
+:root[data-theme='guofeng'] .cg-poem-card::before { top: 12px; left: 16px; }
+:root[data-theme='guofeng'] .cg-poem-card::after  { bottom: 12px; right: 16px; }
+
+:root[data-theme='guofeng'] .cg-poem-title {
+  font-size: 18px;
+  color: var(--gf-ink-soft);
+  margin-bottom: var(--gf-space-md);
+  letter-spacing: 0.3em;
+  font-family: var(--gf-font-serif);
+}
+
+:root[data-theme='guofeng'] .cg-poem-verse {
+  font-family: var(--gf-font-serif);
+  font-size: 26px;
+  line-height: 2.2;
+  color: var(--gf-ink);
+  letter-spacing: 0.15em;
+  margin: var(--gf-space-md) 0;
+}
+:root[data-theme='guofeng'] .cg-poem-verse .cg-poem-line { display: block; }
+
+:root[data-theme='guofeng'] .cg-poem-stamp {
+  margin-top: var(--gf-space-lg);
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ---- 白话解读 ---- */
+:root[data-theme='guofeng'] .cg-interpret-card {
+  max-width: 720px;
+  margin: 0 auto var(--gf-space-xl);
+  padding: var(--gf-space-lg);
+  background-color: rgba(255, 251, 240, 0.7);
+  border-left: 3px solid var(--gf-cinnabar);
+}
+
+:root[data-theme='guofeng'] .cg-interpret-card h3 {
+  margin: 0 0 var(--gf-space-md);
+  color: var(--gf-cinnabar);
+  font-size: 18px;
+}
+
+:root[data-theme='guofeng'] .cg-interpret-card p {
+  margin: 0 0 var(--gf-space-sm);
+  line-height: 2;
+  color: var(--gf-ink);
+}
+
+:root[data-theme='guofeng'] .cg-interpret-note {
+  color: var(--gf-ink-soft);
+  font-size: 13px;
+  font-style: italic;
+}
+
+/* ---- Mobile ---- */
+@media (max-width: 768px) {
+  :root[data-theme='guofeng'] .cg-layout { grid-template-columns: 1fr; }
+  :root[data-theme='guofeng'] .cg-poem-verse { font-size: 20px; letter-spacing: 0.1em; }
+}
+@media (max-width: 640px) {
+  :root[data-theme='guofeng'] .cg-bone-table { grid-template-columns: repeat(2, 1fr); }
+}

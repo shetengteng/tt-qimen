@@ -88,6 +88,8 @@ const nayinAnnotItems = computed<AnnotItem[]>(() => {
       label: headerLabel ? `${headerLabel} · ${p.nayin}` : p.nayin,
       short: meaning?.short,
       long: meaning?.long,
+      classical: meaning?.classical,
+      source: meaning?.source,
     }
   })
 })

@@ -26,10 +26,13 @@ const isGuofeng = computed(() => themeStore.id === 'guofeng')
 const fallbackItems = computed(() => (tm('bazi.shishen.items') as ShishenItem[]) ?? [])
 
 /**
- * 当前只展示短版说明：
- * - `tenGods.ts` 已明确标注为“C 类常识性知识卡片”
- * - 其中 `long` 字段尚无独立 raw → extracted 溯源链
- * 因此此组件暂不渲染 long，避免把未审校的扩写直接展示给用户。
+ * 当前只展示短版说明（desc / descMn）：
+ * - `tenGods.ts` 顶层已补 classical / source（《三命通会》卷五 / 卷六，简体）
+ *   但考虑到本组件 4 柱并排的紧凑布局，塞入古文引文会显著加高每个卡片，
+ *   且 4 项引文出处多为同卷，视觉重复——故 UI 层暂不展示 classical / source，
+ *   数据保留在 TEN_GOD_INFO 供未来独立交互（例如 hover InlineAnnotsBar）复用。
+ * - long 四字段（trait/suit/caution/relation）仍为现代化扩写，未单独溯源，
+ *   故此组件也暂不渲染 long。
  */
 const items = computed<ShishenItem[]>(() => {
   if (!props.chart) return fallbackItems.value

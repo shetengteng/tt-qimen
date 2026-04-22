@@ -20,5 +20,8 @@
 @import './components/birth-form.css';
 @import './components/bazi.css';
 @import './components/ziwei.css';
+@import './components/chenggu.css';
+@import './components/liuren.css';
+@import './components/lingqian.css';
 @import './components/scrollbar.css';
 @import './components/collapsible.css';

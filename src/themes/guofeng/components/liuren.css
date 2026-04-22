@@ -1,0 +1,299 @@
+/* ============================================
+ * Guofeng Theme — 小六壬 (Liuren) module
+ * Migrated from design/prototypes/guofeng/liuren.html
+ * Selector prefix: lr-*
+ * ============================================ */
+
+/* ---------- 时间速览条 ---------- */
+:root[data-theme='guofeng'] .lr-time-bar {
+  max-width: 720px;
+  margin: 0 auto var(--gf-space-lg);
+  padding: var(--gf-space-lg);
+}
+
+:root[data-theme='guofeng'] .lr-time-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--gf-space-md);
+}
+
+:root[data-theme='guofeng'] .lr-time-item {
+  text-align: center;
+}
+
+:root[data-theme='guofeng'] .lr-time-label {
+  font-size: 13px;
+  color: var(--gf-ink-soft);
+  display: block;
+  margin-bottom: 6px;
+  letter-spacing: 0.05em;
+}
+
+:root[data-theme='guofeng'] .lr-time-value {
+  padding: 10px 14px;
+  border: 1px solid rgba(176, 141, 59, 0.4);
+  background-color: rgba(255, 251, 240, 0.8);
+  font-family: var(--gf-font-serif);
+  font-size: 15px;
+  color: var(--gf-ink);
+  border-radius: var(--gf-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+}
+
+:root[data-theme='guofeng'] .lr-time-value.accent {
+  color: var(--gf-cinnabar);
+  border-color: var(--gf-cinnabar);
+  background-color: rgba(249, 228, 212, 0.6);
+}
+
+/* ---------- 六宫圆盘 ---------- */
+:root[data-theme='guofeng'] .lr-wheel-section {
+  display: flex;
+  justify-content: center;
+  padding: var(--gf-space-xl) 0;
+}
+
+:root[data-theme='guofeng'] .lr-wheel {
+  position: relative;
+  width: 480px;
+  height: 480px;
+  max-width: 90vw;
+  max-height: 90vw;
+}
+
+:root[data-theme='guofeng'] .lr-wheel::before {
+  content: "";
+  position: absolute;
+  inset: 60px;
+  border: 2px dashed rgba(176, 141, 59, 0.3);
+  border-radius: 50%;
+}
+
+:root[data-theme='guofeng'] .lr-wheel-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, var(--gf-cinnabar), var(--gf-cinnabar-deep));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--gf-rice);
+  box-shadow: 0 8px 24px rgba(194, 58, 42, 0.4),
+              inset 0 -4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+}
+
+:root[data-theme='guofeng'] .lr-wheel-center-main {
+  font-size: 48px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+:root[data-theme='guofeng'] .lr-wheel-center-main--idle {
+  font-size: 56px;
+  opacity: 0.7;
+}
+
+:root[data-theme='guofeng'] .lr-wheel-center-label {
+  font-size: 12px;
+  margin-top: 8px;
+  letter-spacing: 0.3em;
+}
+
+:root[data-theme='guofeng'] .lr-palace {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(255, 251, 240, 0.9);
+  border: 2px solid rgba(176, 141, 59, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-shadow: var(--gf-shadow-sm);
+  transition: all 0.3s;
+  cursor: default;
+}
+
+:root[data-theme='guofeng'] .lr-palace:hover {
+  transform: scale(1.06);
+  box-shadow: var(--gf-shadow-md);
+}
+
+:root[data-theme='guofeng'] .lr-palace.active {
+  background: linear-gradient(135deg, #f9e4d4, #f5d0ba);
+  border-color: var(--gf-cinnabar);
+  box-shadow: 0 8px 20px rgba(194, 58, 42, 0.35);
+  transform: scale(1.05);
+}
+
+:root[data-theme='guofeng'] .lr-palace-name {
+  font-size: 22px;
+  color: var(--gf-ink);
+  font-weight: 500;
+  line-height: 1;
+}
+
+:root[data-theme='guofeng'] .lr-palace.active .lr-palace-name {
+  color: var(--gf-cinnabar);
+}
+
+:root[data-theme='guofeng'] .lr-palace-badge {
+  font-size: 11px;
+  color: var(--gf-ink-soft);
+  margin-top: 4px;
+}
+
+/* 六宫位置：从顶部顺时针 12 / 2 / 4 / 6 / 8 / 10 点钟 */
+:root[data-theme='guofeng'] .lr-palace[data-pos='1'] { top: 0; left: 50%; transform: translateX(-50%); }
+:root[data-theme='guofeng'] .lr-palace[data-pos='2'] { top: 25%; right: 0; }
+:root[data-theme='guofeng'] .lr-palace[data-pos='3'] { bottom: 25%; right: 0; }
+:root[data-theme='guofeng'] .lr-palace[data-pos='4'] { bottom: 0; left: 50%; transform: translateX(-50%); }
+:root[data-theme='guofeng'] .lr-palace[data-pos='5'] { bottom: 25%; left: 0; }
+:root[data-theme='guofeng'] .lr-palace[data-pos='6'] { top: 25%; left: 0; }
+
+:root[data-theme='guofeng'] .lr-palace[data-pos='1'].active { transform: translateX(-50%) scale(1.05); }
+:root[data-theme='guofeng'] .lr-palace[data-pos='4'].active { transform: translateX(-50%) scale(1.05); }
+
+/* ---------- 分面 tabs ---------- */
+:root[data-theme='guofeng'] .lr-aspect-tabs {
+  display: flex;
+  justify-content: center;
+  gap: var(--gf-space-sm);
+  margin: var(--gf-space-xl) auto var(--gf-space-lg);
+  max-width: 720px;
+  flex-wrap: wrap;
+}
+
+:root[data-theme='guofeng'] .lr-aspect-tab {
+  padding: 8px 20px;
+  background: transparent;
+  color: var(--gf-ink-soft);
+  border: 1px solid rgba(176, 141, 59, 0.3);
+  border-radius: var(--gf-radius-sm);
+  cursor: pointer;
+  font-family: var(--gf-font-serif);
+  font-size: 14px;
+  transition: all 0.15s;
+}
+
+:root[data-theme='guofeng'] .lr-aspect-tab.active {
+  background-color: var(--gf-cinnabar);
+  color: var(--gf-rice);
+  border-color: var(--gf-cinnabar);
+}
+
+:root[data-theme='guofeng'] .lr-aspect-tab:hover:not(.active) {
+  border-color: var(--gf-gold);
+  color: var(--gf-ink);
+}
+
+/* ---------- 解读卡 ---------- */
+:root[data-theme='guofeng'] .lr-reading-card {
+  max-width: 720px;
+  margin: 0 auto var(--gf-space-xl);
+  background: linear-gradient(135deg, rgba(249, 228, 212, 0.4), rgba(246, 236, 214, 0.6));
+  border: 1px solid var(--gf-cinnabar);
+  border-radius: var(--gf-radius-md);
+  padding: var(--gf-space-xl);
+  box-shadow: var(--gf-shadow-sm);
+}
+
+:root[data-theme='guofeng'] .lr-reading-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--gf-space-md);
+  padding-bottom: var(--gf-space-sm);
+  border-bottom: 1px dashed rgba(194, 58, 42, 0.3);
+}
+
+:root[data-theme='guofeng'] .lr-reading-title {
+  font-size: 22px;
+  color: var(--gf-cinnabar);
+  margin: 0;
+  letter-spacing: 0.04em;
+}
+
+:root[data-theme='guofeng'] .lr-reading-verdict {
+  padding: 4px 16px;
+  border-radius: 14px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+:root[data-theme='guofeng'] .lr-reading-verdict.ji {
+  background-color: rgba(74, 109, 93, 0.15);
+  color: var(--gf-jade);
+}
+:root[data-theme='guofeng'] .lr-reading-verdict.ping {
+  background-color: rgba(176, 141, 59, 0.15);
+  color: var(--gf-gold);
+}
+:root[data-theme='guofeng'] .lr-reading-verdict.xiong {
+  background-color: rgba(194, 58, 42, 0.15);
+  color: var(--gf-cinnabar);
+}
+
+:root[data-theme='guofeng'] .lr-reading-body {
+  line-height: 2;
+  color: var(--gf-ink);
+  font-size: 15px;
+  margin: 0 0 var(--gf-space-md);
+}
+
+/* ---------- 宜忌 ---------- */
+:root[data-theme='guofeng'] .lr-yiji {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gf-space-md);
+  margin-top: var(--gf-space-md);
+}
+
+:root[data-theme='guofeng'] .lr-yiji-item {
+  display: flex;
+  gap: var(--gf-space-sm);
+  align-items: flex-start;
+}
+
+:root[data-theme='guofeng'] .lr-yiji-label {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+  text-align: center;
+  color: var(--gf-rice);
+  border-radius: 2px;
+  font-size: 13px;
+  font-family: var(--gf-font-serif);
+}
+
+:root[data-theme='guofeng'] .lr-yiji-label.yi { background-color: var(--gf-jade); }
+:root[data-theme='guofeng'] .lr-yiji-label.ji { background-color: var(--gf-cinnabar); }
+
+:root[data-theme='guofeng'] .lr-yiji-content {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--gf-ink);
+}
+
+@media (max-width: 768px) {
+  :root[data-theme='guofeng'] .lr-wheel { width: 320px; height: 320px; }
+  :root[data-theme='guofeng'] .lr-wheel-center { width: 100px; height: 100px; }
+  :root[data-theme='guofeng'] .lr-wheel-center-main { font-size: 36px; }
+  :root[data-theme='guofeng'] .lr-palace { width: 84px; height: 84px; }
+  :root[data-theme='guofeng'] .lr-palace-name { font-size: 18px; }
+  :root[data-theme='guofeng'] .lr-yiji { grid-template-columns: 1fr; }
+  :root[data-theme='guofeng'] .lr-time-grid { grid-template-columns: repeat(2, 1fr); }
+  :root[data-theme='guofeng'] .lr-reading-card { padding: var(--gf-space-lg); }
+}

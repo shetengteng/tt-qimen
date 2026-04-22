@@ -24,6 +24,16 @@ export interface AnnotItem {
   short?: string
   /** 长释义（80-220 字） */
   long?: string
+  /**
+   * 古籍原文主旨句（繁体，≤ 40 字），UI 在 long 下方用小字引用。
+   * 与 `source` 成对出现时渲染"引文 + 出处"溯源区块。
+   */
+  classical?: string
+  /**
+   * 原文锚点，如"《三命通会》· 卷一 · L281-283"。
+   * 与 `classical` 成对出现才生效；仅有 source 不渲染。
+   */
+  source?: string
 }
 
 interface Props {
@@ -70,6 +80,10 @@ const visible = computed(() => props.items.length > 0)
           <template v-if="it.long">{{ it.long }}</template>
           <template v-else-if="!it.short">（详细解释待接入运行时数据）</template>
         </p>
+        <div v-if="it.classical && it.source" class="inline-annot-item-source">
+          <p class="source-classical">「{{ it.classical }}」</p>
+          <p class="source-cite">—— {{ it.source }}</p>
+        </div>
       </div>
     </div>
   </Transition>
@@ -92,5 +106,27 @@ const visible = computed(() => props.items.length > 0)
   .annot-bar-leave-active {
     transition: none;
   }
+}
+
+.inline-annot-item-source {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(0, 0, 0, 0.12);
+}
+.inline-annot-item-source p {
+  margin: 0;
+  line-height: 1.7;
+}
+.inline-annot-item-source .source-classical {
+  font-size: 13px;
+  opacity: 0.75;
+  font-style: italic;
+  letter-spacing: 0.3px;
+}
+.inline-annot-item-source .source-cite {
+  margin-top: 3px;
+  font-size: 12px;
+  opacity: 0.55;
+  text-align: right;
 }
 </style>

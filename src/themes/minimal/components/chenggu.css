@@ -1,0 +1,319 @@
+/* ============================================
+ * Minimal Theme — Chenggu (称骨算命)
+ *
+ * 对齐 design/prototypes/minimal/chenggu.html：
+ *   - cg-layout 两列（输入 + 天秤）
+ *   - cg-balance-scene / cg-balance（极简圆点抽象天秤）
+ *   - cg-bone-table-card / cg-bone-col（分骨重分解）
+ *   - cg-poem-section / cg-poem-card（歌诀徽章 + 横排诗）
+ *   - cg-interpret-card（白话解读 · 强调色左侧分隔线）
+ *
+ * 所有 token 均为 minimal/tokens.css 已定义变量。
+ * ============================================ */
+
+/* ---- 两列布局 ---- */
+:root[data-theme='minimal'] .cg-layout {
+  max-width: 980px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: var(--mn-space-8);
+  align-items: start;
+}
+
+/* ---- 天秤视觉 ---- */
+:root[data-theme='minimal'] .cg-balance-scene {
+  background: linear-gradient(135deg, var(--mn-bg-elev), #f8f7f2);
+  border: 1px solid var(--mn-border);
+  border-radius: var(--mn-radius-xl);
+  padding: var(--mn-space-10);
+  text-align: center;
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+:root[data-theme='minimal'] .cg-scale {
+  width: 200px;
+  height: 140px;
+  margin: 0 auto var(--mn-space-6);
+  position: relative;
+}
+
+:root[data-theme='minimal'] .cg-scale-base {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: var(--mn-ink);
+  border-radius: 2px;
+}
+
+:root[data-theme='minimal'] .cg-scale-pole {
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 90px;
+  background: var(--mn-ink);
+}
+
+:root[data-theme='minimal'] .cg-scale-bar {
+  position: absolute;
+  top: 45px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--mn-ink);
+  transform: rotate(-3deg);
+  transform-origin: center;
+  animation: cg-swing-mn 3s ease-in-out infinite alternate;
+}
+
+@keyframes cg-swing-mn {
+  0%   { transform: rotate(-3deg); }
+  100% { transform: rotate(3deg); }
+}
+
+:root[data-theme='minimal'] .cg-scale-pan {
+  position: absolute;
+  top: 30px;
+  width: 44px;
+  height: 16px;
+  border: 1.5px solid var(--mn-accent);
+  border-top: none;
+  border-radius: 0 0 22px 22px;
+  background: var(--mn-accent-soft);
+}
+:root[data-theme='minimal'] .cg-scale-pan.left  { left: 0; }
+:root[data-theme='minimal'] .cg-scale-pan.right { right: 0; }
+
+:root[data-theme='minimal'] .cg-weight {
+  margin-top: var(--mn-space-6);
+}
+
+:root[data-theme='minimal'] .cg-weight-value {
+  font-size: 56px;
+  font-weight: 700;
+  color: var(--mn-accent);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+:root[data-theme='minimal'] .cg-weight-label {
+  font-size: 13px;
+  color: var(--mn-ink-muted);
+  margin-top: var(--mn-space-3);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+:root[data-theme='minimal'] .cg-weight-breakdown {
+  margin-top: var(--mn-space-5);
+  padding-top: var(--mn-space-4);
+  border-top: 1px solid var(--mn-border);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--mn-space-3);
+  font-size: 13px;
+}
+
+:root[data-theme='minimal'] .cg-wb-item {
+  text-align: center;
+  color: var(--mn-ink-soft);
+}
+:root[data-theme='minimal'] .cg-wb-item strong {
+  display: block;
+  color: var(--mn-ink);
+  font-size: 16px;
+  margin-top: 2px;
+}
+
+/* ---- 分骨重卡 ---- */
+:root[data-theme='minimal'] .cg-bone-table-card {
+  max-width: 1000px;
+  margin: 0 auto var(--mn-space-8);
+  padding: var(--mn-space-6);
+}
+
+:root[data-theme='minimal'] .cg-bone-table {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--mn-space-3);
+  margin-bottom: var(--mn-space-4);
+}
+
+:root[data-theme='minimal'] .cg-bone-col {
+  padding: var(--mn-space-4);
+  background: var(--mn-bg);
+  border: 1px solid var(--mn-border);
+  border-radius: var(--mn-radius-md);
+  text-align: center;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+:root[data-theme='minimal'] .cg-bone-col:hover {
+  transform: translateY(-1px);
+  border-color: var(--mn-accent);
+  box-shadow: 0 6px 18px rgba(10, 10, 10, 0.05);
+}
+
+:root[data-theme='minimal'] .cg-bone-head {
+  font-size: 12px;
+  color: var(--mn-ink-muted);
+  letter-spacing: 0.2em;
+  margin-bottom: 4px;
+}
+:root[data-theme='minimal'] .cg-bone-src {
+  font-size: 11px;
+  color: var(--mn-ink-muted);
+  margin-bottom: 6px;
+}
+:root[data-theme='minimal'] .cg-bone-weight {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--mn-accent);
+}
+
+:root[data-theme='minimal'] .cg-bone-total {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--mn-space-4);
+  padding-top: var(--mn-space-4);
+  border-top: 1px dashed var(--mn-border);
+  flex-wrap: wrap;
+}
+:root[data-theme='minimal'] .cg-total-label {
+  font-size: 12px;
+  color: var(--mn-ink-muted);
+  letter-spacing: 0.15em;
+}
+:root[data-theme='minimal'] .cg-total-value {
+  font-size: 24px;
+  color: var(--mn-accent);
+  font-weight: 600;
+}
+
+:root[data-theme='minimal'] .cg-rank-badge {
+  padding: 4px 12px;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  border-radius: 999px;
+  font-weight: 500;
+}
+:root[data-theme='minimal'] .cg-rank-badge.rank-top,
+:root[data-theme='minimal'] .cg-rank-badge.rank-high {
+  background: var(--mn-accent-soft);
+  color: var(--mn-accent);
+}
+:root[data-theme='minimal'] .cg-rank-badge.rank-mid {
+  background: #ecfdf5;
+  color: var(--mn-success);
+}
+:root[data-theme='minimal'] .cg-rank-badge.rank-low,
+:root[data-theme='minimal'] .cg-rank-badge.rank-bottom {
+  background: #fef2f2;
+  color: var(--mn-danger);
+}
+
+/* ---- 歌诀区（简约横排） ---- */
+:root[data-theme='minimal'] .cg-poem-section {
+  max-width: 720px;
+  margin: var(--mn-space-12) auto var(--mn-space-8);
+}
+
+:root[data-theme='minimal'] .cg-poem-card {
+  background: linear-gradient(180deg, var(--mn-bg-elev), #f8f7f2);
+  border: 1px solid var(--mn-border);
+  border-radius: var(--mn-radius-xl);
+  padding: var(--mn-space-10) var(--mn-space-8);
+  text-align: center;
+  position: relative;
+  box-shadow: var(--mn-shadow-sm);
+}
+
+:root[data-theme='minimal'] .cg-poem-badge {
+  position: absolute;
+  top: var(--mn-space-4);
+  right: var(--mn-space-4);
+  padding: 4px 12px;
+  background-color: var(--mn-accent);
+  color: #ffffff;
+  font-size: 11px;
+  border-radius: 999px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+}
+
+:root[data-theme='minimal'] .cg-poem-eyebrow {
+  font-size: 11px;
+  color: var(--mn-ink-muted);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: var(--mn-space-5);
+}
+
+:root[data-theme='minimal'] .cg-poem-verse {
+  font-size: 24px;
+  line-height: 2.2;
+  color: var(--mn-ink);
+  letter-spacing: 0.1em;
+  font-weight: 500;
+  margin: 0;
+}
+:root[data-theme='minimal'] .cg-poem-verse .cg-poem-line { display: block; }
+
+:root[data-theme='minimal'] .cg-poem-divider {
+  width: 40px;
+  height: 2px;
+  background-color: var(--mn-accent);
+  margin: var(--mn-space-6) auto;
+  border-radius: 1px;
+}
+
+:root[data-theme='minimal'] .cg-poem-meta {
+  font-size: 12px;
+  color: var(--mn-ink-muted);
+  letter-spacing: 0.1em;
+}
+
+/* ---- 白话解读 ---- */
+:root[data-theme='minimal'] .cg-interpret-card {
+  max-width: 720px;
+  margin: 0 auto var(--mn-space-8);
+  padding: var(--mn-space-6) var(--mn-space-8);
+  background-color: var(--mn-bg-elev);
+  border: 1px solid var(--mn-border);
+  border-radius: var(--mn-radius-lg);
+  border-left: 3px solid var(--mn-accent);
+}
+:root[data-theme='minimal'] .cg-interpret-card h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 var(--mn-space-4);
+  color: var(--mn-accent);
+}
+:root[data-theme='minimal'] .cg-interpret-card p {
+  color: var(--mn-ink-soft);
+  line-height: 1.8;
+  margin: 0 0 var(--mn-space-3);
+}
+:root[data-theme='minimal'] .cg-interpret-note {
+  font-size: 12px;
+  color: var(--mn-ink-muted);
+  font-style: italic;
+  margin-top: var(--mn-space-4);
+}
+
+/* ---- Mobile ---- */
+@media (max-width: 768px) {
+  :root[data-theme='minimal'] .cg-layout { grid-template-columns: 1fr; }
+  :root[data-theme='minimal'] .cg-poem-verse { font-size: 18px; letter-spacing: 0.05em; }
+}
+@media (max-width: 640px) {
+  :root[data-theme='minimal'] .cg-bone-table { grid-template-columns: repeat(2, 1fr); }
+}

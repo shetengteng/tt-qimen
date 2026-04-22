@@ -1,0 +1,359 @@
+/* ============================================
+ * Guofeng Theme — 观音灵签 (Lingqian) module
+ * Migrated from design/prototypes/guofeng/lingqian.html
+ * Selector prefix: lq-*
+ * ============================================ */
+
+/* ---------- 输入卡：复用 ds-input-card 公共规范 + 提示文案 ---------- */
+:root[data-theme='guofeng'] .lq-input-hint {
+  font-size: 12px;
+  color: var(--gf-ink-soft);
+  margin: 0 0 var(--gf-space-md);
+  text-align: center;
+  line-height: 1.7;
+}
+
+:root[data-theme='guofeng'] .lq-input-hint strong {
+  color: var(--gf-cinnabar);
+}
+
+/* ---------- 摇签筒场景 ---------- */
+:root[data-theme='guofeng'] .lq-shake-scene {
+  max-width: 720px;
+  margin: 0 auto var(--gf-space-xl);
+  background: linear-gradient(180deg, #fdf5db, #f6ecd6);
+  border: 1.5px solid var(--gf-gold);
+  border-radius: var(--gf-radius-md);
+  padding: var(--gf-space-xxl);
+  text-align: center;
+  position: relative;
+  box-shadow: var(--gf-shadow-sm);
+}
+
+:root[data-theme='guofeng'] .lq-tube {
+  width: 120px;
+  height: 200px;
+  margin: 0 auto;
+  position: relative;
+  background: linear-gradient(135deg, var(--gf-cinnabar), var(--gf-cinnabar-deep));
+  border-radius: 6px 6px 60px 60px;
+  box-shadow:
+    var(--gf-shadow-md),
+    inset 0 4px 8px rgba(0, 0, 0, 0.2),
+    inset 0 -8px 16px rgba(0, 0, 0, 0.3);
+  animation: lq-shake 2s ease-in-out infinite;
+}
+
+@keyframes lq-shake {
+  0%, 100% { transform: rotate(-3deg) translateY(0); }
+  50%      { transform: rotate(3deg)  translateY(-6px); }
+}
+
+:root[data-theme='guofeng'] .lq-tube::before {
+  content: "";
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140px;
+  height: 20px;
+  background-color: var(--gf-gold);
+  border-radius: 4px;
+  box-shadow: var(--gf-shadow-sm);
+}
+
+:root[data-theme='guofeng'] .lq-tube-stick {
+  position: absolute;
+  top: -30px;
+  width: 3px;
+  height: 50px;
+  background: linear-gradient(180deg, #8a6b3a, #4a3d26);
+  border-radius: 2px;
+}
+
+:root[data-theme='guofeng'] .lq-tube-stick:nth-of-type(1) { left: 30%; transform: rotate(-8deg); }
+:root[data-theme='guofeng'] .lq-tube-stick:nth-of-type(2) { left: 45%; transform: rotate(2deg);  top: -36px; }
+:root[data-theme='guofeng'] .lq-tube-stick:nth-of-type(3) { left: 60%; transform: rotate(10deg); top: -28px; }
+:root[data-theme='guofeng'] .lq-tube-stick:nth-of-type(4) { left: 50%; top: -40px; }
+
+:root[data-theme='guofeng'] .lq-tube-label {
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 30px;
+  color: var(--gf-rice);
+  writing-mode: vertical-rl;
+  letter-spacing: 0.3em;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme='guofeng'] .lq-tube { animation: none; }
+}
+
+/* ---------- 签文卡 ---------- */
+:root[data-theme='guofeng'] .lq-card {
+  max-width: 720px;
+  margin: 0 auto var(--gf-space-xl);
+  background:
+    linear-gradient(180deg, rgba(255, 251, 240, 0.98), rgba(246, 236, 214, 0.95)),
+    repeating-linear-gradient(0deg, transparent, transparent 32px, rgba(176, 141, 59, 0.05) 32px, rgba(176, 141, 59, 0.05) 33px);
+  border: 1.5px solid var(--gf-gold);
+  border-radius: var(--gf-radius-md);
+  padding: var(--gf-space-xxl) var(--gf-space-xl);
+  position: relative;
+  box-shadow: var(--gf-shadow-md);
+}
+
+:root[data-theme='guofeng'] .lq-title-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--gf-space-lg);
+  padding-bottom: var(--gf-space-sm);
+  border-bottom: 1px dashed rgba(176, 141, 59, 0.4);
+}
+
+:root[data-theme='guofeng'] .lq-qian-number {
+  text-align: center;
+}
+
+:root[data-theme='guofeng'] .lq-qian-number-label {
+  font-size: 12px;
+  color: var(--gf-ink-soft);
+  letter-spacing: 0.3em;
+}
+
+:root[data-theme='guofeng'] .lq-qian-number-value {
+  font-size: 56px;
+  color: var(--gf-cinnabar);
+  font-weight: 600;
+  line-height: 1;
+  margin-top: 4px;
+}
+
+:root[data-theme='guofeng'] .lq-qian-meta {
+  text-align: right;
+}
+
+:root[data-theme='guofeng'] .lq-qian-name {
+  font-size: 20px;
+  color: var(--gf-ink);
+  margin-bottom: 6px;
+}
+
+:root[data-theme='guofeng'] .lq-qian-level {
+  padding: 4px 14px;
+  border-radius: 14px;
+  font-size: 13px;
+  display: inline-block;
+}
+
+:root[data-theme='guofeng'] .lq-qian-level.up {
+  background-color: rgba(74, 109, 93, 0.15);
+  color: var(--gf-jade);
+}
+:root[data-theme='guofeng'] .lq-qian-level.mid {
+  background-color: rgba(176, 141, 59, 0.15);
+  color: var(--gf-gold);
+}
+:root[data-theme='guofeng'] .lq-qian-level.down {
+  background-color: rgba(194, 58, 42, 0.15);
+  color: var(--gf-cinnabar);
+}
+
+/* ---------- 签诗 ---------- */
+:root[data-theme='guofeng'] .lq-poem {
+  text-align: center;
+  padding: var(--gf-space-lg) 0;
+}
+
+:root[data-theme='guofeng'] .lq-poem-title {
+  font-size: 14px;
+  color: var(--gf-ink-soft);
+  margin-bottom: var(--gf-space-md);
+  letter-spacing: 0.3em;
+}
+
+:root[data-theme='guofeng'] .lq-poem-body {
+  font-size: 22px;
+  line-height: 2.4;
+  color: var(--gf-ink);
+  letter-spacing: 0.2em;
+  font-family: var(--gf-font-serif);
+}
+
+:root[data-theme='guofeng'] .lq-poem-line {
+  display: block;
+}
+
+/* ---------- 典故段 ---------- */
+:root[data-theme='guofeng'] .lq-tale {
+  background-color: rgba(255, 255, 255, 0.5);
+  border-left: 3px solid var(--gf-cinnabar);
+  padding: var(--gf-space-md) var(--gf-space-lg);
+  margin: var(--gf-space-lg) 0;
+  font-size: 14px;
+  color: var(--gf-ink-soft);
+  line-height: 1.9;
+}
+
+:root[data-theme='guofeng'] .lq-tale strong {
+  color: var(--gf-cinnabar);
+  margin-right: var(--gf-space-sm);
+}
+
+:root[data-theme='guofeng'] .lq-poem-seal {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--gf-space-md);
+}
+
+/* ---------- 解曰 / 仙机 双栏 ---------- */
+:root[data-theme='guofeng'] .lq-two-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gf-space-lg);
+  max-width: 980px;
+  margin: 0 auto var(--gf-space-xl);
+}
+
+:root[data-theme='guofeng'] .lq-col {
+  padding: var(--gf-space-lg);
+  background: var(--gf-rice);
+  border: 1px solid rgba(176, 141, 59, 0.3);
+  border-radius: var(--gf-radius-sm);
+  position: relative;
+}
+
+:root[data-theme='guofeng'] .lq-col::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px dashed rgba(176, 141, 59, 0.2);
+  border-radius: calc(var(--gf-radius-sm) - 2px);
+  pointer-events: none;
+}
+
+:root[data-theme='guofeng'] .lq-col-head {
+  position: relative;
+  font-family: var(--gf-font-kaiti);
+  font-size: 18px;
+  letter-spacing: 0.3em;
+  margin-bottom: var(--gf-space-md);
+  padding-bottom: var(--gf-space-sm);
+  border-bottom: 1px dashed rgba(176, 141, 59, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--gf-cinnabar);
+}
+
+:root[data-theme='guofeng'] .lq-col-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gf-cinnabar);
+  flex-shrink: 0;
+}
+
+:root[data-theme='guofeng'] .lq-col-xianji .lq-col-head { color: var(--gf-gold); }
+:root[data-theme='guofeng'] .lq-col-xianji .lq-col-dot  { background: var(--gf-gold); }
+
+:root[data-theme='guofeng'] .lq-col-body {
+  position: relative;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--gf-ink);
+}
+
+/* ---------- 6 大分类指引 ---------- */
+:root[data-theme='guofeng'] .lq-topics {
+  max-width: 720px;
+  margin: 0 auto var(--gf-space-xl);
+}
+
+:root[data-theme='guofeng'] .lq-topics-title {
+  text-align: center;
+  color: var(--gf-cinnabar);
+  font-family: var(--gf-font-kaiti);
+  font-size: 18px;
+  letter-spacing: 0.3em;
+  margin-bottom: var(--gf-space-lg);
+}
+
+:root[data-theme='guofeng'] .lq-topic-tabs {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--gf-space-sm);
+  margin-bottom: var(--gf-space-lg);
+}
+
+:root[data-theme='guofeng'] .lq-topic-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gf-space-sm);
+  padding: 8px 16px;
+  background: transparent;
+  color: var(--gf-ink-soft);
+  border: 1px solid rgba(176, 141, 59, 0.3);
+  border-radius: var(--gf-radius-sm);
+  cursor: pointer;
+  font-family: var(--gf-font-serif);
+  font-size: 14px;
+  transition: all 0.15s;
+}
+
+:root[data-theme='guofeng'] .lq-topic-tab:hover:not(.active) {
+  border-color: var(--gf-gold);
+  color: var(--gf-ink);
+}
+
+:root[data-theme='guofeng'] .lq-topic-tab.active {
+  background-color: var(--gf-cinnabar);
+  border-color: var(--gf-cinnabar);
+  color: var(--gf-rice);
+}
+
+:root[data-theme='guofeng'] .lq-topic-icon {
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  background-color: var(--gf-cinnabar);
+  color: var(--gf-rice);
+  border-radius: 50%;
+  font-size: 12px;
+}
+
+:root[data-theme='guofeng'] .lq-topic-tab.active .lq-topic-icon {
+  background-color: var(--gf-rice);
+  color: var(--gf-cinnabar);
+}
+
+:root[data-theme='guofeng'] .lq-topic-name {
+  font-size: 14px;
+  letter-spacing: 0.1em;
+}
+
+:root[data-theme='guofeng'] .lq-topic-body {
+  background-color: rgba(255, 251, 240, 0.7);
+  border: 1px solid rgba(176, 141, 59, 0.3);
+  border-radius: var(--gf-radius-md);
+  padding: var(--gf-space-lg);
+  font-size: 15px;
+  line-height: 1.9;
+  color: var(--gf-ink);
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  :root[data-theme='guofeng'] .lq-title-header { flex-direction: column; text-align: center; gap: var(--gf-space-md); }
+  :root[data-theme='guofeng'] .lq-qian-meta    { text-align: center; }
+  :root[data-theme='guofeng'] .lq-poem-body    { font-size: 18px; letter-spacing: 0.15em; }
+  :root[data-theme='guofeng'] .lq-two-cols     { grid-template-columns: 1fr; }
+  :root[data-theme='guofeng'] .lq-card         { padding: var(--gf-space-xl) var(--gf-space-lg); }
+}

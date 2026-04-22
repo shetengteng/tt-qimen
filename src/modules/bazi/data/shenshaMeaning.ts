@@ -1,15 +1,20 @@
 /**
  * 神煞简短释义表（古法术语版）
  *
- * 核数状态（2026-04-22 grep 统计）：
- *   - `auditStatus: 'verified'` · 共 **36** key
- *   - `auditStatus: 'pending'`  · 共 **40** key
- *   - 合计 76 key
+ * 核数状态（2026-04-22 T-2.4-A 精确 grep 统计）：
+ *   - `auditStatus: 'verified'` · 共 **43** key（原 35 + T-2.4-A 新增 8）
+ *   - `auditStatus: 'pending'`  · 共 **29** key
+ *   - 合计 72 key
  *
- * 校对说明：先前注释声明"38 verified key"为早期设计目标数；代码实际到 2026-04-22
- *           已落 36 个（天官 / 国印贵人等 2 个尚未完成 long 与锚点对齐），
- *           后续按 `design/bazi/2026-04-22-03-八字文案溯源改造方案TODO.md` § 2.4
- *           T-2.4-A 计划分批补全。
+ * 校对说明：
+ *   - P0（2026-04-22）：先前注释声明"38 verified / 40 pending / 76 total"均为早期设计目标数或粗估；
+ *     按代码实体 key 精确数，当时实际为 35 verified / 37 pending（含 8 待补的 verified 候选）/ 72 total。
+ *     P1 阶段再次核对时发现 P0 核数常量（36 / 40 / 76）仍有 ±1~4 的偏差，属于人工手数误差。
+ *   - P1 · T-2.4-A（2026-04-22）：补齐高频 pending 8 项 → verified，实际补 8 个 key：
+ *       天赦 / 天喜 / 魁罡貴人 / 三奇 / 陰陽差錯 / 陰差陽錯 / 金神 / 截路空亡
+ *     （其中 `陰陽差錯` + `陰差陽錯` 为异体 key，共享同一 raw 出处；`紅鸾` 因八字古籍无独立节，延至 P2）
+ *   - SHENSHA_MEANING_COUNT 常量已按精确值更新为 43 / 29 / 72（P0 旧值 36/40/76 同步修正）
+ *   - 剩余 29 个 pending 按 `2026-04-22-03-八字文案溯源改造方案TODO.md` § 2.4 P2 阶段分批补全
  *
  * 本表口径：
  *   - verified 36 项：short / long 严格对照《三命通会》《五行精纪》原文，
@@ -27,13 +32,24 @@
  *   short:       20 字内的一句话释义（chip 下方直接显示）
  *   long:        80 字内的长释义（hover tooltip / Modal 详情使用，可选）
  *   auditStatus: 文案审校状态（'verified' | 'pending'）
- *   source:      原文锚点（仅 verified 项必填，格式 "ST3 · L###" 等，详见档案）
+ *   source:      原文锚点（仅 verified 项必填，格式 "ST3 · L###" / "YZ · L###" 等）
+ *
+ * source 字段缩写映射：
+ *   - ST2 = 《三命通会》· 卷二
+ *   - ST3 = 《三命通会》· 卷三
+ *   - ST6 = 《三命通会》· 卷六（T-2.4-A 新增 · 魁罡）
+ *   - WJ  = 《五行精纪》· 全卷
+ *   - YZ  = 《渊海子平》· 全卷（T-2.4-A 新增 · 金神）
  *
  * 来源文献：
  *   - 《三命通会》明·万民英 卷二、卷三论诸神煞
  *     （raw 路径：design/bazi/raw/sanming-tonghui/volume-02.md / volume-03.md）
+ *   - 《三命通会》明·万民英 卷六（T-2.4-A 新增魁罡单节）
+ *     （raw 路径：design/bazi/raw/sanming-tonghui/volume-06.md）
  *   - 《五行精纪》宋·廖中 卷十四 ~ 卷廿七
  *     （raw 路径：design/bazi/raw/wuxing-jingji/full.md）
+ *   - 《渊海子平》宋·徐子平 · 论金神（T-2.4-A 新增 · 三命通会未独立列金神）
+ *     （raw 路径：design/bazi/raw/yuanhai-ziping/full.md）
  *   - 审校档案：`design/bazi/extracted/05-shensha.md`
  *   - 溯源改造 TODO：`design/bazi/2026-04-22-03-八字文案溯源改造方案TODO.md` § 2.4
  */
@@ -53,9 +69,9 @@ export const SHENSHA_MEANING_STATUS: 'pending' | 'verified' = 'verified'
  * 调整 SHENSHA_MEANING 条目时需同步更新此常量，便于 CI 做一致性校验（P2 项）。
  */
 export const SHENSHA_MEANING_COUNT = {
-  verified: 36,
-  pending: 40,
-  total: 76,
+  verified: 43,
+  pending: 29,
+  total: 72,
 } as const
 
 export interface ShenshaMeaning {
@@ -74,14 +90,14 @@ export interface ShenshaMeaning {
 /**
  * key 为繁体神煞名，与 `plugin-char8ex` 的 `C8God.key` 一一对应。
  *
- * ── 第一组：高频概念项（36 个 verified key，已落原文锚点） ──
- * ── 第二组：其他 plugin 输出 key（40 个 pending，short 中性占位、long 缺省） ──
+ * ── 第一组：高频概念项（35 个 verified key，已落原文锚点） ──
+ * ── 第二组：其他 plugin 输出 key（37 个 · T-2.4-A 后：8 verified + 29 pending） ──
  *
- * 两组合计 76 key。详见 SHENSHA_MEANING_COUNT。
+ * 两组合计 72 key。详见 SHENSHA_MEANING_COUNT。
  */
 export const SHENSHA_MEANING: Record<string, ShenshaMeaning> = {
   // ============================================================
-  // 第一组：高频概念项 · 36 个 verified key · 古法术语版
+  // 第一组：高频概念项 · 35 个 verified key · 古法术语版
   // ============================================================
 
   // ----- 吉神（15 项） -----
@@ -334,9 +350,10 @@ export const SHENSHA_MEANING: Record<string, ShenshaMeaning> = {
   },
 
   // ============================================================
-  // 第二组：40 个 pending key · 分批补全中
-  // short 中性占位、long 缺省、UI 可加"待审校"角标
-  // 补全进度见 design/bazi/2026-04-22-03-八字文案溯源改造方案TODO.md § 2.4 T-2.4-A
+  // 第二组：37 个 key · 含 T-2.4-A 升级的 8 verified + 剩余 29 pending
+  // pending 项：short 中性占位、long 缺省，UI 可加"待审校"角标
+  // verified 项：与第一组同等字段完整性（含 long + source）
+  // 补全进度见 design/bazi/2026-04-22-03-八字文案溯源改造方案TODO.md § 2.4
   // ============================================================
   天印貴人: {
     short: '印信文书之神',
@@ -359,9 +376,11 @@ export const SHENSHA_MEANING: Record<string, ShenshaMeaning> = {
     auditStatus: 'pending',
   },
   天赦: {
-    short: '赦宥之恩',
+    short: '宥罪赦过 · 专气生育',
+    long: '天赦日：春戊寅、夏甲午、秋戊申、冬甲子，乃四时专气、生育万物、宥罪赦过之神。命遇之主逢凶化吉、解厄释灾，更与德秀、天月二德同现则尤妙。',
     defaultCategory: 'auspicious',
-    auditStatus: 'pending',
+    auditStatus: 'verified',
+    source: 'ST3 · L179',
   },
   垣城: {
     short: '命垣有靠之象',
@@ -369,9 +388,11 @@ export const SHENSHA_MEANING: Record<string, ShenshaMeaning> = {
     auditStatus: 'pending',
   },
   天喜: {
-    short: '喜庆之神',
+    short: '遇之欢欣 · 顺季起神',
+    long: '天喜神：春戊、夏丑、秋辰、冬未，遇者主欢欣；与德秀、天月二德并现更增喜庆之事，多主顺境、婚喜、添丁、升迁之应。',
     defaultCategory: 'auspicious',
-    auditStatus: 'pending',
+    auditStatus: 'verified',
+    source: 'ST3 · L181',
   },
   文星貴人: {
     short: '文星之神 · 与文昌相配',
@@ -409,14 +430,18 @@ export const SHENSHA_MEANING: Record<string, ShenshaMeaning> = {
     auditStatus: 'pending',
   },
   魁罡貴人: {
-    short: '魁罡刚毅之象',
+    short: '聚众发福 · 秉权果断',
+    long: '魁罡止四日：庚辰、壬辰、戊戌、庚戌。辰为天罡，戌为河魁，乃阴阳绝灭之地；魁罡聚众，发福非常，主人性格聪明、文章振发、临事果断、秉权好杀。身旺发福百端，一见财官，祸患立至。',
     defaultCategory: 'auspicious',
-    auditStatus: 'pending',
+    auditStatus: 'verified',
+    source: 'ST6 · L89-92',
   },
   三奇: {
-    short: '三奇相连 · 才华出众',
+    short: '精神异常 · 博学多能',
+    long: '三奇有三体：天上三奇「乙丙丁」、地下三奇「甲戊庚」、人中三奇「辛壬癸」。凡命遇三奇，主人精神异常，襟怀卓越，好奇尚大，博学多能；带天乙贵者勋业超群，带天月二德者凶灾不犯。',
     defaultCategory: 'auspicious',
-    auditStatus: 'pending',
+    auditStatus: 'verified',
+    source: 'ST3 · L161-165',
   },
   紅鸞: {
     short: '婚姻喜庆之神',
@@ -469,9 +494,11 @@ export const SHENSHA_MEANING: Record<string, ShenshaMeaning> = {
     auditStatus: 'pending',
   },
   截路空亡: {
-    short: '空亡之衍化',
+    short: '途中遇水 · 百事皆忌',
+    long: '有截路空亡，正如人在途中遇水，不能前进，不可以济，故曰截路。以日取时见之：甲己见申酉，乙庚见午未，丙辛见辰巳，丁壬见寅卯，戊癸见戌亥。不独命见不吉，凡出入、求财、交易、上官、嫁娶，百事皆忌。',
     defaultCategory: 'inauspicious',
-    auditStatus: 'pending',
+    auditStatus: 'verified',
+    source: 'ST3 · L273',
   },
   時墓: {
     short: '时柱入墓之象',
@@ -489,19 +516,25 @@ export const SHENSHA_MEANING: Record<string, ShenshaMeaning> = {
     auditStatus: 'pending',
   },
   金神: {
-    short: '金气刚烈之神',
+    short: '破败之神 · 制伏方贵',
+    long: '金神止有三时：癸酉、己巳、乙丑。金神乃破败之神，要制伏，入火乡为胜；如四柱中更带七杀阳刃，真贵人也。其人刚断明敏之才、倔强不可驯伏；遇水乡则困穷，运行火局方超迁贵显。',
     defaultCategory: 'inauspicious',
-    auditStatus: 'pending',
+    auditStatus: 'verified',
+    source: 'YZ · L896-900',
   },
   陰陽差錯: {
-    short: '阴阳差错煞',
+    short: '外家冷退 · 婚家不足',
+    long: '阴阳差错煞，乃丙子、丁丑、戊寅、辛卯、壬辰、癸巳、丙午、丁未、戊申、辛酉、壬戌、癸亥十二日。女子逢之，公姑寡合、妯娌不足、夫家冷退；男子逢之，主退外家，亦与妻家是非寡合。月日时多重犯者极重，主不得外家力。',
     defaultCategory: 'inauspicious',
-    auditStatus: 'pending',
+    auditStatus: 'verified',
+    source: 'ST3 · L363-365',
   },
   陰差陽錯: {
-    short: '阴阳差错煞 · 异体',
+    short: '外家冷退 · 婚家不足',
+    long: '阴差阳错煞，与「陰陽差錯」同出一源（ST3·L363-365），十二日相同：丙子、丁丑、戊寅、辛卯、壬辰、癸巳、丙午、丁未、戊申、辛酉、壬戌、癸亥。主外家冷退、夫家寡合、妻家是非；日家犯之尤重。',
     defaultCategory: 'inauspicious',
-    auditStatus: 'pending',
+    auditStatus: 'verified',
+    source: 'ST3 · L363-365',
   },
   陰陽煞: {
     short: '阴阳煞',

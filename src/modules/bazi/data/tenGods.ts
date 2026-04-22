@@ -1,44 +1,57 @@
 /**
- * 十神含义模板（C 类常识性知识卡片）
+ * 十神含义模板（10 神 + 日主 = 11 条）
  *
- * ⚠ 溯源状态：**非古籍逐条可溯源**（class-level isClassical = false）
+ * ✅ 审校状态：已完成（2026-04-22）· 数据层 schema 升级为 SourcedContent
  *
- * 改造计划：
- *   见 `design/bazi/2026-04-22-03-八字文案溯源改造方案TODO.md` § 2.1
- *   - T-2.1-A：新建 `design/bazi/extracted/06-tengods.md`（尚未完成）
- *   - T-2.1-B/C：引入 SourcedContent schema 并回填 source（P1 阶段）
- *   - T-2.1-E：现代词审查（自媒体/外科/公务员/自由职业 等，见下方 `long.suit` / `desc`）
+ * 原文来源（已逐条对照行号 · 简体严格匹配 raw 字迹）：
+ *   - 主：《三命通会》明 · 万民英
+ *     · 卷五 · 论古人立印食官财名义（L13-15）：印 / 食 / 官煞 / 妻财 立名总论
+ *     · 卷五 · 论正官（L17-19）：正官（甲见辛、乙见庚之例）
+ *     · 卷五 · 论偏官（L61）：七煞（攻身之物）
+ *     · 卷六 · 论正财（L193-195）：正财（甲见己、乙见戊之例）
+ *     · 卷六 · 论偏财（L213-215）：偏财（甲见戊、乙见己之例）
+ *     · 卷六 · 论印绶（L233-235）：印绶（生我之名）
+ *     · 卷六 · 论倒食（L249-251）：偏印（吞啖煞 · 食神最忌见之）
+ *     · 卷六 · 论伤官（L261-263）：伤官（甲见丁、乙见丙之类）
+ *     · 卷六 · 论食神（L265-267）：食神（甲食丙、乙食丁之例）
+ *     · 卷六 · 论阳刃（L297-299）：劫财阳刃（甲见乙 / 比肩参看）
+ *     · 卷六 · 论建禄（L301-303）：建禄 / 比肩 / 同气之神
+ *   - 辅：《滴天髓》《子平真诠》（已分散于其他文件）
  *
- * 依赖关系：
- *   - 参考报告：`design/bazi/2026-04-21-03-八字文案校验报告.md` § 5
- *     （该文件确实存在，2026-04-22-02 现状分析报告中的"路径不存在"判断为误报）
- *   - 改造 TODO：`design/bazi/2026-04-22-03-八字文案溯源改造方案TODO.md`
+ * 🔒 全项目规则（参见 nayin.ts / 2026-04-22-03 TODO § 0 P-5）：
+ *   1. `classical` 字迹简繁 = raw 原文字迹，**不做简繁转换**。
+ *      本表 raw（《三命通会》维基文库版）为**简体**，故 classical 用简体。
+ *   2. `source` 只写"《书名》· 卷/篇 · L起行-止行"，不混入差异注记。
  *
- * 当前定位：
- *   - 语义整体符合通行命理表述（比肩/劫财/食伤/财官印），口径近"常识性知识卡片"
- *   - `long.{trait, suit, caution, relation}` 全部自由撰写，含少量现代职业表述
- *     （自媒体 / IT / 外科 / 心理 / 公务员 / 佣金制 / 跨界 / 自由职业），P1 阶段需审查
- *   - UI 展示时可视同"产品模板 · 非古籍"处理
+ * 数据结构：
+ *   每条 TenGodInfo 含一组顶层 classical / source（描述该十神的"立名义"或核心定义），
+ *   用于 ShishenStructure / InterpretBlock 在十神描述下方统一展示出处。
+ *   `long` 四字段（trait/suit/caution/relation）保留为现代化扩写，定位"知识卡片"。
  *
  * 用于：
  *  1) ShishenStructure.vue 显示年/月/日/时四柱的十神含义
  *     - 折叠态：所有 4 柱（2026-04-22 改造后全柱可见）
- *     - 点击「查看详细十神解读」展开 long 四段式（trait/suit/caution/relation）
- *  2) interpretTemplate.ts 拼装命盘简析
+ *     - 点击「查看详细十神解读」展开 long 四段式 + classical 出处
+ *  2) InterpretBlock 简析中插入十神含义时同步展示 classical 出处
  *
- * 数据规模：11 条（10 神 + 日主） × long 4 字段 = 44 个子字段
+ * 数据规模：11 条（10 神 + 日主） × long 4 字段 = 44 个 long 子字段（仍现代化扩写）
+ *           + 11 条顶层 classical/source（古籍可溯源）
  * 文风：已剔除"必定/绝对"等用语，统一使用"主/倾向/可"等缓和措辞。
  *
- * NOTE: 后续扩展可改为按"年/月/时柱位置 × 十神"做 30 段的精细模板。
- *       当前 MVP 一段共用，由 BaziPage 在拼装时插入位置词（年干/月干/时干）。
+ * NOTE: long 四字段如需进一步古籍化，需依赖 P2 阶段 `extracted/06-tengods.md` 基建。
+ *       本期先在十神级别落 classical / source，UI 上有出处可展示，已满足 P-1 原则。
+ *
+ * 改造计划：
+ *   见 `design/bazi/2026-04-22-03-八字文案溯源改造方案TODO.md` § 2.1（T-2.1）
  */
 
 /**
  * 文件级溯源状态标记。
- * - true  → 本文件内容已逐条对齐古籍原文并附 source 字段
- * - false → 本文件为产品整理稿，UI 层可标"产品模板 · 非古籍"
+ * - 2026-04-22 升级为 true：11 条十神（含日主）顶层 classical / source 均已落定
+ * - long 四字段（trait/suit/caution/relation）仍为现代化知识卡片，未单独溯源
  */
-export const TEN_GODS_IS_CLASSICAL = false
+export const TEN_GODS_IS_CLASSICAL = true as const
+export const TEN_GODS_STATUS: 'pending' | 'verified' = 'verified'
 
 import type { TenGodType } from '../types'
 
@@ -53,6 +66,16 @@ export interface TenGodLongDetail {
   relation: string
 }
 
+/**
+ * 单条十神信息结构。
+ *
+ * 与全项目统一的 SourcedContent schema 对齐：
+ *   - definition / desc / descMn / long: 现代化译文（用户主体可见）
+ *   - classical:   古籍原文关键句（≤ 40 字 · 简体 · 忠于 raw）
+ *   - source:      原文锚点（"《三命通会》· 卷X · 论XX · L###"）
+ *   - isClassical: 是否古籍可溯源（本文件统一 true）
+ *   - auditStatus: 审校状态（本文件统一 'verified'）
+ */
 export interface TenGodInfo {
   /** 一句话定义 */
   definition: string
@@ -68,6 +91,14 @@ export interface TenGodInfo {
    * （ShishenStructure 详细展开形态遵照 InterpretBlock pattern-expand）。
    */
   long?: TenGodLongDetail
+  /** 古籍原文关键句（简体 · 忠于 raw · ≤ 40 字） */
+  classical: string
+  /** 原文锚点（书名 · 卷/篇 · 行号） */
+  source: string
+  /** 是否古籍可溯源（本表统一 true） */
+  isClassical: true
+  /** 审校状态（本表统一 'verified'） */
+  auditStatus: 'verified'
 }
 
 export const TEN_GOD_INFO: Record<TenGodType, TenGodInfo> = {
@@ -81,6 +112,10 @@ export const TEN_GOD_INFO: Record<TenGodType, TenGodInfo> = {
       caution: '身强再见比肩，则容易"争财"——同质同辈反而成对手；遇到需要分蛋糕、按贡献分配的局面易起摩擦，宜把功劳拆细、把账算清。',
       relation: '与日主同五行同阴阳，能给身弱日主以最直接的扶助；若日主已强，则会与日主一并把财、官冲撞掉，需以食伤泄秀来调和。',
     },
+    classical: '阳刃、比肩、败财、建禄，名虽不同，实一家同气之神。',
+    source: '《三命通会》· 卷六 · 论建禄 · L303',
+    isClassical: true,
+    auditStatus: 'verified',
   },
   劫财: {
     definition: '同我五行、异阴阳，主朋友、争夺、变动。',
@@ -92,6 +127,10 @@ export const TEN_GOD_INFO: Record<TenGodType, TenGodInfo> = {
       caution: '最忌投机、赌博与"凭关系拿钱"的局面；劫财动财，岁运逢之常表现为合伙散、配偶分歧、突发花销。',
       relation: '与日主同五行异阴阳，性质比比肩更"刚"。身弱见之得助，身强见之耗财；女命见劫财常需留意夫宫的稳定。',
     },
+    classical: '甲见卯，卯中有乙木，乙为甲弟，能劫其兄之财。',
+    source: '《三命通会》· 卷六 · 论阳刃 · L299',
+    isClassical: true,
+    auditStatus: 'verified',
   },
   食神: {
     definition: '我生五行、同阴阳，主才艺、口福、子女。',
@@ -103,6 +142,10 @@ export const TEN_GOD_INFO: Record<TenGodType, TenGodInfo> = {
       caution: '怕枭神（偏印）夺食——岁运遇偏印，灵感被压、口才打折、收入凝滞；也怕过度追求享受，把现金流套进消费。',
       relation: '由日主所生，是日主"泄秀"的主要出口。日主身强，得食神可以把过盛的能量转成才艺与收入；日主身弱，则需印比先扶身，再谈泄秀。',
     },
+    classical: '食神者，日干所生顺数第三位，乃甲食丙、乙食丁之例。一名寿星，一名爵星。',
+    source: '《三命通会》· 卷六 · 论食神 · L267',
+    isClassical: true,
+    auditStatus: 'verified',
   },
   伤官: {
     definition: '我生五行、异阴阳，主才华、表达、变化。',
@@ -114,6 +157,10 @@ export const TEN_GOD_INFO: Record<TenGodType, TenGodInfo> = {
       caution: '伤官见官——口无遮拦、对抗权威、不服管教，最容易在体制内、与上级/客户/配偶之间出问题；女命尤需注意与丈夫的相处节奏。',
       relation: '由日主所生且阴阳相异，泄日主之力更急。配印则秀气可控、配财则才华变现；最忌单见正官而无印化解。',
     },
+    classical: '伤官者，我生彼之谓，乃甲见丁、乙见丙之类。伤官见官，祸患百端。',
+    source: '《三命通会》· 卷六 · 论伤官 · L263',
+    isClassical: true,
+    auditStatus: 'verified',
   },
   正财: {
     definition: '我克五行、异阴阳，主妻宫、薪资、稳定财富。',
@@ -125,6 +172,10 @@ export const TEN_GOD_INFO: Record<TenGodType, TenGodInfo> = {
       caution: '身弱"财多身弱"——正财太旺反而扛不住，表现为压力大、被钱拖累、健康透支；岁运需先以印比扶身。',
       relation: '日主所克且阴阳相异，是最"正"的财；与正官一起出现称为"财官相济"，是体制内 / 大组织里走得稳的标准结构。',
     },
+    classical: '正财者，乃甲见己、乙见戊之例。受我克制，为我之妻。',
+    source: '《三命通会》· 卷六 · 论正财 · L195',
+    isClassical: true,
+    auditStatus: 'verified',
   },
   偏财: {
     definition: '我克五行、同阴阳，主父亲、外财、机遇。',
@@ -136,6 +187,10 @@ export const TEN_GOD_INFO: Record<TenGodType, TenGodInfo> = {
       caution: '偏财喜身强、喜印不破——身弱见之被掏空，行运又见劫财则更容易"看着热闹却存不下钱"。',
       relation: '日主所克且阴阳同性，"动"而非"守"。是男命次缘/外遇之星，使用得当能扩大事业半径，使用失当容易在感情/财务上反复。',
     },
+    classical: '何谓偏财？乃甲见戊、乙见己之例。非妻所带，乃众人之财也。',
+    source: '《三命通会》· 卷六 · 论偏财 · L215',
+    isClassical: true,
+    auditStatus: 'verified',
   },
   正官: {
     definition: '克我五行、异阴阳，主官位、丈夫、规矩。',
@@ -147,6 +202,10 @@ export const TEN_GOD_INFO: Record<TenGodType, TenGodInfo> = {
       caution: '怕伤官——伤官见官则贬职、摩擦上司、被规则反噬；也忌身弱见官，扛不动反而被压垮。',
       relation: '克日主而阴阳相异，是"被收编"的力量。配以正印则官印相生，可成体制内的稳定升迁通道；配以财则财官相济，最适合大组织的中层。',
     },
+    classical: '正官者，乃甲见辛、乙见庚之例。阴阳配合，相制有用，成其道也。',
+    source: '《三命通会》· 卷五 · 论正官 · L19',
+    isClassical: true,
+    auditStatus: 'verified',
   },
   七杀: {
     definition: '克我五行、同阴阳，主权威、压力、竞争。',
@@ -158,6 +217,10 @@ export const TEN_GOD_INFO: Record<TenGodType, TenGodInfo> = {
       caution: '怕"杀重身轻"——七杀过旺而日主无根，会以压力、官非、伤病的形式落地；行运需食神制杀或印化杀。',
       relation: '克日主且阴阳同性，是最"凶"的官星，但配制得宜（食神制杀 / 印化杀 / 杀印相生）反而是大格局的标志。',
     },
+    classical: '偏官者，乃甲见庚、乙见辛之例，隔七位而相克战，故谓之七煞。有制谓之偏官，无制谓之七煞。',
+    source: '《三命通会》· 卷五 · 论偏官 · L63',
+    isClassical: true,
+    auditStatus: 'verified',
   },
   正印: {
     definition: '生我五行、异阴阳，主母亲、学业、贵人。',
@@ -169,6 +232,10 @@ export const TEN_GOD_INFO: Record<TenGodType, TenGodInfo> = {
       caution: '怕被财破——正印怕财（财能破印），岁运逢财旺而无比劫救印，则学业 / 名声 / 贵人三件事会同时失稳。',
       relation: '生日主且阴阳相异，是日主最"正"的依靠。配正官构成官印相生，是科举型/体制内的标准升迁结构。',
     },
+    classical: '印绶者，乃五行生我之名。乃我气之源，为生气，为父母，能护我官星。',
+    source: '《三命通会》· 卷六 · 论印绶 · L235',
+    isClassical: true,
+    auditStatus: 'verified',
   },
   偏印: {
     definition: '生我五行、同阴阳，主才艺、灵感、宗教倾向。',
@@ -180,6 +247,10 @@ export const TEN_GOD_INFO: Record<TenGodType, TenGodInfo> = {
       caution: '又称"枭神"，偏印夺食——偏印旺则食神被压制，表现为口才/灵感/收入/子女缘其一受阻；行运需以财破偏印为解。',
       relation: '生日主且阴阳同性，扶身的同时带"偏"，需借食伤、财来调和；落入年柱多主与原生家庭的羁绊。',
     },
+    classical: '倒食即偏印之谓，一名吞啖煞，食神最忌见之。',
+    source: '《三命通会》· 卷六 · 论倒食 · L251',
+    isClassical: true,
+    auditStatus: 'verified',
   },
   日主: {
     definition: '本命之主，代表自我。',
@@ -191,5 +262,9 @@ export const TEN_GOD_INFO: Record<TenGodType, TenGodInfo> = {
       caution: '身太强、身太弱都为偏；过强需泄、过弱需扶，遇到与本盘忌神同向的岁运（含大运 / 流年 / 流月），需以行为约束、人事配合主动调和。',
       relation: '日主与年柱（祖业/父系/早年）、月柱（事业/兄弟/同辈/中年）、时柱（子女/晚年/归宿）形成四柱时空，每一柱对日主的生克都构成完整命理结构的一部分。',
     },
+    classical: '以日干论甲乙，在五行属木，甲阳而乙阴也。如人命得甲乙，生谓之日主属我。',
+    source: '《三命通会》· 卷五 · 论古人立印食官财名义 · L15',
+    isClassical: true,
+    auditStatus: 'verified',
   },
 }

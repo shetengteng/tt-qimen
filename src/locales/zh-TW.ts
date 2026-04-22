@@ -365,9 +365,271 @@ export default {
     },
   },
   ziwei: { title: '紫微斗數', subtitle: '十二宮垣 · 三方四正' },
-  liuren: { title: '小六壬', subtitle: '掐指一算 · 應事即時' },
-  chenggu: { title: '秤骨論命', subtitle: '袁天罡之訣 · 一斤一兩' },
-  lingqian: { title: '靈籤問卜', subtitle: '虔誠一念 · 神明指引' },
+  liuren: {
+    title: '小六壬',
+    subtitle: '掐指一算 · 應事即時',
+    pageTitle: '小六壬',
+    pageSubtitle: '大安 · 留連 · 速喜 · 赤口 · 小吉 · 空亡',
+    breadcrumbHome: '首頁',
+    breadcrumbCurrent: '小六壬',
+
+    timeBar: {
+      lunar: '當前農曆',
+      monthStep: '月起',
+      dayStep: '日數',
+      hourStep: '時辰',
+    },
+
+    input: {
+      title: '起 · 卦',
+      modeImmediate: '即時起卦',
+      modeCustom: '自訂時間',
+      questionLabel: '心中一問（選填）',
+      questionPlaceholder: '如：今年運勢、此事是否成功…',
+      aspectLabel: '問事方向',
+      hourLabel: '時辰',
+      hourSuffix: '時',
+      hourNowFmt: '當前（{name}）',
+      monthLabel: '農曆月',
+      dayLabel: '農曆日',
+    },
+
+    aspect: {
+      overall: '綜合',
+      career: '事業',
+      love: '感情',
+      wealth: '財運',
+      health: '健康',
+      travel: '出行',
+    },
+
+    btn: {
+      paipan: '即刻起卦',
+      paipanIcon: '◉',
+      reset: '重新起卦',
+      resetIcon: '◐',
+      repaipan: '再起一卦',
+      repaipanIcon: '◑',
+      share: '生成分享卡片',
+      shareIcon: '◈',
+      save: '儲存到本機',
+      saveIcon: '◐',
+    },
+
+    resultBanner: {
+      title: '卦象既成',
+      subtitle: '月起 · 日數 · 時辰 · 三步入宮',
+    },
+
+    skeleton: {
+      title: '掐指推算',
+      subtitle: '取月、加日、入時辰，三步定宮',
+    },
+
+    wheel: {
+      centerLabel: '當 前 卦',
+    },
+
+    verdict: {
+      idle: '—',
+      ji: '吉 · 順勢可成',
+      ping: '平 · 進退有度',
+      xiong: '凶 · 宜守不宜進',
+    },
+
+    reading: {
+      suitable: '宜',
+      avoid: '忌',
+    },
+
+    placeholder: {
+      title: '尚未起卦',
+      reading: '請先「即刻起卦」或「自訂時間」起一卦，此處將顯示對應宮位的解讀。',
+    },
+
+    computeError: {
+      title: '起卦未成',
+      hint: '輸入資料有誤，請檢查月/日/時辰後重試。',
+      retry: '重新起卦',
+    },
+
+    share: {
+      title: '我的小六壬 · TT 占卜',
+      text: '掐指一算 · 應事即時 · 來自 TT 占卜的小六壬結果。',
+    },
+  },
+  chenggu: {
+    title: '秤骨論命',
+    subtitle: '袁天罡之訣 · 一斤一兩',
+    pageTitle: '秤骨算命',
+    pageSubtitle: '袁天罡古法 · 年月日時骨重 · 五十一段歌訣',
+    breadcrumbHome: '首頁',
+    breadcrumbCurrent: '秤骨算命',
+    inputCardTitle: '錄入生辰',
+    btn: {
+      paipan: '開始秤骨',
+      paipanIcon: '◈',
+      repaipan: '重新秤骨',
+      repaipanIcon: '◑',
+      share: '生成分享卡片',
+      shareIcon: '◈',
+      save: '儲存到本地',
+      saveIcon: '◐',
+    },
+    resultBanner: {
+      title: '四骨秤重',
+      subtitle: '年月日時 · 骨重相加 · 歌訣以推終身',
+    },
+    skeleton: {
+      title: '秤骨中',
+      subtitle: '查年柱、取月日、定時辰、加骨重',
+    },
+    section: {
+      breakdown: '四骨分解',
+      poem: '歌訣',
+    },
+    computeError: {
+      title: '秤骨未成',
+      hint: '生辰資料有誤或超出 1900-2100 年支援範圍，請檢查後重試。',
+      retry: '重新錄入',
+    },
+    balance: {
+      label: '骨 · 重',
+      labelMn: '骨 · 重',
+      unit: '兩',
+      breakdown: { year: '年', month: '月', day: '日', hour: '時' },
+    },
+    placeholder: { displayWeight: '五兩一錢' },
+    table: {
+      year: '年 骨',
+      month: '月 骨',
+      day: '日 骨',
+      hour: '時 骨',
+      totalLabel: '四 骨 相 加',
+    },
+    level: {
+      top: '極 · 貴極',
+      high: '上 · 貴顯',
+      middle: '中 · 平順',
+      low: '下 · 辛勞',
+      bottom: '貧 · 清苦',
+    },
+    poem: {
+      seal: '啟門',
+      eyebrow: '袁 天 罡 歌 訣',
+      meta: '古法歌訣 · 公版整理',
+    },
+    interpret: {
+      title: '◉ 歌訣釋義',
+      titleMn: '◆ 歌訣釋義',
+      note: '註：白話解讀由編輯團隊在公版古籍基礎上整理，僅供文化參考。',
+    },
+    share: {
+      title: '我的秤骨算命 · TT 占卜',
+      text: '年月日時 · 骨重相加 · 袁天罡古法。來自 TT 占卜的秤骨結果。',
+    },
+  },
+  lingqian: {
+    title: '靈籤問卜',
+    subtitle: '虔誠一念 · 神明指引',
+    pageTitle: '觀音靈籤',
+    pageSubtitle: '心誠則靈 · 搖籤百支 · 問事指迷',
+    breadcrumbHome: '首頁',
+    breadcrumbCurrent: '觀音靈籤',
+
+    tubeLabel: '觀音靈籤',
+
+    input: {
+      title: '所 求 何 事',
+      questionLabel: '心中所問（選填）',
+      questionPlaceholder: '如：今年學業、姻緣、事業、求財…',
+      topicLabel: '占問領域',
+      hintBefore: '心中默念所求之事 ·',
+      hintEmphasis: '三次深呼吸',
+      hintAfter: '後輕按啟籤',
+    },
+
+    topic: {
+      overall: '綜合',
+      family: '家宅',
+      marriage: '婚姻',
+      career: '事業',
+      wealth: '財富',
+      travel: '出行',
+      health: '健康',
+    },
+
+    btn: {
+      paipan: '啟籤',
+      paipanIcon: '◈',
+      reset: '再搖',
+      resetIcon: '◐',
+      repaipan: '重新求籤',
+      repaipanIcon: '◑',
+      share: '生成分享卡片',
+      shareIcon: '◈',
+      save: '保存到本地',
+      saveIcon: '◐',
+    },
+
+    resultBanner: {
+      title: '籤文既啟',
+      subtitle: '觀音慈悲 · 靈籤指迷',
+    },
+
+    skeleton: {
+      title: '搖籤百支',
+      subtitle: '心誠則靈 · 神明開示',
+    },
+
+    qianTitle: {
+      qianLabel: '第  籤',
+      qianPrefix: '第',
+      qianSuffix: '籤',
+    },
+
+    poem: {
+      label: '◉ 籤 詩 ◉',
+      taleLabel: '典故',
+      taleLabelMn: '◆ 典故',
+      taleIntro: '典出《{title}》。籤意詳見解曰/仙機與 6 大分類。',
+      seal: '觀音',
+    },
+
+    jieyue: {
+      label: '解 曰',
+    },
+
+    xianji: {
+      label: '仙 機',
+    },
+
+    topics: {
+      title: '◉ 分事而問 · 六事開示',
+    },
+
+    placeholder: {
+      title: '尚未求籤',
+      jieyue: '請先「啟籤」抽取一籤，此處將顯示白話解曰。',
+      xianji: '籤文未出 · 仙機未啟',
+      topic: '抽籤後將按「家宅 / 婚姻 / 事業 / 財富 / 出行 / 健康」逐項開示。',
+    },
+
+    divider: {
+      qianTitle: '第 {num} 籤 · {level}',
+    },
+
+    computeError: {
+      title: '未能求籤',
+      hint: '樣本資料為空或載入失敗，請重新整理後再試。',
+      retry: '重新求籤',
+    },
+
+    share: {
+      title: '我的觀音靈籤 · TT 占卜',
+      text: '虔誠一念 · 神明指引 · 來自 TT 占卜的觀音靈籤。',
+    },
+  },
   xingming: { title: '姓名學', subtitle: '五格剖象 · 三才配置' },
   huangli: { title: '老黃曆', subtitle: '宜忌吉時 · 節氣物候' },
   jiemeng: { title: '周公解夢', subtitle: '夢境尋蹤 · 心象索解' },
