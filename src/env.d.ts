@@ -7,3 +7,12 @@ declare module '*.vue' {
 }
 
 declare module '*.css'
+
+declare module 'chinese-character-strokes' {
+  const mod: {
+    取笔顺?: (char: string) => string | null
+    [key: string]: unknown
+  }
+  export default mod
+  export const 取笔顺: (char: string) => string | null
+}

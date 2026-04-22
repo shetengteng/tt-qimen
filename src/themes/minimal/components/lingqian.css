@@ -58,12 +58,17 @@
   50%      { opacity: 0.8; transform: scale(1.05); }
 }
 
+/* 签筒摇晃包装：承担整体摇晃动画；tube 本身不再动。
+ * 签条作为 wrap 的子元素（与 tube 兄弟），通过 z-index 让底部被 tube 遮挡。
+ * margin-top 为签条预留伸出空间（签条伸出筒外约 38px），避免被 scene 的 overflow:hidden 裁掉。 */
 :root[data-theme='minimal'] .lq-tube-wrap {
   width: 120px;
   height: 200px;
-  margin: 0 auto var(--mn-space-6);
+  margin: 32px auto var(--mn-space-6);
   position: relative;
   z-index: 2;
+  transform-origin: 50% 100%;
+  animation: lq-shake-mn 2.8s cubic-bezier(0.36, 0, 0.4, 1) infinite;
 }
 
 :root[data-theme='minimal'] .lq-tube {
@@ -72,12 +77,11 @@
   background: linear-gradient(135deg, var(--mn-accent), var(--mn-accent-hover));
   border-radius: 8px 8px 60px 60px;
   position: relative;
+  z-index: 2;
   box-shadow:
     0 12px 32px rgba(59, 47, 99, 0.25),
     inset 0 3px 6px rgba(255, 255, 255, 0.08),
     inset 0 -8px 16px rgba(20, 15, 40, 0.35);
-  transform-origin: 50% 100%;
-  animation: lq-shake-mn 2.8s cubic-bezier(0.36, 0, 0.4, 1) infinite;
 }
 
 /* 筒口暗影（签条插入处） */
@@ -93,7 +97,7 @@
   pointer-events: none;
 }
 
-/* 多帧摇晃 */
+/* 多帧摇晃（常态） */
 @keyframes lq-shake-mn {
   0%    { transform: rotate(-2deg) translateY(0)    scale(1);     }
   14%   { transform: rotate(-3.5deg) translateY(-3px) scale(1.01); }
@@ -102,6 +106,18 @@
   66%   { transform: rotate(1deg)  translateY(-3px) scale(1.006); }
   82%   { transform: rotate(-1.5deg) translateY(0) scale(1);      }
   100%  { transform: rotate(-2deg) translateY(0)    scale(1);     }
+}
+
+/* 抽签中：签筒剧烈摇摆 */
+:root[data-theme='minimal'] .lq-shake-scene--drawing .lq-tube-wrap {
+  animation: lq-shake-mn-drawing 0.4s cubic-bezier(0.36, 0, 0.4, 1) infinite;
+}
+@keyframes lq-shake-mn-drawing {
+  0%    { transform: rotate(-10deg) translateY(-2px) scale(1.02); }
+  25%   { transform: rotate(8deg)   translateY(-8px) scale(1.03); }
+  50%   { transform: rotate(-13deg) translateY(-4px) scale(1.02); }
+  75%   { transform: rotate(11deg)  translateY(-6px) scale(1.03); }
+  100%  { transform: rotate(-10deg) translateY(-2px) scale(1.02); }
 }
 
 :root[data-theme='minimal'] .lq-tube::after {
@@ -135,44 +151,90 @@
   pointer-events: none;
 }
 
-/* ---------- 签条 ---------- */
+/* ---------- 签条 ----------
+ * 视觉：扁平竹木片（横向 5 段渐变制造圆柱立体感）+ 紫色封头 + 极淡竖向纹理
+ * ---------- */
 :root[data-theme='minimal'] .lq-tube-stick {
   position: absolute;
-  top: -20px;
-  width: 3px;
-  height: 40px;
-  background: linear-gradient(180deg, var(--mn-ink) 0%, var(--mn-ink-soft) 100%);
-  border-radius: 2px;
-  box-shadow: 0 1px 2px rgba(10, 10, 10, 0.18);
+  top: -38px;
+  width: 6px;
+  height: 58px;
+  background:
+    linear-gradient(180deg,
+      rgba(255, 255, 255, 0.15) 0%,
+      transparent 14%,
+      transparent 88%,
+      rgba(0, 0, 0, 0.22) 100%),
+    linear-gradient(90deg,
+      #1d1d1d 0%,
+      #3a3a3a 22%,
+      #5f5f5e 50%,
+      #3a3a3a 78%,
+      #161616 100%);
+  border-radius: 1.5px 1.5px 2px 2px;
+  box-shadow:
+    0 2px 3px rgba(10, 10, 10, 0.28),
+    0 1px 1px rgba(10, 10, 10, 0.18);
   transform-origin: 50% 100%;
-  z-index: 3;
+  /* z-index: 1 让签条落在 tube (z-index: 2) 之后：底部插入筒里的部分会被筒壁遮挡 */
+  z-index: 1;
 }
 /* 签条顶端紫色封头 */
 :root[data-theme='minimal'] .lq-tube-stick::before {
   content: "";
   position: absolute;
   top: 0;
-  left: -1px;
-  right: -1px;
-  height: 5px;
-  background: var(--mn-accent);
-  border-radius: 2px 2px 1px 1px;
-  box-shadow: 0 0 4px rgba(59, 47, 99, 0.4);
+  left: 0;
+  right: 0;
+  height: 10px;
+  background:
+    linear-gradient(180deg,
+      rgba(255, 255, 255, 0.38) 0%,
+      rgba(255, 255, 255, 0.1) 30%,
+      transparent 55%,
+      rgba(0, 0, 0, 0.2) 100%),
+    linear-gradient(90deg,
+      #261d45 0%,
+      var(--mn-accent) 32%,
+      #5a4a86 52%,
+      var(--mn-accent) 72%,
+      var(--mn-accent-hover) 100%);
+  border-radius: 2px 2px 0.5px 0.5px;
+  box-shadow:
+    0 0 4px rgba(59, 47, 99, 0.45),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+/* 签身极淡竖向纹理 */
+:root[data-theme='minimal'] .lq-tube-stick::after {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    repeating-linear-gradient(90deg,
+      transparent 0 2px,
+      rgba(255, 255, 255, 0.04) 2px 2.5px,
+      transparent 2.5px 4px);
+  border-radius: 0 0 2px 2px;
+  pointer-events: none;
+  opacity: 0.7;
 }
 
 :root[data-theme='minimal'] .lq-tube-stick.s1 {
-  left: 20%;
+  left: calc(20% - 1.5px);
   transform: rotate(-5deg);
   animation: lq-stick-wobble-mn-1 2.8s ease-in-out infinite;
 }
 :root[data-theme='minimal'] .lq-tube-stick.s2 {
-  left: 45%;
-  top: -28px;
+  left: calc(45% - 1.5px);
+  top: -46px;
   animation: lq-stick-wobble-mn-2 5.6s ease-in-out infinite;
   animation-delay: -1s;
 }
 :root[data-theme='minimal'] .lq-tube-stick.s3 {
-  left: 60%;
+  left: calc(60% - 1.5px);
   transform: rotate(8deg);
   animation: lq-stick-wobble-mn-3 2.8s ease-in-out infinite;
   animation-delay: -0.5s;
@@ -192,6 +254,24 @@
 @keyframes lq-stick-wobble-mn-3 {
   0%, 100% { transform: rotate(8deg)   translateY(0); }
   50%      { transform: rotate(12deg)  translateY(-2px); }
+}
+
+/* 抽签中：签条剧烈抖动；三根共用 fast-wobble，错峰 delay。 */
+:root[data-theme='minimal'] .lq-shake-scene--drawing .lq-tube-stick {
+  animation: lq-stick-wobble-drawing-mn 0.34s ease-in-out infinite;
+}
+:root[data-theme='minimal'] .lq-shake-scene--drawing .lq-tube-stick.s2 {
+  animation-delay: -0.12s;
+}
+:root[data-theme='minimal'] .lq-shake-scene--drawing .lq-tube-stick.s3 {
+  animation-delay: -0.22s;
+}
+@keyframes lq-stick-wobble-drawing-mn {
+  0%   { transform: rotate(-14deg) translateY(-2px);  }
+  25%  { transform: rotate(12deg)  translateY(-8px);  }
+  50%  { transform: rotate(-8deg)  translateY(-13px); }
+  75%  { transform: rotate(16deg)  translateY(-6px);  }
+  100% { transform: rotate(-14deg) translateY(-2px);  }
 }
 
 /* 地面阴影 */
@@ -253,7 +333,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :root[data-theme='minimal'] .lq-tube,
+  :root[data-theme='minimal'] .lq-tube-wrap,
   :root[data-theme='minimal'] .lq-tube-stick,
   :root[data-theme='minimal'] .lq-tube-shadow,
   :root[data-theme='minimal'] .lq-scene-halo,

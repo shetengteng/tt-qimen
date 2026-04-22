@@ -5,6 +5,14 @@ import { useThemeStore } from '@/stores/theme'
 import { useLiurenStore } from '../stores/liurenStore'
 import type { Aspect } from '../types'
 import { HOUR_BRANCH_NAMES } from '../core/liuren'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Label } from '@/components/ui/label'
 
 interface Props {
   /** 即时起卦模式下展示的"当前时辰"汉字 */
@@ -28,6 +36,16 @@ const HOUR_OPTIONS = HOUR_BRANCH_NAMES.map((name, idx) => ({
   value: idx + 1,
   label: `${name}${t('liuren.input.hourSuffix')}`,
 }))
+
+/** v-model 桥接：reka-ui Select 仅接受 string，数字型 hourIndex 需要 string<->number 转换 */
+const aspectModel = computed<string>({
+  get: () => liurenStore.aspect,
+  set: (v) => liurenStore.setAspect(v as Aspect),
+})
+const hourIndexModel = computed<string>({
+  get: () => String(liurenStore.custom.hourIndex),
+  set: (v) => liurenStore.setCustom({ hourIndex: Number(v) }),
+})
 
 function setMode(m: 'immediate' | 'custom') {
   liurenStore.setMode(m)
@@ -60,7 +78,7 @@ function setMode(m: 'immediate' | 'custom') {
 
     <div class="ds-input-row lr-input-row">
       <div class="ds-input-group lr-question-group">
-        <label>{{ t('liuren.input.questionLabel') }}</label>
+        <Label>{{ t('liuren.input.questionLabel') }}</Label>
         <input
           :value="liurenStore.question"
           type="text"
@@ -69,36 +87,50 @@ function setMode(m: 'immediate' | 'custom') {
         >
       </div>
       <div class="ds-input-group">
-        <label>{{ t('liuren.input.aspectLabel') }}</label>
-        <select
-          :value="liurenStore.aspect"
-          @change="liurenStore.setAspect(($event.target as HTMLSelectElement).value as Aspect)"
-        >
-          <option v-for="a in ASPECTS" :key="a" :value="a">{{ t(`liuren.aspect.${a}`) }}</option>
-        </select>
+        <Label>{{ t('liuren.input.aspectLabel') }}</Label>
+        <Select v-model="aspectModel">
+          <SelectTrigger>
+            <SelectValue :placeholder="t('liuren.input.aspectLabel')" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="a in ASPECTS" :key="a" :value="a">
+              {{ t(`liuren.aspect.${a}`) }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       <div class="ds-input-group">
-        <label>{{ t('liuren.input.hourLabel') }}</label>
-        <select
+        <Label>{{ t('liuren.input.hourLabel') }}</Label>
+        <Select
           v-if="liurenStore.mode === 'immediate'"
-          :value="0"
+          :model-value="'now'"
           disabled
         >
-          <option :value="0">{{ t('liuren.input.hourNowFmt', { name: currentHourLabel }) }}</option>
-        </select>
-        <select
-          v-else
-          :value="liurenStore.custom.hourIndex"
-          @change="liurenStore.setCustom({ hourIndex: Number(($event.target as HTMLSelectElement).value) })"
-        >
-          <option v-for="h in HOUR_OPTIONS" :key="h.value" :value="h.value">{{ h.label }}</option>
-        </select>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="now">
+              {{ t('liuren.input.hourNowFmt', { name: currentHourLabel }) }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+        <Select v-else v-model="hourIndexModel">
+          <SelectTrigger>
+            <SelectValue :placeholder="t('liuren.input.hourLabel')" />
+          </SelectTrigger>
+          <SelectContent class="max-h-72">
+            <SelectItem v-for="h in HOUR_OPTIONS" :key="h.value" :value="String(h.value)">
+              {{ h.label }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
       </div>
     </div>
 
     <div v-if="liurenStore.mode === 'custom'" class="ds-input-row lr-input-row">
       <div class="ds-input-group">
-        <label>{{ t('liuren.input.monthLabel') }}</label>
+        <Label>{{ t('liuren.input.monthLabel') }}</Label>
         <input
           :value="liurenStore.custom.month"
           type="number"
@@ -108,7 +140,7 @@ function setMode(m: 'immediate' | 'custom') {
         >
       </div>
       <div class="ds-input-group">
-        <label>{{ t('liuren.input.dayLabel') }}</label>
+        <Label>{{ t('liuren.input.dayLabel') }}</Label>
         <input
           :value="liurenStore.custom.day"
           type="number"
@@ -153,7 +185,7 @@ function setMode(m: 'immediate' | 'custom') {
 
     <div class="ds-input-row lr-input-row">
       <div class="ds-input-group lr-question-group">
-        <label>{{ t('liuren.input.questionLabel') }}</label>
+        <Label>{{ t('liuren.input.questionLabel') }}</Label>
         <input
           :value="liurenStore.question"
           type="text"
@@ -162,36 +194,50 @@ function setMode(m: 'immediate' | 'custom') {
         >
       </div>
       <div class="ds-input-group">
-        <label>{{ t('liuren.input.aspectLabel') }}</label>
-        <select
-          :value="liurenStore.aspect"
-          @change="liurenStore.setAspect(($event.target as HTMLSelectElement).value as Aspect)"
-        >
-          <option v-for="a in ASPECTS" :key="a" :value="a">{{ t(`liuren.aspect.${a}`) }}</option>
-        </select>
+        <Label>{{ t('liuren.input.aspectLabel') }}</Label>
+        <Select v-model="aspectModel">
+          <SelectTrigger>
+            <SelectValue :placeholder="t('liuren.input.aspectLabel')" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="a in ASPECTS" :key="a" :value="a">
+              {{ t(`liuren.aspect.${a}`) }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       <div class="ds-input-group">
-        <label>{{ t('liuren.input.hourLabel') }}</label>
-        <select
+        <Label>{{ t('liuren.input.hourLabel') }}</Label>
+        <Select
           v-if="liurenStore.mode === 'immediate'"
-          :value="0"
+          :model-value="'now'"
           disabled
         >
-          <option :value="0">{{ t('liuren.input.hourNowFmt', { name: currentHourLabel }) }}</option>
-        </select>
-        <select
-          v-else
-          :value="liurenStore.custom.hourIndex"
-          @change="liurenStore.setCustom({ hourIndex: Number(($event.target as HTMLSelectElement).value) })"
-        >
-          <option v-for="h in HOUR_OPTIONS" :key="h.value" :value="h.value">{{ h.label }}</option>
-        </select>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="now">
+              {{ t('liuren.input.hourNowFmt', { name: currentHourLabel }) }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+        <Select v-else v-model="hourIndexModel">
+          <SelectTrigger>
+            <SelectValue :placeholder="t('liuren.input.hourLabel')" />
+          </SelectTrigger>
+          <SelectContent class="max-h-72">
+            <SelectItem v-for="h in HOUR_OPTIONS" :key="h.value" :value="String(h.value)">
+              {{ h.label }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
       </div>
     </div>
 
     <div v-if="liurenStore.mode === 'custom'" class="ds-input-row lr-input-row">
       <div class="ds-input-group">
-        <label>{{ t('liuren.input.monthLabel') }}</label>
+        <Label>{{ t('liuren.input.monthLabel') }}</Label>
         <input
           :value="liurenStore.custom.month"
           type="number"
@@ -201,7 +247,7 @@ function setMode(m: 'immediate' | 'custom') {
         >
       </div>
       <div class="ds-input-group">
-        <label>{{ t('liuren.input.dayLabel') }}</label>
+        <Label>{{ t('liuren.input.dayLabel') }}</Label>
         <input
           :value="liurenStore.custom.day"
           type="number"

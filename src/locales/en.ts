@@ -370,7 +370,6 @@ export default {
     source: {
       prefix: 'Source: ',
       classicalLabel: 'Classical source',
-      nonClassical: 'Product template · not classical',
       pending: 'Under review',
     },
   },
@@ -640,7 +639,321 @@ export default {
       text: 'Sincere intent · divine guidance · a Guanyin Sacred Lot from TT Divination.',
     },
   },
-  xingming: { title: 'Name Numerology', subtitle: 'Five Grids · Three Talents' },
-  huangli: { title: 'Almanac (Huang Li)', subtitle: 'Yi/Ji · solar terms' },
-  jiemeng: { title: 'Dream Interpretation', subtitle: 'Trace the dream · decode the symbol' },
+  xingming: {
+    title: 'Name Numerology',
+    subtitle: 'Five Grids · Three Talents',
+    pageTitle: 'Name Numerology · Five Grids',
+    pageSubtitle: 'Kangxi strokes · Heaven/Man/Earth/Outer/Total · 81 numbers',
+    breadcrumbHome: 'Home',
+    breadcrumbCurrent: 'Five Grids',
+    inputCardTitle: 'Name Input',
+
+    field: {
+      surname: 'Surname',
+      givenName: 'Given name',
+      gender: 'Gender',
+      birthYear: 'Birth year',
+    },
+    placeholder: {
+      surname: 'e.g. 李',
+      givenName: 'e.g. 文轩',
+      birthYear: 'e.g. 1995 (optional)',
+    },
+    gender: {
+      male: 'Male',
+      female: 'Female',
+    },
+
+    btn: {
+      calculate: 'Compute Five Grids',
+      recalculate: 'Try another name',
+      share: 'Share result',
+      save: 'Save result',
+    },
+
+    resultBanner: {
+      title: 'Five-Grid Analysis',
+      subtitle: 'Heaven · Man · Earth · Outer · Total · 81 numerology · Overall score',
+    },
+
+    breakdown: {
+      title: 'Stroke Breakdown',
+      simplified: 'Simp.',
+      kangxi: 'Kangxi',
+      kangxiWord: 'Kangxi stroke count',
+      hintPrefix: 'Numerology follows ',
+      hintSuffix: '; simplified and traditional counts may differ.',
+    },
+
+    grids: {
+      tian: 'Heaven',
+      ren: 'Man',
+      di: 'Earth',
+      wai: 'Outer',
+      zong: 'Total',
+    },
+
+    levels: {
+      '大吉': 'Great Fortune',
+      '吉': 'Fortune',
+      '中吉': 'Moderate Fortune',
+      '中平': 'Neutral',
+      '凶': 'Misfortune',
+      '大凶': 'Great Misfortune',
+    },
+
+    detail: {
+      strokesUnit: 'strokes',
+    },
+
+    section: {
+      fivegrids: 'Five Grids',
+      overall: 'Overall Score',
+    },
+
+    overall: {
+      label: 'Overall Score',
+      badge: {
+        excellent: 'Excellent',
+        good: 'Good',
+        fair: 'Fair',
+        poor: 'Weak',
+      },
+    },
+
+    skeleton: {
+      title: 'Computing five grids...',
+      subtitle: 'Kangxi strokes · Heaven/Man/Earth/Outer/Total · 81 numerology',
+    },
+
+    computeError: {
+      title: 'Computation failed',
+      hint: 'Invalid name input. Please check and try again.',
+      retry: 'Try again',
+      rareChar: 'Character not indexed: {char} (rare character not yet supported)',
+    },
+
+    share: {
+      title: 'My Name Numerology · TT Divination',
+      text: 'Kangxi strokes · Five Grids · 81 numerology · from TT Divination.',
+    },
+
+    disclaimer: 'The 81-number system was compiled by Kumazaki Kenou in 1918. For cultural reference only and does not equate to personality.',
+  },
+  huangli: {
+    title: 'Almanac (Huang Li)',
+    subtitle: 'Yi/Ji · solar terms',
+    pageTitle: 'Chinese Almanac',
+    pageSubtitle: 'Daily yi / ji · auspicious / inauspicious · 9 matters',
+    breadcrumbHome: 'Home',
+    breadcrumbCurrent: 'Almanac',
+
+    resultBanner: {
+      title: 'A Day in the Almanac',
+      subtitle: 'Yi / Ji · deities · matters · monthly view',
+    },
+
+    query: {
+      title: 'Pick a Date',
+      fieldYear: 'Year',
+      fieldMonth: 'Month',
+      fieldDay: 'Day',
+      fieldMatter: 'Matter (optional)',
+      matterAll: 'All',
+      btnQuery: 'Query',
+      btnQueryIcon: '◈',
+      btnToday: 'Today',
+      btnTodayIcon: '↻',
+    },
+
+    todayCard: {
+      weekdayPrefix: '',
+      infoGanzhi: 'Ganzhi',
+      infoDuty: 'Duty',
+      infoFetus: 'Fetal Spirit',
+      infoChong: 'Clash',
+      infoPengzu: 'PengZu Warn',
+      infoTerm: 'Solar Term',
+      ecliptic: { yellow: 'Yellow-Path', black: 'Black-Path' },
+      dutySuffix: '',
+      bigLabel: 'Duty Star',
+      chongFmt: 'Clash {zodiac} ({ganzhi}) · Evil toward {direction}',
+      noFestival: '—',
+    },
+
+    yiji: {
+      yiTitle: 'Yi · Recommended',
+      yiSubtitle: 'Auspicious activities',
+      jiTitle: 'Ji · Avoid',
+      jiSubtitle: 'Inauspicious activities',
+      empty: 'None',
+    },
+
+    shensha: {
+      gods: 'Auspicious Gods',
+      fiends: 'Inauspicious Gods',
+      luckyHours: 'Lucky Hours',
+      directions: 'Directions',
+      directionsFmt: 'Joy {joy} · Wealth {wealth}',
+      empty: '—',
+    },
+
+    matters: {
+      sectionTitle: 'Nine Matters',
+      sectionHint: 'Tap any matter to see today\u2019s verdict',
+      all: 'All',
+      names: {
+        jisi:    'Sacrifice',
+        qifu:    'Prayer',
+        jiaqu:   'Marriage',
+        chuxing: 'Travel',
+        qianyue: 'Contract',
+        kaishi:  'Open Business',
+        dongtu:  'Ground-breaking',
+        ruzhai:  'Move In',
+        potu:    'Burial Ground',
+      },
+      verdict: {
+        yi: 'Yi',
+        ji: 'Ji',
+        ping: '—',
+      },
+    },
+
+    calendar: {
+      divider: '◆ Monthly View ◆',
+      title: '{year}-{month}',
+      prev: 'Prev',
+      next: 'Next',
+      prevMonthFmt: 'Mo {month}',
+      nextMonthFmt: 'Mo {month}',
+      weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      legendHuangdao: 'Yellow-Path',
+      legendHeidao: 'Black-Path',
+      legendGood: 'Matches chosen matter',
+      matterHintPrefix: 'Filter:',
+      clearMatter: 'Clear filter',
+    },
+
+    detail: {
+      title: 'Selected Day · Detail',
+      closeAria: 'Close',
+      duty: 'Duty Star',
+      dutyIntroFmt: 'Day of {duty}',
+      gods: 'Auspicious',
+      fiends: 'Inauspicious',
+      chongLabel: 'Clash',
+      pengzu: 'PengZu Warn',
+      fetus: 'Fetal Spirit',
+      luckyHours: 'Lucky Hours',
+      directions: 'Directions',
+      directionsFmt: 'Joy {joy} · Wealth {wealth} · Fortune {fu}',
+      dateFmt: '{date} · {weekday}',
+      lunarFmt: 'Lunar {lunar} · {ecliptic}',
+      yi: 'Yi',
+      ji: 'Ji',
+      empty: 'None',
+    },
+
+    btn: {
+      share: 'Share card',
+      shareIcon: '◈',
+      save: 'Save locally',
+      saveIcon: '◐',
+      reset: 'Back to today',
+      resetIcon: '↻',
+    },
+
+    computeError: {
+      title: 'Invalid Date',
+      hint: 'Please check year / month / day (supported range: 1901\u20132099).',
+      retry: 'Back to today',
+    },
+
+    share: {
+      title: 'My Almanac Day · TT Divination',
+      text: 'Daily yi/ji, deities and 9 matters — from TT Divination.',
+    },
+  },
+  jiemeng: {
+    title: 'Dream Interpretation',
+    subtitle: 'Trace the dream · decode the symbol',
+    pageTitle: 'Dream Interpretation',
+    pageSubtitle: 'Classical entries · fuzzy search · modern insight',
+    breadcrumbHome: 'Home',
+    breadcrumbCurrent: 'Dream Interpretation',
+
+    input: {
+      title: 'Describe the dream',
+      keywordLabel: 'Keyword',
+      keywordPlaceholder: 'What did you dream of? e.g. 蛇, 掉牙, 飞翔…',
+      categoryLabel: 'Category',
+      categoryAuto: 'Auto',
+      hint: 'Fuzzy search · bundled entries from the public-domain "Zhou Gong Jie Meng" · classical + modern readings',
+    },
+
+    btn: {
+      search: 'Search',
+      searchIcon: '⌕',
+      reset: 'Clear',
+      resetIcon: '◐',
+      share: 'Share card',
+      shareIcon: '◈',
+      save: 'Save locally',
+      saveIcon: '◐',
+      another: 'Another dream',
+      anotherIcon: '◑',
+    },
+
+    category: {
+      sectionTitle: 'Browse by category',
+      sectionSubtitle: 'Click any card to filter entries within that category',
+      countFmt: '{n} entries',
+      animal: 'Animals',
+      people: 'People',
+      nature: 'Nature',
+      body: 'Body',
+      life: 'Life',
+      ghost: 'Spirit',
+      building: 'Places',
+      other: 'Other',
+    },
+
+    recent: {
+      label: 'Recent',
+      clear: 'Clear',
+    },
+
+    result: {
+      searchHead: 'Results for "{q}"',
+      categoryHead: 'Browsing · {name}',
+      allHead: 'All entries',
+      countFmt: '{n} entries',
+    },
+
+    empty: {
+      title: 'No matching entries',
+      desc: 'Try a different keyword, or pick a category above to browse.',
+    },
+
+    detail: {
+      classical: 'Classical source',
+      classicalSource: 'Zhou Gong Jie Meng (public domain)',
+      modern: 'Modern reading',
+      adviceLabel: 'Tip: ',
+      warning: '⚠ Dream interpretations vary. Entries are cultural references only. If dreams disturb your daily life, please consult a mental-health professional.',
+    },
+
+    tag: {
+      auspicious: 'Auspicious',
+      cautious: 'Caution',
+      ambiguous: 'Ambiguous',
+      neutral: 'Neutral',
+    },
+
+    share: {
+      title: 'My dream entry · TT Divination',
+      text: 'Classical source & modern reading — from TT Divination.',
+    },
+  },
 }

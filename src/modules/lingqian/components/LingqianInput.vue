@@ -4,10 +4,18 @@ import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
 import { useLingqianStore } from '../stores/lingqianStore'
 import type { LingqianTopicKey } from '../types'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Label } from '@/components/ui/label'
 
 /**
  * 起签输入卡：心中所问 + 占问领域 + 启签 / 再摇 按钮。
- * 沿用 ds-input-card 公共规范，两套主题。
+ * 下拉组件对齐 BirthForm（shadcn-vue Select），保持全站统一视觉。
  */
 const emit = defineEmits<{
   (e: 'paipan'): void
@@ -28,6 +36,12 @@ const TOPIC_OPTIONS: readonly LingqianTopicKey[] = [
   'travel',
   'family',
 ]
+
+/** v-model 桥接：reka-ui Select 仅接受 string；此处与 store 直接双向同步 */
+const topicModel = computed<LingqianTopicKey>({
+  get: () => lingqianStore.preferredTopic,
+  set: (v) => lingqianStore.setPreferredTopic(v as LingqianTopicKey),
+})
 </script>
 
 <template>
@@ -41,7 +55,7 @@ const TOPIC_OPTIONS: readonly LingqianTopicKey[] = [
 
     <div class="ds-input-row" style="grid-template-columns: 2fr 1fr;">
       <div class="ds-input-group">
-        <label>{{ t('lingqian.input.questionLabel') }}</label>
+        <Label>{{ t('lingqian.input.questionLabel') }}</Label>
         <input
           :value="lingqianStore.question"
           type="text"
@@ -50,15 +64,17 @@ const TOPIC_OPTIONS: readonly LingqianTopicKey[] = [
         >
       </div>
       <div class="ds-input-group">
-        <label>{{ t('lingqian.input.topicLabel') }}</label>
-        <select
-          :value="lingqianStore.preferredTopic"
-          @change="lingqianStore.setPreferredTopic(($event.target as HTMLSelectElement).value as LingqianTopicKey)"
-        >
-          <option v-for="topic in TOPIC_OPTIONS" :key="topic" :value="topic">
-            {{ t(`lingqian.topic.${topic}`) }}
-          </option>
-        </select>
+        <Label>{{ t('lingqian.input.topicLabel') }}</Label>
+        <Select v-model="topicModel">
+          <SelectTrigger>
+            <SelectValue :placeholder="t('lingqian.input.topicLabel')" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="topic in TOPIC_OPTIONS" :key="topic" :value="topic">
+              {{ t(`lingqian.topic.${topic}`) }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
       </div>
     </div>
 
@@ -87,7 +103,7 @@ const TOPIC_OPTIONS: readonly LingqianTopicKey[] = [
 
     <div class="ds-input-row" style="grid-template-columns: 2fr 1fr;">
       <div class="ds-input-group">
-        <label>{{ t('lingqian.input.questionLabel') }}</label>
+        <Label>{{ t('lingqian.input.questionLabel') }}</Label>
         <input
           :value="lingqianStore.question"
           type="text"
@@ -96,15 +112,17 @@ const TOPIC_OPTIONS: readonly LingqianTopicKey[] = [
         >
       </div>
       <div class="ds-input-group">
-        <label>{{ t('lingqian.input.topicLabel') }}</label>
-        <select
-          :value="lingqianStore.preferredTopic"
-          @change="lingqianStore.setPreferredTopic(($event.target as HTMLSelectElement).value as LingqianTopicKey)"
-        >
-          <option v-for="topic in TOPIC_OPTIONS" :key="topic" :value="topic">
-            {{ t(`lingqian.topic.${topic}`) }}
-          </option>
-        </select>
+        <Label>{{ t('lingqian.input.topicLabel') }}</Label>
+        <Select v-model="topicModel">
+          <SelectTrigger>
+            <SelectValue :placeholder="t('lingqian.input.topicLabel')" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="topic in TOPIC_OPTIONS" :key="topic" :value="topic">
+              {{ t(`lingqian.topic.${topic}`) }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
       </div>
     </div>
 

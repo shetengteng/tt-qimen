@@ -1,0 +1,444 @@
+/* ============================================
+ * Guofeng Theme — Xingming (姓名学五格)
+ *
+ * 对齐 design/prototypes/guofeng/xingming.html（金红古朴风格）。
+ * 与 minimal 使用同一套 class 名（xm-*），保证 Vue 组件可复用。
+ *
+ * Class 体系：
+ *   xm-container           页面容器内部排版补丁
+ *   xm-name-input          姓名输入卡（ds-input-card 基础上加姓名字段样式）
+ *   xm-text-input          姓/名/出生年的文本输入框
+ *   xm-breakdown           字拆解卡（古纸米底 + 金线）
+ *   xm-chars / xm-char-*   字卡片网格
+ *   xm-wuge-layout         五格两列布局
+ *   xm-fivegrids           3×3 十字交叉图外框
+ *   xm-chart               3×3 网格
+ *   xm-ge-box              单格容器（天/人/地/外/总）
+ *   xm-ge-details          详解列表
+ *   xm-score-card          综合评分卡
+ *   xm-gauge / xm-gauge-*  SVG 仪表盘
+ *   xm-score-items         5 项评分小卡片
+ * ============================================ */
+
+/* ---- 页标题 ---- */
+:root[data-theme='guofeng'] .xm-container .page-title {
+  text-align: center;
+  padding: var(--gf-space-xl) 0 var(--gf-space-lg);
+}
+:root[data-theme='guofeng'] .xm-container .page-title h1 {
+  font-size: 40px;
+  color: var(--gf-ink);
+  margin: 0;
+  letter-spacing: 0.1em;
+}
+:root[data-theme='guofeng'] .xm-container .page-title .subtitle {
+  font-size: 14px;
+  color: var(--gf-ink-soft);
+  margin-top: var(--gf-space-sm);
+}
+
+/* ---- 输入卡局部（尺寸限定，其余走 ds-input-* 全局样式） ---- */
+:root[data-theme='guofeng'] .xm-name-input {
+  max-width: 640px;
+  margin: 0 auto var(--gf-space-xl);
+}
+
+/* ---- 字拆解卡（古纸朱笔意象） ---- */
+:root[data-theme='guofeng'] .xm-breakdown {
+  max-width: 720px;
+  margin: 0 auto var(--gf-space-xl);
+  background-color: rgba(255, 251, 240, 0.7);
+  border: 1px solid rgba(176, 141, 59, 0.3);
+  border-radius: var(--gf-radius-md);
+  padding: var(--gf-space-lg);
+}
+:root[data-theme='guofeng'] .xm-breakdown-title {
+  margin: 0 0 var(--gf-space-md);
+  color: var(--gf-ink);
+  text-align: center;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gf-space-sm);
+}
+:root[data-theme='guofeng'] .xm-breakdown-title .ds-ornament {
+  color: var(--gf-gold);
+  font-size: 12px;
+}
+:root[data-theme='guofeng'] .xm-chars {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--gf-space-md);
+  margin-bottom: var(--gf-space-md);
+}
+:root[data-theme='guofeng'] .xm-char-card {
+  width: 100px;
+  text-align: center;
+  padding: var(--gf-space-md);
+  background-color: rgba(255, 251, 240, 0.95);
+  border: 1px solid var(--gf-gold);
+  border-radius: var(--gf-radius-sm);
+  box-shadow: var(--gf-shadow-sm);
+}
+:root[data-theme='guofeng'] .xm-char-glyph {
+  font-size: 48px;
+  color: var(--gf-ink);
+  line-height: 1;
+  margin-bottom: var(--gf-space-sm);
+  font-weight: 500;
+  font-family: var(--gf-font-kaiti);
+}
+:root[data-theme='guofeng'] .xm-char-strokes {
+  font-size: 12px;
+  color: var(--gf-ink-soft);
+  line-height: 1.6;
+}
+:root[data-theme='guofeng'] .xm-char-num {
+  color: var(--gf-cinnabar);
+  font-weight: 600;
+}
+:root[data-theme='guofeng'] .xm-char-element {
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--gf-gold);
+  letter-spacing: 0.2em;
+}
+:root[data-theme='guofeng'] .xm-breakdown-note {
+  text-align: center;
+  font-size: 12px;
+  color: var(--gf-ink-soft);
+  margin: 0;
+  letter-spacing: 0.05em;
+}
+:root[data-theme='guofeng'] .xm-breakdown-note strong {
+  color: var(--gf-cinnabar);
+  font-weight: 600;
+}
+
+/* ---- 五格两列布局 ---- */
+:root[data-theme='guofeng'] .xm-wuge-layout {
+  max-width: 980px;
+  margin: 0 auto var(--gf-space-xl);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gf-space-xl);
+  align-items: start;
+}
+
+/* ---- 五格 · 3×3 网格图 ---- */
+:root[data-theme='guofeng'] .xm-fivegrids {
+  background: linear-gradient(135deg, #fdf5db, #f6ecd6);
+  border: 1px solid var(--gf-gold);
+  border-radius: var(--gf-radius-md);
+  padding: var(--gf-space-lg);
+  position: relative;
+  min-height: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+:root[data-theme='guofeng'] .xm-fivegrids .xm-chart {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  grid-template-rows: auto auto auto;
+  gap: 8px 16px;
+  align-items: center;
+  justify-items: center;
+  width: 100%;
+  max-width: 360px;
+}
+:root[data-theme='guofeng'] .xm-fivegrids .xm-cell-empty {
+  min-height: 16px;
+}
+:root[data-theme='guofeng'] .xm-ge-box {
+  padding: 12px 16px;
+  border: 1.5px solid var(--gf-gold);
+  border-radius: 4px;
+  background-color: rgba(255, 251, 240, 0.95);
+  text-align: center;
+  width: 100%;
+  min-width: 100px;
+  min-height: 92px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--gf-shadow-sm);
+}
+:root[data-theme='guofeng'] .xm-ge-tian {
+  background: linear-gradient(180deg, #fdf5db, #f6ecd6);
+}
+:root[data-theme='guofeng'] .xm-ge-ren {
+  background: linear-gradient(135deg, #f9e4d4, #f5d0ba);
+  border-color: var(--gf-cinnabar);
+}
+:root[data-theme='guofeng'] .xm-ge-di {
+  background: linear-gradient(180deg, #f6ecd6, #eaddc0);
+}
+:root[data-theme='guofeng'] .xm-ge-wai {
+  background: linear-gradient(135deg, rgba(74, 109, 93, 0.18), rgba(74, 109, 93, 0.08));
+  border-color: var(--gf-jade);
+}
+:root[data-theme='guofeng'] .xm-ge-zong {
+  background: linear-gradient(135deg, rgba(176, 141, 59, 0.22), rgba(176, 141, 59, 0.1));
+  border-color: var(--gf-gold);
+}
+:root[data-theme='guofeng'] .xm-ge-box .xm-ge-name {
+  font-size: 13px;
+  color: var(--gf-ink-soft);
+  margin-bottom: 4px;
+  letter-spacing: 0.2em;
+}
+:root[data-theme='guofeng'] .xm-ge-box .xm-ge-num {
+  font-size: 28px;
+  color: var(--gf-ink);
+  font-weight: 600;
+  line-height: 1;
+  font-family: var(--gf-font-serif);
+}
+:root[data-theme='guofeng'] .xm-ge-ren .xm-ge-num {
+  color: var(--gf-cinnabar);
+}
+:root[data-theme='guofeng'] .xm-ge-element {
+  font-size: 11px;
+  margin-top: 6px;
+  padding: 2px 8px;
+  display: inline-block;
+  border-radius: 10px;
+  background-color: rgba(176, 141, 59, 0.18);
+  color: var(--gf-gold);
+  letter-spacing: 0.1em;
+}
+:root[data-theme='guofeng'] .xm-ge-element.ji {
+  background-color: rgba(74, 109, 93, 0.18);
+  color: var(--gf-jade);
+}
+:root[data-theme='guofeng'] .xm-ge-element.xiong {
+  background-color: rgba(194, 58, 42, 0.16);
+  color: var(--gf-cinnabar);
+}
+
+/* ---- 五格详解列表 ---- */
+:root[data-theme='guofeng'] .xm-ge-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gf-space-md);
+}
+:root[data-theme='guofeng'] .xm-ge-detail {
+  background-color: rgba(255, 251, 240, 0.8);
+  border-left: 3px solid var(--gf-gold);
+  padding: var(--gf-space-md) var(--gf-space-lg);
+  border-radius: 0 var(--gf-radius-sm) var(--gf-radius-sm) 0;
+}
+:root[data-theme='guofeng'] .xm-ge-detail.is-ren {
+  border-left-color: var(--gf-cinnabar);
+  background-color: rgba(249, 228, 212, 0.5);
+}
+:root[data-theme='guofeng'] .xm-ge-detail-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--gf-space-sm);
+}
+:root[data-theme='guofeng'] .xm-ge-detail-title {
+  font-size: 16px;
+  color: var(--gf-ink);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+:root[data-theme='guofeng'] .xm-ge-detail-body {
+  font-size: 13px;
+  color: var(--gf-ink-soft);
+  line-height: 1.9;
+  margin: 0;
+}
+
+/* ---- 综合评分卡 ---- */
+:root[data-theme='guofeng'] .xm-score-card {
+  max-width: 720px;
+  margin: var(--gf-space-xl) auto;
+  padding: var(--gf-space-lg);
+  background: linear-gradient(135deg, rgba(176, 141, 59, 0.1), rgba(194, 58, 42, 0.06));
+  border: 1px solid var(--gf-gold);
+  border-radius: var(--gf-radius-md);
+  text-align: center;
+  box-shadow: var(--gf-shadow-md);
+}
+:root[data-theme='guofeng'] .xm-gauge-wrap {
+  position: relative;
+  width: 260px;
+  margin: 0 auto var(--gf-space-md);
+}
+:root[data-theme='guofeng'] .xm-gauge {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+:root[data-theme='guofeng'] .xm-gauge-track {
+  stroke: rgba(176, 141, 59, 0.18);
+  stroke-width: 14;
+  stroke-linecap: round;
+}
+:root[data-theme='guofeng'] .xm-gauge-fill {
+  stroke: var(--gf-cinnabar);
+  stroke-width: 14;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.8s ease;
+}
+:root[data-theme='guofeng'] .xm-gauge-needle {
+  stroke: var(--gf-ink);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  transition: transform 0.8s cubic-bezier(0.4, 1.4, 0.5, 1);
+  transform-origin: 100px 110px;
+}
+:root[data-theme='guofeng'] .xm-gauge-hub {
+  fill: var(--gf-gold);
+  stroke: var(--gf-ink);
+  stroke-width: 1.5;
+}
+:root[data-theme='guofeng'] .xm-gauge-tick {
+  font-size: 10px;
+  fill: var(--gf-ink-soft);
+  font-family: var(--gf-font-serif);
+}
+:root[data-theme='guofeng'] .xm-score-center {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+:root[data-theme='guofeng'] .xm-score-center .xm-score-value {
+  font-size: 38px;
+  font-weight: 600;
+  color: var(--gf-cinnabar);
+  font-family: var(--gf-font-serif);
+  line-height: 1;
+}
+:root[data-theme='guofeng'] .xm-score-center .xm-score-unit {
+  font-size: 11px;
+  color: var(--gf-ink-soft);
+  letter-spacing: 0.1em;
+  margin-top: 2px;
+}
+:root[data-theme='guofeng'] .xm-score-label {
+  font-size: 14px;
+  color: var(--gf-ink-soft);
+  margin: var(--gf-space-sm) 0 var(--gf-space-md);
+  letter-spacing: 0.2em;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gf-space-sm);
+}
+:root[data-theme='guofeng'] .xm-score-badge {
+  padding: 2px 12px;
+  background: var(--gf-gold);
+  color: var(--gf-rice);
+  font-size: 13px;
+  border-radius: var(--gf-radius-sm);
+  letter-spacing: 0.15em;
+  font-weight: 500;
+}
+
+/* 5 项评分 */
+:root[data-theme='guofeng'] .xm-score-items {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin: var(--gf-space-md) auto;
+  max-width: 520px;
+}
+:root[data-theme='guofeng'] .xm-score-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  background: rgba(255, 251, 240, 0.5);
+  border: 1px solid rgba(176, 141, 59, 0.3);
+  border-radius: var(--gf-radius-sm);
+}
+:root[data-theme='guofeng'] .xm-score-item .xm-s-name {
+  font-size: 11px;
+  color: var(--gf-ink-soft);
+  letter-spacing: 0.15em;
+}
+:root[data-theme='guofeng'] .xm-score-item .xm-s-num {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--gf-ink);
+  font-family: var(--gf-font-serif);
+}
+:root[data-theme='guofeng'] .xm-score-item .xm-s-tag {
+  font-size: 10px;
+  padding: 1px 8px;
+  border-radius: var(--gf-radius-sm);
+  letter-spacing: 0.1em;
+}
+:root[data-theme='guofeng'] .xm-score-item .xm-s-tag.good {
+  background: rgba(74, 109, 93, 0.15);
+  color: var(--gf-jade);
+}
+:root[data-theme='guofeng'] .xm-score-item .xm-s-tag.warn {
+  background: rgba(194, 58, 42, 0.1);
+  color: var(--gf-cinnabar);
+}
+:root[data-theme='guofeng'] .xm-score-item .xm-s-tag.mid {
+  background: rgba(176, 141, 59, 0.15);
+  color: var(--gf-gold);
+}
+:root[data-theme='guofeng'] .xm-score-desc {
+  color: var(--gf-ink);
+  font-size: 15px;
+  line-height: 1.9;
+  margin: 0;
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ---- 免责说明（小字 · 淡朱色） ---- */
+:root[data-theme='guofeng'] .xm-disclaimer {
+  text-align: center;
+  font-size: 12px;
+  color: var(--gf-ink-muted);
+  margin: var(--gf-space-lg) auto 0;
+  max-width: 560px;
+  letter-spacing: 0.08em;
+  line-height: 1.8;
+}
+
+/* ---- 响应式 ---- */
+@media (max-width: 768px) {
+  :root[data-theme='guofeng'] .xm-wuge-layout {
+    grid-template-columns: 1fr;
+  }
+  :root[data-theme='guofeng'] .xm-chars {
+    gap: var(--gf-space-sm);
+  }
+  :root[data-theme='guofeng'] .xm-char-card {
+    width: 72px;
+    padding: var(--gf-space-sm);
+  }
+  :root[data-theme='guofeng'] .xm-char-glyph {
+    font-size: 32px;
+  }
+  :root[data-theme='guofeng'] .xm-fivegrids {
+    min-height: 300px;
+  }
+}
+@media (max-width: 640px) {
+  :root[data-theme='guofeng'] .xm-score-items {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  :root[data-theme='guofeng'] .xm-container .page-title h1 {
+    font-size: 32px;
+  }
+}

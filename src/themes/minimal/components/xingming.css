@@ -1,0 +1,431 @@
+/* ============================================
+ * Minimal Theme — Xingming (姓名学五格)
+ *
+ * 对齐 design/prototypes/minimal/xingming.html（现代简约 · 紫腔 accent）。
+ * 与 guofeng 使用同一套 class 名（xm-*）。
+ *
+ * Class 体系（与 guofeng 完全一致）：
+ *   xm-container / xm-name-input / xm-text-input
+ *   xm-breakdown / xm-chars / xm-char-*
+ *   xm-wuge-layout / xm-fivegrids / xm-chart
+ *   xm-ge-cell / xm-ge-* / xm-ge-verdict
+ *   xm-score-card / xm-gauge-* / xm-score-items
+ * ============================================ */
+
+/* ---- 页 hero ---- */
+:root[data-theme='minimal'] .xm-container .page-hero {
+  padding: var(--mn-space-10) 0 var(--mn-space-8);
+}
+:root[data-theme='minimal'] .xm-container .page-breadcrumb {
+  font-size: 13px;
+  color: var(--mn-ink-muted);
+  margin-bottom: var(--mn-space-3);
+}
+:root[data-theme='minimal'] .xm-container .page-breadcrumb a {
+  color: var(--mn-ink-muted);
+  text-decoration: none;
+}
+:root[data-theme='minimal'] .xm-container .page-breadcrumb a:hover {
+  color: var(--mn-accent);
+}
+:root[data-theme='minimal'] .xm-container .page-hero h1 {
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin: 0;
+  color: var(--mn-ink);
+}
+:root[data-theme='minimal'] .xm-container .page-hero p {
+  color: var(--mn-ink-soft);
+  font-size: 16px;
+  margin: var(--mn-space-3) 0 0;
+}
+
+/* ---- 输入卡（尺寸限定，其余走 ds-input-* 全局样式） ---- */
+:root[data-theme='minimal'] .xm-name-input {
+  max-width: 640px;
+  margin: 0 auto var(--mn-space-8);
+}
+
+/* ---- 字拆解卡 ---- */
+:root[data-theme='minimal'] .xm-breakdown {
+  max-width: 720px;
+  margin: 0 auto var(--mn-space-8);
+  padding: var(--mn-space-6);
+}
+:root[data-theme='minimal'] .xm-breakdown-title {
+  margin: 0 0 var(--mn-space-5);
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: var(--mn-ink-soft);
+  text-transform: uppercase;
+}
+:root[data-theme='minimal'] .xm-chars {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--mn-space-4);
+}
+:root[data-theme='minimal'] .xm-char-card {
+  min-width: 110px;
+  padding: var(--mn-space-4);
+  background-color: var(--mn-bg);
+  border: 1px solid var(--mn-border);
+  border-radius: var(--mn-radius-md);
+  text-align: center;
+  transition: border-color var(--transition-fast);
+}
+:root[data-theme='minimal'] .xm-char-card:hover {
+  border-color: var(--mn-accent);
+}
+:root[data-theme='minimal'] .xm-char-glyph {
+  font-size: 48px;
+  font-weight: 600;
+  color: var(--mn-ink);
+  line-height: 1;
+  margin-bottom: var(--mn-space-3);
+}
+:root[data-theme='minimal'] .xm-char-strokes {
+  font-size: 12px;
+  color: var(--mn-ink-muted);
+  margin-bottom: var(--mn-space-1);
+  line-height: 1.6;
+}
+:root[data-theme='minimal'] .xm-char-num {
+  color: var(--mn-accent);
+  font-weight: 600;
+}
+:root[data-theme='minimal'] .xm-char-element {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 10px;
+  display: inline-block;
+  border-radius: 999px;
+  background-color: var(--mn-accent-soft);
+  color: var(--mn-accent);
+  margin-top: var(--mn-space-2);
+  letter-spacing: 0.1em;
+}
+:root[data-theme='minimal'] .xm-breakdown-note {
+  text-align: center;
+  font-size: 12px;
+  color: var(--mn-ink-muted);
+  margin: var(--mn-space-4) 0 0;
+}
+:root[data-theme='minimal'] .xm-breakdown-note strong {
+  color: var(--mn-accent);
+  font-weight: 600;
+}
+
+/* ---- 五格两列布局 ---- */
+:root[data-theme='minimal'] .xm-wuge-layout {
+  max-width: 1000px;
+  margin: 0 auto var(--mn-space-8);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--mn-space-6);
+  align-items: start;
+}
+
+/* ---- 五格 · 3×3 网格图 ---- */
+:root[data-theme='minimal'] .xm-fivegrids {
+  background-color: var(--mn-bg-elev);
+  border: 1px solid var(--mn-border);
+  border-radius: var(--mn-radius-xl);
+  padding: var(--mn-space-8);
+  min-height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+:root[data-theme='minimal'] .xm-fivegrids .xm-chart {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  grid-template-rows: auto auto auto;
+  gap: 12px;
+  width: 100%;
+  max-width: 360px;
+  align-items: center;
+  justify-items: center;
+}
+:root[data-theme='minimal'] .xm-fivegrids .xm-cell-empty {
+  min-height: 12px;
+}
+:root[data-theme='minimal'] .xm-ge-cell {
+  padding: var(--mn-space-4);
+  background-color: var(--mn-bg);
+  border: 1px solid var(--mn-border);
+  border-radius: var(--mn-radius-md);
+  text-align: center;
+  width: 100%;
+  min-width: 100px;
+  min-height: 92px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: border-color var(--transition-fast);
+}
+:root[data-theme='minimal'] .xm-ge-cell.is-ren {
+  background-color: var(--mn-accent-soft);
+  border-color: var(--mn-accent);
+}
+:root[data-theme='minimal'] .xm-ge-cell .xm-ge-name {
+  font-size: 11px;
+  color: var(--mn-ink-muted);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: var(--mn-space-2);
+}
+:root[data-theme='minimal'] .xm-ge-cell .xm-ge-num {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--mn-ink);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+:root[data-theme='minimal'] .xm-ge-cell.is-ren .xm-ge-num {
+  color: var(--mn-accent);
+}
+:root[data-theme='minimal'] .xm-ge-verdict {
+  display: inline-block;
+  margin-top: var(--mn-space-2);
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 500;
+  border-radius: 999px;
+  letter-spacing: 0.05em;
+}
+:root[data-theme='minimal'] .xm-ge-verdict.ji {
+  background-color: #dcfce7;
+  color: #166534;
+}
+:root[data-theme='minimal'] .xm-ge-verdict.dj {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+:root[data-theme='minimal'] .xm-ge-verdict.xiong {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+:root[data-theme='minimal'] .xm-ge-verdict.mid {
+  background-color: var(--mn-accent-soft);
+  color: var(--mn-accent);
+}
+
+/* ---- 详解列表 ---- */
+:root[data-theme='minimal'] .xm-ge-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mn-space-3);
+}
+:root[data-theme='minimal'] .xm-ge-detail {
+  background-color: var(--mn-bg-elev);
+  border: 1px solid var(--mn-border);
+  border-radius: var(--mn-radius-md);
+  padding: var(--mn-space-4) var(--mn-space-5);
+  transition: border-color var(--transition-fast);
+}
+:root[data-theme='minimal'] .xm-ge-detail:hover {
+  border-color: var(--mn-accent);
+}
+:root[data-theme='minimal'] .xm-ge-detail.is-ren {
+  border-left: 3px solid var(--mn-accent);
+}
+:root[data-theme='minimal'] .xm-ge-detail-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--mn-space-2);
+  gap: var(--mn-space-2);
+}
+:root[data-theme='minimal'] .xm-ge-detail-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--mn-ink);
+}
+:root[data-theme='minimal'] .xm-ge-detail-body {
+  font-size: 13px;
+  color: var(--mn-ink-soft);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ---- 综合评分卡 ---- */
+:root[data-theme='minimal'] .xm-score-card {
+  max-width: 720px;
+  margin: var(--mn-space-8) auto;
+  background: linear-gradient(135deg, var(--mn-accent-soft), #f3f1fa);
+  border: 1px solid var(--mn-accent);
+  border-radius: var(--mn-radius-xl);
+  padding: var(--mn-space-8);
+  text-align: center;
+}
+:root[data-theme='minimal'] .xm-gauge-wrap {
+  position: relative;
+  width: 260px;
+  margin: 0 auto var(--mn-space-5);
+}
+:root[data-theme='minimal'] .xm-gauge {
+  width: 100%;
+  display: block;
+}
+:root[data-theme='minimal'] .xm-gauge-track {
+  stroke: var(--mn-border);
+  stroke-width: 14;
+  stroke-linecap: round;
+}
+:root[data-theme='minimal'] .xm-gauge-fill {
+  stroke: var(--mn-accent);
+  stroke-width: 14;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.8s ease;
+}
+:root[data-theme='minimal'] .xm-gauge-needle {
+  stroke: var(--mn-ink);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  transition: transform 0.8s cubic-bezier(0.4, 1.4, 0.5, 1);
+  transform-origin: 100px 110px;
+}
+:root[data-theme='minimal'] .xm-gauge-hub {
+  fill: var(--mn-accent);
+  stroke: white;
+  stroke-width: 1.5;
+}
+:root[data-theme='minimal'] .xm-score-center {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+:root[data-theme='minimal'] .xm-score-center .xm-score-num {
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--mn-accent);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+:root[data-theme='minimal'] .xm-score-center .xm-score-num small {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--mn-ink-muted);
+  margin-left: 4px;
+}
+:root[data-theme='minimal'] .xm-score-label {
+  font-size: 12px;
+  color: var(--mn-ink-muted);
+  margin: var(--mn-space-3) 0 var(--mn-space-5);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mn-space-2);
+}
+:root[data-theme='minimal'] .xm-score-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  background: var(--mn-accent-soft);
+  color: var(--mn-accent);
+  border-radius: 999px;
+  letter-spacing: 0.1em;
+}
+
+/* 5 项评分 */
+:root[data-theme='minimal'] .xm-score-items {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin: var(--mn-space-4) auto;
+  max-width: 520px;
+}
+:root[data-theme='minimal'] .xm-score-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  background: var(--mn-bg);
+  border: 1px solid var(--mn-border);
+  border-radius: var(--mn-radius-md);
+}
+:root[data-theme='minimal'] .xm-score-item .xm-s-name {
+  font-size: 11px;
+  color: var(--mn-ink-muted);
+  letter-spacing: 0.1em;
+}
+:root[data-theme='minimal'] .xm-score-item .xm-s-num {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--mn-ink);
+}
+:root[data-theme='minimal'] .xm-score-item .xm-s-tag {
+  font-size: 10px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-weight: 500;
+}
+:root[data-theme='minimal'] .xm-score-item .xm-s-tag.good {
+  background: #ecfdf5;
+  color: var(--mn-success);
+}
+:root[data-theme='minimal'] .xm-score-item .xm-s-tag.warn {
+  background: #fef2f2;
+  color: var(--mn-danger);
+}
+:root[data-theme='minimal'] .xm-score-item .xm-s-tag.mid {
+  background: var(--mn-accent-soft);
+  color: var(--mn-accent);
+}
+:root[data-theme='minimal'] .xm-score-desc {
+  color: var(--mn-ink-soft);
+  line-height: 1.8;
+  max-width: 480px;
+  margin: 0 auto;
+  font-size: 14px;
+}
+
+/* ---- 免责说明 ---- */
+:root[data-theme='minimal'] .xm-disclaimer {
+  text-align: center;
+  font-size: 12px;
+  color: var(--mn-ink-muted);
+  margin: var(--mn-space-6) auto 0;
+  max-width: 520px;
+  letter-spacing: 0.02em;
+  line-height: 1.7;
+}
+
+/* ---- 响应式 ---- */
+@media (max-width: 768px) {
+  :root[data-theme='minimal'] .xm-wuge-layout {
+    grid-template-columns: 1fr;
+  }
+  :root[data-theme='minimal'] .xm-chars {
+    gap: var(--mn-space-2);
+  }
+  :root[data-theme='minimal'] .xm-char-card {
+    min-width: 80px;
+    padding: var(--mn-space-3);
+  }
+  :root[data-theme='minimal'] .xm-char-glyph {
+    font-size: 36px;
+  }
+  :root[data-theme='minimal'] .xm-fivegrids {
+    min-height: 340px;
+  }
+}
+@media (max-width: 640px) {
+  :root[data-theme='minimal'] .xm-score-items {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  :root[data-theme='minimal'] .xm-container .page-hero h1 {
+    font-size: 32px;
+  }
+}

@@ -92,10 +92,6 @@ const flowTagsMn = (idx: number): FlowTagMn[] =>
       style="text-align: center; font-size: 28px; color: var(--gf-ink); margin-bottom: var(--gf-space-sm);"
     >
       {{ t('bazi.flow.title') }}
-      <span
-        class="non-classical-badge"
-        :title="t('bazi.source.nonClassical')"
-      >{{ t('bazi.source.nonClassical') }}</span>
     </div>
     <div style="text-align: center; color: var(--gf-ink-soft); font-size: 14px;">
       {{ t('bazi.flow.subtitle') }}
@@ -132,10 +128,6 @@ const flowTagsMn = (idx: number): FlowTagMn[] =>
   <section v-else class="flow-section">
     <div class="fortune-header">
       <div class="meta">{{ t('bazi.flow.subtitleMn') }}</div>
-      <span
-        class="non-classical-badge non-classical-badge-mn"
-        :title="t('bazi.source.nonClassical')"
-      >{{ t('bazi.source.nonClassical') }}</span>
     </div>
 
     <div class="flow-grid">

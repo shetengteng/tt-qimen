@@ -14,9 +14,12 @@ body {
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  /* 永久预留滚动条位置：避免 reka-ui Select / Dialog 等组件
-   * 在打开/关闭瞬间锁定 body overflow 时，页面宽度抖动；
-   * 同时确保 macOS 用户在任何主题下都能看到稳定的滚动通道。 */
+  /* 永久滚动条槽位：
+   * - overflow-y: scroll 让 html 始终是滚动容器，即使 body 被 reka-ui 锁定
+   *   （body { overflow: hidden } 时，html 仍保留滚动条槽，不会触发页面左右偏移）
+   * - scrollbar-gutter: stable 则补齐「内容不足一屏时也预留槽」的场景，两者配合即可
+   *   消除打开 Select / Dialog 时的抖动。 */
+  overflow-y: scroll;
   scrollbar-gutter: stable;
 }
 

@@ -1,0 +1,449 @@
+/* ============================================
+ * Minimal Theme — Jiemeng (周公解梦)
+ *
+ * 对齐 design/prototypes/minimal/jiemeng.html，现代简约风。
+ * 与 guofeng 共享 class 名（jm-*），Vue 组件零分叉。
+ * ============================================ */
+
+/* ---------- 输入卡 ---------- */
+:root[data-theme='minimal'] .jm-input-card {
+  max-width: 720px;
+}
+
+:root[data-theme='minimal'] .jm-input-card .jm-input-row {
+  grid-template-columns: 2fr 1fr;
+}
+
+:root[data-theme='minimal'] .jm-input-hint {
+  margin: var(--mn-space-4) 0 0;
+  text-align: center;
+  font-size: 12px;
+  color: var(--mn-ink-muted);
+  line-height: 1.6;
+}
+
+/* ---------- 最近搜索 ---------- */
+:root[data-theme='minimal'] .jm-recent {
+  max-width: 720px;
+  margin: 0 auto var(--mn-space-6);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 0 var(--mn-space-3);
+}
+
+:root[data-theme='minimal'] .jm-recent-label {
+  font-size: 12px;
+  color: var(--mn-ink-muted);
+  letter-spacing: 0.05em;
+  margin-right: 4px;
+}
+
+:root[data-theme='minimal'] .jm-recent-chip {
+  padding: 4px 12px;
+  font-size: 12px;
+  font-family: inherit;
+  background: var(--mn-bg-elev);
+  border: 1px solid var(--mn-border);
+  border-radius: 999px;
+  color: var(--mn-ink-soft);
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+:root[data-theme='minimal'] .jm-recent-chip:hover {
+  background: var(--mn-accent-soft);
+  border-color: var(--mn-accent);
+  color: var(--mn-accent);
+}
+
+:root[data-theme='minimal'] .jm-recent-chip.active {
+  background: var(--mn-accent);
+  color: #ffffff;
+  border-color: var(--mn-accent);
+}
+
+:root[data-theme='minimal'] .jm-recent-clear {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--mn-ink-muted);
+  text-decoration: none;
+}
+
+:root[data-theme='minimal'] .jm-recent-clear:hover {
+  color: var(--mn-accent);
+}
+
+/* ---------- 分类网格 ---------- */
+:root[data-theme='minimal'] .jm-cat-section {
+  max-width: 960px;
+  margin: 0 auto var(--mn-space-10);
+}
+
+:root[data-theme='minimal'] .jm-cat-head {
+  text-align: center;
+  margin-bottom: var(--mn-space-6);
+}
+
+:root[data-theme='minimal'] .jm-cat-title {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--mn-ink);
+}
+
+:root[data-theme='minimal'] .jm-cat-subtitle {
+  font-size: 14px;
+  color: var(--mn-ink-soft);
+  margin: var(--mn-space-2) 0 0;
+}
+
+:root[data-theme='minimal'] .jm-cat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--mn-space-3);
+}
+
+:root[data-theme='minimal'] .jm-cat-card {
+  background-color: var(--mn-bg-elev);
+  border: 1px solid var(--mn-border);
+  border-radius: var(--mn-radius-lg);
+  padding: var(--mn-space-5);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  color: var(--mn-ink);
+}
+
+:root[data-theme='minimal'] .jm-cat-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--mn-accent);
+  box-shadow: var(--mn-shadow-sm);
+}
+
+:root[data-theme='minimal'] .jm-cat-card.active {
+  background-color: var(--mn-accent-soft);
+  border-color: var(--mn-accent);
+}
+
+:root[data-theme='minimal'] .jm-cat-icon {
+  width: 44px;
+  height: 44px;
+  margin: 0 auto var(--mn-space-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--mn-accent-soft);
+  color: var(--mn-accent);
+  border-radius: var(--mn-radius-md);
+  font-size: 22px;
+  font-weight: 600;
+}
+
+:root[data-theme='minimal'] .jm-cat-card.active .jm-cat-icon {
+  background-color: var(--mn-accent);
+  color: #ffffff;
+}
+
+:root[data-theme='minimal'] .jm-cat-name {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: var(--mn-ink);
+}
+
+:root[data-theme='minimal'] .jm-cat-count {
+  font-size: 12px;
+  color: var(--mn-ink-muted);
+}
+
+/* ---------- 结果区 ---------- */
+:root[data-theme='minimal'] .jm-results-zone {
+  margin-top: var(--mn-space-8);
+}
+
+:root[data-theme='minimal'] .jm-results {
+  max-width: 820px;
+  margin: 0 auto var(--mn-space-8);
+}
+
+:root[data-theme='minimal'] .jm-results-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: var(--mn-space-5);
+  padding-bottom: var(--mn-space-3);
+  border-bottom: 1px solid var(--mn-border);
+}
+
+:root[data-theme='minimal'] .jm-results-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--mn-ink);
+}
+
+:root[data-theme='minimal'] .jm-results-title mark {
+  background-color: var(--mn-accent-soft);
+  color: var(--mn-accent);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+:root[data-theme='minimal'] .jm-results-count {
+  font-size: 13px;
+  color: var(--mn-ink-muted);
+}
+
+:root[data-theme='minimal'] .jm-entry-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mn-space-3);
+}
+
+:root[data-theme='minimal'] .jm-entry {
+  padding: var(--mn-space-5);
+  background-color: var(--mn-bg-elev);
+  border: 1px solid var(--mn-border);
+  border-radius: var(--mn-radius-md);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+  font-family: inherit;
+  color: var(--mn-ink);
+}
+
+:root[data-theme='minimal'] .jm-entry:hover {
+  border-color: var(--mn-accent);
+  box-shadow: var(--mn-shadow-sm);
+}
+
+:root[data-theme='minimal'] .jm-entry-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--mn-space-2);
+  margin-bottom: var(--mn-space-2);
+}
+
+:root[data-theme='minimal'] .jm-entry-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--mn-ink);
+}
+
+:root[data-theme='minimal'] .jm-entry-title mark {
+  background-color: var(--mn-accent-soft);
+  color: var(--mn-accent);
+  padding: 0 3px;
+  border-radius: 3px;
+}
+
+:root[data-theme='minimal'] .jm-entry-category {
+  padding: 2px 10px;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  border-radius: 999px;
+  background-color: var(--mn-bg);
+  border: 1px solid var(--mn-border);
+  color: var(--mn-ink-muted);
+  white-space: nowrap;
+}
+
+:root[data-theme='minimal'] .jm-entry-summary {
+  font-size: 14px;
+  color: var(--mn-ink-soft);
+  line-height: 1.6;
+  margin: 0 0 var(--mn-space-3);
+}
+
+:root[data-theme='minimal'] .jm-entry-tags {
+  display: flex;
+  gap: var(--mn-space-2);
+  flex-wrap: wrap;
+}
+
+:root[data-theme='minimal'] .jm-entry-tag {
+  padding: 2px 10px;
+  font-size: 11px;
+  background-color: var(--mn-bg);
+  border: 1px solid var(--mn-border);
+  border-radius: 999px;
+  color: var(--mn-ink-soft);
+}
+
+:root[data-theme='minimal'] .jm-entry-tag.tag-auspicious {
+  background-color: rgba(22, 163, 74, 0.08);
+  color: var(--mn-success);
+  border-color: rgba(22, 163, 74, 0.25);
+}
+
+:root[data-theme='minimal'] .jm-entry-tag.tag-cautious {
+  background-color: rgba(202, 138, 4, 0.08);
+  color: var(--mn-warning);
+  border-color: rgba(202, 138, 4, 0.25);
+}
+
+:root[data-theme='minimal'] .jm-entry-tag.tag-ambiguous {
+  background-color: var(--mn-accent-soft);
+  color: var(--mn-accent);
+  border-color: rgba(59, 47, 99, 0.2);
+}
+
+/* ---------- 空态 ---------- */
+:root[data-theme='minimal'] .jm-empty {
+  padding: var(--mn-space-10) var(--mn-space-5);
+  text-align: center;
+  background-color: var(--mn-bg-elev);
+  border: 1px dashed var(--mn-border);
+  border-radius: var(--mn-radius-md);
+}
+
+:root[data-theme='minimal'] .jm-empty-icon {
+  font-size: 32px;
+  color: var(--mn-accent);
+  margin-bottom: var(--mn-space-2);
+}
+
+:root[data-theme='minimal'] .jm-empty-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--mn-ink);
+  margin: 0 0 var(--mn-space-2);
+}
+
+:root[data-theme='minimal'] .jm-empty-desc {
+  font-size: 13px;
+  color: var(--mn-ink-soft);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ---------- 详情卡 ---------- */
+:root[data-theme='minimal'] .jm-detail {
+  max-width: 720px;
+  margin: var(--mn-space-10) auto;
+  background-color: var(--mn-bg-elev);
+  border: 1px solid var(--mn-border);
+  border-radius: var(--mn-radius-xl);
+  padding: var(--mn-space-8);
+  box-shadow: var(--mn-shadow-md);
+}
+
+:root[data-theme='minimal'] .jm-detail-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--mn-space-3);
+  margin-bottom: var(--mn-space-6);
+  padding-bottom: var(--mn-space-4);
+  border-bottom: 1px solid var(--mn-border);
+}
+
+:root[data-theme='minimal'] .jm-detail-title {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--mn-accent);
+  margin: 0;
+}
+
+:root[data-theme='minimal'] .jm-detail-category {
+  padding: 2px 10px;
+  font-size: 12px;
+  border-radius: 999px;
+  background-color: var(--mn-accent-soft);
+  color: var(--mn-accent);
+  white-space: nowrap;
+}
+
+:root[data-theme='minimal'] .jm-detail-section {
+  margin-bottom: var(--mn-space-6);
+}
+
+:root[data-theme='minimal'] .jm-detail-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--mn-accent);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: var(--mn-space-3);
+}
+
+:root[data-theme='minimal'] .jm-detail-original {
+  padding: var(--mn-space-4) var(--mn-space-5);
+  background-color: var(--mn-accent-soft);
+  border-radius: var(--mn-radius-md);
+  font-style: italic;
+  color: var(--mn-ink);
+  line-height: 1.8;
+  font-size: 15px;
+}
+
+:root[data-theme='minimal'] .jm-detail-original small {
+  font-style: normal;
+  font-size: 12px;
+  color: var(--mn-ink-muted);
+  display: block;
+  margin-top: var(--mn-space-2);
+}
+
+:root[data-theme='minimal'] .jm-detail-modern p {
+  color: var(--mn-ink-soft);
+  line-height: 1.8;
+  margin: 0 0 var(--mn-space-3);
+  font-size: 15px;
+}
+
+:root[data-theme='minimal'] .jm-detail-modern p.jm-detail-tip {
+  padding: var(--mn-space-4);
+  background-color: #dbeafe;
+  border-left: 3px solid var(--mn-info);
+  border-radius: var(--mn-radius-md);
+  color: #1e3a8a;
+  font-weight: 500;
+}
+
+:root[data-theme='minimal'] .jm-detail-modern p.jm-detail-tip strong {
+  color: #1e3a8a;
+  margin-right: 6px;
+}
+
+:root[data-theme='minimal'] .jm-detail-warning {
+  margin-top: var(--mn-space-6);
+  padding: var(--mn-space-3) var(--mn-space-4);
+  background-color: #fef3c7;
+  border-left: 3px solid #f59e0b;
+  border-radius: var(--mn-radius-md);
+  font-size: 13px;
+  color: #854d0e;
+  line-height: 1.6;
+}
+
+/* ---------- 结果下方的分享操作 ---------- */
+:root[data-theme='minimal'] .jm-actions {
+  max-width: 720px;
+  margin: var(--mn-space-8) auto;
+  display: flex;
+  justify-content: center;
+  gap: var(--mn-space-3);
+  flex-wrap: wrap;
+}
+
+:root[data-theme='minimal'] .jm-share-card {
+  background: transparent;
+}
+
+/* ---------- Mobile ---------- */
+@media (max-width: 768px) {
+  :root[data-theme='minimal'] .jm-input-card .jm-input-row { grid-template-columns: 1fr; }
+  :root[data-theme='minimal'] .jm-cat-grid { grid-template-columns: repeat(3, 1fr); }
+  :root[data-theme='minimal'] .jm-detail { padding: var(--mn-space-5); }
+}
+
+@media (max-width: 480px) {
+  :root[data-theme='minimal'] .jm-cat-grid { grid-template-columns: repeat(2, 1fr); }
+  :root[data-theme='minimal'] .jm-results-head { flex-direction: column; align-items: flex-start; gap: 6px; }
+}

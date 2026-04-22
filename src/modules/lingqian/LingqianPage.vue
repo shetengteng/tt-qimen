@@ -27,14 +27,21 @@ const isGuofeng = computed(() => themeStore.id === 'guofeng')
 const inputCardEl = ref<HTMLElement | null>(null)
 const resultBannerEl = ref<HTMLElement | null>(null)
 const shareCardEl = ref<HTMLElement | null>(null)
+const tubeSceneEl = ref<HTMLElement | null>(null)
 
 const result = shallowRef<LingqianResult | null>(null)
 const currentTopic = ref<TopicKey>('family')
+
+/** 抽签中标志：驱动 LotteryTube 的剧烈摇晃动画，并替代原全屏 skeleton 弹框 */
+const drawing = ref(false)
 
 const skeleton = useSkeletonReveal({
   delay: 1500,
   scrollOffset: 30,
   scrollHoldMs: 280,
+  onReveal: () => {
+    drawing.value = false
+  },
 })
 
 function topicFromPreference(preferred: string): TopicKey {
@@ -65,11 +72,14 @@ function onPaipan() {
     result.value = null
   }
 
+  drawing.value = true
+  skeleton.scrollTo(tubeSceneEl.value, 80)
   skeleton.start(() => resultBannerEl.value)
 }
 
 function onRepaipan() {
   result.value = null
+  drawing.value = false
   skeleton.reset(() => inputCardEl.value)
 }
 
@@ -120,7 +130,9 @@ watch(
         <LingqianInput @paipan="onPaipan" @reset="onRepaipan" />
       </div>
 
-      <LotteryTube />
+      <div ref="tubeSceneEl">
+        <LotteryTube :drawing="drawing" />
+      </div>
     </div>
 
     <div v-if="skeleton.revealed.value" ref="resultBannerEl" class="result-banner revealed">
@@ -198,7 +210,9 @@ watch(
         <LingqianInput @paipan="onPaipan" @reset="onRepaipan" />
       </div>
 
-      <LotteryTube />
+      <div ref="tubeSceneEl">
+        <LotteryTube :drawing="drawing" />
+      </div>
     </main>
 
     <div v-if="skeleton.revealed.value" ref="resultBannerEl" class="result-banner revealed">
@@ -246,17 +260,7 @@ watch(
     </div>
   </template>
 
-  <!-- 骨架遮罩 -->
-  <div :class="['skeleton-overlay', { visible: skeleton.skeletonVisible.value }]">
-    <div class="skeleton-card">
-      <div class="skeleton-ring" />
-      <div v-if="isGuofeng" class="skeleton-text">{{ t('lingqian.skeleton.title') }}</div>
-      <div v-else class="skeleton-title">{{ t('lingqian.skeleton.title') }}</div>
-      <div v-if="isGuofeng" class="skeleton-subtext">{{ t('lingqian.skeleton.subtitle') }}</div>
-      <div v-else class="skeleton-sub">{{ t('lingqian.skeleton.subtitle') }}</div>
-      <div class="skeleton-dots"><span>·</span><span>·</span><span>·</span></div>
-    </div>
-  </div>
+  <!-- 注：全屏 skeleton 遮罩已替换为签筒本体的"抽签中"剧烈摇晃动画（见 LotteryTube :drawing）。 -->
 
   <ShareToast :state="toastState" />
 </template>

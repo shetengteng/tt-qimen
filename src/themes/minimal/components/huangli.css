@@ -1,0 +1,638 @@
+/* ============================================================
+ * Minimal Theme — Huangli (黄历择日)
+ *
+ * 作用域：:root[data-theme='minimal'] ... 下的 .hl-*  类。
+ * 样式来源：design/prototypes/minimal/huangli.html
+ * ============================================================ */
+
+:root[data-theme='minimal'] {
+  /* ---------- 查询卡 ---------- */
+  .hl-query-card {
+    max-width: 720px;
+    margin: 0 auto var(--mn-space-8);
+  }
+
+  /* ---------- 今日大卡 ---------- */
+  .hl-today-card {
+    max-width: 960px;
+    margin: 0 auto var(--mn-space-6);
+    background: linear-gradient(135deg, var(--mn-bg-elev), #f5f3ed);
+    border: 1px solid var(--mn-border);
+    border-radius: var(--mn-radius-xl);
+    padding: var(--mn-space-8);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--mn-space-8);
+    align-items: center;
+    box-shadow: var(--mn-shadow-sm);
+  }
+
+  .hl-today-date {
+    text-align: center;
+    padding-right: var(--mn-space-6);
+    border-right: 1px solid var(--mn-border);
+  }
+
+  .hl-today-weekday {
+    font-size: 12px;
+    color: var(--mn-ink-muted);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: var(--mn-space-2);
+  }
+
+  .hl-today-day {
+    font-size: 88px;
+    font-weight: 700;
+    color: var(--mn-accent);
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  .hl-today-full {
+    font-size: 13px;
+    color: var(--mn-ink-muted);
+    margin-top: var(--mn-space-3);
+  }
+
+  .hl-today-lunar {
+    font-size: 15px;
+    color: var(--mn-ink);
+    margin-top: var(--mn-space-1);
+    font-weight: 500;
+  }
+
+  .hl-today-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mn-space-3);
+  }
+
+  .hl-info-line {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    align-items: center;
+    gap: var(--mn-space-4);
+    font-size: 14px;
+  }
+
+  .hl-info-label {
+    font-size: 11px;
+    color: var(--mn-ink-muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .hl-info-value {
+    color: var(--mn-ink);
+    font-weight: 500;
+  }
+
+  .hl-info-ganzhi {
+    font-weight: 600;
+    color: var(--mn-accent);
+    letter-spacing: 0.04em;
+  }
+
+  .hl-today-big {
+    text-align: center;
+  }
+
+  .hl-big-label {
+    font-size: 11px;
+    color: var(--mn-ink-muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: var(--mn-space-2);
+  }
+
+  .hl-big-value {
+    width: 88px;
+    height: 88px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--mn-accent);
+    color: white;
+    border-radius: var(--mn-radius-lg);
+    font-size: 32px;
+    font-weight: 700;
+    box-shadow: var(--mn-shadow-md);
+  }
+
+  .hl-today-big[data-ecliptic='黑道'] .hl-big-value {
+    background: #525252;
+  }
+
+  /* ---------- 宜忌 ---------- */
+  .hl-yiji-section {
+    max-width: 960px;
+    margin: 0 auto var(--mn-space-6);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--mn-space-5);
+  }
+
+  .hl-yiji-card {
+    background-color: var(--mn-bg-elev);
+    border: 1px solid var(--mn-border);
+    border-radius: var(--mn-radius-lg);
+    padding: var(--mn-space-6);
+  }
+
+  .hl-yiji-card--yi { border-top: 3px solid #16a34a; }
+  .hl-yiji-card--ji { border-top: 3px solid #dc2626; }
+
+  .hl-yiji-header {
+    display: flex;
+    align-items: center;
+    gap: var(--mn-space-3);
+    margin-bottom: var(--mn-space-5);
+  }
+
+  .hl-yiji-stamp {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--mn-radius-md);
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+  }
+
+  .hl-yiji-stamp--yi { background-color: #16a34a; }
+  .hl-yiji-stamp--ji { background-color: #dc2626; }
+
+  .hl-yiji-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--mn-ink);
+  }
+
+  .hl-yiji-subtitle {
+    font-size: 12px;
+    color: var(--mn-ink-muted);
+    margin-top: 2px;
+  }
+
+  .hl-yiji-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--mn-space-2);
+  }
+
+  .hl-yiji-tag {
+    padding: 6px 12px;
+    font-size: 13px;
+    background-color: var(--mn-bg);
+    border: 1px solid var(--mn-border);
+    border-radius: 999px;
+    color: var(--mn-ink);
+  }
+
+  .hl-yiji-empty {
+    color: var(--mn-ink-muted);
+    font-style: italic;
+    padding: 6px 2px;
+  }
+
+  /* ---------- 神煞 ---------- */
+  .hl-shensha-section {
+    max-width: 960px;
+    margin: 0 auto var(--mn-space-8);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--mn-space-4);
+  }
+
+  .hl-shensha-card {
+    background-color: var(--mn-bg-elev);
+    border: 1px solid var(--mn-border);
+    border-radius: var(--mn-radius-md);
+    padding: var(--mn-space-4) var(--mn-space-5);
+  }
+
+  .hl-shensha-label {
+    font-size: 11px;
+    color: var(--mn-ink-muted);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: var(--mn-space-1);
+  }
+
+  .hl-shensha-content {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--mn-ink);
+  }
+
+  .hl-shensha-content--positive { color: #166534; }
+  .hl-shensha-content--negative { color: #991b1b; }
+
+  /* ---------- 事由 ---------- */
+  .hl-matter-section {
+    max-width: 960px;
+    margin: 0 auto var(--mn-space-8);
+  }
+
+  .hl-matter-section-head {
+    margin-bottom: var(--mn-space-5);
+  }
+
+  .hl-matter-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 var(--mn-space-2);
+    color: var(--mn-ink);
+  }
+
+  .hl-matter-sub {
+    font-size: 14px;
+    color: var(--mn-ink-soft);
+    margin: 0;
+  }
+
+  .hl-matter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--mn-space-3);
+  }
+
+  .hl-matter-card {
+    background-color: var(--mn-bg-elev);
+    border: 1px solid var(--mn-border);
+    border-radius: var(--mn-radius-md);
+    padding: var(--mn-space-4);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--mn-space-2);
+    color: inherit;
+    font-family: inherit;
+  }
+
+  .hl-matter-card:hover {
+    border-color: var(--mn-accent);
+    transform: translateY(-2px);
+    box-shadow: var(--mn-shadow-sm);
+  }
+
+  .hl-matter-card.is-active {
+    border-color: var(--mn-accent);
+    background-color: var(--mn-accent-soft);
+    box-shadow: var(--mn-shadow-sm);
+  }
+
+  .hl-matter-icon {
+    font-size: 24px;
+    color: var(--mn-accent);
+  }
+
+  .hl-matter-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--mn-ink);
+  }
+
+  .hl-matter-verdict {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 11px;
+    border-radius: 999px;
+    font-weight: 500;
+  }
+
+  .hl-matter-verdict--yi   { background-color: #dcfce7; color: #166534; }
+  .hl-matter-verdict--ji   { background-color: #fee2e2; color: #991b1b; }
+  .hl-matter-verdict--ping { background-color: #fef3c7; color: #854d0e; }
+
+  /* ---------- 月历 ---------- */
+  .hl-cal {
+    max-width: 720px;
+    margin: 0 auto var(--mn-space-10);
+    background-color: var(--mn-bg-elev);
+    border: 1px solid var(--mn-border);
+    border-radius: var(--mn-radius-lg);
+    padding: var(--mn-space-5);
+  }
+
+  .hl-cal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--mn-space-4);
+  }
+
+  .hl-cal-head .mn-btn { padding: 6px 12px; font-size: 13px; }
+
+  .hl-cal-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--mn-ink);
+  }
+
+  .hl-cal-filter {
+    margin: 0 0 var(--mn-space-4);
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--mn-accent-soft);
+    border: 1px solid var(--mn-border);
+    border-radius: var(--mn-radius-sm);
+    font-size: 13px;
+    color: var(--mn-ink);
+  }
+
+  .hl-cal-filter-clear {
+    background: transparent;
+    border: none;
+    color: var(--mn-accent);
+    cursor: pointer;
+    font-size: 12px;
+    font-family: inherit;
+  }
+
+  .hl-cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+
+  .hl-cal-wk {
+    text-align: center;
+    padding: var(--mn-space-2);
+    font-size: 11px;
+    color: var(--mn-ink-muted);
+    letter-spacing: 0.1em;
+    font-weight: 500;
+  }
+
+  .hl-cal-day {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.15s;
+    font-size: 13px;
+    position: relative;
+    background: transparent;
+    border: none;
+    color: inherit;
+    font-family: inherit;
+  }
+
+  .hl-cal-day:hover:not(.is-today):not(.is-off) {
+    background-color: var(--mn-accent-soft);
+  }
+
+  .hl-cal-day.is-off { opacity: 0.3; }
+
+  .hl-cal-day.is-today {
+    background-color: var(--mn-accent);
+    color: white;
+    font-weight: 600;
+  }
+
+  .hl-cal-day.is-match {
+    background-color: var(--mn-accent-soft);
+    box-shadow: inset 0 0 0 1.5px var(--mn-accent);
+  }
+
+  .hl-cal-day.is-today.is-match {
+    box-shadow: inset 0 0 0 1.5px #ffffff99;
+  }
+
+  .hl-cal-day.is-huangdao::before {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: #16a34a;
+  }
+
+  .hl-cal-day.is-heidao::before {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: #dc2626;
+  }
+
+  .hl-cal-day-num { font-weight: 500; }
+
+  .hl-cal-day-lunar {
+    font-size: 10px;
+    color: var(--mn-ink-muted);
+    margin-top: 2px;
+  }
+
+  .hl-cal-day.is-today .hl-cal-day-lunar { color: rgba(255, 255, 255, 0.85); }
+
+  .hl-cal-legend {
+    display: flex;
+    justify-content: center;
+    gap: var(--mn-space-5);
+    margin-top: var(--mn-space-4);
+    font-size: 12px;
+    color: var(--mn-ink-muted);
+  }
+
+  .hl-cal-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--mn-space-1);
+  }
+
+  .hl-cal-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  .hl-cal-dot--hd    { background-color: #16a34a; }
+  .hl-cal-dot--hei   { background-color: #dc2626; }
+  .hl-cal-dot--match { background-color: var(--mn-accent); }
+
+  /* ---------- 详情卡 ---------- */
+  .hl-detail-card {
+    max-width: 1000px;
+    margin: var(--mn-space-6) auto var(--mn-space-10);
+    padding: 0;
+    background-color: var(--mn-bg-elev);
+    border: 1px solid var(--mn-border);
+    border-radius: var(--mn-radius-lg);
+    box-shadow: var(--mn-shadow-sm);
+    overflow: hidden;
+  }
+
+  .hl-detail-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--mn-space-4) var(--mn-space-6);
+    background: var(--mn-accent-soft);
+    border-bottom: 1px solid var(--mn-border);
+  }
+
+  .hl-detail-date {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--mn-ink);
+  }
+
+  .hl-detail-lunar {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--mn-ink-soft);
+  }
+
+  .hl-detail-close {
+    font-size: 20px;
+    color: var(--mn-ink-muted);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+    font-family: inherit;
+  }
+
+  .hl-detail-close:hover {
+    background: var(--mn-bg);
+    color: var(--mn-ink);
+  }
+
+  .hl-detail-body {
+    padding: var(--mn-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--mn-space-4);
+  }
+
+  .hl-dd-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--mn-space-4);
+  }
+
+  .hl-dd-section {
+    padding: var(--mn-space-4);
+    background: var(--mn-bg);
+    border: 1px solid var(--mn-border);
+    border-radius: var(--mn-radius-md);
+  }
+
+  .hl-dd-section--yi {
+    border-color: #bbf7d0;
+    background: #f0fdf4;
+  }
+
+  .hl-dd-section--ji {
+    border-color: #fecaca;
+    background: #fef2f2;
+  }
+
+  .hl-dd-head {
+    font-size: 12px;
+    color: var(--mn-ink-muted);
+    letter-spacing: 0.15em;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+
+  .hl-dd-content {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--mn-ink);
+  }
+
+  .hl-dd-tag {
+    display: inline-block;
+    padding: 3px 10px;
+    margin: 2px 4px 2px 0;
+    font-size: 11px;
+    border-radius: 999px;
+    border: 1px solid var(--mn-border);
+    background: var(--mn-bg-elev);
+    color: var(--mn-ink-soft);
+  }
+
+  .hl-dd-tag--primary {
+    background: var(--mn-accent);
+    color: white;
+    border-color: var(--mn-accent);
+  }
+
+  .hl-dd-tag--good {
+    border-color: #bbf7d0;
+    color: var(--mn-success);
+    background: #f0fdf4;
+  }
+
+  .hl-dd-tag--warn {
+    border-color: #fecaca;
+    color: var(--mn-danger);
+    background: #fef2f2;
+  }
+
+  .hl-dd-tag--yi {
+    background: var(--mn-success);
+    color: white;
+    border-color: var(--mn-success);
+  }
+
+  .hl-dd-tag--ji {
+    background: var(--mn-danger);
+    color: white;
+    border-color: var(--mn-danger);
+  }
+
+  .hl-dd-line { display: block; }
+
+  .hl-dd-empty {
+    color: var(--mn-ink-muted);
+    font-style: italic;
+  }
+
+  .hl-dd-meaning {
+    color: var(--mn-ink-soft);
+  }
+
+  /* ---------- 响应式 ---------- */
+  @media (max-width: 768px) {
+    .hl-today-card {
+      grid-template-columns: 1fr;
+      gap: var(--mn-space-4);
+      text-align: center;
+      padding: var(--mn-space-6);
+    }
+    .hl-today-date {
+      padding-right: 0;
+      border-right: none;
+      border-bottom: 1px solid var(--mn-border);
+      padding-bottom: var(--mn-space-4);
+    }
+    .hl-today-info { align-items: center; }
+    .hl-info-line { grid-template-columns: 1fr; text-align: center; gap: var(--mn-space-1); }
+    .hl-yiji-section { grid-template-columns: 1fr; }
+    .hl-dd-row { grid-template-columns: 1fr; }
+  }
+}

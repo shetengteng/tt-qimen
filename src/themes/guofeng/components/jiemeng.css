@@ -1,0 +1,453 @@
+/* ============================================
+ * Guofeng Theme — Jiemeng (周公解梦)
+ *
+ * 对齐 design/prototypes/guofeng/jiemeng.html，金红古朴风格。
+ * 与 minimal 共享 class 名（jm-*），保证 Vue 组件可复用。
+ *
+ * 布局层次：
+ *   jm-input-card / jm-input-hint         复用 ds-input-card + 下方提示
+ *   jm-recent                             最近搜索 chip 行
+ *   jm-cat-section / jm-cat-grid          8 大分类网格
+ *   jm-results-zone / jm-results          查询 / 分类浏览结果
+ *   jm-entry / jm-entry-*                 单条词条卡
+ *   jm-detail / jm-detail-*               词条详情卡
+ *   jm-share-card                         分享卡包装盒
+ * ============================================ */
+
+/* ---------- 输入卡 ---------- */
+:root[data-theme='guofeng'] .jm-input-card {
+  max-width: 720px;
+}
+
+:root[data-theme='guofeng'] .jm-input-card .jm-input-row {
+  grid-template-columns: 2fr 1fr;
+}
+
+:root[data-theme='guofeng'] .jm-input-hint {
+  margin: var(--gf-space-md) 0 0;
+  text-align: center;
+  font-size: 12px;
+  color: var(--gf-ink-soft);
+  line-height: 1.7;
+}
+
+/* ---------- 最近搜索 ---------- */
+:root[data-theme='guofeng'] .jm-recent {
+  max-width: 720px;
+  margin: 0 auto var(--gf-space-lg);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 0 var(--gf-space-md);
+}
+
+:root[data-theme='guofeng'] .jm-recent-label {
+  font-size: 12px;
+  color: var(--gf-ink-soft);
+  letter-spacing: 0.2em;
+  margin-right: 4px;
+}
+
+:root[data-theme='guofeng'] .jm-recent-chip {
+  padding: 4px 12px;
+  font-size: 12px;
+  font-family: var(--gf-font-serif);
+  background: rgba(176, 141, 59, 0.08);
+  border: 1px solid rgba(176, 141, 59, 0.25);
+  border-radius: var(--gf-radius-sm);
+  color: var(--gf-ink-soft);
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+:root[data-theme='guofeng'] .jm-recent-chip:hover {
+  background: rgba(194, 58, 42, 0.1);
+  border-color: var(--gf-cinnabar);
+  color: var(--gf-cinnabar);
+}
+
+:root[data-theme='guofeng'] .jm-recent-chip.active {
+  background: var(--gf-cinnabar);
+  color: var(--gf-rice);
+  border-color: var(--gf-cinnabar);
+}
+
+:root[data-theme='guofeng'] .jm-recent-clear {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--gf-ink-soft);
+  text-decoration: none;
+  letter-spacing: 0.1em;
+}
+
+:root[data-theme='guofeng'] .jm-recent-clear:hover {
+  color: var(--gf-cinnabar);
+}
+
+/* ---------- 分类网格 ---------- */
+:root[data-theme='guofeng'] .jm-cat-section {
+  max-width: 960px;
+  margin: 0 auto var(--gf-space-xl);
+}
+
+:root[data-theme='guofeng'] .jm-cat-head {
+  text-align: center;
+  margin-bottom: var(--gf-space-lg);
+}
+
+:root[data-theme='guofeng'] .jm-cat-title {
+  font-family: var(--gf-font-serif);
+  font-size: 22px;
+  color: var(--gf-ink);
+  letter-spacing: 0.3em;
+  margin: var(--gf-space-lg) 0 var(--gf-space-sm);
+}
+
+:root[data-theme='guofeng'] .jm-cat-subtitle {
+  font-size: 13px;
+  color: var(--gf-ink-soft);
+  margin: 0;
+}
+
+:root[data-theme='guofeng'] .jm-cat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--gf-space-md);
+  margin-top: var(--gf-space-lg);
+}
+
+:root[data-theme='guofeng'] .jm-cat-card {
+  background-color: rgba(255, 251, 240, 0.8);
+  border: 1px solid rgba(176, 141, 59, 0.3);
+  border-radius: var(--gf-radius-md);
+  padding: var(--gf-space-md);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  color: var(--gf-ink);
+  font-family: inherit;
+}
+
+:root[data-theme='guofeng'] .jm-cat-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--gf-gold);
+  box-shadow: var(--gf-shadow-sm);
+}
+
+:root[data-theme='guofeng'] .jm-cat-card.active {
+  background: linear-gradient(135deg, rgba(249, 228, 212, 0.6), rgba(246, 236, 214, 0.6));
+  border-color: var(--gf-cinnabar);
+}
+
+:root[data-theme='guofeng'] .jm-cat-icon {
+  font-size: 40px;
+  margin-bottom: var(--gf-space-sm);
+  display: block;
+  color: var(--gf-gold);
+}
+
+:root[data-theme='guofeng'] .jm-cat-card.active .jm-cat-icon {
+  color: var(--gf-cinnabar);
+}
+
+:root[data-theme='guofeng'] .jm-cat-name {
+  font-size: 15px;
+  color: var(--gf-ink);
+  margin-bottom: 4px;
+  letter-spacing: 0.2em;
+}
+
+:root[data-theme='guofeng'] .jm-cat-count {
+  font-size: 12px;
+  color: var(--gf-ink-soft);
+}
+
+/* ---------- 结果区 ---------- */
+:root[data-theme='guofeng'] .jm-results-zone {
+  margin-top: var(--gf-space-xl);
+}
+
+:root[data-theme='guofeng'] .jm-results {
+  max-width: 840px;
+  margin: 0 auto var(--gf-space-xl);
+}
+
+:root[data-theme='guofeng'] .jm-results-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--gf-space-md);
+  padding-bottom: var(--gf-space-sm);
+  border-bottom: 1px solid rgba(176, 141, 59, 0.3);
+}
+
+:root[data-theme='guofeng'] .jm-results-title {
+  font-size: 18px;
+  color: var(--gf-ink);
+  font-family: var(--gf-font-serif);
+  letter-spacing: 0.05em;
+}
+
+:root[data-theme='guofeng'] .jm-results-title mark {
+  background-color: rgba(194, 58, 42, 0.12);
+  color: var(--gf-cinnabar);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+:root[data-theme='guofeng'] .jm-results-count {
+  font-size: 13px;
+  color: var(--gf-ink-soft);
+}
+
+:root[data-theme='guofeng'] .jm-entry-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gf-space-md);
+}
+
+:root[data-theme='guofeng'] .jm-entry {
+  background-color: rgba(255, 251, 240, 0.8);
+  border: 1px solid rgba(176, 141, 59, 0.2);
+  border-radius: var(--gf-radius-md);
+  padding: var(--gf-space-lg);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  font-family: inherit;
+  color: var(--gf-ink);
+}
+
+:root[data-theme='guofeng'] .jm-entry:hover {
+  border-color: var(--gf-gold);
+  box-shadow: var(--gf-shadow-sm);
+}
+
+:root[data-theme='guofeng'] .jm-entry-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--gf-space-sm);
+  margin-bottom: var(--gf-space-sm);
+}
+
+:root[data-theme='guofeng'] .jm-entry-title {
+  font-size: 18px;
+  color: var(--gf-ink);
+  font-family: var(--gf-font-serif);
+  letter-spacing: 0.05em;
+}
+
+:root[data-theme='guofeng'] .jm-entry-title mark {
+  background-color: rgba(194, 58, 42, 0.12);
+  color: var(--gf-cinnabar);
+  padding: 0 3px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+:root[data-theme='guofeng'] .jm-entry-category {
+  padding: 2px 10px;
+  font-size: 12px;
+  border-radius: 10px;
+  background-color: rgba(176, 141, 59, 0.15);
+  color: var(--gf-gold);
+  white-space: nowrap;
+}
+
+:root[data-theme='guofeng'] .jm-entry-summary {
+  font-size: 14px;
+  color: var(--gf-ink-soft);
+  line-height: 1.8;
+  margin: 0;
+}
+
+:root[data-theme='guofeng'] .jm-entry-tags {
+  display: flex;
+  gap: var(--gf-space-sm);
+  flex-wrap: wrap;
+  margin-top: var(--gf-space-sm);
+}
+
+:root[data-theme='guofeng'] .jm-entry-tag {
+  padding: 2px 10px;
+  font-size: 12px;
+  background-color: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(176, 141, 59, 0.25);
+  border-radius: 10px;
+  color: var(--gf-ink-soft);
+}
+
+:root[data-theme='guofeng'] .jm-entry-tag.tag-auspicious {
+  background-color: rgba(74, 109, 93, 0.12);
+  color: var(--gf-jade);
+  border-color: rgba(74, 109, 93, 0.3);
+}
+
+:root[data-theme='guofeng'] .jm-entry-tag.tag-cautious {
+  background-color: rgba(194, 58, 42, 0.08);
+  color: var(--gf-cinnabar);
+  border-color: rgba(194, 58, 42, 0.2);
+}
+
+:root[data-theme='guofeng'] .jm-entry-tag.tag-ambiguous {
+  background-color: rgba(176, 141, 59, 0.1);
+  color: var(--gf-gold);
+  border-color: rgba(176, 141, 59, 0.3);
+}
+
+/* ---------- 空态 ---------- */
+:root[data-theme='guofeng'] .jm-empty {
+  padding: var(--gf-space-xl) var(--gf-space-md);
+  text-align: center;
+  background-color: rgba(255, 251, 240, 0.6);
+  border: 1px dashed rgba(176, 141, 59, 0.3);
+  border-radius: var(--gf-radius-md);
+}
+
+:root[data-theme='guofeng'] .jm-empty-icon {
+  font-size: 36px;
+  color: var(--gf-gold);
+  margin-bottom: var(--gf-space-sm);
+}
+
+:root[data-theme='guofeng'] .jm-empty-title {
+  font-size: 16px;
+  color: var(--gf-ink);
+  font-family: var(--gf-font-serif);
+  letter-spacing: 0.1em;
+  margin: 0 0 var(--gf-space-sm);
+}
+
+:root[data-theme='guofeng'] .jm-empty-desc {
+  font-size: 13px;
+  color: var(--gf-ink-soft);
+  line-height: 1.8;
+  margin: 0;
+}
+
+/* ---------- 详情卡 ---------- */
+:root[data-theme='guofeng'] .jm-detail-divider {
+  margin: var(--gf-space-xl) auto var(--gf-space-md);
+}
+
+:root[data-theme='guofeng'] .jm-detail {
+  max-width: 720px;
+  margin: 0 auto var(--gf-space-xl);
+  background:
+    linear-gradient(180deg, rgba(255, 251, 240, 0.98), rgba(246, 236, 214, 0.95)),
+    repeating-linear-gradient(0deg, transparent, transparent 30px, rgba(176, 141, 59, 0.04) 30px, rgba(176, 141, 59, 0.04) 31px);
+  border: 1.5px solid var(--gf-cinnabar);
+  border-radius: var(--gf-radius-md);
+  padding: var(--gf-space-xl);
+  box-shadow: var(--gf-shadow-md);
+}
+
+:root[data-theme='guofeng'] .jm-detail-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--gf-space-md);
+  margin-bottom: var(--gf-space-md);
+  padding-bottom: var(--gf-space-sm);
+  border-bottom: 1px dashed rgba(194, 58, 42, 0.3);
+}
+
+:root[data-theme='guofeng'] .jm-detail-title {
+  font-family: var(--gf-font-serif);
+  font-size: 24px;
+  color: var(--gf-cinnabar);
+  margin: 0;
+  letter-spacing: 0.1em;
+}
+
+:root[data-theme='guofeng'] .jm-detail-category {
+  padding: 2px 10px;
+  font-size: 12px;
+  border-radius: 10px;
+  background-color: rgba(176, 141, 59, 0.15);
+  color: var(--gf-gold);
+  white-space: nowrap;
+}
+
+:root[data-theme='guofeng'] .jm-detail-section {
+  margin-bottom: var(--gf-space-lg);
+}
+
+:root[data-theme='guofeng'] .jm-detail-label {
+  font-size: 14px;
+  color: var(--gf-gold);
+  letter-spacing: 0.3em;
+  margin-bottom: var(--gf-space-sm);
+  font-family: var(--gf-font-serif);
+}
+
+:root[data-theme='guofeng'] .jm-detail-original {
+  font-family: var(--gf-font-serif);
+  font-size: 15px;
+  line-height: 2;
+  color: var(--gf-ink);
+  padding: var(--gf-space-md);
+  background-color: rgba(255, 255, 255, 0.5);
+  border-left: 3px solid var(--gf-gold);
+  border-radius: 0 var(--gf-radius-sm) var(--gf-radius-sm) 0;
+  font-style: italic;
+}
+
+:root[data-theme='guofeng'] .jm-detail-original small {
+  display: block;
+  font-style: normal;
+  font-size: 12px;
+  color: var(--gf-ink-muted);
+  margin-top: var(--gf-space-sm);
+}
+
+:root[data-theme='guofeng'] .jm-detail-modern p {
+  font-size: 15px;
+  line-height: 2;
+  color: var(--gf-ink);
+  margin: 0 0 var(--gf-space-sm);
+}
+
+:root[data-theme='guofeng'] .jm-detail-modern p.jm-detail-tip {
+  background-color: rgba(194, 58, 42, 0.06);
+  color: var(--gf-cinnabar);
+  border-left: 3px solid var(--gf-cinnabar);
+  border-radius: 0 var(--gf-radius-sm) var(--gf-radius-sm) 0;
+  padding: var(--gf-space-md);
+  margin-top: var(--gf-space-md);
+}
+
+:root[data-theme='guofeng'] .jm-detail-modern p.jm-detail-tip strong {
+  color: var(--gf-cinnabar-deep);
+  margin-right: 6px;
+}
+
+:root[data-theme='guofeng'] .jm-detail-warning {
+  margin-top: var(--gf-space-md);
+  padding: var(--gf-space-sm) var(--gf-space-md);
+  font-size: 13px;
+  color: var(--gf-ink-soft);
+  background: rgba(176, 141, 59, 0.08);
+  border-radius: var(--gf-radius-sm);
+  line-height: 1.7;
+}
+
+/* ---------- 分享卡包装 ---------- */
+:root[data-theme='guofeng'] .jm-share-card {
+  background: transparent;
+}
+
+/* ---------- Mobile ---------- */
+@media (max-width: 768px) {
+  :root[data-theme='guofeng'] .jm-input-card .jm-input-row { grid-template-columns: 1fr; }
+  :root[data-theme='guofeng'] .jm-cat-grid { grid-template-columns: repeat(3, 1fr); }
+  :root[data-theme='guofeng'] .jm-detail { padding: var(--gf-space-md); }
+}
+
+@media (max-width: 480px) {
+  :root[data-theme='guofeng'] .jm-cat-grid { grid-template-columns: repeat(2, 1fr); }
+  :root[data-theme='guofeng'] .jm-results-head { flex-direction: column; align-items: flex-start; gap: 6px; }
+}

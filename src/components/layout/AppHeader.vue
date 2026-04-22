@@ -71,10 +71,10 @@ function isActive(name: string): boolean {
         <a
           href="#/"
           class="mn-logo"
+          :aria-label="t('brand')"
           @click.prevent="router.push({ name: 'home' })"
         >
           <span class="mn-logo-mark">{{ t('brandMark') }}</span>
-          {{ t('brand') }}
         </a>
         <nav class="mn-nav">
           <a

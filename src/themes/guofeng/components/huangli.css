@@ -1,0 +1,670 @@
+/* ============================================================
+ * Guofeng Theme — Huangli (黄历择日)
+ *
+ * 作用域：:root[data-theme='guofeng'] ... 下的 .hl-*  类。
+ * 样式来源：design/prototypes/guofeng/huangli.html（逐块搬运 + 适配 Vue 组件类名）
+ * ============================================================ */
+
+:root[data-theme='guofeng'] {
+  /* ---------- 查询卡（按 ds-input-card 现有规范，无需扩展） ---------- */
+  .hl-query-card {
+    max-width: 720px;
+    margin: 0 auto var(--gf-space-xl);
+  }
+
+  /* ---------- 今日大卡 ---------- */
+  .hl-today-card {
+    max-width: 960px;
+    margin: 0 auto var(--gf-space-xl);
+    background:
+      linear-gradient(135deg, rgba(255, 251, 240, 0.95), rgba(246, 236, 214, 0.85)),
+      radial-gradient(circle at 20% 20%, rgba(194, 58, 42, 0.1), transparent 40%);
+    border: 1.5px solid var(--gf-gold);
+    border-radius: var(--gf-radius-md);
+    padding: var(--gf-space-xl);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--gf-space-xl);
+    align-items: center;
+    position: relative;
+    box-shadow: var(--gf-shadow-md);
+  }
+
+  .hl-today-date {
+    text-align: center;
+    padding-right: var(--gf-space-lg);
+    border-right: 1px solid rgba(176, 141, 59, 0.3);
+  }
+
+  .hl-today-weekday {
+    font-size: 13px;
+    color: var(--gf-ink-soft);
+    letter-spacing: 0.2em;
+    margin-bottom: var(--gf-space-sm);
+    font-family: var(--gf-font-kaiti);
+  }
+
+  .hl-today-day {
+    font-size: 88px;
+    color: var(--gf-cinnabar);
+    line-height: 1;
+    font-weight: 600;
+    font-family: var(--gf-font-serif);
+  }
+
+  .hl-today-full {
+    font-size: 14px;
+    color: var(--gf-ink-soft);
+    margin-top: var(--gf-space-sm);
+    font-family: var(--gf-font-en);
+  }
+
+  .hl-today-lunar {
+    font-size: 16px;
+    color: var(--gf-ink);
+    margin-top: 4px;
+    font-family: var(--gf-font-kaiti);
+  }
+
+  .hl-today-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gf-space-sm);
+  }
+
+  .hl-info-line {
+    display: flex;
+    gap: var(--gf-space-md);
+    align-items: center;
+    font-size: 14px;
+  }
+
+  .hl-info-label {
+    color: var(--gf-ink-soft);
+    min-width: 60px;
+    letter-spacing: 0.1em;
+    font-family: var(--gf-font-kaiti);
+  }
+
+  .hl-info-value {
+    color: var(--gf-ink);
+    font-weight: 500;
+  }
+
+  .hl-info-ganzhi {
+    font-size: 18px;
+    color: var(--gf-cinnabar);
+    letter-spacing: 0.1em;
+    font-weight: 500;
+    font-family: var(--gf-font-serif);
+  }
+
+  .hl-today-big {
+    text-align: center;
+  }
+
+  .hl-big-label {
+    font-size: 13px;
+    color: var(--gf-ink-soft);
+    margin-bottom: var(--gf-space-sm);
+    letter-spacing: 0.2em;
+    font-family: var(--gf-font-kaiti);
+  }
+
+  .hl-big-value {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--gf-cinnabar), var(--gf-cinnabar-deep));
+    color: var(--gf-rice);
+    font-size: 32px;
+    font-weight: 600;
+    box-shadow: 0 6px 20px rgba(194, 58, 42, 0.3);
+    font-family: var(--gf-font-serif);
+  }
+
+  .hl-today-big[data-ecliptic='黑道'] .hl-big-value {
+    background: radial-gradient(circle, #4a6d5d, #2f4d42);
+    box-shadow: 0 6px 20px rgba(74, 109, 93, 0.3);
+  }
+
+  /* ---------- 宜忌双卡 ---------- */
+  .hl-yiji-section {
+    max-width: 960px;
+    margin: 0 auto var(--gf-space-xl);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--gf-space-lg);
+  }
+
+  .hl-yiji-card {
+    background-color: rgba(255, 251, 240, 0.7);
+    border: 1px solid rgba(176, 141, 59, 0.3);
+    border-radius: var(--gf-radius-md);
+    padding: var(--gf-space-lg);
+  }
+
+  .hl-yiji-card--yi {
+    border-color: var(--gf-jade);
+    background: linear-gradient(135deg, rgba(74, 109, 93, 0.08), rgba(255, 251, 240, 0.9));
+  }
+
+  .hl-yiji-card--ji {
+    border-color: var(--gf-cinnabar);
+    background: linear-gradient(135deg, rgba(194, 58, 42, 0.08), rgba(255, 251, 240, 0.9));
+  }
+
+  .hl-yiji-header {
+    display: flex;
+    align-items: center;
+    gap: var(--gf-space-md);
+    margin-bottom: var(--gf-space-md);
+    padding-bottom: var(--gf-space-sm);
+    border-bottom: 1px dashed rgba(176, 141, 59, 0.3);
+  }
+
+  .hl-yiji-stamp {
+    width: 52px;
+    height: 52px;
+    line-height: 52px;
+    text-align: center;
+    font-size: 28px;
+    color: var(--gf-rice);
+    border-radius: 4px;
+    font-weight: 600;
+    font-family: var(--gf-font-serif);
+  }
+
+  .hl-yiji-stamp--yi { background-color: var(--gf-jade); }
+  .hl-yiji-stamp--ji { background-color: var(--gf-cinnabar); }
+
+  .hl-yiji-title {
+    font-size: 18px;
+    color: var(--gf-ink);
+    font-family: var(--gf-font-kaiti);
+  }
+
+  .hl-yiji-subtitle {
+    font-size: 12px;
+    color: var(--gf-ink-soft);
+    margin-top: 2px;
+  }
+
+  .hl-yiji-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gf-space-sm);
+  }
+
+  .hl-yiji-tag {
+    padding: 6px 12px;
+    font-size: 14px;
+    background-color: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(176, 141, 59, 0.2);
+    border-radius: var(--gf-radius-sm);
+    color: var(--gf-ink);
+  }
+
+  .hl-yiji-card--yi .hl-yiji-tag { border-color: rgba(74, 109, 93, 0.3); }
+  .hl-yiji-card--ji .hl-yiji-tag { border-color: rgba(194, 58, 42, 0.3); }
+
+  .hl-yiji-empty {
+    color: var(--gf-ink-muted);
+    padding: 6px 2px;
+    font-style: italic;
+  }
+
+  /* ---------- 神煞 ---------- */
+  .hl-shensha-section {
+    max-width: 960px;
+    margin: 0 auto var(--gf-space-xl);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--gf-space-md);
+  }
+
+  .hl-shensha-card {
+    background-color: rgba(255, 251, 240, 0.8);
+    border: 1px solid rgba(176, 141, 59, 0.3);
+    border-radius: var(--gf-radius-md);
+    padding: var(--gf-space-md) var(--gf-space-lg);
+  }
+
+  .hl-shensha-label {
+    font-size: 12px;
+    color: var(--gf-ink-soft);
+    margin-bottom: 4px;
+    letter-spacing: 0.2em;
+    font-family: var(--gf-font-kaiti);
+  }
+
+  .hl-shensha-content {
+    font-size: 15px;
+    color: var(--gf-ink);
+    line-height: 1.7;
+  }
+
+  .hl-shensha-content--positive { color: var(--gf-jade); }
+  .hl-shensha-content--negative { color: var(--gf-cinnabar); }
+
+  /* ---------- 事由网格 ---------- */
+  .hl-matter-section {
+    max-width: 960px;
+    margin: 0 auto var(--gf-space-xl);
+  }
+
+  .hl-matter-section-head {
+    text-align: center;
+    margin-bottom: var(--gf-space-md);
+  }
+
+  .hl-matter-title {
+    font-size: 18px;
+    color: var(--gf-ink);
+    margin: 0 0 var(--gf-space-xs);
+    font-family: var(--gf-font-kaiti);
+    letter-spacing: 0.12em;
+  }
+
+  .hl-matter-sub {
+    font-size: 13px;
+    color: var(--gf-ink-soft);
+    margin: 0;
+  }
+
+  .hl-matter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: var(--gf-space-md);
+    margin-top: var(--gf-space-lg);
+  }
+
+  .hl-matter-card {
+    background-color: rgba(255, 251, 240, 0.8);
+    border: 1px solid rgba(176, 141, 59, 0.3);
+    border-radius: var(--gf-radius-md);
+    padding: var(--gf-space-md);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gf-space-xs);
+    color: inherit;
+    font-family: inherit;
+  }
+
+  .hl-matter-card:hover {
+    border-color: var(--gf-gold);
+    transform: translateY(-2px);
+    box-shadow: var(--gf-shadow-sm);
+  }
+
+  .hl-matter-card.is-active {
+    border-color: var(--gf-cinnabar);
+    background: linear-gradient(135deg, rgba(194, 58, 42, 0.08), rgba(255, 251, 240, 0.9));
+    box-shadow: var(--gf-shadow-sm);
+  }
+
+  .hl-matter-icon {
+    font-size: 30px;
+    display: block;
+  }
+
+  .hl-matter-name {
+    font-size: 14px;
+    color: var(--gf-ink);
+    font-family: var(--gf-font-kaiti);
+    letter-spacing: 0.1em;
+  }
+
+  .hl-matter-verdict {
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 8px;
+    display: inline-block;
+    font-family: var(--gf-font-kaiti);
+  }
+
+  .hl-matter-verdict--yi {
+    background-color: rgba(74, 109, 93, 0.15);
+    color: var(--gf-jade);
+  }
+
+  .hl-matter-verdict--ji {
+    background-color: rgba(194, 58, 42, 0.15);
+    color: var(--gf-cinnabar);
+  }
+
+  .hl-matter-verdict--ping {
+    background-color: rgba(176, 141, 59, 0.15);
+    color: var(--gf-gold);
+  }
+
+  /* ---------- 月历 ---------- */
+  .hl-cal {
+    max-width: 720px;
+    margin: 0 auto var(--gf-space-xl);
+    background-color: rgba(255, 251, 240, 0.7);
+    border: 1px solid rgba(176, 141, 59, 0.3);
+    border-radius: var(--gf-radius-md);
+    padding: var(--gf-space-lg);
+  }
+
+  .hl-cal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--gf-space-md);
+  }
+
+  .hl-cal-head .gf-btn {
+    padding: 6px 14px;
+    font-size: 13px;
+  }
+
+  .hl-cal-title {
+    font-size: 18px;
+    color: var(--gf-ink);
+    font-family: var(--gf-font-serif);
+    letter-spacing: 0.1em;
+  }
+
+  .hl-cal-filter {
+    margin: 0 0 var(--gf-space-md);
+    padding: 6px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(194, 58, 42, 0.06);
+    border: 1px dashed rgba(194, 58, 42, 0.3);
+    border-radius: var(--gf-radius-sm);
+    font-size: 13px;
+    color: var(--gf-ink);
+  }
+
+  .hl-cal-filter-clear {
+    background: transparent;
+    border: none;
+    color: var(--gf-cinnabar);
+    cursor: pointer;
+    font-size: 12px;
+    font-family: inherit;
+  }
+
+  .hl-cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+
+  .hl-cal-wk {
+    text-align: center;
+    padding: 6px;
+    font-size: 12px;
+    color: var(--gf-ink-soft);
+    letter-spacing: 0.2em;
+    font-family: var(--gf-font-kaiti);
+  }
+
+  .hl-cal-day {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.15s;
+    background: transparent;
+    border: 1.5px solid transparent;
+    color: inherit;
+    font-family: inherit;
+  }
+
+  .hl-cal-day:hover {
+    background-color: rgba(176, 141, 59, 0.1);
+  }
+
+  .hl-cal-day.is-off {
+    opacity: 0.3;
+  }
+
+  .hl-cal-day.is-huangdao {
+    border-color: var(--gf-jade);
+  }
+
+  .hl-cal-day.is-heidao {
+    border-color: var(--gf-cinnabar);
+  }
+
+  .hl-cal-day.is-match {
+    background-color: rgba(176, 141, 59, 0.2);
+  }
+
+  .hl-cal-day.is-today {
+    background: radial-gradient(circle, var(--gf-cinnabar), var(--gf-cinnabar-deep));
+    color: var(--gf-rice);
+    border-color: var(--gf-cinnabar-deep);
+  }
+
+  .hl-cal-day-num {
+    font-size: 14px;
+    font-weight: 500;
+    font-family: var(--gf-font-serif);
+  }
+
+  .hl-cal-day-lunar {
+    font-size: 10px;
+    color: var(--gf-ink-soft);
+    margin-top: 2px;
+    font-family: var(--gf-font-kaiti);
+  }
+
+  .hl-cal-day.is-today .hl-cal-day-lunar { color: rgba(255, 255, 255, 0.85); }
+
+  .hl-cal-legend {
+    margin-top: var(--gf-space-md);
+    display: flex;
+    justify-content: center;
+    gap: var(--gf-space-md);
+    font-size: 12px;
+    color: var(--gf-ink-soft);
+  }
+
+  .hl-cal-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .hl-cal-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+  }
+
+  .hl-cal-dot--hd    { border: 1.5px solid var(--gf-jade); }
+  .hl-cal-dot--hei   { border: 1.5px solid var(--gf-cinnabar); }
+  .hl-cal-dot--match { background-color: rgba(176, 141, 59, 0.4); }
+
+  /* ---------- 详情卡 ---------- */
+  .hl-detail-card {
+    max-width: 980px;
+    margin: var(--gf-space-lg) auto var(--gf-space-xl);
+    padding: 0;
+    background: var(--gf-rice);
+    border: 1px solid rgba(176, 141, 59, 0.35);
+    border-radius: var(--gf-radius-md);
+    box-shadow: var(--gf-shadow-sm);
+    overflow: hidden;
+  }
+
+  .hl-detail-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--gf-space-md) var(--gf-space-lg);
+    background: linear-gradient(135deg, rgba(194, 58, 42, 0.08), rgba(176, 141, 59, 0.08));
+    border-bottom: 1px solid rgba(176, 141, 59, 0.3);
+  }
+
+  .hl-detail-date {
+    font-family: var(--gf-font-serif);
+    font-size: 18px;
+    color: var(--gf-ink);
+    letter-spacing: 0.1em;
+  }
+
+  .hl-detail-lunar {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--gf-ink-soft);
+    letter-spacing: 0.1em;
+  }
+
+  .hl-detail-close {
+    font-size: 22px;
+    color: var(--gf-ink-soft);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+    font-family: inherit;
+  }
+
+  .hl-detail-close:hover {
+    background: rgba(176, 141, 59, 0.15);
+    color: var(--gf-ink);
+  }
+
+  .hl-detail-body {
+    padding: var(--gf-space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--gf-space-md);
+  }
+
+  .hl-dd-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--gf-space-md);
+  }
+
+  .hl-dd-section {
+    padding: var(--gf-space-md);
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px dashed rgba(176, 141, 59, 0.25);
+    border-radius: var(--gf-radius-sm);
+  }
+
+  .hl-dd-section--yi {
+    border-color: rgba(74, 109, 93, 0.4);
+    background: rgba(74, 109, 93, 0.04);
+  }
+
+  .hl-dd-section--ji {
+    border-color: rgba(194, 58, 42, 0.4);
+    background: rgba(194, 58, 42, 0.04);
+  }
+
+  .hl-dd-head {
+    font-size: 13px;
+    color: var(--gf-ink-soft);
+    letter-spacing: 0.25em;
+    margin-bottom: 8px;
+    font-family: var(--gf-font-kaiti);
+  }
+
+  .hl-dd-content {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--gf-ink);
+  }
+
+  .hl-dd-tag {
+    display: inline-block;
+    padding: 2px 10px;
+    margin: 2px 4px 2px 0;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    border-radius: var(--gf-radius-sm);
+    border: 1px solid rgba(176, 141, 59, 0.3);
+    background: rgba(255, 251, 240, 0.5);
+    color: var(--gf-ink);
+  }
+
+  .hl-dd-tag--primary {
+    background: var(--gf-gold);
+    color: var(--gf-rice);
+    border-color: var(--gf-gold);
+  }
+
+  .hl-dd-tag--good {
+    border-color: rgba(74, 109, 93, 0.4);
+    color: var(--gf-jade);
+    background: rgba(74, 109, 93, 0.08);
+  }
+
+  .hl-dd-tag--warn {
+    border-color: rgba(194, 58, 42, 0.4);
+    color: var(--gf-cinnabar);
+    background: rgba(194, 58, 42, 0.08);
+  }
+
+  .hl-dd-tag--yi {
+    background: var(--gf-jade);
+    color: var(--gf-rice);
+    border-color: var(--gf-jade);
+  }
+
+  .hl-dd-tag--ji {
+    background: var(--gf-cinnabar);
+    color: var(--gf-rice);
+    border-color: var(--gf-cinnabar);
+  }
+
+  .hl-dd-line {
+    display: block;
+  }
+
+  .hl-dd-empty {
+    color: var(--gf-ink-muted);
+    font-style: italic;
+  }
+
+  .hl-dd-meaning {
+    color: var(--gf-ink-soft);
+    font-family: var(--gf-font-kaiti);
+  }
+
+  /* ---------- 响应式 ---------- */
+  @media (max-width: 768px) {
+    .hl-today-card {
+      grid-template-columns: 1fr;
+      gap: var(--gf-space-md);
+      text-align: center;
+      padding: var(--gf-space-lg);
+    }
+    .hl-today-date {
+      padding-right: 0;
+      border-right: none;
+      border-bottom: 1px solid rgba(176, 141, 59, 0.3);
+      padding-bottom: var(--gf-space-md);
+    }
+    .hl-today-info { align-items: center; }
+    .hl-info-line { justify-content: center; }
+    .hl-yiji-section { grid-template-columns: 1fr; }
+    .hl-dd-row { grid-template-columns: 1fr; }
+  }
+}

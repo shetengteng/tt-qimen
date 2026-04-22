@@ -372,7 +372,6 @@ export default {
     source: {
       prefix: '出处：',
       classicalLabel: '古籍原文',
-      nonClassical: '产品模板 · 非古籍',
       pending: '待审校',
     },
   },
@@ -823,13 +822,318 @@ export default {
   xingming: {
     title: '姓名学',
     subtitle: '五格剖象 · 三才配置',
+    pageTitle: '姓名学五格',
+    pageSubtitle: '康熙笔画 · 天人地外总 · 八十一数理',
+    breadcrumbHome: '首页',
+    breadcrumbCurrent: '姓名学五格',
+    inputCardTitle: '姓名输入',
+
+    field: {
+      surname: '姓氏',
+      givenName: '名字',
+      gender: '性别',
+      birthYear: '出生年',
+    },
+    placeholder: {
+      surname: '如：李',
+      givenName: '如：文轩',
+      birthYear: '如：1995（可选）',
+    },
+    gender: {
+      male: '男',
+      female: '女',
+    },
+
+    btn: {
+      calculate: '五格推演',
+      recalculate: '更换名字',
+      share: '生成分享卡片',
+      save: '保存结果',
+    },
+
+    resultBanner: {
+      title: '五格剖象结果',
+      subtitle: '天地人外总 · 81 数理 · 综合评分',
+    },
+
+    breakdown: {
+      title: '笔画拆解',
+      simplified: '简',
+      kangxi: '康熙',
+      kangxiWord: '康熙笔画',
+      hintPrefix: '姓名学以',
+      hintSuffix: '为准，部分繁简体笔画不同。',
+    },
+
+    grids: {
+      tian: '天格',
+      ren: '人格',
+      di: '地格',
+      wai: '外格',
+      zong: '总格',
+    },
+
+    levels: {
+      '大吉': '大吉',
+      '吉': '吉',
+      '中吉': '中吉',
+      '中平': '中平',
+      '凶': '凶',
+      '大凶': '大凶',
+    },
+
+    detail: {
+      strokesUnit: '画',
+    },
+
+    section: {
+      fivegrids: '五格推演',
+      overall: '综合评分',
+    },
+
+    overall: {
+      label: '综合评分',
+      badge: {
+        excellent: '优',
+        good: '良',
+        fair: '中',
+        poor: '差',
+      },
+    },
+
+    skeleton: {
+      title: '五格推演中 · · ·',
+      subtitle: '康熙笔画 · 天人地外总 · 81 数理',
+    },
+
+    computeError: {
+      title: '推演失败',
+      hint: '姓名输入有误，请检查后重试。',
+      retry: '重新推演',
+      rareChar: '未收录字：{char}（暂不支持生僻字）',
+    },
+
+    share: {
+      title: '我的姓名学五格 · TT 占卜',
+      text: '康熙笔画 · 天人地外总 · 81 数理 · 来自 TT 占卜的姓名学五格。',
+    },
+
+    disclaimer: '81 数理由熊崎健翁 1918 年整理，属文化参考，不等于人格。',
   },
   huangli: {
     title: '老黄历',
     subtitle: '宜忌吉时 · 节气物候',
+    pageTitle: '黄历择日',
+    pageSubtitle: '每日宜忌 · 吉神凶煞 · 九类事由',
+    breadcrumbHome: '首页',
+    breadcrumbCurrent: '黄历择日',
+
+    resultBanner: {
+      title: '黄历一日',
+      subtitle: '宜忌 · 神煞 · 九事 · 月历',
+    },
+
+    query: {
+      title: '查询日期',
+      fieldYear: '年',
+      fieldMonth: '月',
+      fieldDay: '日',
+      fieldMatter: '所求事项（可选）',
+      matterAll: '全部',
+      btnQuery: '查询',
+      btnQueryIcon: '◈',
+      btnToday: '今日',
+      btnTodayIcon: '↻',
+    },
+
+    todayCard: {
+      weekdayPrefix: '星 · 期 · ',
+      infoGanzhi: '干 支',
+      infoDuty: '值 日',
+      infoFetus: '胎 神',
+      infoChong: '冲 煞',
+      infoPengzu: '彭祖忌',
+      infoTerm: '节 气',
+      ecliptic: { yellow: '黄道', black: '黑道' },
+      dutySuffix: '日',
+      bigLabel: '建 · 除',
+      chongFmt: '冲{zodiac}（{ganzhi}）· 煞{direction}',
+      noFestival: '—',
+    },
+
+    yiji: {
+      yiTitle: '今 · 日 · 宜',
+      yiSubtitle: '推荐施行之事项',
+      jiTitle: '今 · 日 · 忌',
+      jiSubtitle: '宜避免之事项',
+      empty: '无',
+    },
+
+    shensha: {
+      gods: '吉 · 神',
+      fiends: '凶 · 神',
+      luckyHours: '吉 时',
+      directions: '喜神 · 财神',
+      directionsFmt: '喜神 {joy} · 财神 {wealth}',
+      empty: '—',
+    },
+
+    matters: {
+      sectionTitle: '九 事 速 查',
+      sectionHint: '点击事由，查看当日评判',
+      all: '全部',
+      names: {
+        jisi:    '祭祀',
+        qifu:    '祈福',
+        jiaqu:   '嫁娶',
+        chuxing: '出行',
+        qianyue: '签约',
+        kaishi:  '开市',
+        dongtu:  '动土',
+        ruzhai:  '入宅',
+        potu:    '破土',
+      },
+      verdict: {
+        yi: '宜',
+        ji: '忌',
+        ping: '平',
+      },
+    },
+
+    calendar: {
+      divider: '◆ 月 历 总 览 ◆',
+      title: '{year} 年 {month} 月',
+      prev: '上月',
+      next: '下月',
+      prevMonthFmt: '{month} 月',
+      nextMonthFmt: '{month} 月',
+      weekdays: ['日', '一', '二', '三', '四', '五', '六'],
+      legendHuangdao: '黄道日',
+      legendHeidao: '黑道日',
+      legendGood: '符合所选事由',
+      matterHintPrefix: '当前筛选：',
+      clearMatter: '清除筛选',
+    },
+
+    detail: {
+      title: '所选日 · 详情',
+      closeAria: '关闭',
+      duty: '十二建星',
+      dutyIntroFmt: '{duty}日',
+      gods: '吉神',
+      fiends: '凶神',
+      chongLabel: '冲煞',
+      pengzu: '彭祖忌',
+      fetus: '胎神',
+      luckyHours: '吉时',
+      directions: '方位',
+      directionsFmt: '喜神 {joy} · 财神 {wealth} · 福神 {fu}',
+      dateFmt: '{date} · 周{weekday}',
+      lunarFmt: '农历 {lunar} · {ecliptic}',
+      yi: '宜',
+      ji: '忌',
+      empty: '无',
+    },
+
+    btn: {
+      share: '生成分享卡片',
+      shareIcon: '◈',
+      save: '保存到本地',
+      saveIcon: '◐',
+      reset: '返回今日',
+      resetIcon: '↻',
+    },
+
+    computeError: {
+      title: '日期无效',
+      hint: '请检查年 / 月 / 日是否合法（支持范围：1901–2099）。',
+      retry: '返回今日',
+    },
+
+    share: {
+      title: '我的黄历一日 · TT 占卜',
+      text: '每日宜忌 · 吉神凶煞 · 九类事由 · 来自 TT 占卜。',
+    },
   },
   jiemeng: {
     title: '周公解梦',
     subtitle: '梦境寻踪 · 心象索解',
+    pageTitle: '周公解梦',
+    pageSubtitle: '两千词条古籍 · 模糊查询 · 现代建议',
+    breadcrumbHome: '首页',
+    breadcrumbCurrent: '周公解梦',
+
+    input: {
+      title: '输入所梦',
+      keywordLabel: '梦境关键词',
+      keywordPlaceholder: '梦见了什么？如：梦见蛇、掉牙、飞翔…',
+      categoryLabel: '梦境分类',
+      categoryAuto: '自动识别',
+      hint: '支持模糊查询 · 内置《周公解梦》公版词条 · 古籍与现代双解',
+    },
+
+    btn: {
+      search: '查询解梦',
+      searchIcon: '☌',
+      reset: '清空',
+      resetIcon: '◐',
+      share: '生成分享卡片',
+      shareIcon: '◈',
+      save: '保存到本地',
+      saveIcon: '◐',
+      another: '查其他梦境',
+      anotherIcon: '◑',
+    },
+
+    category: {
+      sectionTitle: '按 类 浏 览',
+      sectionSubtitle: '传统《周公解梦》分类索引，点击任一卡片过滤词条',
+      countFmt: '{n} 条',
+      animal: '动物',
+      people: '人物',
+      nature: '自然',
+      body: '身体',
+      life: '生活',
+      ghost: '神怪',
+      building: '建筑',
+      other: '其他',
+    },
+
+    recent: {
+      label: '近日所查',
+      clear: '清空',
+    },
+
+    result: {
+      searchHead: '"{q}" · 搜索结果',
+      categoryHead: '{name} · 分类浏览',
+      allHead: '全部词条',
+      countFmt: '共 {n} 条词条',
+    },
+
+    empty: {
+      title: '没有找到相关词条',
+      desc: '试试换个关键词，或点击上方的分类卡片浏览所有词条。',
+    },
+
+    detail: {
+      classical: '古籍原文',
+      classicalSource: '《周公解梦》公版古籍',
+      modern: '现代解读',
+      adviceLabel: '建议：',
+      warning: '⚠ 梦境解读因人而异，古籍仅供参考。若梦境频繁困扰现实生活，建议咨询专业心理咨询师。',
+    },
+
+    tag: {
+      auspicious: '吉兆',
+      cautious: '警示',
+      ambiguous: '多义',
+      neutral: '中性',
+    },
+
+    share: {
+      title: '我的解梦词条 · TT 占卜',
+      text: '古籍原文 · 现代解读 · 来自 TT 占卜的周公解梦。',
+    },
   },
 }
