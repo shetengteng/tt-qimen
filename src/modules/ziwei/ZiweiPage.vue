@@ -6,7 +6,9 @@ import { useThemeStore } from '@/stores/theme'
 import { BIRTH_STORE_KEY } from '@/composables/useBirthStore'
 import BirthForm from '@/modules/bazi/components/BirthForm.vue'
 import CollapsibleSection from '@/components/common/CollapsibleSection.vue'
+import ShareToast from '@/components/common/ShareToast.vue'
 import { useSkeletonReveal } from '@/composables/useSkeletonReveal'
+import { useShareCard } from '@/composables/useShareCard'
 import ZiweiMeta from './components/ZiweiMeta.vue'
 import SihuaLegend from './components/SihuaLegend.vue'
 import SanfangToggle from './components/SanfangToggle.vue'
@@ -61,6 +63,29 @@ function go(name: 'home') {
   router.push({ name })
 }
 
+/**
+ * 分享 / 保存命盘卡片：复用 useShareCard，截图根 div 由 shareCardEl 持有，
+ * 包裹整个 result-zone 内容（不含 actions）。
+ */
+const shareCardEl = ref<HTMLElement | null>(null)
+const { toastState, shareCard, saveCard } = useShareCard()
+function buildShareOpts() {
+  const b = ziweiStore.birth
+  const mm = String(b.month).padStart(2, '0')
+  const dd = String(b.day).padStart(2, '0')
+  return {
+    fileName: `ziwei-${b.year}-${mm}-${dd}-${b.gender}-${themeStore.id}`,
+    title: t('ziwei.share.title'),
+    text: t('ziwei.share.text'),
+  }
+}
+function onShare() {
+  shareCard(shareCardEl.value, buildShareOpts())
+}
+function onSave() {
+  saveCard(shareCardEl.value, buildShareOpts())
+}
+
 onMounted(() => {
   if (!ziweiStore.isDefault) {
     onPaipan()
@@ -105,6 +130,7 @@ watch(
     </div>
 
     <div :class="['result-zone', { revealed: skeleton.revealed.value }]">
+      <div ref="shareCardEl" class="ziwei-share-card">
       <div class="gf-container" style="padding-top: 0;">
         <CollapsibleSection :label="t('ziwei.collapse.sectionMeta')">
           <ZiweiMeta :chart="chart" />
@@ -131,11 +157,16 @@ watch(
           <DaxianGrid :chart="chart" />
         </CollapsibleSection>
       </div>
+      </div><!-- /ziwei-share-card -->
 
       <div class="action-bar">
-        <button class="gf-btn">{{ t('ziwei.btn.shareIcon') }} {{ t('ziwei.btn.share') }}</button>
-        <button class="gf-btn gf-btn-outline">{{ t('ziwei.btn.saveIcon') }} {{ t('ziwei.btn.save') }}</button>
-        <button class="gf-btn gf-btn-outline" @click="onRepaipan">
+        <button type="button" class="gf-btn" @click="onShare">
+          {{ t('ziwei.btn.shareIcon') }} {{ t('ziwei.btn.share') }}
+        </button>
+        <button type="button" class="gf-btn gf-btn-outline" @click="onSave">
+          {{ t('ziwei.btn.saveIcon') }} {{ t('ziwei.btn.save') }}
+        </button>
+        <button type="button" class="gf-btn gf-btn-outline" @click="onRepaipan">
           {{ t('ziwei.btn.repaipanIcon') }} {{ t('ziwei.btn.repaipan') }}
         </button>
       </div>
@@ -170,6 +201,7 @@ watch(
     </div>
 
     <div :class="['result-zone', { revealed: skeleton.revealed.value }]">
+      <div ref="shareCardEl" class="ziwei-share-card">
       <main class="mn-container" style="padding-top: 0;">
         <CollapsibleSection :label="t('ziwei.collapse.sectionMetaMn')">
           <ZiweiMeta :chart="chart" />
@@ -194,11 +226,12 @@ watch(
           <DaxianGrid :chart="chart" />
         </CollapsibleSection>
       </main>
+      </div><!-- /ziwei-share-card -->
 
       <div class="actions mn-container">
-        <button class="mn-btn">{{ t('ziwei.btn.share') }}</button>
-        <button class="mn-btn mn-btn-outline">{{ t('ziwei.btn.save') }}</button>
-        <button class="mn-btn mn-btn-ghost" @click="onRepaipan">{{ t('ziwei.btn.repaipan') }}</button>
+        <button type="button" class="mn-btn" @click="onShare">{{ t('ziwei.btn.share') }}</button>
+        <button type="button" class="mn-btn mn-btn-outline" @click="onSave">{{ t('ziwei.btn.save') }}</button>
+        <button type="button" class="mn-btn mn-btn-ghost" @click="onRepaipan">{{ t('ziwei.btn.repaipan') }}</button>
       </div>
     </div>
   </template>
@@ -214,4 +247,7 @@ watch(
       <div class="skeleton-dots"><span>·</span><span>·</span><span>·</span></div>
     </div>
   </div>
+
+  <!-- 分享 / 保存的反馈 toast（fixed 定位） -->
+  <ShareToast :state="toastState" />
 </template>

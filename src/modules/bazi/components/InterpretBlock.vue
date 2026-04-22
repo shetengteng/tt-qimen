@@ -4,11 +4,20 @@ import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
 import type { BaziChart } from '../types'
 import { getPatternLongInterpret } from '../data/patternLongInterpret'
+import InlineAnnotsBar, { type AnnotItem } from '@/components/common/InlineAnnotsBar.vue'
+import { useAnnotBar } from '@/composables/useAnnotBar'
 
 interface Props {
   chart?: BaziChart | null
 }
 const props = defineProps<Props>()
+
+defineExpose({
+  /** 暴露给父组件：actions slot 用，挂"展开/收起 注释"按钮 */
+  toggleAllAnnot: () => annotBar.toggleAll(),
+  isAnyAnnotOpen: () => annotBar.isAnyOpen.value,
+  closeAllAnnot: () => annotBar.closeAll(),
+})
 
 const { t, tm, locale } = useI18n()
 const themeStore = useThemeStore()
@@ -38,6 +47,43 @@ const expanded = ref(false)
 function toggleExpand() {
   expanded.value = !expanded.value
 }
+
+/**
+ * v3.1.1 注释交互：4 条格局 tag 的展开释义。
+ * 使用 i18n `bazi.interpret.tagAnnots[]` 提供 short/long；
+ * 与 `bazi.interpret.tags` / `tagsMn` 按数组下标一一对应。
+ *
+ * 设计上 tags 不会随 chart 变化（始终 4 条：身/格/用神/忌神），
+ * 因此这里直接按下标取注释；若 i18n 未配置则 short/long 留空，
+ * UI 会显示「待接入运行时数据」占位（行为与原型一致）。
+ */
+interface PatternAnnotMeta { focus: string; short?: string; long?: string }
+
+const tagAnnotMeta = computed<PatternAnnotMeta[]>(() => {
+  const raw = (tm('bazi.interpret.tagAnnots') as PatternAnnotMeta[]) ?? []
+  return Array.isArray(raw) ? raw : []
+})
+
+const annotItems = computed<AnnotItem[]>(() => {
+  const labels = isGuofeng.value ? tags.value : tagsMn.value
+  return labels.map((label, idx) => {
+    const meta = tagAnnotMeta.value[idx] ?? { focus: `tag-${idx}` }
+    return {
+      focus: meta.focus || `tag-${idx}`,
+      label,
+      short: meta.short,
+      long: meta.long,
+    }
+  })
+})
+
+const annotBar = useAnnotBar(annotItems)
+
+function onTagClick(focus: string) {
+  annotBar.toggleOne(focus)
+}
+
+const annotLabel = computed(() => t('bazi.collapse.annotLabel.pattern'))
 </script>
 
 <template>
@@ -63,8 +109,22 @@ function toggleExpand() {
     </div>
 
     <div class="interpret-tags">
-      <span v-for="tag in tags" :key="tag" class="interpret-tag">{{ tag }}</span>
+      <button
+        v-for="(tag, idx) in tags"
+        :key="annotItems[idx]?.focus ?? tag"
+        type="button"
+        class="interpret-tag annot-trigger"
+        :data-annot-focus="annotItems[idx]?.focus ?? tag"
+        :aria-expanded="annotBar.isOpen(annotItems[idx]?.focus ?? tag)"
+        @click="onTagClick(annotItems[idx]?.focus ?? tag)"
+      >{{ tag }}</button>
     </div>
+
+    <InlineAnnotsBar
+      layout="tag"
+      :items="annotBar.openItems.value"
+      :ariaLabelText="annotLabel"
+    />
   </div>
 
   <!-- 简约 -->
@@ -89,11 +149,41 @@ function toggleExpand() {
     </div>
 
     <div class="interpret-tags">
-      <span class="mn-badge">{{ tagsMn[0] }}</span>
-      <span class="mn-badge">{{ tagsMn[1] }}</span>
-      <span class="mn-badge mn-badge-success">{{ tagsMn[2] }}</span>
-      <span class="mn-badge mn-badge-danger">{{ tagsMn[3] }}</span>
+      <button
+        type="button"
+        class="mn-badge annot-trigger"
+        :data-annot-focus="annotItems[0]?.focus ?? 'tag-0'"
+        :aria-expanded="annotBar.isOpen(annotItems[0]?.focus ?? 'tag-0')"
+        @click="onTagClick(annotItems[0]?.focus ?? 'tag-0')"
+      >{{ tagsMn[0] }}</button>
+      <button
+        type="button"
+        class="mn-badge annot-trigger"
+        :data-annot-focus="annotItems[1]?.focus ?? 'tag-1'"
+        :aria-expanded="annotBar.isOpen(annotItems[1]?.focus ?? 'tag-1')"
+        @click="onTagClick(annotItems[1]?.focus ?? 'tag-1')"
+      >{{ tagsMn[1] }}</button>
+      <button
+        type="button"
+        class="mn-badge mn-badge-success annot-trigger"
+        :data-annot-focus="annotItems[2]?.focus ?? 'tag-2'"
+        :aria-expanded="annotBar.isOpen(annotItems[2]?.focus ?? 'tag-2')"
+        @click="onTagClick(annotItems[2]?.focus ?? 'tag-2')"
+      >{{ tagsMn[2] }}</button>
+      <button
+        type="button"
+        class="mn-badge mn-badge-danger annot-trigger"
+        :data-annot-focus="annotItems[3]?.focus ?? 'tag-3'"
+        :aria-expanded="annotBar.isOpen(annotItems[3]?.focus ?? 'tag-3')"
+        @click="onTagClick(annotItems[3]?.focus ?? 'tag-3')"
+      >{{ tagsMn[3] }}</button>
     </div>
+
+    <InlineAnnotsBar
+      layout="tag"
+      :items="annotBar.openItems.value"
+      :ariaLabelText="annotLabel"
+    />
   </div>
 </template>
 

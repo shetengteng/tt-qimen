@@ -4,8 +4,14 @@
  * 拆分原因：原型把「大运」和「流年」做成两个独立的可折叠区块，
  * Vue 端要在 BaziPage 里用同一个 CollapsibleSection 包两次，
  * 必须把流年逻辑独立成组件，否则两个 section 会一起折叠。
+ *
+ * v3.1.1：「查看更多年份」交互
+ *   - 默认显示前 INITIAL_VISIBLE 年（5 年）
+ *   - 点击「查看更多年份 →」按钮一次，扩展 STEP 年（5 年）
+ *   - 已显示全部年份时按钮自动隐藏；mock 4 年场景下也直接隐藏
+ *   - 容器高度变化通过 toggle-expand emit 通知父级 BaziPage 调 syncHeight
  */
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
 import { flowYears as fallbackFlow, type FlowYearCell } from '../data/mockBazi'
@@ -15,6 +21,14 @@ interface Props {
   chart?: BaziChart | null
 }
 const props = defineProps<Props>()
+
+const emit = defineEmits<{
+  /** 「查看更多年份」点击后触发（带新的 visibleCount），父级用于 syncHeight */
+  'toggle-expand': [visibleCount: number]
+}>()
+
+const INITIAL_VISIBLE = 5
+const STEP = 5
 
 const { t, locale } = useI18n()
 const themeStore = useThemeStore()
@@ -30,7 +44,7 @@ interface FlowYearVm {
   current?: boolean
 }
 
-const flowYears = computed<FlowYearVm[]>(() => {
+const allFlowYears = computed<FlowYearVm[]>(() => {
   if (!props.chart) {
     return fallbackFlow.map<FlowYearVm>(fy => ({
       year: fy.year,
@@ -50,6 +64,27 @@ const flowYears = computed<FlowYearVm[]>(() => {
     current: fy.current,
   }))
 })
+
+/** 当前可见年份数 —— 由「查看更多年份」按钮逐步扩展 */
+const visibleCount = ref(INITIAL_VISIBLE)
+
+/** 切换 chart 或 mock 时重置 visibleCount，避免上一次展开状态残留 */
+watch(
+  () => allFlowYears.value.length,
+  () => { visibleCount.value = INITIAL_VISIBLE },
+)
+
+const flowYears = computed<FlowYearVm[]>(() =>
+  allFlowYears.value.slice(0, visibleCount.value),
+)
+const showMoreBtn = computed(() => visibleCount.value < allFlowYears.value.length)
+function onShowMore() {
+  visibleCount.value = Math.min(
+    visibleCount.value + STEP,
+    allFlowYears.value.length,
+  )
+  emit('toggle-expand', visibleCount.value)
+}
 
 const flowHint = (idx: number) => {
   if (props.chart) return flowYears.value[idx].hint
@@ -109,8 +144,10 @@ const flowTagsMn = (idx: number): FlowTagMn[] => {
       </div>
     </div>
 
-    <div style="text-align: center; margin-top: var(--gf-space-lg);">
-      <button class="gf-btn gf-btn-outline">{{ t('bazi.btn.moreYears') }}</button>
+    <div v-if="showMoreBtn" style="text-align: center; margin-top: var(--gf-space-lg);">
+      <button type="button" class="gf-btn gf-btn-outline" @click="onShowMore">
+        {{ t('bazi.btn.moreYears') }}
+      </button>
     </div>
   </section>
 
@@ -149,8 +186,10 @@ const flowTagsMn = (idx: number): FlowTagMn[] => {
       </div>
     </div>
 
-    <div style="text-align: center; margin-top: var(--mn-space-6);">
-      <button class="mn-btn mn-btn-outline">{{ t('bazi.btn.moreYears') }}</button>
+    <div v-if="showMoreBtn" style="text-align: center; margin-top: var(--mn-space-6);">
+      <button type="button" class="mn-btn mn-btn-outline" @click="onShowMore">
+        {{ t('bazi.btn.moreYears') }}
+      </button>
     </div>
   </section>
 </template>

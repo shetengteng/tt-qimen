@@ -19,6 +19,7 @@
     "chinese-conv": "^4.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "html2canvas": "^1.4.1",
     "iztro": "^2.5.8",
     "lucide-vue-next": "^1.0.0",
     "lunisolar": "^2.6.0",

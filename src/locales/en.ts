@@ -171,6 +171,7 @@ export default {
       saveIcon: '◐',
       moreYears: 'More years →',
       shishenDetail: 'Detailed Ten Gods reading ▾',
+      shishenDetailCollapse: 'Collapse detailed reading ▴',
     },
 
     resultBanner: {
@@ -182,6 +183,12 @@ export default {
     skeleton: {
       title: 'Calculating',
       subtitle: 'Selecting useful god, mapping major fortunes, threading annual fortunes',
+    },
+
+    computeError: {
+      title: 'Chart unavailable',
+      hint: 'We could not compute a chart from this birth time. Please review the inputs and try again.',
+      retry: 'Recompute',
     },
 
     chartTitle: 'Chart · Male nativity',
@@ -206,6 +213,12 @@ export default {
       sectionTitle: 'Ten Gods Structure',
       sectionTag: 'Officer-Seal · Wealth-Officer pattern',
       moreShown: 'View detailed Ten Gods reading',
+      longField: {
+        trait: 'Personality',
+        suit: 'Best suited for',
+        caution: 'Watch out for',
+        relation: 'Relation to Day Master',
+      },
       items: [
         {
           pillar: 'Year stem',
@@ -253,6 +266,28 @@ export default {
       p2: 'Pattern-wise, Indirect Resource (Jia) supports the Day Master, lending quick wit; double Wealth stems (Geng, Xin) suggest career thrives with allies. Zi Water as the Officer favors job-hunting and promotions.',
       tags: ['Body · Strong', 'Pattern · Wealth-Officer', 'Useful · Water + Wood', 'Avoid · Fire + Earth'],
       tagsMn: ['Strong body', 'Wealth-Officer', 'Useful · Water + Wood', 'Avoid · Fire + Earth'],
+      tagAnnots: [
+        {
+          focus: 'tag-shen',
+          short: 'Strong body: the day master is well-rooted and can carry Wealth and Officer.',
+          long: 'Bing Fire is born in the Si month at the height of Fire and is further supported by Fire and Earth in the year and hour. A strong body benefits from Wealth, Officer, and Output cycles to release surplus, and avoids more Resource or Companion supports.',
+        },
+        {
+          focus: 'tag-pattern',
+          short: 'Wealth–Officer: Geng/Xin Metal as Wealth and Zi Water as Officer reinforce each other.',
+          long: 'Geng and Xin Metal stems serve as Wealth, while Zi Water in the day branch is the Officer. Wealth nourishes the Officer and the Officer protects Wealth — a stable career structure that suits resourceful mid-management roles or partnerships with senior allies.',
+        },
+        {
+          focus: 'tag-yongshen',
+          short: 'Useful · Water + Wood: water moistens fire, wood drains earth.',
+          long: 'Fire and Earth are excessive in this chart, so Water (control) and Wood (consumption) are wanted. When the major or annual cycles bring Ren/Gui or Hai/Zi (Water), or Jia/Yi or Yin/Mao (Wood), affairs flow more easily across career, relationships, and health.',
+        },
+        {
+          focus: 'tag-jishen',
+          short: 'Avoid · Fire + Earth: more fire/earth makes the body too heavy to balance.',
+          long: 'The chart is already Fire/Earth heavy. More Bing/Ding or Si/Wu (Fire), or Wu/Ji or Chen/Xu/Chou/Wei (Earth) cycles can make energy spike — visible as quick temper, aggressive judgment, and interpersonal friction. During those years, lean toward Water/Wood themed work, environments, and people.',
+        },
+      ],
     },
 
     shensha: {
@@ -276,15 +311,20 @@ export default {
       genderBadgeMale: 'Male nativity · Forward',
       genderBadgeFemale: 'Female nativity · Reverse',
       genderBadgeHint: 'This section is gender-aware (the four pillars / five elements / ten gods are not)',
-      currentDetailTitle: 'Current major fortune · Ages 35–44',
-      currentDetailTitleMn: 'Current fortune · Resource-Wealth synergy',
-      currentDetailSubtitle: 'Yi Wood as Direct Resource, You Metal as Direct Wealth · Resource–Wealth synergy · Auspicious',
-      currentDetailSubtitleMn: 'Yi Wood = Direct Resource · You Metal = Direct Wealth · Auspicious',
-      currentDetailHint: 'This decade walks Direct Resource paired with Direct Wealth — Resource brings learning, integrity and reputation; Wealth brings income, pragmatism and harvest. Resource favors further study, role transition and certification; Wealth signals deep cultivation in your field. Overall, this is a phase of "long-term investment, steady returns".',
+      currentDetailTitle: 'Current major fortune · Ages {age}',
+      currentDetailTitleMn: 'Current fortune · {tenGod}',
+      currentDetailSubtitleMn: '{ganzhi} · {tenGod} · {verdict}',
       yi: 'Do',
-      yiContent: 'Study, certify, follow mentors, handle documents, moderate property or long-term investments',
       ji: 'Avoid',
+      /** @deprecated Sample copy from the 1990-05-20 male prototype; now generated dynamically from chart. Key kept for backward compatibility, no longer rendered. */
+      currentDetailSubtitle: 'Yi Wood as Direct Resource, You Metal as Direct Wealth · Resource–Wealth synergy · Auspicious',
+      /** @deprecated Same as above; superseded by chart.decades[*].hint. */
+      currentDetailHint: 'This decade walks Direct Resource paired with Direct Wealth — Resource brings learning, integrity and reputation; Wealth brings income, pragmatism and harvest. Resource favors further study, role transition and certification; Wealth signals deep cultivation in your field. Overall, this is a phase of "long-term investment, steady returns".',
+      /** @deprecated Same as above; no trustworthy source to dynamically generate yi/ji behavior list, removed from UI. */
+      yiContent: 'Study, certify, follow mentors, handle documents, moderate property or long-term investments',
+      /** @deprecated Same as above. */
       jiContent: 'Frequent job-hopping, speculation, conflict with female elders, overspending',
+      /** @deprecated Same as above; verdict badge now derived from chart.decades[*].tendency. */
       currentBadge: 'Auspicious',
       verdictJi: 'Lucky',
       verdictZhong: 'Mid',
@@ -312,6 +352,18 @@ export default {
       sectionShenshaMn: 'Spiritual Stars',
       sectionFortuneMn: 'Major Fortune',
       sectionFlowMn: 'Annual Fortune',
+      annotExpand: 'Expand notes',
+      annotCollapse: 'Collapse notes',
+      annotLabel: {
+        nayin: 'Nayin notes',
+        pattern: 'Pattern notes',
+        shensha: 'Spiritual-star notes',
+      },
+    },
+
+    share: {
+      title: 'My Bazi Chart · TT Divination',
+      text: 'Four pillars · Five elements · Ten gods · Fortune cycles. Brought to you by TT Divination.',
     },
   },
   ziwei: { title: 'Ziwei Dou Shu', subtitle: 'Twelve Palaces · Triple harmony & opposition' },

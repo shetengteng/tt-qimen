@@ -5,6 +5,7 @@ import { useThemeStore } from '@/stores/theme'
 import type { BaziArc } from '../composables/useBaziDrawings'
 import { getNayinMeaning } from '../data/nayin'
 import type { PillarCell } from '../data/mockBazi'
+import type { AnnotItem } from '@/components/common/InlineAnnotsBar.vue'
 
 interface PillarHeader {
   key: 'year' | 'month' | 'day' | 'hour'
@@ -21,13 +22,16 @@ interface Props {
   arcs: BaziArc[]
   /** 可选：四柱表头副标题（来自真实生辰）；未传则回退到固定示例 1990/5/20/午时 */
   headerSubs?: PillarHeader[]
+  /** v3.1.1 注释交互：Nayin 锚点已展开的 focus key 集合（由父组件托管） */
+  openNayinKeys?: ReadonlySet<string>
 }
 
 const props = defineProps<Props>()
-defineExpose<{ tableRef: () => HTMLElement | null; svgRef: () => SVGElement | null }>({
-  tableRef: () => tableEl.value,
-  svgRef: () => svgEl.value,
-})
+
+const emit = defineEmits<{
+  /** v3.1.1 注释交互：点击 Nayin 锚点 → 父组件切换该项展开 */
+  'toggle-nayin': [focus: string]
+}>()
 
 const { t, tm, locale } = useI18n()
 const themeStore = useThemeStore()
@@ -62,6 +66,45 @@ const headers = computed(() => {
     { key: 'hour', label: pillarsLabels.value.hour, sub: subMap.hour, dayMaster: false },
   ]
 })
+
+/**
+ * v3.1.1 注释交互：4 柱 Nayin 全部可展开项。
+ * 与原型 design/prototypes/{guofeng,minimal}/bazi.html 中
+ * `data-annot-{focus,label,short,long}` 一一对应：
+ *   focus = 纳音名（如 "路旁土"，与 NAYIN_MEANING key 对齐）
+ *   label = "<柱位> · <纳音名>"
+ *   short = NayinMeaning.short
+ *   long  = NayinMeaning.long
+ *
+ * 英文 locale 下 NAYIN_MEANING 暂未配套，items 仍生成（label 仅纳音名），
+ * 但 short/long 会缺失，UI 会显示「待接入运行时数据」占位——等同原型行为。
+ */
+const nayinAnnotItems = computed<AnnotItem[]>(() => {
+  return props.pillars.map((p, idx) => {
+    const headerLabel = headers.value[idx]?.label ?? ''
+    const meaning = getNayinMeaning(p.nayin)
+    return {
+      focus: p.nayin,
+      label: headerLabel ? `${headerLabel} · ${p.nayin}` : p.nayin,
+      short: meaning?.short,
+      long: meaning?.long,
+    }
+  })
+})
+
+defineExpose({
+  tableRef: () => tableEl.value,
+  svgRef: () => svgEl.value,
+  /** 暴露给父组件：用于在 .bazi-table 之后渲染 InlineAnnotsBar */
+  nayinAnnotItems: () => nayinAnnotItems.value,
+})
+
+function isNayinOpen(focus: string): boolean {
+  return !!props.openNayinKeys?.has(focus)
+}
+function onNayinClick(focus: string) {
+  emit('toggle-nayin', focus)
+}
 
 function highlight(rel: string | null) {
   if (!tableEl.value) return
@@ -158,10 +201,14 @@ function nayinTooltip(nayin: string): string {
           :key="`ny-${idx}`"
           :class="['bazi-cell', { day: idx === 2 }]"
         >
-          <div
-            class="bazi-cell-nayin"
+          <button
+            type="button"
+            class="bazi-cell-nayin annot-trigger"
             :title="nayinTooltip(p.nayin)"
-          >{{ p.nayin }}</div>
+            :data-annot-focus="p.nayin"
+            :aria-expanded="isNayinOpen(p.nayin)"
+            @click="onNayinClick(p.nayin)"
+          >{{ p.nayin }}</button>
         </div>
       </div>
       <svg ref="svgEl" class="bazi-relations-svg" preserveAspectRatio="none" />
@@ -185,9 +232,10 @@ function nayinTooltip(nayin: string): string {
       <div>
         <h2 style="margin: 0; font-size: 22px;">{{ chartTitle }}</h2>
       </div>
-      <div class="chart-meta">
-        <div>{{ metaLabels.solar }} <strong>{{ meta.solar }}</strong></div>
-        <div>{{ metaLabels.lunar }} <strong>{{ meta.lunar }}</strong></div>
+      <div class="chart-meta is-inline">
+        <span>{{ metaLabels.solar }} <strong>{{ meta.solar }}</strong></span>
+        <span class="chart-meta-sep" aria-hidden="true">·</span>
+        <span>{{ metaLabels.lunar }} <strong>{{ meta.lunar }}</strong></span>
       </div>
     </div>
 
@@ -251,10 +299,14 @@ function nayinTooltip(nayin: string): string {
           :key="`ny-${idx}`"
           :class="['bazi-cell', { day: idx === 2 }]"
         >
-          <div
-            class="bazi-cell-nayin"
+          <button
+            type="button"
+            class="bazi-cell-nayin annot-trigger"
             :title="nayinTooltip(p.nayin)"
-          >{{ p.nayin }}</div>
+            :data-annot-focus="p.nayin"
+            :aria-expanded="isNayinOpen(p.nayin)"
+            @click="onNayinClick(p.nayin)"
+          >{{ p.nayin }}</button>
         </div>
       </div>
       <svg ref="svgEl" class="bazi-relations-svg" />

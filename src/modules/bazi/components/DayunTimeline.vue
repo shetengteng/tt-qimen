@@ -63,22 +63,41 @@ const currentDecade = computed(() => {
   return idx >= 0 ? props.chart.decades[idx] : props.chart.decades[0]
 })
 
-/** 当前详情 ganzhi + range 文案（无 chart 时回退原型示例 "乙酉 / 35-44 / 2025-2034"） */
-const currentDetail = computed(() => {
-  if (!currentDecade.value) {
-    return {
-      ganzhi: '乙酉',
-      ageRange: '35 - 44',
-      yearRange: '2025 - 2034',
-      hint: flowFortune.value.currentDetailHint,
-    }
-  }
+/**
+ * 当前大运详情卡的视图模型。
+ *
+ * 当 chart 不存在时，由 `BaziPage.vue` 顶层 `showComputeError` 拦截，
+ * 本组件根本不会被渲染。所以这里仅在 chart 存在时返回有效对象，
+ * 不再回退到 `bazi.fortune.currentDetailHint / yiContent / jiContent /
+ * currentDetailSubtitleMn` 等 1990-05-20 男的硬编码示例文案。
+ *
+ * 见 `design/bazi/2026-04-21-03-八字文案校验报告.md` § 7（"主路径硬编码"修复）。
+ */
+interface CurrentDetailVm {
+  ganzhi: string
+  ageRange: string
+  yearRange: string
+  /** 当前大运一句话提示（来自 chart.decades[*].hint，C 类规则化模板生成） */
+  hint: string
+  /** 大运十神简称（如 "正印 · 正财"），用于副标题 */
+  tenGod: string
+  /** badge css class（ji/zhong/xiong），决定颜色 */
+  badgeClass: 'ji' | 'zhong' | 'xiong'
+  /** badge 文字（吉/中/凶） */
+  badge: string
+}
+const currentDetail = computed<CurrentDetailVm | null>(() => {
+  if (!currentDecade.value) return null
   const cd = currentDecade.value
+  const cls = tendencyClass(cd.tendency)
   return {
     ganzhi: cd.ganzhi,
     ageRange: `${cd.startAge} - ${cd.endAge}`,
     yearRange: `${cd.startYear} - ${cd.endYear}`,
     hint: cd.hint,
+    tenGod: cd.tenGod,
+    badgeClass: cls,
+    badge: verdictLabel(cls),
   }
 })
 </script>
@@ -112,26 +131,18 @@ const currentDetail = computed(() => {
       </div>
     </div>
 
-    <div class="current-fortune-detail">
+    <div v-if="currentDetail" class="current-fortune-detail">
       <div class="detail-header">
         <div class="detail-ganzhi">{{ currentDetail.ganzhi }}</div>
         <div class="detail-meta">
-          <div class="detail-title">{{ flowFortune.currentDetailTitle }}</div>
+          <div class="detail-title">
+            {{ t('bazi.fortune.currentDetailTitle', { age: currentDetail.ageRange }) }}
+          </div>
           <div class="detail-subtitle">{{ currentDetail.ageRange }} {{ '岁' }} · {{ currentDetail.yearRange }}</div>
         </div>
-        <div class="decade-label ji">{{ flowFortune.currentBadge }}</div>
+        <div :class="['decade-label', currentDetail.badgeClass]">{{ currentDetail.badge }}</div>
       </div>
       <p class="detail-hint">{{ currentDetail.hint }}</p>
-      <div class="hint-list">
-        <div class="hint-item">
-          <span class="hint-label">{{ flowFortune.yi }}</span>
-          <span class="hint-content">{{ flowFortune.yiContent }}</span>
-        </div>
-        <div class="hint-item">
-          <span class="hint-label avoid">{{ flowFortune.ji }}</span>
-          <span class="hint-content">{{ flowFortune.jiContent }}</span>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -163,25 +174,21 @@ const currentDetail = computed(() => {
       </div>
     </div>
 
-    <div class="current-detail">
+    <div v-if="currentDetail" class="current-detail">
       <div class="detail-lead">
         <div class="detail-lead-gz">{{ currentDetail.ganzhi }}</div>
         <div class="detail-lead-range">{{ currentDetail.ageRange }} {{ '岁' }}<br>{{ currentDetail.yearRange }}</div>
       </div>
       <div class="detail-body">
-        <h3>{{ flowFortune.currentDetailTitleMn }}</h3>
-        <p class="sub">{{ flowFortune.currentDetailSubtitleMn }}</p>
+        <h3>{{ t('bazi.fortune.currentDetailTitleMn', { tenGod: currentDetail.tenGod }) }}</h3>
+        <p class="sub">
+          {{ t('bazi.fortune.currentDetailSubtitleMn', {
+            ganzhi: currentDetail.ganzhi,
+            tenGod: currentDetail.tenGod,
+            verdict: currentDetail.badge,
+          }) }}
+        </p>
         <p>{{ currentDetail.hint }}</p>
-        <div class="detail-hints">
-          <div class="hint yi">
-            <strong>◎ {{ flowFortune.yi }}</strong>
-            {{ flowFortune.yiContent }}
-          </div>
-          <div class="hint ji">
-            <strong>✕ {{ flowFortune.ji }}</strong>
-            {{ flowFortune.jiContent }}
-          </div>
-        </div>
       </div>
     </div>
   </section>

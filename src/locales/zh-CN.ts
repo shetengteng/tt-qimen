@@ -171,6 +171,7 @@ export default {
       saveIcon: '◐',
       moreYears: '查看更多年份 →',
       shishenDetail: '查看详细十神解读 ▾',
+      shishenDetailCollapse: '收起详细十神解读 ▴',
     },
 
     resultBanner: { title: '排盘结果', subtitle: '四柱 · 五行 · 十神 · 大运 · 流年' },
@@ -179,6 +180,12 @@ export default {
     skeleton: {
       title: '推演中',
       subtitle: '取用神、配大运、系流年',
+    },
+
+    computeError: {
+      title: '排盘未完成',
+      hint: '当前生辰无法生成命盘，请检查生辰输入后重新排盘。',
+      retry: '重新排盘',
     },
 
     chartTitle: '排盘 · 乾造',
@@ -203,6 +210,12 @@ export default {
       sectionTitle: '十神结构',
       sectionTag: '官印 · 财官格',
       moreShown: '查看详细十神解读',
+      longField: {
+        trait: '性格特质',
+        suit: '适宜方向',
+        caution: '行运警示',
+        relation: '与日主关系',
+      },
       items: [
         {
           pillar: '年干',
@@ -250,6 +263,33 @@ export default {
       p2: '格局上偏印（甲）配日主，文思敏捷；财星双透（庚辛），事业上宜与贵人合作。子水为官星，利于求职、升迁之事。',
       tags: ['身 · 强', '格 · 财官相济', '用神 · 水木', '忌神 · 火土'],
       tagsMn: ['身强', '财官相济', '用神 · 水木', '忌神 · 火土'],
+      /**
+       * v3.1.1 注释交互：4 条格局 tag 的展开释义。
+       * focus key 必须稳定，与 InterpretBlock.vue 内 annotItems 按下标对齐。
+       * 设计文档：design/bazi/2026-04-21-03-注释交互设计方案.md §11
+       */
+      tagAnnots: [
+        {
+          focus: 'tag-shen',
+          short: '身强：日主气足，能担财官。',
+          long: '日主丙火生在巳月火旺之地，又得年时火土相助，气势充盈。身强者宜行财、官、食伤之运以泄秀，最忌再补印比助身。',
+        },
+        {
+          focus: 'tag-pattern',
+          short: '财官相济：庚辛金为财、子水为官，财生官旺。',
+          long: '天干庚辛金透出为财星，地支子水暗藏为官星，财能生官、官能护财，是事业宫位的稳定结构。利于在组织中担任带资源的中层角色，亦适合与贵人合作经商。',
+        },
+        {
+          focus: 'tag-yongshen',
+          short: '用神 · 水木：以水润火、以木疏土。',
+          long: '本盘火土偏旺，需以水克之、以木耗之。岁运若引动壬癸亥子（水）、甲乙寅卯（木）则身心顺遂；流年遇水木相生之地，事业、感情、健康三方面同步上行。',
+        },
+        {
+          focus: 'tag-jishen',
+          short: '忌神 · 火土：火土再旺则身重难调。',
+          long: '本盘已是火土偏旺，再遇丙丁巳午（火）或戊己辰戌丑未（土）的岁运，则身势过亢，易表现为脾气急躁、判断激进、人际摩擦增加；行运至此宜以水木的事务、环境、人事来调和。',
+        },
+      ],
     },
 
     shensha: {
@@ -273,15 +313,20 @@ export default {
       genderBadgeMale: '乾造 · 顺行',
       genderBadgeFemale: '坤造 · 逆行',
       genderBadgeHint: '此模块按性别展开（四柱五行十神不受性别影响）',
-      currentDetailTitle: '当前大运 · 35 - 44 岁',
-      currentDetailTitleMn: '当前大运 · 印财相生',
-      currentDetailSubtitle: '天干乙木为正印，地支酉金为正财 · 印财相生 · 吉',
-      currentDetailSubtitleMn: '天干乙木为正印 · 地支酉金为正财 · 吉运',
-      currentDetailHint: '此十年走正印配正财之运，印主学识、正气与名声；财主财富、务实与收获。印星有利于进修、转型、获得资格认证；财星则提示在本行业深耕能得实利。总体是"长期投入 · 稳健回报"的阶段。',
+      currentDetailTitle: '当前大运 · {age} 岁',
+      currentDetailTitleMn: '当前大运 · {tenGod}',
+      currentDetailSubtitleMn: '{ganzhi} · {tenGod} · {verdict}',
       yi: '宜',
-      yiContent: '学习进修、拿证书、跟随师长、处理文书、适度投资房产或长线资产',
       ji: '忌',
+      /** @deprecated 旧示例文案（1990-05-20 男样本），改为按 chart 动态拼装；保留 key 仅为向后兼容，不再被任何路径渲染 */
+      currentDetailSubtitle: '天干乙木为正印，地支酉金为正财 · 印财相生 · 吉',
+      /** @deprecated 同上，已由 chart.decades[*].hint 动态填充 */
+      currentDetailHint: '此十年走正印配正财之运，印主学识、正气与名声；财主财富、务实与收获。印星有利于进修、转型、获得资格认证；财星则提示在本行业深耕能得实利。总体是"长期投入 · 稳健回报"的阶段。',
+      /** @deprecated 同上，无可信源动态生成 yi/ji 行为列表，已删除展示 */
+      yiContent: '学习进修、拿证书、跟随师长、处理文书、适度投资房产或长线资产',
+      /** @deprecated 同上 */
       jiContent: '频繁跳槽、投机冒险、与女性长辈冲突、过度消费',
+      /** @deprecated 同上，吉/中/凶 badge 已由 chart.decades[*].tendency 动态生成 */
       currentBadge: '吉运',
       verdictJi: '吉',
       verdictZhong: '中',
@@ -309,6 +354,18 @@ export default {
       sectionShenshaMn: '神煞',
       sectionFortuneMn: '大运时间轴',
       sectionFlowMn: '流年运势',
+      annotExpand: '展开注释',
+      annotCollapse: '收起注释',
+      annotLabel: {
+        nayin: '纳音注释',
+        pattern: '格局注释',
+        shensha: '神煞注释',
+      },
+    },
+
+    share: {
+      title: '我的八字命盘 · TT 占卜',
+      text: '四柱 · 五行 · 十神 · 大运 · 流年。来自 TT 占卜的命盘解读。',
     },
   },
   ziwei: {
@@ -464,6 +521,11 @@ export default {
       sectionChartMn: '十二宫',
       sectionInterpretMn: '命盘解读',
       sectionDaxianMn: '大限 · 小限',
+    },
+
+    share: {
+      title: '我的紫微命盘 · TT 占卜',
+      text: '十二宫 · 三方四正 · 四化飞星 · 大限小限。来自 TT 占卜的命盘解读。',
     },
   },
   liuren: {

@@ -53,6 +53,17 @@
   color: var(--mn-ink);
   font-weight: 600;
 }
+/* 公历 / 农历同行展示（去除原来的两个 <div> 强制换行） */
+:root[data-theme='minimal'] .chart-meta.is-inline {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0 8px;
+}
+:root[data-theme='minimal'] .chart-meta.is-inline .chart-meta-sep {
+  color: var(--mn-border-strong, var(--mn-ink-muted));
+  user-select: none;
+}
 
 /* 四柱对齐表 */
 :root[data-theme='minimal'] .bazi-table {
@@ -378,12 +389,18 @@
   color: var(--mn-ink-soft);
 }
 :root[data-theme='minimal'] .shishen-detail-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--mn-space-2);
+  width: 100%;
   margin-top: var(--mn-space-4);
   padding: var(--mn-space-3) var(--mn-space-4);
   background-color: var(--mn-bg);
   border: 1px dashed var(--mn-border-strong);
   border-radius: var(--mn-radius-md);
   font-size: 12px;
+  font-family: inherit;
   color: var(--mn-ink-muted);
   text-align: center;
   cursor: pointer;
@@ -391,6 +408,27 @@
 }
 :root[data-theme='minimal'] .shishen-detail-trigger:hover {
   border-color: var(--mn-accent);
+  color: var(--mn-accent);
+}
+:root[data-theme='minimal'] .shishen-detail-trigger:focus-visible {
+  outline: 2px solid var(--mn-accent);
+  outline-offset: 2px;
+}
+:root[data-theme='minimal'] .shishen-detail-trigger .shishen-detail-caret {
+  display: inline-block;
+  font-size: 10px;
+  transition: transform 0.18s ease;
+}
+:root[data-theme='minimal'] .shishen-detail-trigger .shishen-detail-caret.open {
+  transform: rotate(180deg);
+}
+
+/* 简约主题：详细解读 long 区块的色调对齐（scoped 基础样式 + 主题色覆盖） */
+:root[data-theme='minimal'] .ss-long {
+  background-color: var(--mn-bg-elev);
+  border-left-color: var(--mn-accent);
+}
+:root[data-theme='minimal'] .ss-long dt {
   color: var(--mn-accent);
 }
 
@@ -999,6 +1037,29 @@
 }
 :root[data-theme='minimal'] .result-zone.revealed .result-zone-hint { display: none; }
 
+/* 排盘失败提示卡（chart=null 时取代旧 mock 文案 fallback） */
+:root[data-theme='minimal'] .compute-error-card.mn {
+  max-width: 640px;
+  margin: var(--mn-space-6) auto;
+  padding: var(--mn-space-6) var(--mn-space-6);
+  background: var(--mn-bg-elev);
+  border: 1px solid var(--mn-border);
+  border-radius: 8px;
+  text-align: center;
+  color: var(--mn-ink-soft);
+}
+:root[data-theme='minimal'] .compute-error-card.mn h3 {
+  margin: 0 0 8px;
+  color: var(--mn-ink);
+  font-size: 18px;
+  font-weight: 600;
+}
+:root[data-theme='minimal'] .compute-error-card.mn p {
+  margin: 0 0 var(--mn-space-4);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
 /* 骨架屏 */
 :root[data-theme='minimal'] .skeleton-overlay {
   position: fixed;
@@ -1101,4 +1162,163 @@
     grid-template-columns: repeat(2, 1fr);
     gap: var(--mn-space-5) var(--mn-space-3);
   }
+}
+
+/* ========================================================================
+ * 注释交互（Nayin / 格局 / 神煞 锚点 + section 尾部聚合容器）
+ * 移植自 design/prototypes/minimal/bazi.html line 1431-1614
+ * 设计文档：design/bazi/2026-04-21-03-注释交互设计方案.md §11
+ * ====================================================================== */
+
+:root[data-theme='minimal'] .annot-trigger {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: background 150ms ease, box-shadow 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+:root[data-theme='minimal'] .annot-trigger:focus-visible {
+  outline: 2px solid var(--mn-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+:root[data-theme='minimal'] .bazi-cell-nayin.annot-trigger {
+  border: none;
+  padding: 3px 8px;
+  text-decoration: underline dotted var(--mn-border);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  min-height: 30px;
+  border-radius: 4px;
+  color: var(--mn-ink-soft);
+}
+:root[data-theme='minimal'] .bazi-cell-nayin.annot-trigger:hover,
+:root[data-theme='minimal'] .bazi-cell-nayin.annot-trigger[aria-expanded='true'] {
+  background: var(--mn-accent-soft, rgba(99, 102, 241, 0.08));
+  color: var(--mn-ink);
+}
+
+:root[data-theme='minimal'] .mn-badge.annot-trigger {
+  border: 1px solid var(--mn-border);
+  cursor: pointer;
+}
+:root[data-theme='minimal'] .mn-badge.annot-trigger:hover,
+:root[data-theme='minimal'] .mn-badge.annot-trigger[aria-expanded='true'] {
+  border-color: var(--mn-accent);
+  color: var(--mn-accent);
+}
+
+:root[data-theme='minimal'] .shensha-chip.annot-trigger {
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--mn-border);
+}
+:root[data-theme='minimal'] .shensha-chip.annot-trigger:hover,
+:root[data-theme='minimal'] .shensha-chip.annot-trigger[aria-expanded='true'] {
+  border-color: var(--mn-accent);
+  background: var(--mn-accent-soft, rgba(99, 102, 241, 0.06));
+}
+
+:root[data-theme='minimal'] .annot-toggle-all {
+  appearance: none;
+  -webkit-appearance: none;
+  font-size: 12px;
+  color: var(--mn-ink-muted);
+  padding: 4px 12px;
+  border: 1px solid var(--mn-border, rgba(0, 0, 0, 0.1));
+  border-radius: 999px;
+  background: transparent;
+  line-height: 1.4;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+:root[data-theme='minimal'] .annot-toggle-all:hover {
+  border-color: var(--mn-accent);
+  color: var(--mn-accent);
+}
+:root[data-theme='minimal'] .annot-toggle-all:focus-visible {
+  outline: 2px solid var(--mn-accent);
+  outline-offset: 2px;
+}
+:root[data-theme='minimal'] .annot-toggle-all[aria-pressed='true'] {
+  border-color: var(--mn-accent);
+  color: var(--mn-accent);
+  background-color: var(--mn-accent-soft, rgba(99, 102, 241, 0.12));
+}
+
+:root[data-theme='minimal'] .inline-annots-bar {
+  margin: var(--mn-space-4, 16px) 0 0;
+  padding: 12px 14px 10px;
+  border-top: 1px dashed var(--mn-border);
+  display: grid;
+  gap: 10px;
+}
+:root[data-theme='minimal'] .inline-annots-bar.is-nayin {
+  grid-template-columns: repeat(4, 1fr);
+}
+:root[data-theme='minimal'] .inline-annots-bar.is-tag {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+:root[data-theme='minimal'] .inline-annots-bar.is-chip {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+:root[data-theme='minimal'] .inline-annot-item {
+  padding: 10px 12px 10px 14px;
+  border-left: 2px solid var(--mn-accent);
+  background: var(--mn-surface-soft, rgba(244, 244, 245, 0.6));
+  border-radius: 0 var(--mn-radius, 6px) var(--mn-radius, 6px) 0;
+}
+:root[data-theme='minimal'] .inline-annots-bar.is-tag .inline-annot-item {
+  flex: 1 1 calc(50% - 10px);
+  min-width: 280px;
+}
+
+:root[data-theme='minimal'] .inline-annot-item-title {
+  font-weight: 600;
+  color: var(--mn-accent);
+  font-size: 14px;
+  letter-spacing: 0.03em;
+  margin-bottom: 4px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--mn-border);
+}
+:root[data-theme='minimal'] .inline-annot-item-body {
+  margin: 0;
+  color: var(--mn-ink);
+  font-size: 13px;
+  line-height: 1.75;
+}
+:root[data-theme='minimal'] .inline-annot-item-body-short {
+  color: var(--mn-accent);
+  font-weight: 500;
+}
+
+@media (max-width: 640px) {
+  :root[data-theme='minimal'] .inline-annots-bar.is-nayin {
+    grid-template-columns: 1fr;
+  }
+  :root[data-theme='minimal'] .inline-annots-bar.is-tag .inline-annot-item {
+    flex-basis: 100%;
+  }
+}
+@media (max-width: 420px) {
+  :root[data-theme='minimal'] .inline-annots-bar { padding: 10px 12px 8px; }
+  :root[data-theme='minimal'] .inline-annot-item { padding: 8px 10px 8px 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme='minimal'] .annot-trigger,
+  :root[data-theme='minimal'] .annot-toggle-all { transition: none; }
 }

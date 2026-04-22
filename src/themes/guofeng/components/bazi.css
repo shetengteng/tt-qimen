@@ -369,6 +369,45 @@
   font-family: var(--gf-font-kaiti);
 }
 
+/* 「查看详细十神解读」按钮（国风） */
+:root[data-theme='guofeng'] .shishen-detail-toggle-wrap {
+  margin-top: var(--gf-space-md, 12px);
+  display: flex;
+  justify-content: center;
+}
+:root[data-theme='guofeng'] .shishen-detail-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: transparent;
+  border: 1px dashed var(--gf-cinnabar);
+  border-radius: 4px;
+  font-family: var(--gf-font-kaiti);
+  font-size: 14px;
+  color: var(--gf-cinnabar);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+:root[data-theme='guofeng'] .shishen-detail-toggle:hover {
+  background-color: rgba(159, 47, 47, 0.06);
+}
+:root[data-theme='guofeng'] .shishen-detail-toggle:focus-visible {
+  outline: 2px solid var(--gf-cinnabar);
+  outline-offset: 2px;
+}
+
+/* 详细解读 long 区块（国风 + 简约共用 .ss-long，scoped 已定义基础样式，
+   此处仅做主题色覆盖以契合国风视觉） */
+:root[data-theme='guofeng'] .ss-long {
+  background-color: rgba(159, 47, 47, 0.04);
+  border-left-color: var(--gf-cinnabar);
+}
+:root[data-theme='guofeng'] .ss-long dt {
+  color: var(--gf-cinnabar);
+  font-family: var(--gf-font-kaiti);
+}
+
 /* 五行雷达 */
 :root[data-theme='guofeng'] .elements-radar-card {
   display: grid;
@@ -934,6 +973,29 @@
   flex-wrap: wrap;
 }
 
+/* 排盘失败提示卡（chart=null 时取代旧 mock 文案 fallback） */
+:root[data-theme='guofeng'] .compute-error-card {
+  max-width: 720px;
+  margin: var(--gf-space-xl) auto;
+  padding: var(--gf-space-xl) var(--gf-space-xl);
+  background-color: rgba(255, 251, 240, 0.95);
+  border: 1px dashed var(--gf-gold);
+  border-radius: 8px;
+  text-align: center;
+  color: var(--gf-ink-soft);
+}
+:root[data-theme='guofeng'] .compute-error-card h3 {
+  margin: 0 0 12px;
+  color: var(--gf-ink);
+  font-size: 20px;
+  letter-spacing: 0.05em;
+}
+:root[data-theme='guofeng'] .compute-error-card p {
+  margin: 0 0 var(--gf-space-md);
+  line-height: 1.8;
+  font-size: 14px;
+}
+
 /* 排盘交互：result-zone / banner / skeleton */
 :root[data-theme='guofeng'] .result-zone {
   opacity: 0.28;
@@ -1096,4 +1158,175 @@
     grid-template-columns: repeat(2, 1fr);
     gap: var(--gf-space-lg) var(--gf-space-md);
   }
+}
+
+/* ========================================================================
+ * 注释交互（Nayin / 格局 / 神煞 锚点 + section 尾部聚合容器）
+ * 移植自 design/prototypes/guofeng/bazi.html line 1300-1496
+ * 设计文档：design/bazi/2026-04-21-03-注释交互设计方案.md §11
+ * ====================================================================== */
+
+:root[data-theme='guofeng'] .annot-trigger {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: background 180ms ease, box-shadow 180ms ease, color 180ms ease;
+}
+:root[data-theme='guofeng'] .annot-trigger:focus-visible {
+  outline: 2px solid var(--gf-gold);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+:root[data-theme='guofeng'] .bazi-cell-nayin.annot-trigger {
+  border: none;
+  padding: 4px 10px;
+  text-decoration: underline dotted rgba(176, 141, 59, 0.55);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  min-height: 32px;
+  border-radius: 4px;
+}
+:root[data-theme='guofeng'] .bazi-cell-nayin.annot-trigger:hover,
+:root[data-theme='guofeng'] .bazi-cell-nayin.annot-trigger[aria-expanded='true'] {
+  background: rgba(176, 141, 59, 0.12);
+  color: var(--gf-cinnabar);
+}
+
+:root[data-theme='guofeng'] .interpret-tag.annot-trigger {
+  border: 1px solid transparent;
+  padding: 4px 12px;
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1.4;
+}
+:root[data-theme='guofeng'] .interpret-tag.annot-trigger:hover {
+  background-color: rgba(194, 58, 42, 0.22);
+}
+:root[data-theme='guofeng'] .interpret-tag.annot-trigger[aria-expanded='true'] {
+  background-color: rgba(194, 58, 42, 0.22);
+  border-color: var(--gf-cinnabar);
+}
+
+:root[data-theme='guofeng'] .shensha-chip.annot-trigger {
+  border: 1px solid rgba(176, 141, 59, 0.2);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  min-height: 44px;
+}
+:root[data-theme='guofeng'] .shensha-chip.annot-trigger:hover {
+  box-shadow: 0 2px 8px rgba(176, 141, 59, 0.2);
+  transform: translateY(-1px);
+}
+:root[data-theme='guofeng'] .shensha-chip.annot-trigger[aria-expanded='true'] {
+  border-color: var(--gf-cinnabar);
+  box-shadow: 0 2px 8px rgba(194, 58, 42, 0.18);
+}
+
+:root[data-theme='guofeng'] .annot-toggle-all {
+  appearance: none;
+  -webkit-appearance: none;
+  font-size: 13px;
+  color: var(--gf-ink-soft);
+  padding: 4px 12px;
+  border: 1px solid rgba(176, 141, 59, 0.3);
+  border-radius: 14px;
+  background: transparent;
+  font-family: var(--gf-font-kaiti);
+  line-height: 1.4;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+:root[data-theme='guofeng'] .annot-toggle-all:hover {
+  border-color: var(--gf-gold);
+  color: var(--gf-ink);
+  background-color: rgba(176, 141, 59, 0.08);
+}
+:root[data-theme='guofeng'] .annot-toggle-all:focus-visible {
+  outline: 2px solid var(--gf-gold);
+  outline-offset: 2px;
+}
+:root[data-theme='guofeng'] .annot-toggle-all[aria-pressed='true'] {
+  border-color: var(--gf-cinnabar);
+  color: var(--gf-cinnabar);
+  background-color: rgba(194, 58, 42, 0.08);
+}
+
+:root[data-theme='guofeng'] .inline-annots-bar {
+  margin: var(--gf-space-md) 0 0;
+  padding: 12px 14px 10px;
+  border-top: 1px dashed rgba(176, 141, 59, 0.35);
+  display: grid;
+  gap: 10px;
+}
+:root[data-theme='guofeng'] .inline-annots-bar.is-nayin {
+  grid-template-columns: repeat(4, 1fr);
+}
+:root[data-theme='guofeng'] .inline-annots-bar.is-tag {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gf-space-sm);
+}
+:root[data-theme='guofeng'] .inline-annots-bar.is-chip {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+:root[data-theme='guofeng'] .inline-annot-item {
+  padding: 10px 12px 10px 14px;
+  border-left: 2px solid var(--gf-cinnabar);
+  background: rgba(255, 251, 240, 0.5);
+  border-radius: 0 var(--gf-radius-sm) var(--gf-radius-sm) 0;
+}
+:root[data-theme='guofeng'] .inline-annots-bar.is-tag .inline-annot-item {
+  flex: 1 1 calc(50% - var(--gf-space-sm));
+  min-width: 280px;
+}
+
+:root[data-theme='guofeng'] .inline-annot-item-title {
+  font-family: var(--gf-font-kaiti, inherit);
+  font-weight: 600;
+  color: var(--gf-cinnabar);
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+  padding-bottom: 4px;
+  border-bottom: 1px dotted rgba(176, 141, 59, 0.35);
+}
+:root[data-theme='guofeng'] .inline-annot-item-body {
+  margin: 0;
+  color: var(--gf-ink);
+  font-size: 13px;
+  line-height: 1.75;
+}
+:root[data-theme='guofeng'] .inline-annot-item-body-short {
+  font-family: var(--gf-font-kaiti, inherit);
+  color: var(--gf-cinnabar);
+  font-weight: 500;
+}
+
+@media (max-width: 640px) {
+  :root[data-theme='guofeng'] .inline-annots-bar.is-nayin {
+    grid-template-columns: 1fr;
+  }
+  :root[data-theme='guofeng'] .inline-annots-bar.is-tag .inline-annot-item {
+    flex-basis: 100%;
+  }
+}
+@media (max-width: 420px) {
+  :root[data-theme='guofeng'] .inline-annots-bar { padding: 10px 12px 8px; }
+  :root[data-theme='guofeng'] .inline-annot-item { padding: 8px 10px 8px 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme='guofeng'] .annot-trigger,
+  :root[data-theme='guofeng'] .annot-toggle-all { transition: none; }
 }

@@ -171,6 +171,7 @@ export default {
       saveIcon: '◐',
       moreYears: '查看更多年份 →',
       shishenDetail: '查看詳細十神解讀 ▾',
+      shishenDetailCollapse: '收起詳細十神解讀 ▴',
     },
 
     resultBanner: { title: '排盤結果', subtitle: '四柱 · 五行 · 十神 · 大運 · 流年' },
@@ -179,6 +180,12 @@ export default {
     skeleton: {
       title: '推演中',
       subtitle: '取用神、配大運、繫流年',
+    },
+
+    computeError: {
+      title: '排盤未完成',
+      hint: '當前生辰無法生成命盤，請檢查生辰輸入後重新排盤。',
+      retry: '重新排盤',
     },
 
     chartTitle: '排盤 · 乾造',
@@ -203,6 +210,12 @@ export default {
       sectionTitle: '十神結構',
       sectionTag: '官印 · 財官格',
       moreShown: '查看詳細十神解讀',
+      longField: {
+        trait: '性格特質',
+        suit: '適宜方向',
+        caution: '行運警示',
+        relation: '與日主關係',
+      },
       items: [
         {
           pillar: '年干',
@@ -250,6 +263,28 @@ export default {
       p2: '格局上偏印（甲）配日主，文思敏捷；財星雙透（庚辛），事業上宜與貴人合作。子水為官星，利於求職、升遷之事。',
       tags: ['身 · 強', '格 · 財官相濟', '用神 · 水木', '忌神 · 火土'],
       tagsMn: ['身強', '財官相濟', '用神 · 水木', '忌神 · 火土'],
+      tagAnnots: [
+        {
+          focus: 'tag-shen',
+          short: '身強：日主氣足，能擔財官。',
+          long: '日主丙火生在巳月火旺之地，又得年時火土相助，氣勢充盈。身強者宜行財、官、食傷之運以洩秀，最忌再補印比助身。',
+        },
+        {
+          focus: 'tag-pattern',
+          short: '財官相濟：庚辛金為財、子水為官，財生官旺。',
+          long: '天干庚辛金透出為財星，地支子水暗藏為官星，財能生官、官能護財，是事業宮位的穩定結構。利於在組織中擔任帶資源的中層角色，亦適合與貴人合作經商。',
+        },
+        {
+          focus: 'tag-yongshen',
+          short: '用神 · 水木：以水潤火、以木疏土。',
+          long: '本盤火土偏旺，需以水克之、以木耗之。歲運若引動壬癸亥子（水）、甲乙寅卯（木）則身心順遂；流年遇水木相生之地，事業、感情、健康三方面同步上行。',
+        },
+        {
+          focus: 'tag-jishen',
+          short: '忌神 · 火土：火土再旺則身重難調。',
+          long: '本盤已是火土偏旺，再遇丙丁巳午（火）或戊己辰戌丑未（土）的歲運，則身勢過亢，易表現為脾氣急躁、判斷激進、人際摩擦增加；行運至此宜以水木的事務、環境、人事來調和。',
+        },
+      ],
     },
 
     shensha: {
@@ -273,15 +308,20 @@ export default {
       genderBadgeMale: '乾造 · 順行',
       genderBadgeFemale: '坤造 · 逆行',
       genderBadgeHint: '此模組按性別展開（四柱五行十神不受性別影響）',
-      currentDetailTitle: '當前大運 · 35 - 44 歲',
-      currentDetailTitleMn: '當前大運 · 印財相生',
-      currentDetailSubtitle: '天干乙木為正印，地支酉金為正財 · 印財相生 · 吉',
-      currentDetailSubtitleMn: '天干乙木為正印 · 地支酉金為正財 · 吉運',
-      currentDetailHint: '此十年走正印配正財之運，印主學識、正氣與名聲；財主財富、務實與收獲。印星有利於進修、轉型、獲得資格認證；財星則提示在本行業深耕能得實利。總體是「長期投入 · 穩健回報」的階段。',
+      currentDetailTitle: '當前大運 · {age} 歲',
+      currentDetailTitleMn: '當前大運 · {tenGod}',
+      currentDetailSubtitleMn: '{ganzhi} · {tenGod} · {verdict}',
       yi: '宜',
-      yiContent: '學習進修、拿證書、跟隨師長、處理文書、適度投資房產或長線資產',
       ji: '忌',
+      /** @deprecated 舊示例文案（1990-05-20 男樣本），改為按 chart 動態拼裝；保留 key 僅為向後兼容，不再被任何路徑渲染 */
+      currentDetailSubtitle: '天干乙木為正印，地支酉金為正財 · 印財相生 · 吉',
+      /** @deprecated 同上，已由 chart.decades[*].hint 動態填充 */
+      currentDetailHint: '此十年走正印配正財之運，印主學識、正氣與名聲；財主財富、務實與收獲。印星有利於進修、轉型、獲得資格認證；財星則提示在本行業深耕能得實利。總體是「長期投入 · 穩健回報」的階段。',
+      /** @deprecated 同上，無可信源動態生成 yi/ji 行為列表，已刪除展示 */
+      yiContent: '學習進修、拿證書、跟隨師長、處理文書、適度投資房產或長線資產',
+      /** @deprecated 同上 */
       jiContent: '頻繁跳槽、投機冒險、與女性長輩衝突、過度消費',
+      /** @deprecated 同上，吉/中/凶 badge 已由 chart.decades[*].tendency 動態生成 */
       currentBadge: '吉運',
       verdictJi: '吉',
       verdictZhong: '中',
@@ -309,6 +349,18 @@ export default {
       sectionShenshaMn: '神煞',
       sectionFortuneMn: '大運時間軸',
       sectionFlowMn: '流年運勢',
+      annotExpand: '展開註釋',
+      annotCollapse: '收起註釋',
+      annotLabel: {
+        nayin: '納音註釋',
+        pattern: '格局註釋',
+        shensha: '神煞註釋',
+      },
+    },
+
+    share: {
+      title: '我的八字命盤 · TT 占卜',
+      text: '四柱 · 五行 · 十神 · 大運 · 流年。來自 TT 占卜的命盤解讀。',
     },
   },
   ziwei: { title: '紫微斗數', subtitle: '十二宮垣 · 三方四正' },

@@ -41,6 +41,14 @@ const props = withDefaults(defineProps<Props>(), {
   headClass: '',
 })
 
+const emit = defineEmits<{
+  /**
+   * 折叠状态变化。父组件可在收起时一并清理 inline-annots 状态，
+   * 避免下次展开 section 时残留旧的注释项。
+   */
+  'update:open': [open: boolean]
+}>()
+
 const { t } = useI18n()
 
 const open = ref<boolean>(props.defaultOpen)
@@ -70,9 +78,39 @@ function toggle() {
   open.value = !open.value
 }
 
-watch(open, () => {
+watch(open, (v) => {
+  emit('update:open', v)
   // 等待 DOM 更新后再读取 scrollHeight（如有展开后立即变高的子组件）
   nextTick(() => applyMaxHeight())
+})
+
+/**
+ * 父组件在 inline-annots 状态变化（toggle 单条 / 一键 toggle）后调用，
+ * 重新测量当前展开状态下的 scrollHeight，避免 max-height 卡住造成内容裁切。
+ *
+ * 等价原型 design/prototypes/{guofeng,minimal}/bazi.html 中
+ * `syncCollapsibleHeight(host)` 的语义。
+ */
+function syncHeight() {
+  if (!open.value) return
+  const el = bodyEl.value
+  if (!el) return
+  // 先把 max-height 释放回 'none' 以拿到真实 scrollHeight，
+  // 再写回新的 px 值；如果父刚改了 inline-annots，下面的 px 会比原来大
+  maxHeight.value = ''
+  nextTick(() => {
+    if (!open.value) return
+    const next = el.scrollHeight
+    maxHeight.value = next + 'px'
+    window.setTimeout(() => {
+      if (open.value) maxHeight.value = ''
+    }, 520)
+  })
+}
+
+defineExpose({
+  syncHeight,
+  isOpen: () => open.value,
 })
 
 function handleResize() {
@@ -96,14 +134,17 @@ onBeforeUnmount(() => {
 <template>
   <div :class="['collapsible-head', headClass]">
     <h3>{{ label }}</h3>
-    <button
-      type="button"
-      class="collapse-toggle"
-      :data-state="open ? 'open' : 'closed'"
-      @click="toggle"
-    >
-      {{ open ? t('bazi.collapse.collapseLabel') + ' ▲' : t('bazi.collapse.expandLabel') + ' ▼' }}
-    </button>
+    <div class="collapsible-head-actions">
+      <slot name="actions" />
+      <button
+        type="button"
+        class="collapse-toggle"
+        :data-state="open ? 'open' : 'closed'"
+        @click="toggle"
+      >
+        {{ open ? t('bazi.collapse.collapseLabel') + ' ▲' : t('bazi.collapse.expandLabel') + ' ▼' }}
+      </button>
+    </div>
   </div>
 
   <div

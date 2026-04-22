@@ -22,6 +22,12 @@
   letter-spacing: 0.1em;
 }
 
+:root[data-theme='guofeng'] .collapsible-head-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 :root[data-theme='guofeng'] .collapse-toggle {
   font-size: 13px;
   color: var(--gf-ink-soft);
