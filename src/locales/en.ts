@@ -213,6 +213,7 @@ export default {
       sectionTitle: 'Ten Gods Structure',
       sectionTag: 'Officer-Seal · Wealth-Officer pattern',
       moreShown: 'View detailed Ten Gods reading',
+      detailPanelLabel: 'Ten Gods Detailed Reading',
       longField: {
         trait: 'Personality',
         suit: 'Best suited for',

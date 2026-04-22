@@ -210,6 +210,7 @@ export default {
       sectionTitle: '十神結構',
       sectionTag: '官印 · 財官格',
       moreShown: '查看詳細十神解讀',
+      detailPanelLabel: '十神詳細解讀',
       longField: {
         trait: '性格特質',
         suit: '適宜方向',

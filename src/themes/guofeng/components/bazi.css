@@ -397,15 +397,32 @@
   outline-offset: 2px;
 }
 
-/* 详细解读 long 区块（国风 + 简约共用 .ss-long，scoped 已定义基础样式，
-   此处仅做主题色覆盖以契合国风视觉） */
-:root[data-theme='guofeng'] .ss-long {
+/* 详细解读全局一栏（国风主题色覆盖；基础结构见 ShishenStructure.vue scoped style） */
+:root[data-theme='guofeng'] .ss-long-entry {
   background-color: rgba(159, 47, 47, 0.04);
   border-left-color: var(--gf-cinnabar);
 }
-:root[data-theme='guofeng'] .ss-long dt {
+:root[data-theme='guofeng'] .ss-long-meta {
+  border-bottom-color: rgba(159, 47, 47, 0.18);
+  font-family: var(--gf-font-kaiti);
+}
+:root[data-theme='guofeng'] .ss-long-gan {
   color: var(--gf-cinnabar);
   font-family: var(--gf-font-kaiti);
+}
+:root[data-theme='guofeng'] .ss-long-shishen {
+  color: var(--gf-cinnabar);
+  font-family: var(--gf-font-kaiti);
+}
+:root[data-theme='guofeng'] .ss-long-pillar {
+  color: var(--gf-ink-soft);
+}
+:root[data-theme='guofeng'] .ss-long-label {
+  color: var(--gf-cinnabar);
+  font-family: var(--gf-font-kaiti);
+}
+:root[data-theme='guofeng'] .ss-long-text {
+  color: var(--gf-ink);
 }
 
 /* 五行雷达 */
@@ -1262,22 +1279,25 @@
 }
 
 :root[data-theme='guofeng'] .inline-annots-bar {
-  margin: var(--gf-space-md) 0 0;
-  padding: 12px 14px 10px;
+  max-width: 1000px;
+  margin: var(--gf-space-md) auto 0;
+  padding: 12px 16px 10px;
   border-top: 1px dashed rgba(176, 141, 59, 0.35);
   display: grid;
   gap: 10px;
 }
+/* 纳音释义：每项独占一行，纵向依次堆叠（与神煞 is-chip 一致） */
 :root[data-theme='guofeng'] .inline-annots-bar.is-nayin {
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: 1fr;
 }
 :root[data-theme='guofeng'] .inline-annots-bar.is-tag {
   display: flex;
   flex-wrap: wrap;
   gap: var(--gf-space-sm);
 }
+/* 神煞释义：每项独占一行，纵向依次堆叠（用户反馈：不再 4 列并排） */
 :root[data-theme='guofeng'] .inline-annots-bar.is-chip {
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: 1fr;
 }
 
 :root[data-theme='guofeng'] .inline-annot-item {
@@ -1314,9 +1334,7 @@
 }
 
 @media (max-width: 640px) {
-  :root[data-theme='guofeng'] .inline-annots-bar.is-nayin {
-    grid-template-columns: 1fr;
-  }
+  /* is-nayin 已全尺寸单列，无需覆盖；仅保留 is-tag 在窄屏改为 100% */
   :root[data-theme='guofeng'] .inline-annots-bar.is-tag .inline-annot-item {
     flex-basis: 100%;
   }
