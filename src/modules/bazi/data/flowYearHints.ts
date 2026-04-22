@@ -1,13 +1,15 @@
 /**
  * 流年一句话模板（C 类规则化产品模板）
  *
- * 定位说明（见 `design/bazi/2026-04-21-03-八字文案校验报告.md` § 6）：
- *   本文件**不是**古籍逐条可回溯的白话改写，而是产品层的规则化提示语。
- *   `design/bazi/extracted/04-flowyear.md` 已明确说明：
- *     - 古籍里没有直接对应的"60 甲子流年模板库"
- *     - 当前 30 段短模板只是覆盖"十神 × 吉凶"主轴
- *     - 商业 App 的同类模板多为团队内部写作
- *   因此本文件可以继续使用，但不应被计入"raw 校验完成"的成果。
+ * ⚠ 溯源状态：**非古籍逐条可溯源**（class-level isClassical = false）
+ *
+ * 定位说明：
+ *   - 见 `design/bazi/2026-04-21-03-八字文案校验报告.md` § 6
+ *   - `design/bazi/extracted/04-flowyear.md` 已明确：古籍里没有"60 甲子流年模板库"
+ *   - 商业 App 的同类模板多为团队内部写作
+ *   - 改造计划：`design/bazi/2026-04-22-03-八字文案溯源改造方案TODO.md` § 2.7
+ *
+ * 当前定位：产品层规则化提示语，可继续使用，但不计入 raw 校验完成成果。
  *
  * 用于：FlowYears.vue 在每年下面显示一句话提示 + 标签 chip。
  *
@@ -18,6 +20,12 @@
  */
 
 import type { TenGodType, Tendency } from '../types'
+
+/**
+ * 文件级溯源状态标记。
+ * false 表示本文件为产品模板，UI 层可相应标注"产品模板 · 非古籍"。
+ */
+export const FLOW_YEAR_HINTS_IS_CLASSICAL = false
 
 export type FlowYearHintKey = `${TenGodType}_${Tendency}`
 

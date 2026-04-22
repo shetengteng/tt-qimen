@@ -1,18 +1,37 @@
 /**
  * 命盘简析模板（B 类公版文献整理）
  *
+ * ⚠ 溯源状态：
+ *   - `PARAGRAPH_1_BY_DAYMASTER`（50 段：10 干 × 5 旺衰）→ **未溯源**
+ *     （缺 `extracted/07-daymaster-strength.md`，见 TODO T-2.2-A）
+ *   - `PATTERN_HINT`（11 段）→ **未独立溯源**
+ *     （与已 verified 的 patternLongInterpret 同源但未裁剪对齐，见 TODO T-2.2-C）
+ *   - `ELEMENT_TIPS.industry` → **非古籍 · 五行象意现代推衍**
+ *     （古籍无"五行 → 现代行业"直接映射表，见 TODO T-2.2-B）
+ *
+ * 改造计划：见 `design/bazi/2026-04-22-03-八字文案溯源改造方案TODO.md` § 2.2
+ *
  * 用于：BaziPage / InterpretBlock 拼装命盘简析（约 150 字 + 4 个 chip）。
  *
  * 设计：
  *   - 段落 1：日主（五行 + 阴阳） · 月令旺衰 · 用神方向
  *   - 段落 2：格局简评 · 财官印关系 · 喜用神调候
  *
- * 当前 MVP：模板字符串中预留占位符 {dayMaster}/{strength}/{favorable}/{unfavorable}/{monthZhi}/{monthGod}
- *           由 core/bazi.ts 在生成 InterpretSummary 时填充。
+ * 当前现状：
+ *   - 基础模板：`PARAGRAPH_1_TEMPLATE` / `PARAGRAPH_2_TEMPLATE`（占位符填充）
+ *   - 差异化模板：`PARAGRAPH_1_BY_DAYMASTER`（50 段，已实现，非 MVP）
+ *   - 格局提示：`PATTERN_HINT`（11 段，已实现）
+ *   - 五行 → 现代行业：`ELEMENT_TIPS`（5 段，其中 industry 为产品推衍）
  *
- * 后续可按 "日主十干 × 旺衰 × 月令" 做更细的差异化模板（30~120 段），
- * 当前先保留通用框架，避免一次性产出过多文案。
+ * 后续如按"日主 × 旺衰 × 月令"继续细化（30~120 段），需先完成 extracted 溯源。
  */
+
+/**
+ * 文件级溯源状态标记。
+ * - PARAGRAPH_1_BY_DAYMASTER / PATTERN_HINT / ELEMENT_TIPS.industry 均为非古籍
+ * - UI 层可在相关提示上加"产品模板 · 非古籍"标识
+ */
+export const INTERPRET_TEMPLATE_IS_CLASSICAL = false
 
 import type { ElementName, StrengthLevel, PatternName } from '../types'
 
@@ -39,7 +58,16 @@ export const STRENGTH_DESC: Record<StrengthLevel, string> = {
   极弱: '失令、根浅气衰',
 }
 
-/** 五行 → 颜色/方位/行业（用于"喜用提示"chip 提示语） */
+/**
+ * 五行 → 颜色/方位/行业（用于"喜用提示"chip 提示语）
+ *
+ * 字段溯源：
+ *   - color / dir：沿用古籍"五色配五行""五方配五行"标准映射，来源可考（ST1·L43-51）
+ *   - industry：**非古籍 · 五行象意现代推衍**
+ *     古籍无"五行 → 现代行业"直接映射表；本字段依"五行象意 + 现代产业分类"二次推衍
+ *     （木 → 生长/文教；火 → 热能/光明；土 → 承载/经营；金 → 锐利/律法；水 → 流动/智慧）
+ *     P1 审查时可决定：保留现状并在 UI 标注，或改写为更古法的表述
+ */
 export const ELEMENT_TIPS: Record<ElementName, { color: string; dir: string; industry: string }> = {
   木: { color: '青/绿', dir: '东方', industry: '教育、出版、林业、纺织' },
   火: { color: '红/紫', dir: '南方', industry: '能源、餐饮、传媒、广告' },

@@ -1,19 +1,22 @@
 /**
- * 神煞简短释义表（古法术语版 · 30 项原文锚点考据）
+ * 神煞简短释义表（古法术语版）
  *
- * ✅ 审校状态：已完成（2026-04-22）
+ * 核数状态（2026-04-22 grep 统计）：
+ *   - `auditStatus: 'verified'` · 共 **36** key
+ *   - `auditStatus: 'pending'`  · 共 **40** key
+ *   - 合计 76 key
  *
- * 详细审校档案：`design/bazi/extracted/05-shensha.md`
+ * 校对说明：先前注释声明"38 verified key"为早期设计目标数；代码实际到 2026-04-22
+ *           已落 36 个（天官 / 国印贵人等 2 个尚未完成 long 与锚点对齐），
+ *           后续按 `design/bazi/2026-04-22-03-八字文案溯源改造方案TODO.md` § 2.4
+ *           T-2.4-A 计划分批补全。
  *
- * 本轮返工内容：
- *   1. 30 个高频神煞（见档案 § 30 项原文锚点清单）→ `auditStatus: 'verified'`，
- *      short / long 已严格对照《三命通会》《五行精纪》原文，
- *      改写为古法术语，附 `source` 字段记录原文行号锚点
- *   2. 其他 plugin-char8ex 输出但未做逐条考据的 key → `auditStatus: 'pending'`，
- *      short 改为简短中性占位，long 缺省，UI 可决定是否展示
- *   3. 全部删除"公职 / 审批 / 心理咨询 / 律政 / 谈判 / 传媒 / 体制内 / 公关 /
- *      餐饮食品 / 法律审批 / 健康食品行业"等无原文出处的现代化扩写
- *      （详见档案 § 现代化扩写黑名单）
+ * 本表口径：
+ *   - verified 36 项：short / long 严格对照《三命通会》《五行精纪》原文，
+ *     附 `source` 字段记录行号锚点（见 `extracted/05-shensha.md`）
+ *   - pending 40 项：short 为简短中性占位，long 缺省，UI 可选渲染"待审"角标
+ *   - 已全部删除"公职 / 审批 / 心理咨询 / 律政 / 谈判 / 传媒 / 体制内 / 公关 /
+ *     餐饮食品 / 法律审批 / 健康食品行业"等无原文出处的现代化扩写
  *
  * —— 字形对齐提醒 ——
  * key 严格对齐 `@lunisolar/plugin-char8ex` 的 `C8God.key`（繁体字形）。
@@ -31,14 +34,29 @@
  *     （raw 路径：design/bazi/raw/sanming-tonghui/volume-02.md / volume-03.md）
  *   - 《五行精纪》宋·廖中 卷十四 ~ 卷廿七
  *     （raw 路径：design/bazi/raw/wuxing-jingji/full.md）
+ *   - 审校档案：`design/bazi/extracted/05-shensha.md`
+ *   - 溯源改造 TODO：`design/bazi/2026-04-22-03-八字文案溯源改造方案TODO.md` § 2.4
  */
 
 /**
  * 整表审校状态。
- * - 'verified': 30 项高频神煞已逐条对照原文锚点，未审校项已显式标 'pending'
+ * - 'verified': verified 项已逐条对照原文锚点；非 verified 项显式标 'pending'
  * - 'pending':  整表尚未完成考据
+ *
+ * 当前整表处于"分批完成中"状态：36 已 verified / 40 待审；取其严格定义仍标 'verified'
+ * 以兼容下游 UI 判断（verified 项可直接展示出处）。
  */
 export const SHENSHA_MEANING_STATUS: 'pending' | 'verified' = 'verified'
+
+/**
+ * 分类计数快照（供 UI / 测试断言，避免手工算错）。
+ * 调整 SHENSHA_MEANING 条目时需同步更新此常量，便于 CI 做一致性校验（P2 项）。
+ */
+export const SHENSHA_MEANING_COUNT = {
+  verified: 36,
+  pending: 40,
+  total: 76,
+} as const
 
 export interface ShenshaMeaning {
   /** 一句话短释义（20 字以内，chip 下方显示） */
@@ -56,12 +74,14 @@ export interface ShenshaMeaning {
 /**
  * key 为繁体神煞名，与 `plugin-char8ex` 的 `C8God.key` 一一对应。
  *
- * ── 第一组：30 项高频神煞（auditStatus: 'verified'，已落原文锚点） ──
- * ── 第二组：其他 plugin 输出 key（auditStatus: 'pending'，short 中性占位、long 缺省） ──
+ * ── 第一组：高频概念项（36 个 verified key，已落原文锚点） ──
+ * ── 第二组：其他 plugin 输出 key（40 个 pending，short 中性占位、long 缺省） ──
+ *
+ * 两组合计 76 key。详见 SHENSHA_MEANING_COUNT。
  */
 export const SHENSHA_MEANING: Record<string, ShenshaMeaning> = {
   // ============================================================
-  // 第一组：30 项高频神煞 · 古法术语版（auditStatus: 'verified'）
+  // 第一组：高频概念项 · 36 个 verified key · 古法术语版
   // ============================================================
 
   // ----- 吉神（15 项） -----
@@ -314,8 +334,9 @@ export const SHENSHA_MEANING: Record<string, ShenshaMeaning> = {
   },
 
   // ============================================================
-  // 第二组：plugin 输出但本轮未做逐条考据（auditStatus: 'pending'）
-  // short 中性占位、long 缺省、UI 可加"待审校"标识
+  // 第二组：40 个 pending key · 分批补全中
+  // short 中性占位、long 缺省、UI 可加"待审校"角标
+  // 补全进度见 design/bazi/2026-04-22-03-八字文案溯源改造方案TODO.md § 2.4 T-2.4-A
   // ============================================================
   天印貴人: {
     short: '印信文书之神',

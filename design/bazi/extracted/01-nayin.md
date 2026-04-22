@@ -1,10 +1,14 @@
 ---
 title: 纳音 30 种 · 文案摘录
 fetched_at: 2026-04-20
-status: 原文已定位，白话改写待后期进行
+last_updated: 2026-04-22
+status: 白话改写已入代码（`src/modules/bazi/data/nayin.ts`），待回填 extracted 对齐
 target_field: src/modules/bazi/data/nayin.ts
 source_primary: 《三命通会·卷一·论纳音取象》
 source_backup: 《渊海子平·卷一》《五行精纪·卷三》
+followup:
+  - T-2.3-A 交叉审校 nayin.ts.long vs 本文件原文（见 2026-04-22-03-TODO）
+  - T-2.3-D 把代码里的白话改写回填到本文件"long 占位"处
 ---
 
 # 纳音 30 种 · 文案摘录

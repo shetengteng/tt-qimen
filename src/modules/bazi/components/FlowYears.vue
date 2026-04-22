@@ -14,7 +14,7 @@
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
-import { flowYears as fallbackFlow, type FlowYearCell } from '../data/mockBazi'
+import { flowYears as fallbackFlow, MOCK_BAZI_IS_MOCK, type FlowYearCell } from '../data/mockBazi'
 import type { BaziChart } from '../types'
 
 interface Props {
@@ -46,6 +46,13 @@ interface FlowYearVm {
 
 const allFlowYears = computed<FlowYearVm[]>(() => {
   if (!props.chart) {
+    if (import.meta.env.DEV && MOCK_BAZI_IS_MOCK) {
+      console.warn(
+        '[FlowYears] using mockBazi.flowYears fallback (chart is null). '
+        + 'mock data contains modern commercial terms without classical sources. '
+        + 'See design/bazi/2026-04-22-03-八字文案溯源改造方案TODO.md § 2.6',
+      )
+    }
     return fallbackFlow.map<FlowYearVm>(fy => ({
       year: fy.year,
       ganzhi: fy.ganzhi,

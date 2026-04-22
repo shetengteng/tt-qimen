@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
 import type { BaziChart } from '../types'
-import { getPatternLongInterpret } from '../data/patternLongInterpret'
+import { getPatternLongEntry, getPatternLongInterpret } from '../data/patternLongInterpret'
 import InlineAnnotsBar, { type AnnotItem } from '@/components/common/InlineAnnotsBar.vue'
 import { useAnnotBar } from '@/composables/useAnnotBar'
 
@@ -40,6 +40,17 @@ const patternLong = computed<string | null>(() => {
   if (!props.chart) return null
   if (locale.value === 'en') return null
   return getPatternLongInterpret(props.chart.pattern.name)
+})
+
+/**
+ * 第三段 · 完整格局解读的古籍出处条目。
+ * 含 classical（原文关键句）+ source（书名 · 章节 · 行号）。
+ * 仅中文 locale 渲染。
+ */
+const patternEntry = computed(() => {
+  if (!props.chart) return null
+  if (locale.value === 'en') return null
+  return getPatternLongEntry(props.chart.pattern.name)
 })
 const patternName = computed(() => props.chart?.pattern.name ?? '')
 
@@ -105,6 +116,10 @@ const annotLabel = computed(() => t('bazi.collapse.annotLabel.pattern'))
       </button>
       <div v-if="expanded" class="pattern-expand-content">
         <p>{{ patternLong }}</p>
+        <div v-if="patternEntry" class="pattern-expand-source">
+          <p class="source-classical">「{{ patternEntry.classical }}」</p>
+          <p class="source-cite">—— {{ patternEntry.source }}</p>
+        </div>
       </div>
     </div>
 
@@ -145,6 +160,10 @@ const annotLabel = computed(() => t('bazi.collapse.annotLabel.pattern'))
       </button>
       <div v-if="expanded" class="pattern-expand-content">
         <p>{{ patternLong }}</p>
+        <div v-if="patternEntry" class="pattern-expand-source">
+          <p class="source-classical">「{{ patternEntry.classical }}」</p>
+          <p class="source-cite">—— {{ patternEntry.source }}</p>
+        </div>
       </div>
     </div>
 
@@ -239,5 +258,27 @@ const annotLabel = computed(() => t('bazi.collapse.annotLabel.pattern'))
   font-size: inherit;
   color: inherit;
   opacity: 0.92;
+}
+
+.pattern-expand-source {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(0, 0, 0, 0.12);
+}
+.pattern-expand-source p {
+  margin: 0;
+  line-height: 1.7;
+}
+.pattern-expand-source .source-classical {
+  font-size: 13px;
+  opacity: 0.75;
+  font-style: italic;
+  letter-spacing: 0.3px;
+}
+.pattern-expand-source .source-cite {
+  margin-top: 4px;
+  font-size: 12px;
+  opacity: 0.55;
+  text-align: right;
 }
 </style>

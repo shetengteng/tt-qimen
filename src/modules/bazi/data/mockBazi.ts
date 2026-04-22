@@ -4,7 +4,20 @@
  * The sprint goal is UI parity with the prototype, not real bazi computation.
  * All textual narrations live in i18n; this module only exposes raw chart
  * symbols (干支, 数量, 区间) that read identically across locales.
+ *
+ * ⚠ 溯源状态：本文件为 **mock 数据**（非古籍、非生产计算结果）
+ *   - `flowYears` 下每条 hint/tags 含现代商业词（合伙纠纷 / 副业 / 长期合约 等）
+ *   - 仅在无用户输入或计算失败时作 UI fallback
+ *   - 改造计划见 `design/bazi/2026-04-22-03-八字文案溯源改造方案TODO.md` § 2.6
+ *
+ * UI 层在渲染此 mock 数据时，建议打 console.warn 日志以便定位生产 fallback 使用点。
  */
+
+/**
+ * 文件级 mock 标记。
+ * 调用方（如 FlowYears.vue）若使用本文件的数据作 fallback，应检测此常量并打 warn。
+ */
+export const MOCK_BAZI_IS_MOCK = true
 
 export interface PillarCell {
   gan: string

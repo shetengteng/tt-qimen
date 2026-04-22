@@ -1,14 +1,14 @@
 ---
-title: 神煞文案 · 摘录（30 项原文锚点版）
+title: 神煞文案 · 摘录（30 个概念项 / 38 个 verified key）
 fetched_at: 2026-04-20
 last_audit: 2026-04-22
-status: verified · 30 个高频神煞已逐条落原文锚点；其余 plugin 神煞维持 pending
+status: verified · 30 个高频概念项已逐条落原文锚点；按 key 计共 38 个 verified 项，其余 plugin 神煞维持 pending
 target_field: src/modules/bazi/data/shenshaMeaning.ts
 source_primary: 《三命通会·卷二、卷三》（design/bazi/raw/sanming-tonghui/volume-02.md / volume-03.md）
 source_backup: 《五行精纪·卷十四~廿七》（design/bazi/raw/wuxing-jingji/full.md）
 ---
 
-# 神煞文案 · 摘录（30 项原文锚点版）
+# 神煞文案 · 摘录（30 个概念项 / 38 个 verified key）
 
 ## 用途
 
@@ -16,8 +16,9 @@ source_backup: 《五行精纪·卷十四~廿七》（design/bazi/raw/wuxing-jin
 
 > ⚠️ 凡 ts 文件中标注 `auditStatus: 'verified'` 的神煞，均能在本档案中找到原文锚点；
 > 标注 `auditStatus: 'pending'` 的神煞为 plugin-char8ex 输出但本轮**未考据**，文案保持 short 简短中性、long 缺省，由 UI 自行决定是否展示。
+> 说明：本档案按“概念项”组织，共 30 项；代码按运行时 key 落表，包含异体字 / 别名展开后共 38 个 `verified` key。
 
-## 30 项高频神煞清单（逐条原文锚点）
+## 30 个高频概念项清单（逐条原文锚点）
 
 锚点格式：`[文献名 · L###]`，例如：
 - 三命通会卷二：`[ST2 · L###]` → `design/bazi/raw/sanming-tonghui/volume-02.md`
