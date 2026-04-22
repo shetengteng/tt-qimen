@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, provide, ref, shallowRef } from 'vue'
+import { computed, provide, ref, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
@@ -73,12 +73,6 @@ function onSave() {
 }
 
 const showComputeError = computed(() => skeleton.revealed.value && result.value === null)
-
-onMounted(() => {
-  if (!chengguStore.isDefault) {
-    onPaipan()
-  }
-})
 </script>
 
 <template>
@@ -99,7 +93,7 @@ onMounted(() => {
             @paipan="onPaipan"
           />
         </div>
-        <WeightBalance v-if="result" :result="result" />
+        <WeightBalance :result="result" />
       </div>
     </div>
 
@@ -170,7 +164,7 @@ onMounted(() => {
             @paipan="onPaipan"
           />
         </div>
-        <WeightBalance v-if="result" :result="result" />
+        <WeightBalance :result="result" />
       </div>
     </main>
 

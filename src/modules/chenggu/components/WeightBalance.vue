@@ -5,20 +5,24 @@ import { useThemeStore } from '@/stores/theme'
 import type { ChengguResult } from '../types'
 
 interface Props {
-  /** 已排盘结果；调用方用 v-if="result" 保证非空 */
-  result: ChengguResult
+  /**
+   * 已排盘结果。允许为空：此时只渲染天秤主体（秤杆/秤盘/柱子），
+   * 下方的 displayWeight / breakdown 数字区会被隐藏，作为首次进入页面的"占位空态"。
+   */
+  result?: ChengguResult | null
 }
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), { result: null })
 
 const { t } = useI18n()
 const themeStore = useThemeStore()
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
-const displayWeight = computed(() => props.result.displayWeight)
-const totalNumber = computed(() => props.result.totalWeight)
+const displayWeight = computed(() => props.result?.displayWeight ?? '')
+const totalNumber = computed(() => props.result?.totalWeight ?? 0)
 
 const parts = computed(() => {
-  const b = props.result.breakdown
+  const b = props.result?.breakdown
+  if (!b) return []
   return [
     { key: 'year', value: b.year.weight },
     { key: 'month', value: b.month.weight },
@@ -38,7 +42,7 @@ const parts = computed(() => {
         <div class="cg-scale-pan right"></div>
       </div>
     </div>
-    <div class="cg-weight">
+    <div v-if="result" class="cg-weight">
       <div class="cg-weight-value">{{ displayWeight }}</div>
       <div class="cg-weight-label">{{ t('chenggu.balance.label') }}</div>
       <div class="cg-weight-breakdown">
@@ -60,7 +64,7 @@ const parts = computed(() => {
         <div class="cg-scale-pan right"></div>
       </div>
     </div>
-    <div class="cg-weight">
+    <div v-if="result" class="cg-weight">
       <div class="cg-weight-value">{{ totalNumber.toFixed(1) }} {{ t('chenggu.balance.unit') }}</div>
       <div class="cg-weight-label">{{ t('chenggu.balance.labelMn') }}</div>
       <div class="cg-weight-breakdown">

@@ -47,9 +47,6 @@ onMounted(() => {
   timer = window.setInterval(() => {
     now.value = new Date()
   }, 60_000)
-  if (liurenStore.mode === 'immediate') {
-    onPaipan()
-  }
 })
 
 onBeforeUnmount(() => {
