@@ -15,7 +15,7 @@ import JieyueXianji from './components/JieyueXianji.vue'
 import TopicTabs from './components/TopicTabs.vue'
 
 import { useLingqianStore } from './stores/lingqianStore'
-import { drawLingqian, TOPIC_KEYS, type TopicKey } from './core/lingqian'
+import { drawLingqian, loadGuanyinData, TOPIC_KEYS, type TopicKey } from './core/lingqian'
 import type { LingqianItem, LingqianResult } from './types'
 
 const { t } = useI18n()
@@ -107,6 +107,7 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
 
 onMounted(() => {
   currentTopic.value = topicFromPreference(lingqianStore.preferredTopic)
+  void loadGuanyinData()
 })
 
 watch(

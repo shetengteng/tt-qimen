@@ -1,13 +1,12 @@
 /**
- * 观音灵签 · 精选样本（覆盖 6 等级）
+ * 观音灵签 · 精选样本（覆盖 6 等级）— 已降级为 fallback
  *
- * 当前为 MVP 占位 6 签，每签都是设计文档定义的 LingqianItem 结构。
- * 数据来源：百度百科 · 观音灵签 通用版（公版古籍 · 无版权风险）；
- * 为了 MVP 跑通 UI，先内置；附录 B 的 100 签全量爬取/校对仍待办。
+ * 运行时主数据源：src/modules/lingqian/data/guanyin.json（100 签，懒加载，gzip ~19KB）；
+ * 若 JSON 加载失败（离线、CDN 挂掉、chunk 404 等），core/lingqian.ts 回退到本数组，
+ * 保证 UI 仍可随机抽到一签，不阻塞仪式感。
  *
- * 替换策略：
- *   - 短期：往本数组追加更多签（保持 LingqianItem 接口）
- *   - 长期：把数据迁到 src/data/lingqian/guanyin.json，组件改为懒加载
+ * 注意：这 6 签是人工整理的精选样本（覆盖 6 等级），与 guanyin.json 中的同 id 条目
+ *       文本可能略有差异（精选样本是站方白话解读版，guanyin.json 是公版古籍原样）。
  */
 
 import type { LingqianItem } from '../types'
