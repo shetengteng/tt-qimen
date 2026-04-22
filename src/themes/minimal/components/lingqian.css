@@ -274,6 +274,85 @@
   100% { transform: rotate(-14deg) translateY(-2px);  }
 }
 
+/* ---------- 主签条（抽签揭示特写） ----------
+ * 与国风节奏一致：delay 0.75s，时长 1.2s，total 1.95s；
+ * LingqianPage 的 skeleton.delay=1500ms，结果揭示时签条处于高点峰段。
+ */
+:root[data-theme='minimal'] .lq-main-stick {
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  width: 9px;
+  height: 84px;
+  border-radius: 2px;
+  background:
+    linear-gradient(180deg,
+      rgba(255, 255, 255, 0.2) 0%,
+      rgba(0, 0, 0, 0.0) 14%,
+      rgba(0, 0, 0, 0.0) 86%,
+      rgba(0, 0, 0, 0.22) 100%),
+    linear-gradient(180deg, var(--mn-accent-hover) 0%, var(--mn-accent) 55%, #2a2144 100%);
+  border: 1px solid rgba(52, 40, 86, 0.55);
+  box-shadow:
+    0 2px 6px rgba(20, 15, 40, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 0 12px rgba(116, 85, 210, 0.45);
+  transform: translate(-50%, 26px) rotate(0deg) scale(0.72);
+  transform-origin: 50% 80%;
+  opacity: 0;
+  z-index: 3;
+  pointer-events: none;
+  transition: opacity 0.45s ease-out;
+}
+:root[data-theme='minimal'] .lq-main-stick::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 14px;
+  background:
+    linear-gradient(180deg,
+      rgba(255, 255, 255, 0.45) 0%,
+      rgba(255, 255, 255, 0.08) 40%,
+      transparent 100%);
+  border-radius: 2px 2px 0 0;
+}
+:root[data-theme='minimal'] .lq-main-stick-glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(170, 148, 255, 0.5),
+    rgba(116, 85, 210, 0.18) 50%,
+    transparent 72%);
+  filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+}
+:root[data-theme='minimal'] .lq-shake-scene--drawing .lq-main-stick {
+  animation: lq-main-fly-mn 1.2s cubic-bezier(0.16, 0.8, 0.3, 1) 0.75s both;
+}
+:root[data-theme='minimal'] .lq-shake-scene--drawing .lq-main-stick .lq-main-stick-glow {
+  animation: lq-main-glow-mn 1s ease-out 0.95s both;
+}
+@keyframes lq-main-fly-mn {
+  0%   { transform: translate(-50%, 26px)   rotate(0deg)   scale(0.72); opacity: 0; }
+  10%  { transform: translate(-50%, 0px)    rotate(-5deg)  scale(0.9);  opacity: 1; }
+  55%  { transform: translate(-50%, -138px) rotate(-12deg) scale(1.06); opacity: 1; }
+  75%  { transform: translate(-50%, -158px) rotate(5deg)   scale(1.02); opacity: 1; }
+  100% { transform: translate(-50%, -150px) rotate(0deg)   scale(1);    opacity: 1; }
+}
+@keyframes lq-main-glow-mn {
+  0%   { opacity: 0;    transform: translate(-50%, -50%) scale(0.6); }
+  40%  { opacity: 0.85; transform: translate(-50%, -50%) scale(1.12); }
+  100% { opacity: 0.7;  transform: translate(-50%, -50%) scale(1);    }
+}
+
 /* 地面阴影 */
 :root[data-theme='minimal'] .lq-tube-shadow {
   position: absolute;
@@ -337,8 +416,17 @@
   :root[data-theme='minimal'] .lq-tube-stick,
   :root[data-theme='minimal'] .lq-tube-shadow,
   :root[data-theme='minimal'] .lq-scene-halo,
-  :root[data-theme='minimal'] .lq-scene-dust li {
+  :root[data-theme='minimal'] .lq-scene-dust li,
+  :root[data-theme='minimal'] .lq-main-stick,
+  :root[data-theme='minimal'] .lq-main-stick .lq-main-stick-glow {
     animation: none !important;
+  }
+  :root[data-theme='minimal'] .lq-shake-scene--drawing .lq-main-stick {
+    opacity: 1;
+    transform: translate(-50%, -138px) scale(1);
+  }
+  :root[data-theme='minimal'] .lq-shake-scene--drawing .lq-main-stick .lq-main-stick-glow {
+    opacity: 0.6;
   }
 }
 

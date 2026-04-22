@@ -323,6 +323,88 @@
   100% { transform: rotate(-18deg) translateY(-2px);  }
 }
 
+/* ---------- 主签条（抽签揭示特写） ----------
+ * 设计文档 §4：抽签 → 签条从筒口飞出 → 定格。
+ * 默认隐藏；.lq-shake-scene--drawing 触发 600ms 飞出 + 定格（animation-delay 0.75s，
+ * 与 LingqianPage 的 1500ms skeleton.delay 配合：0-800ms 摇筒，0.75s-1.95s 飞出定格，
+ * 1500ms 结果揭示时主签条仍在高点被短暂看见）。
+ * drawing=false 后 opacity 走 transition 淡出，避免突兀。
+ */
+:root[data-theme='guofeng'] .lq-main-stick {
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  width: 11px;
+  height: 96px;
+  border-radius: 3px;
+  background:
+    linear-gradient(180deg,
+      rgba(255, 249, 219, 0.25) 0%,
+      rgba(176, 141, 59, 0.0) 14%,
+      rgba(176, 141, 59, 0.0) 86%,
+      rgba(0, 0, 0, 0.28) 100%),
+    linear-gradient(180deg, #f4d77c 0%, #c2923b 45%, #8a6b3a 100%);
+  border: 1px solid rgba(90, 66, 24, 0.55);
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 0 12px rgba(212, 169, 74, 0.45);
+  transform: translate(-50%, 28px) rotate(0deg) scale(0.72);
+  transform-origin: 50% 80%;
+  opacity: 0;
+  z-index: 3;
+  pointer-events: none;
+  transition: opacity 0.45s ease-out;
+}
+:root[data-theme='guofeng'] .lq-main-stick::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 16px;
+  background:
+    linear-gradient(180deg,
+      rgba(255, 255, 255, 0.55) 0%,
+      rgba(255, 255, 255, 0.1) 40%,
+      transparent 100%);
+  border-radius: 3px 3px 0 0;
+}
+:root[data-theme='guofeng'] .lq-main-stick-glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(255, 236, 179, 0.55),
+    rgba(212, 169, 74, 0.2) 50%,
+    transparent 72%);
+  filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+}
+:root[data-theme='guofeng'] .lq-shake-scene--drawing .lq-main-stick {
+  animation: lq-main-fly-gf 1.2s cubic-bezier(0.16, 0.8, 0.3, 1) 0.75s both;
+}
+:root[data-theme='guofeng'] .lq-shake-scene--drawing .lq-main-stick .lq-main-stick-glow {
+  animation: lq-main-glow-gf 1s ease-out 0.95s both;
+}
+@keyframes lq-main-fly-gf {
+  0%   { transform: translate(-50%, 28px)   rotate(0deg)   scale(0.72); opacity: 0; }
+  10%  { transform: translate(-50%, 0px)    rotate(-6deg)  scale(0.9);  opacity: 1; }
+  55%  { transform: translate(-50%, -150px) rotate(-14deg) scale(1.08); opacity: 1; }
+  75%  { transform: translate(-50%, -172px) rotate(6deg)   scale(1.02); opacity: 1; }
+  100% { transform: translate(-50%, -162px) rotate(0deg)   scale(1);    opacity: 1; }
+}
+@keyframes lq-main-glow-gf {
+  0%   { opacity: 0;    transform: translate(-50%, -50%) scale(0.6); }
+  40%  { opacity: 0.95; transform: translate(-50%, -50%) scale(1.15); }
+  100% { opacity: 0.8;  transform: translate(-50%, -50%) scale(1);    }
+}
+
 :root[data-theme='guofeng'] .lq-tube-label {
   position: absolute;
   top: 55%;
@@ -402,8 +484,17 @@
   :root[data-theme='guofeng'] .lq-tube-stick,
   :root[data-theme='guofeng'] .lq-tube-shadow,
   :root[data-theme='guofeng'] .lq-scene-halo,
-  :root[data-theme='guofeng'] .lq-scene-dust li {
+  :root[data-theme='guofeng'] .lq-scene-dust li,
+  :root[data-theme='guofeng'] .lq-main-stick,
+  :root[data-theme='guofeng'] .lq-main-stick .lq-main-stick-glow {
     animation: none !important;
+  }
+  :root[data-theme='guofeng'] .lq-shake-scene--drawing .lq-main-stick {
+    opacity: 1;
+    transform: translate(-50%, -150px) scale(1);
+  }
+  :root[data-theme='guofeng'] .lq-shake-scene--drawing .lq-main-stick .lq-main-stick-glow {
+    opacity: 0.7;
   }
 }
 
