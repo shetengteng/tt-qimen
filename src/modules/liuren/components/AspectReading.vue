@@ -6,11 +6,12 @@ import type { Aspect, LiurenResult } from '../types'
 
 /**
  * 分面 tabs + 解读卡 + 宜忌。
- * 当前分面由上游 v-model 控制；结果缺省时，用"默认速喜"演示示意。
+ * 当前分面由上游 v-model 控制；result 由外层 v-else-if 保证非空。
  */
 interface Props {
   aspect: Aspect
-  result?: LiurenResult | null
+  /** 已计算的六壬结果；调用方用 v-else-if 保证非空 */
+  result: LiurenResult
 }
 const props = defineProps<Props>()
 const emit = defineEmits<{
@@ -23,29 +24,22 @@ const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
 const ASPECTS: readonly Aspect[] = ['overall', 'career', 'love', 'wealth', 'health', 'travel']
 
-const palace = computed(() => props.result?.palace ?? null)
+const palace = computed(() => props.result.palace)
 
-const readingText = computed(() => palace.value?.readings[props.aspect] ?? t('liuren.placeholder.reading'))
-const suitable = computed(() => palace.value?.suitable ?? [])
-const avoid = computed(() => palace.value?.avoid ?? [])
+const readingText = computed(() => palace.value.readings[props.aspect])
+const suitable = computed(() => palace.value.suitable)
+const avoid = computed(() => palace.value.avoid)
 
 const verdictClass = computed(() => {
-  const j = palace.value?.jiXiong
+  const j = palace.value.jiXiong
   if (j === 'ji') return 'ji'
   if (j === 'xiong') return 'xiong'
   return 'ping'
 })
 
-const verdictLabel = computed(() => {
-  const j = palace.value?.jiXiong
-  if (!j) return t('liuren.verdict.idle')
-  return t(`liuren.verdict.${j}`)
-})
+const verdictLabel = computed(() => t(`liuren.verdict.${palace.value.jiXiong}`))
 
-const title = computed(() => {
-  if (palace.value) return `${palace.value.name} · ${t(`liuren.aspect.${props.aspect}`)}`
-  return t('liuren.placeholder.title')
-})
+const title = computed(() => `${palace.value.name} · ${t(`liuren.aspect.${props.aspect}`)}`)
 
 function pickAspect(a: Aspect) {
   emit('update:aspect', a)

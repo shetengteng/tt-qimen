@@ -2,10 +2,10 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import ZiweiPalace from './ZiweiPalace.vue'
-import { palaces as mockPalaces } from '../data/mockZiwei'
 import type { Palace, PalaceKey, ZiweiChart } from '../types'
 
 interface Props {
+  /** 真实命盘；由外层 result-zone v-if 保证非空 */
   chart?: ZiweiChart | null
 }
 
@@ -13,7 +13,7 @@ const props = defineProps<Props>()
 
 const { t } = useI18n()
 
-const palaces = computed<Palace[]>(() => props.chart?.palaces ?? mockPalaces)
+const palaces = computed<Palace[]>(() => props.chart?.palaces ?? [])
 
 const KEY_PALACE_KEYS = ['ming', 'qianyi', 'fuqi', 'guanlu'] as const
 type KeyKey = typeof KEY_PALACE_KEYS[number]

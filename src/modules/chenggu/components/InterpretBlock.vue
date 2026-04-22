@@ -5,7 +5,8 @@ import { useThemeStore } from '@/stores/theme'
 import type { ChengguResult } from '../types'
 
 interface Props {
-  result?: ChengguResult | null
+  /** 已排盘结果；调用方用 v-if="result" 保证非空 */
+  result: ChengguResult
 }
 const props = defineProps<Props>()
 
@@ -13,9 +14,7 @@ const { t } = useI18n()
 const themeStore = useThemeStore()
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
-const PLACEHOLDER = '五两一钱之命，为古法中"贵显"之相。歌诀言"一世荣华"，并非今人所谓必然富贵，而是指心性与格局较为开阔，一生多得遇合，工作上易得贵人提携。'
-
-const body = computed(() => props.result?.poem.description ?? PLACEHOLDER)
+const body = computed(() => props.result.poem.description)
 </script>
 
 <template>

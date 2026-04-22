@@ -8,13 +8,12 @@
  * v3.1.1：「查看更多年份」交互
  *   - 默认显示前 INITIAL_VISIBLE 年（5 年）
  *   - 点击「查看更多年份 →」按钮一次，扩展 STEP 年（5 年）
- *   - 已显示全部年份时按钮自动隐藏；mock 4 年场景下也直接隐藏
+ *   - 已显示全部年份时按钮自动隐藏
  *   - 容器高度变化通过 toggle-expand emit 通知父级 BaziPage 调 syncHeight
  */
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
-import { flowYears as fallbackFlow, MOCK_BAZI_IS_MOCK, type FlowYearCell } from '../data/mockBazi'
 import type { BaziChart } from '../types'
 
 interface Props {
@@ -30,11 +29,11 @@ const emit = defineEmits<{
 const INITIAL_VISIBLE = 5
 const STEP = 5
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
 const themeStore = useThemeStore()
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
-/** 真实命盘下的流年映射（不分多语言，只展示中文模板） */
+/** 流年 UI 视图模型（不分多语言，只展示中文模板） */
 interface FlowYearVm {
   year: number
   ganzhi: string
@@ -45,23 +44,7 @@ interface FlowYearVm {
 }
 
 const allFlowYears = computed<FlowYearVm[]>(() => {
-  if (!props.chart) {
-    if (import.meta.env.DEV && MOCK_BAZI_IS_MOCK) {
-      console.warn(
-        '[FlowYears] using mockBazi.flowYears fallback (chart is null). '
-        + 'mock data contains modern commercial terms without classical sources. '
-        + 'See design/bazi/2026-04-22-03-八字文案溯源改造方案TODO.md § 2.6',
-      )
-    }
-    return fallbackFlow.map<FlowYearVm>(fy => ({
-      year: fy.year,
-      ganzhi: fy.ganzhi,
-      shishen: fy.shishen,
-      hint: fy.hint,
-      tags: fy.tags,
-      current: fy.current,
-    }))
-  }
+  if (!props.chart) return []
   return props.chart.flowYears.map<FlowYearVm>(fy => ({
     year: fy.year,
     ganzhi: fy.ganzhi,
@@ -75,7 +58,7 @@ const allFlowYears = computed<FlowYearVm[]>(() => {
 /** 当前可见年份数 —— 由「查看更多年份」按钮逐步扩展 */
 const visibleCount = ref(INITIAL_VISIBLE)
 
-/** 切换 chart 或 mock 时重置 visibleCount，避免上一次展开状态残留 */
+/** 切换 chart 时重置 visibleCount，避免上一次展开状态残留 */
 watch(
   () => allFlowYears.value.length,
   () => { visibleCount.value = INITIAL_VISIBLE },
@@ -93,31 +76,12 @@ function onShowMore() {
   emit('toggle-expand', visibleCount.value)
 }
 
-const flowHint = (idx: number) => {
-  if (props.chart) return flowYears.value[idx].hint
-  // mock：保留原多语言行为
-  const fy = fallbackFlow[idx] as FlowYearCell | undefined
-  if (!fy) return ''
-  if (locale.value === 'zh-TW') return fy.hintTw
-  if (locale.value === 'en') return fy.hintEn
-  return fy.hint
-}
-const flowTags = (idx: number) => {
-  if (props.chart) return flowYears.value[idx].tags
-  const fy = fallbackFlow[idx] as FlowYearCell | undefined
-  if (!fy) return []
-  if (locale.value === 'zh-TW') return fy.tagsTw
-  if (locale.value === 'en') return fy.tagsEn
-  return fy.tags
-}
+const flowHint = (idx: number) => flowYears.value[idx]?.hint ?? ''
+const flowTags = (idx: number) => flowYears.value[idx]?.tags ?? []
+
 type FlowTagMn = { label: string; tone?: 'warning' | 'success' | 'danger' }
-const flowTagsMn = (idx: number): FlowTagMn[] => {
-  if (props.chart) return flowYears.value[idx].tags.map<FlowTagMn>(label => ({ label }))
-  const fy = fallbackFlow[idx] as FlowYearCell | undefined
-  if (!fy) return []
-  if (locale.value === 'zh-CN' && fy.tagsMn?.length) return fy.tagsMn
-  return flowTags(idx).map<FlowTagMn>((label: string) => ({ label }))
-}
+const flowTagsMn = (idx: number): FlowTagMn[] =>
+  (flowYears.value[idx]?.tags ?? []).map<FlowTagMn>(label => ({ label }))
 </script>
 
 <template>

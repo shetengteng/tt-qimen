@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import type { Palace } from '../data/mockZiwei'
+import type { Palace } from '../types'
 
 interface Props {
   palace: Palace

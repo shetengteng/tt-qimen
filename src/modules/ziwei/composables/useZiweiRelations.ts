@@ -6,7 +6,7 @@ import {
   scheduleDoubleRaf,
   svgNode,
 } from '@/composables/useSvgDraw'
-import type { PalaceKey } from '../data/mockZiwei'
+import type { PalaceKey } from '../types'
 
 /**
  * Mirrors the prototype `drawRelations()` IIFE in

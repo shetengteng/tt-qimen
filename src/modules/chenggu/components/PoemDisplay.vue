@@ -5,7 +5,8 @@ import { useThemeStore } from '@/stores/theme'
 import type { ChengguResult } from '../types'
 
 interface Props {
-  result?: ChengguResult | null
+  /** 已排盘结果；调用方用 v-if="result" 保证非空 */
+  result: ChengguResult
 }
 const props = defineProps<Props>()
 
@@ -13,15 +14,8 @@ const { t } = useI18n()
 const themeStore = useThemeStore()
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
-const PLACEHOLDER_POEM = [
-  '一世荣华事事通',
-  '不须劳碌自享通',
-  '职位高显声名显',
-  '前呼后拥似蛟龙',
-]
-
-const poemLines = computed<string[]>(() => props.result?.poem.poem ?? PLACEHOLDER_POEM)
-const weightTitle = computed<string>(() => props.result?.poem.weight ?? t('chenggu.placeholder.displayWeight'))
+const poemLines = computed<string[]>(() => props.result.poem.poem)
+const weightTitle = computed<string>(() => props.result.poem.weight)
 
 /**
  * 歌诀文案规则：原文不做任何翻译 / 简繁转换，中英繁三语皆保留古文原貌（设计文档 §8）。

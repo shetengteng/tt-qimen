@@ -3,15 +3,11 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
 import ZiweiPalace from './ZiweiPalace.vue'
-import {
-  palaces as mockPalaces,
-  meta as mockMeta,
-  sanfangSiZheng as mockSanfang,
-} from '../data/mockZiwei'
-import type { ZiweiChart } from '../types'
-import { useZiweiRelations } from '../composables/useZiweiRelations'
+import type { ZiweiChart, PalaceKey } from '../types'
+import { useZiweiRelations, type ZiweiRelationsConfig } from '../composables/useZiweiRelations'
 
 interface Props {
+  /** 真实命盘；由外层 result-zone v-if 保证非空 */
   chart?: ZiweiChart | null
   showSanfang: boolean
 }
@@ -22,20 +18,25 @@ const { t } = useI18n()
 const themeStore = useThemeStore()
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
-const palaces = computed(() => props.chart?.palaces ?? mockPalaces)
-const meta = computed(() => props.chart?.meta ?? mockMeta)
-const sanfang = computed(() => props.chart?.sanfangSiZheng ?? mockSanfang)
+const palaces = computed(() => props.chart?.palaces ?? [])
+const meta = computed(() => props.chart?.meta ?? null)
 
 const chartEl = ref<HTMLElement | null>(null)
 const svgEl = ref<SVGElement | null>(null)
 
-const enabled = computed(() => props.showSanfang)
+const enabled = computed(() => props.showSanfang && !!props.chart)
 
-const config = computed(() => ({
-  benming: sanfang.value.benming,
-  triad: [...sanfang.value.triad],
-  duigong: sanfang.value.duigong,
-}))
+const config = computed<ZiweiRelationsConfig>(() => {
+  const sfz = props.chart?.sanfangSiZheng
+  if (!sfz) {
+    return { benming: 'ming' as PalaceKey, triad: [], duigong: 'ming' as PalaceKey }
+  }
+  return {
+    benming: sfz.benming,
+    triad: [...sfz.triad],
+    duigong: sfz.duigong,
+  }
+})
 
 const { schedule } = useZiweiRelations({
   getChart: () => chartEl.value,
@@ -49,6 +50,7 @@ defineExpose<{ schedule: () => void }>({ schedule })
 
 <template>
   <div
+    v-if="chart && meta"
     ref="chartEl"
     :class="['ziwei-chart', { 'show-sanfang': showSanfang }]"
   >

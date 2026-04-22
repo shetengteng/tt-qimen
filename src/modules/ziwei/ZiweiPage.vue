@@ -120,7 +120,7 @@ watch(
       </div>
     </div>
 
-    <div ref="resultBannerEl" :class="['result-banner', { revealed: skeleton.revealed.value }]">
+    <div v-if="skeleton.revealed.value" ref="resultBannerEl" class="result-banner revealed">
       <h2 class="result-banner-title">
         <span class="result-banner-decor">◈</span>
         {{ t('ziwei.resultBanner.title') }}
@@ -129,7 +129,7 @@ watch(
       <div class="result-banner-subtitle">{{ t('ziwei.resultBanner.subtitle') }}</div>
     </div>
 
-    <div :class="['result-zone', { revealed: skeleton.revealed.value }]">
+    <div v-if="skeleton.revealed.value" class="result-zone revealed">
       <div ref="shareCardEl" class="ziwei-share-card">
       <div class="gf-container" style="padding-top: 0;">
         <CollapsibleSection :label="t('ziwei.collapse.sectionMeta')">
@@ -194,13 +194,13 @@ watch(
       </div>
     </main>
 
-    <div ref="resultBannerEl" :class="['result-banner', { revealed: skeleton.revealed.value }]">
+    <div v-if="skeleton.revealed.value" ref="resultBannerEl" class="result-banner revealed">
       <h2 class="result-banner-title">{{ t('ziwei.resultBanner.title') }}</h2>
       <div class="result-banner-sub">{{ t('ziwei.resultBanner.subtitle') }}</div>
       <div class="result-banner-line" />
     </div>
 
-    <div :class="['result-zone', { revealed: skeleton.revealed.value }]">
+    <div v-if="skeleton.revealed.value" class="result-zone revealed">
       <div ref="shareCardEl" class="ziwei-share-card">
       <main class="mn-container" style="padding-top: 0;">
         <CollapsibleSection :label="t('ziwei.collapse.sectionMetaMn')">

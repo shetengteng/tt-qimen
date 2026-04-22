@@ -14,7 +14,7 @@ interface ShishenItem {
 }
 
 interface Props {
-  /** 真实命盘；不传则回退到 i18n mock */
+  /** 真实命盘；由外层 result-zone v-if 保证非空 */
   chart?: BaziChart | null
 }
 const props = defineProps<Props>()
@@ -22,8 +22,6 @@ const props = defineProps<Props>()
 const { t, tm } = useI18n()
 const themeStore = useThemeStore()
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
-
-const fallbackItems = computed(() => (tm('bazi.shishen.items') as ShishenItem[]) ?? [])
 
 /**
  * 当前只展示短版说明（desc / descMn）：
@@ -35,7 +33,7 @@ const fallbackItems = computed(() => (tm('bazi.shishen.items') as ShishenItem[])
  *   故此组件也暂不渲染 long。
  */
 const items = computed<ShishenItem[]>(() => {
-  if (!props.chart) return fallbackItems.value
+  if (!props.chart) return []
   const pillarLabels = tm('bazi.pillars') as Record<string, string>
   const list: ShishenItem[] = []
   const cfgs: Array<{ key: 'year' | 'month' | 'day' | 'hour'; label: string }> = [

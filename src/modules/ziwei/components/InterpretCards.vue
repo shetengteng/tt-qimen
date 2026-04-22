@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { interpretCards as mockCards } from '../data/mockZiwei'
 import type { ZiweiChart } from '../types'
 
 interface Props {
+  /** 真实命盘；由外层 result-zone v-if 保证非空 */
   chart?: ZiweiChart | null
 }
 
@@ -12,7 +12,7 @@ const props = defineProps<Props>()
 
 const { t } = useI18n()
 
-const cards = computed(() => props.chart?.interpretCards ?? mockCards)
+const cards = computed(() => props.chart?.interpretCards ?? [])
 </script>
 
 <template>

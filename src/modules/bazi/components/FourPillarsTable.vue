@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
 import type { BaziArc } from '../composables/useBaziDrawings'
 import { getNayinMeaning } from '../data/nayin'
-import type { PillarCell } from '../data/mockBazi'
+import type { PillarCell } from '../types'
 import type { AnnotItem } from '@/components/common/InlineAnnotsBar.vue'
 
 interface PillarHeader {
@@ -54,16 +54,15 @@ const chartTitle = computed(() => {
 })
 
 const headers = computed(() => {
-  const subMap: Record<PillarHeader['key'], string>
-    = props.headerSubs
-      ? Object.fromEntries(props.headerSubs.map(h => [h.key, h.sub])) as Record<PillarHeader['key'], string>
-      : { year: '1990', month: '5', day: '20', hour: t('bazi.hours.6') }
+  const subMap: Partial<Record<PillarHeader['key'], string>> = props.headerSubs
+    ? Object.fromEntries(props.headerSubs.map(h => [h.key, h.sub])) as Record<PillarHeader['key'], string>
+    : {}
 
   return [
-    { key: 'year', label: pillarsLabels.value.year, sub: subMap.year, dayMaster: false },
-    { key: 'month', label: pillarsLabels.value.month, sub: subMap.month, dayMaster: false },
-    { key: 'day', label: pillarsLabels.value.day, sub: subMap.day, dayMaster: true },
-    { key: 'hour', label: pillarsLabels.value.hour, sub: subMap.hour, dayMaster: false },
+    { key: 'year', label: pillarsLabels.value.year, sub: subMap.year ?? '', dayMaster: false },
+    { key: 'month', label: pillarsLabels.value.month, sub: subMap.month ?? '', dayMaster: false },
+    { key: 'day', label: pillarsLabels.value.day, sub: subMap.day ?? '', dayMaster: true },
+    { key: 'hour', label: pillarsLabels.value.hour, sub: subMap.hour ?? '', dayMaster: false },
   ]
 })
 

@@ -2,8 +2,16 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
-import { decades as fallbackDecades, type DecadeCell } from '../data/mockBazi'
 import type { BaziChart, Tendency } from '../types'
+
+interface DecadeCell {
+  age: string
+  ganzhi: string
+  shishen: string
+  shishenMn: string
+  verdict: 'ji' | 'zhong' | 'xiong'
+  current?: boolean
+}
 
 interface Props {
   chart?: BaziChart | null
@@ -45,7 +53,7 @@ function tendencyClass(t: Tendency): 'ji' | 'zhong' | 'xiong' {
 }
 
 const decades = computed<DecadeCell[]>(() => {
-  if (!props.chart) return fallbackDecades
+  if (!props.chart) return []
   return props.chart.decades.map(d => ({
     age: `${d.startAge} - ${d.endAge}`,
     ganzhi: d.ganzhi,

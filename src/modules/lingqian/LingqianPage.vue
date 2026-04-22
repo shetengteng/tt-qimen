@@ -123,7 +123,7 @@ watch(
       <LotteryTube />
     </div>
 
-    <div ref="resultBannerEl" :class="['result-banner', { revealed: skeleton.revealed.value }]">
+    <div v-if="skeleton.revealed.value" ref="resultBannerEl" class="result-banner revealed">
       <h2 class="result-banner-title">
         <span class="result-banner-decor">◈</span>
         {{ t('lingqian.resultBanner.title') }}
@@ -132,7 +132,7 @@ watch(
       <div class="result-banner-subtitle">{{ t('lingqian.resultBanner.subtitle') }}</div>
     </div>
 
-    <div :class="['result-zone', { revealed: skeleton.revealed.value }]">
+    <div v-if="skeleton.revealed.value" class="result-zone revealed">
       <div v-if="showComputeError" class="compute-error-card">
         <h3>◈ {{ t('lingqian.computeError.title') }}</h3>
         <p>{{ t('lingqian.computeError.hint') }}</p>
@@ -141,26 +141,26 @@ watch(
         </button>
       </div>
 
-      <template v-else>
+      <template v-else-if="result">
         <div ref="shareCardEl" class="lingqian-share-card">
           <div class="gf-container" style="padding-top: 0;">
             <div class="gf-divider">
               <span>◆ {{ t('lingqian.divider.qianTitle', {
-                num: result?.item.id ?? '—',
-                level: result?.item.level ?? '—',
+                num: result.item.id,
+                level: result.item.level,
               }) }} ◆</span>
             </div>
 
-            <PoemDisplay :item="result?.item ?? null">
+            <PoemDisplay :item="result.item">
               <template #header>
-                <LingqianTitle :item="result?.item ?? null" />
+                <LingqianTitle :item="result.item" />
               </template>
             </PoemDisplay>
 
-            <JieyueXianji :item="result?.item ?? null" />
+            <JieyueXianji :item="result.item" />
 
             <TopicTabs
-              :item="result?.item ?? null"
+              :item="result.item"
               :topic="currentTopic"
               @update:topic="currentTopic = $event"
             />
@@ -201,13 +201,13 @@ watch(
       <LotteryTube />
     </main>
 
-    <div ref="resultBannerEl" :class="['result-banner', { revealed: skeleton.revealed.value }]">
+    <div v-if="skeleton.revealed.value" ref="resultBannerEl" class="result-banner revealed">
       <h2 class="result-banner-title">{{ t('lingqian.resultBanner.title') }}</h2>
       <div class="result-banner-sub">{{ t('lingqian.resultBanner.subtitle') }}</div>
       <div class="result-banner-line" />
     </div>
 
-    <div :class="['result-zone', { revealed: skeleton.revealed.value }]">
+    <div v-if="skeleton.revealed.value" class="result-zone revealed">
       <main v-if="showComputeError" class="mn-container">
         <div class="compute-error-card mn">
           <h3>{{ t('lingqian.computeError.title') }}</h3>
@@ -218,19 +218,19 @@ watch(
         </div>
       </main>
 
-      <template v-else>
+      <template v-else-if="result">
         <div ref="shareCardEl" class="lingqian-share-card">
           <main class="mn-container" style="padding-top: 0;">
-            <PoemDisplay :item="result?.item ?? null">
+            <PoemDisplay :item="result.item">
               <template #header>
-                <LingqianTitle :item="result?.item ?? null" />
+                <LingqianTitle :item="result.item" />
               </template>
             </PoemDisplay>
 
-            <JieyueXianji :item="result?.item ?? null" />
+            <JieyueXianji :item="result.item" />
 
             <TopicTabs
-              :item="result?.item ?? null"
+              :item="result.item"
               :topic="currentTopic"
               @update:topic="currentTopic = $event"
             />

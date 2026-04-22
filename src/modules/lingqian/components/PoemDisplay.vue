@@ -6,10 +6,10 @@ import type { LingqianItem } from '../types'
 
 /**
  * 4 行签诗 + 典故段（古文不翻译，按主题样式呈现）。
- * 缺省状态下显示占位文本。
  */
 interface Props {
-  item: LingqianItem | null
+  /** 已抽得的签；调用方用 v-if / v-else-if 保证非空 */
+  item: LingqianItem
 }
 const props = defineProps<Props>()
 
@@ -17,7 +17,7 @@ const { t } = useI18n()
 const themeStore = useThemeStore()
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
-const poemLines = computed(() => props.item?.poem ?? ['—', '—', '—', '—'])
+const poemLines = computed(() => props.item.poem)
 </script>
 
 <template>
@@ -32,7 +32,7 @@ const poemLines = computed(() => props.item?.poem ?? ['—', '—', '—', '—'
       </div>
     </div>
 
-    <div v-if="props.item" class="lq-tale">
+    <div class="lq-tale">
       <strong>{{ t('lingqian.poem.taleLabel') }}</strong>
       {{ t('lingqian.poem.taleIntro', { title: props.item.title }) }}
     </div>
@@ -53,7 +53,7 @@ const poemLines = computed(() => props.item?.poem ?? ['—', '—', '—', '—'
       </div>
     </div>
 
-    <div v-if="props.item" class="lq-tale">
+    <div class="lq-tale">
       <div class="lq-tale-label">{{ t('lingqian.poem.taleLabelMn') }}</div>
       <p class="lq-tale-body">
         {{ t('lingqian.poem.taleIntro', { title: props.item.title }) }}

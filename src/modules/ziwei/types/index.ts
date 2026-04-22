@@ -6,8 +6,6 @@
  * 关键约定：
  *  - PalaceKey 是项目内的稳定 key（与 i18n / SVG 选择器对齐），与 iztro 的中文宫名一一映射
  *  - slot 是 4×4 网格中的位置（1..16，行优先），由 EarthlyBranch 派生
- *  - 与 mock 文件 src/modules/ziwei/data/mockZiwei.ts 共享同一份类型，
- *    保证 mock 与真实 chart 在子组件中可以无缝替换
  */
 
 import type {

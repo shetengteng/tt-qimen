@@ -5,7 +5,8 @@ import { useThemeStore } from '@/stores/theme'
 import type { ChengguLevel, ChengguResult } from '../types'
 
 interface Props {
-  result?: ChengguResult | null
+  /** 已排盘结果；调用方用 v-if="result" 保证非空 */
+  result: ChengguResult
 }
 const props = defineProps<Props>()
 
@@ -13,16 +14,8 @@ const { t } = useI18n()
 const themeStore = useThemeStore()
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
-/** 未排盘态占位（与 WeightBalance 同一套典型样例 5.1 两 / 贵显） */
-const PLACEHOLDER_BREAKDOWN = {
-  year: { label: '庚午年', weight: 1.2 },
-  month: { label: '四月生', weight: 0.9 },
-  day: { label: '二十日', weight: 1.6 },
-  hour: { label: '午时生', weight: 1.4 },
-}
-
 const cells = computed(() => {
-  const b = props.result?.breakdown ?? PLACEHOLDER_BREAKDOWN
+  const b = props.result.breakdown
   return [
     { key: 'year', label: t('chenggu.table.year'), src: b.year.label, weight: b.year.weight },
     { key: 'month', label: t('chenggu.table.month'), src: b.month.label, weight: b.month.weight },
@@ -31,9 +24,9 @@ const cells = computed(() => {
   ]
 })
 
-const totalWeight = computed(() => props.result?.totalWeight ?? 5.1)
+const totalWeight = computed(() => props.result.totalWeight)
 
-const level = computed<ChengguLevel>(() => props.result?.poem.level ?? 'high')
+const level = computed<ChengguLevel>(() => props.result.poem.level)
 
 /** 等级 → badge 类名（用于 CSS 上色） */
 const LEVEL_CLASS: Record<ChengguLevel, string> = {

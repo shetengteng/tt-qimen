@@ -14,7 +14,8 @@ import type { LingqianItem, LingqianLevel } from '../types'
  * tier 仅用于 CSS class，文本内容保留汉字原文。
  */
 interface Props {
-  item: LingqianItem | null
+  /** 已抽得的签；调用方用 v-if / v-else-if 保证非空 */
+  item: LingqianItem
 }
 const props = defineProps<Props>()
 
@@ -31,10 +32,10 @@ const LEVEL_TIER: Readonly<Record<LingqianLevel, 'up' | 'mid' | 'down'>> = {
   下下: 'down',
 }
 
-const numberText = computed(() => props.item?.id ?? '—')
-const levelText = computed(() => props.item?.level ?? '—')
-const titleText = computed(() => props.item?.title ?? t('lingqian.placeholder.title'))
-const tierClass = computed(() => (props.item ? LEVEL_TIER[props.item.level] : 'mid'))
+const numberText = computed(() => props.item.id)
+const levelText = computed(() => props.item.level)
+const titleText = computed(() => props.item.title)
+const tierClass = computed(() => LEVEL_TIER[props.item.level])
 </script>
 
 <template>

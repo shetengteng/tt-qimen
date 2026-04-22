@@ -157,7 +157,7 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
       </div>
     </div>
 
-    <div ref="resultBannerEl" :class="['result-banner', { revealed: skeleton.revealed.value }]">
+    <div v-if="skeleton.revealed.value" ref="resultBannerEl" class="result-banner revealed">
       <h2 class="result-banner-title">
         <span class="result-banner-decor">◈</span>
         {{ t('liuren.resultBanner.title') }}
@@ -166,7 +166,7 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
       <div class="result-banner-subtitle">{{ t('liuren.resultBanner.subtitle') }}</div>
     </div>
 
-    <div :class="['result-zone', { revealed: skeleton.revealed.value }]">
+    <div v-if="skeleton.revealed.value" class="result-zone revealed">
       <div v-if="showComputeError" class="compute-error-card">
         <h3>◈ {{ t('liuren.computeError.title') }}</h3>
         <p>{{ t('liuren.computeError.hint') }}</p>
@@ -175,10 +175,10 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
         </button>
       </div>
 
-      <template v-else>
+      <template v-else-if="result">
         <div ref="shareCardEl" class="liuren-share-card">
           <div class="gf-container" style="padding-top: 0;">
-            <PalaceWheel :current="result?.palace.name ?? null" :path="result?.path ?? []" />
+            <PalaceWheel :current="result.palace.name" :path="result.path" />
 
             <AspectReading
               :aspect="liurenStore.aspect"
@@ -230,13 +230,13 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
       </div>
     </main>
 
-    <div ref="resultBannerEl" :class="['result-banner', { revealed: skeleton.revealed.value }]">
+    <div v-if="skeleton.revealed.value" ref="resultBannerEl" class="result-banner revealed">
       <h2 class="result-banner-title">{{ t('liuren.resultBanner.title') }}</h2>
       <div class="result-banner-sub">{{ t('liuren.resultBanner.subtitle') }}</div>
       <div class="result-banner-line" />
     </div>
 
-    <div :class="['result-zone', { revealed: skeleton.revealed.value }]">
+    <div v-if="skeleton.revealed.value" class="result-zone revealed">
       <main v-if="showComputeError" class="mn-container">
         <div class="compute-error-card mn">
           <h3>{{ t('liuren.computeError.title') }}</h3>
@@ -247,10 +247,10 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
         </div>
       </main>
 
-      <template v-else>
+      <template v-else-if="result">
         <div ref="shareCardEl" class="liuren-share-card">
           <main class="mn-container" style="padding-top: 0;">
-            <PalaceWheel :current="result?.palace.name ?? null" :path="result?.path ?? []" />
+            <PalaceWheel :current="result.palace.name" :path="result.path" />
             <AspectReading
               :aspect="liurenStore.aspect"
               :result="result"

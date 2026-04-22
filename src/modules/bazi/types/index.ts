@@ -208,6 +208,31 @@ export interface ChartMeta {
   genderTitle: '乾造' | '坤造'
 }
 
+/**
+ * UI 层四柱单元格（FourPillarsTable 使用）。
+ *
+ * 与内部计算类型 `PillarInfo` 的区别：
+ *   - PillarInfo 描述完整单柱（用于核心计算）
+ *   - PillarCell 是 UI 展示用的扁平结构，把多语言化后的属性字符串直接塞到字段里
+ * BaziPage 负责把 PillarInfo 转成 PillarCell。
+ */
+export interface PillarCell {
+  gan: string
+  zhi: string
+  /** 类似 "阳金" / "阳火 · 日主" */
+  ganAttr: string
+  /** 类似 "阳火" */
+  zhiAttr: string
+  /** 十神（日柱为 '日主'） */
+  shishen: string
+  /** 纳音名 */
+  nayin: string
+  /** 藏干 */
+  canggang: string[]
+  /** 仅有本气（子/午/卯/酉 等） */
+  cangganSingle?: boolean
+}
+
 /** 完整命盘 */
 export interface BaziChart {
   /** 元信息 */

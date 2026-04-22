@@ -2,11 +2,10 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
-import { fiveElements, radarPolygonPoints as fallbackPoly, radarDataPoints as fallbackPoints } from '../data/mockBazi'
 import type { BaziChart, ElementCell, ElementName } from '../types'
 
 interface Props {
-  /** 真实命盘；不传则回退到 mock */
+  /** 真实命盘；由外层 result-zone v-if 保证非空 */
   chart?: BaziChart | null
 }
 const props = defineProps<Props>()
@@ -52,21 +51,7 @@ interface RadarItem {
 }
 
 const radarItems = computed<RadarItem[]>(() => {
-  if (!props.chart) {
-    return RADAR_ORDER.map((el) => {
-      const key = ELEMENT_KEY[el]
-      const cell = fiveElements.find(e => e.key === key)!
-      return {
-        key,
-        name: labels.value[key],
-        ratio: cell.count / 5,
-        count: cell.count,
-        percent: cell.percent,
-        status: cell.status,
-        statusLabel: fiveElementLabel.value[cell.status],
-      }
-    })
-  }
+  if (!props.chart) return []
 
   const cellMap: Record<ElementName, ElementCell> = props.chart.elementCells
     .reduce((acc, c) => { acc[c.name] = c; return acc }, {} as Record<ElementName, ElementCell>)
@@ -88,30 +73,28 @@ const radarItems = computed<RadarItem[]>(() => {
 })
 
 /** 根据 radarItems 重新生成多边形 + 数据点 */
-const radarDataPoints = computed<ReadonlyArray<readonly [number, number]>>(() => {
-  if (!props.chart) return fallbackPoints
-  return radarItems.value.map((it, i) => {
+const radarDataPoints = computed<ReadonlyArray<readonly [number, number]>>(() =>
+  radarItems.value.map((it, i) => {
     const [x, y] = RADAR_AXES[i]
     return [x * it.ratio, y * it.ratio] as const
-  })
-})
-const radarPolygonPoints = computed(() => {
-  if (!props.chart) return fallbackPoly
-  return radarDataPoints.value.map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`).join(' ')
-})
+  }),
+)
+const radarPolygonPoints = computed(() =>
+  radarDataPoints.value.map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`).join(' '),
+)
 
 /** 用于 5 个轴标签下方的数字（按 RADAR_ORDER 索引取） */
 function axisCount(idx: number): number {
   return radarItems.value[idx]?.count ?? 0
 }
 
-/** 给「五行强弱条」用的展示顺序：金木水火土（与旧 mock 对齐） */
-const elemDisplay = computed(() => {
+/** 给「五行强弱条」用的展示顺序：金木水火土 */
+const elemDisplay = computed<RadarItem[]>(() => {
+  if (!radarItems.value.length) return []
   const order: Array<'jin' | 'mu' | 'shui' | 'huo' | 'tu'> = ['jin', 'mu', 'shui', 'huo', 'tu']
-  return order.map((key) => {
-    const it = radarItems.value.find(r => r.key === key)!
-    return it
-  })
+  return order
+    .map((key) => radarItems.value.find(r => r.key === key))
+    .filter((it): it is RadarItem => !!it)
 })
 
 const description = computed(() => (isGuofeng.value ? t('bazi.radar.desc') : t('bazi.radar.descMn')))

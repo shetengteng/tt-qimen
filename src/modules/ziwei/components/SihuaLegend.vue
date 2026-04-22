@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
-import type { SihuaKey } from '../data/mockZiwei'
+import type { SihuaKey } from '../types'
 
 const { t } = useI18n()
 const themeStore = useThemeStore()

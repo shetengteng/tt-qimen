@@ -989,15 +989,6 @@
   margin: var(--mn-space-12) auto var(--mn-space-6);
   padding: 0 var(--mn-space-6);
   text-align: center;
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
-  pointer-events: none;
-}
-:root[data-theme='minimal'] .result-banner.revealed {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
 }
 :root[data-theme='minimal'] .result-banner-title {
   font-size: 28px;
@@ -1020,33 +1011,8 @@
 }
 
 :root[data-theme='minimal'] .result-zone {
-  opacity: 0.22;
-  filter: grayscale(0.85) blur(0.5px);
-  pointer-events: none;
-  transition: opacity 0.55s ease, filter 0.55s ease;
   position: relative;
 }
-:root[data-theme='minimal'] .result-zone .result-zone-hint {
-  position: absolute;
-  top: 36px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--mn-bg-elev);
-  color: var(--mn-ink-soft);
-  padding: 8px 18px;
-  font-size: 13px;
-  border-radius: 999px;
-  border: 1px dashed var(--mn-border);
-  z-index: 2;
-  white-space: nowrap;
-  letter-spacing: 0.04em;
-}
-:root[data-theme='minimal'] .result-zone.revealed {
-  opacity: 1;
-  filter: none;
-  pointer-events: auto;
-}
-:root[data-theme='minimal'] .result-zone.revealed .result-zone-hint { display: none; }
 
 /* 排盘失败提示卡（chart=null 时取代旧 mock 文案 fallback） */
 :root[data-theme='minimal'] .compute-error-card.mn {

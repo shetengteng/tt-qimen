@@ -2,14 +2,10 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
-import {
-  daxianCells as mockDaxian,
-  xiaoxianCells as mockXiaoxian,
-  meta as mockMeta,
-} from '../data/mockZiwei'
 import type { ZiweiChart } from '../types'
 
 interface Props {
+  /** 真实命盘；由外层 result-zone v-if 保证非空 */
   chart?: ZiweiChart | null
 }
 
@@ -19,18 +15,19 @@ const { t, te } = useI18n()
 const themeStore = useThemeStore()
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
-const daxianCells = computed(() => props.chart?.daxianCells ?? mockDaxian)
-const xiaoxianCells = computed(() => props.chart?.xiaoxianCells ?? mockXiaoxian)
-const meta = computed(() => props.chart?.meta ?? mockMeta)
+const daxianCells = computed(() => props.chart?.daxianCells ?? [])
+const xiaoxianCells = computed(() => props.chart?.xiaoxianCells ?? [])
+const meta = computed(() => props.chart?.meta ?? null)
 
 const currentDaxian = computed(() => daxianCells.value.find((c) => c.current))
 const currentXiaoxian = computed(() => xiaoxianCells.value.find((c) => c.current))
 
 const daxianCurrentText = computed(() => {
   const cur = currentDaxian.value
-  if (!cur) return ''
+  const m = meta.value
+  if (!cur || !m) return ''
   return t('ziwei.daxian.currentFmt', {
-    age: meta.value.currentAge,
+    age: m.currentAge,
     range: cur.age,
     palace: t(`ziwei.palaceNamesShort.${cur.palaceKey}`),
   })
@@ -47,8 +44,9 @@ const xiaoxianCurrentText = computed(() => {
 })
 
 const genderBadgeText = computed(() => {
-  if (!props.chart) return ''
-  const g = meta.value.gender
+  const m = meta.value
+  if (!m) return ''
+  const g = m.gender
   const key = g === '女' ? 'ziwei.daxian.genderBadgeFemale' : g === '男' ? 'ziwei.daxian.genderBadgeMale' : ''
   if (!key || !te(key)) return ''
   return t(key)

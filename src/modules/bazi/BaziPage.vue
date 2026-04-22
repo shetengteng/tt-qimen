@@ -17,14 +17,13 @@ import InlineAnnotsBar from '@/components/common/InlineAnnotsBar.vue'
 import ShareToast from '@/components/common/ShareToast.vue'
 import { useAnnotBar } from '@/composables/useAnnotBar'
 import { useShareCard } from '@/composables/useShareCard'
-import { meta as baziMeta, pillarsByLocale, type PillarCell } from './data/mockBazi'
 import { useBaziDrawings, type BaziArc } from './composables/useBaziDrawings'
 import { useSkeletonReveal } from '@/composables/useSkeletonReveal'
 import { calculateBazi } from './core/bazi'
 import { detectZhiRelations } from './core/zhiRelations'
-import type { BaziChart, PillarInfo } from './types'
+import type { BaziChart, PillarCell, PillarInfo } from './types'
 
-const { t, tm, locale } = useI18n()
+const { t, tm } = useI18n()
 const router = useRouter()
 const themeStore = useThemeStore()
 const userStore = useUserStore()
@@ -83,44 +82,36 @@ function toPillarCell(p: PillarInfo, isDay: boolean): PillarCell {
   }
 }
 
+/**
+ * 以下 computed 均假设 `chart.value` 非空（result-zone 外层通过 v-if 拦截 null 态）。
+ * 未排盘时 BaziPage 只渲染 BirthForm，不会消费这些 computed。
+ */
 const arcs = computed<BaziArc[]>(() => {
-  if (chart.value) {
-    const p = chart.value.pillars
-    return detectZhiRelations(p.year, p.month, p.day, p.hour)
-  }
-  // 未排盘前回退到 i18n 中的示意文案，保持视觉占位
-  const r = tm('bazi.relations') as Record<string, string>
+  const c = chart.value
+  if (!c) return []
+  const p = c.pillars
+  return detectZhiRelations(p.year, p.month, p.day, p.hour)
+})
+
+const pillarsLocalized = computed<PillarCell[]>(() => {
+  const c = chart.value
+  if (!c) return []
+  const p = c.pillars
   return [
-    { type: 'chong', from: 0, to: 2, label: r.chong, desc: r.chongDescMn, dir: 'up' },
-    { type: 'zixing', from: 0, to: 3, label: r.zixing, desc: r.zixingDescMn, dir: 'down' },
-    { type: 'anhe', from: 1, to: 3, label: r.anhe, desc: r.anheDescMn, dir: 'down' },
+    toPillarCell(p.year, false),
+    toPillarCell(p.month, false),
+    toPillarCell(p.day, true),
+    toPillarCell(p.hour, false),
   ]
 })
 
-const pillarsLocalized = computed(() => {
-  if (chart.value) {
-    const c = chart.value.pillars
-    return [
-      toPillarCell(c.year, false),
-      toPillarCell(c.month, false),
-      toPillarCell(c.day, true),
-      toPillarCell(c.hour, false),
-    ]
-  }
-  const map = pillarsByLocale as Record<string, typeof pillarsByLocale['zh-CN']>
-  return map[locale.value] ?? pillarsByLocale['zh-CN']
-})
-
 const meta = computed(() => {
-  if (chart.value) return {
-    solar: chart.value.meta.solar,
-    lunar: chart.value.meta.lunar,
-    genderTitle: chart.value.meta.genderTitle,
-  }
+  const c = chart.value
+  if (!c) return { solar: '', lunar: '', genderTitle: undefined as '乾造' | '坤造' | undefined }
   return {
-    solar: locale.value === 'en' ? baziMeta.solarEn : baziMeta.solar,
-    lunar: locale.value === 'en' ? baziMeta.lunarEn : baziMeta.lunar,
-    genderTitle: userStore.birth.gender === 'female' ? '坤造' as const : '乾造' as const,
+    solar: c.meta.solar,
+    lunar: c.meta.lunar,
+    genderTitle: c.meta.genderTitle,
   }
 })
 
@@ -129,7 +120,7 @@ const metaLabels = computed(() => {
   return { solar: m.solarLabel, lunar: m.lunarLabel }
 })
 
-/** 四柱表头副标题 */
+/** 四柱表头副标题（chart 存在时才有意义） */
 const headerSubs = computed(() => {
   if (!chart.value) return undefined
   const b = userStore.birth
@@ -278,7 +269,7 @@ function onRepaipan() {
 
 /**
  * 排盘失败回退态：当 result-zone 已 reveal、但 chart 仍为 null 时，
- * 直接渲染"排盘未完成"提示，避免子组件落入 i18n / mockBazi 的硬编码示例 fallback
+ * 直接渲染"排盘未完成"提示，避免子组件落入 i18n 硬编码示例 fallback
  * （那些示例本质是 1990-05-20 男的样例文案，与当前用户的生辰无关，
  *  容易被误读为"已经是 TA 的命盘"）。
  *
@@ -304,7 +295,7 @@ function go(name: 'home') {
       </div>
     </div>
 
-    <div ref="resultBannerEl" :class="['result-banner', { revealed: skeleton.revealed.value }]">
+    <div v-if="skeleton.revealed.value" ref="resultBannerEl" class="result-banner revealed">
       <h2 class="result-banner-title">
         <span class="result-banner-decor">◈</span>
         {{ t('bazi.resultBanner.title') }}
@@ -313,7 +304,7 @@ function go(name: 'home') {
       <div class="result-banner-subtitle">{{ t('bazi.resultBanner.subtitle') }}</div>
     </div>
 
-    <div :class="['result-zone', { revealed: skeleton.revealed.value }]">
+    <div v-if="skeleton.revealed.value" class="result-zone revealed">
       <div v-if="showComputeError" class="compute-error-card">
         <h3>◈ {{ t('bazi.computeError.title') }}</h3>
         <p>{{ t('bazi.computeError.hint') }}</p>
@@ -444,13 +435,13 @@ function go(name: 'home') {
       </div>
     </main>
 
-    <div ref="resultBannerEl" :class="['result-banner', { revealed: skeleton.revealed.value }]">
+    <div v-if="skeleton.revealed.value" ref="resultBannerEl" class="result-banner revealed">
       <h2 class="result-banner-title">{{ t('bazi.resultBanner.title') }}</h2>
       <div class="result-banner-sub">{{ t('bazi.resultBanner.subtitle') }}</div>
       <div class="result-banner-line" />
     </div>
 
-    <div :class="['result-zone', { revealed: skeleton.revealed.value }]">
+    <div v-if="skeleton.revealed.value" class="result-zone revealed">
       <main v-if="showComputeError" class="mn-container">
         <div class="compute-error-card mn">
           <h3>{{ t('bazi.computeError.title') }}</h3>

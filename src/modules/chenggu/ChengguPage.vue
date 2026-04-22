@@ -99,11 +99,11 @@ onMounted(() => {
             @paipan="onPaipan"
           />
         </div>
-        <WeightBalance :result="result" />
+        <WeightBalance v-if="result" :result="result" />
       </div>
     </div>
 
-    <div ref="resultBannerEl" :class="['result-banner', { revealed: skeleton.revealed.value }]">
+    <div v-if="skeleton.revealed.value" ref="resultBannerEl" class="result-banner revealed">
       <h2 class="result-banner-title">
         <span class="result-banner-decor">◈</span>
         {{ t('chenggu.resultBanner.title') }}
@@ -112,7 +112,7 @@ onMounted(() => {
       <div class="result-banner-subtitle">{{ t('chenggu.resultBanner.subtitle') }}</div>
     </div>
 
-    <div :class="['result-zone', { revealed: skeleton.revealed.value }]">
+    <div v-if="skeleton.revealed.value" class="result-zone revealed">
       <div v-if="showComputeError" class="compute-error-card">
         <h3>◈ {{ t('chenggu.computeError.title') }}</h3>
         <p>{{ t('chenggu.computeError.hint') }}</p>
@@ -121,14 +121,14 @@ onMounted(() => {
         </button>
       </div>
 
-      <template v-else>
+      <template v-else-if="result">
         <div ref="shareCardEl" class="chenggu-share-card">
           <div class="gf-container" style="padding-top: 0;">
             <div class="gf-divider"><span>◆ {{ t('chenggu.section.breakdown') }} ◆</span></div>
             <WeightTable :result="result" />
 
             <div class="gf-divider">
-              <span>◆ {{ result?.poem.weight ?? t('chenggu.placeholder.displayWeight') }} · {{ t('chenggu.section.poem') }} ◆</span>
+              <span>◆ {{ result.poem.weight }} · {{ t('chenggu.section.poem') }} ◆</span>
             </div>
             <PoemDisplay :result="result" />
             <InterpretBlock :result="result" />
@@ -170,17 +170,17 @@ onMounted(() => {
             @paipan="onPaipan"
           />
         </div>
-        <WeightBalance :result="result" />
+        <WeightBalance v-if="result" :result="result" />
       </div>
     </main>
 
-    <div ref="resultBannerEl" :class="['result-banner', { revealed: skeleton.revealed.value }]">
+    <div v-if="skeleton.revealed.value" ref="resultBannerEl" class="result-banner revealed">
       <h2 class="result-banner-title">{{ t('chenggu.resultBanner.title') }}</h2>
       <div class="result-banner-sub">{{ t('chenggu.resultBanner.subtitle') }}</div>
       <div class="result-banner-line" />
     </div>
 
-    <div :class="['result-zone', { revealed: skeleton.revealed.value }]">
+    <div v-if="skeleton.revealed.value" class="result-zone revealed">
       <main v-if="showComputeError" class="mn-container">
         <div class="compute-error-card mn">
           <h3>{{ t('chenggu.computeError.title') }}</h3>
@@ -191,7 +191,7 @@ onMounted(() => {
         </div>
       </main>
 
-      <template v-else>
+      <template v-else-if="result">
         <div ref="shareCardEl" class="chenggu-share-card">
           <main class="mn-container" style="padding-top: 0;">
             <WeightTable :result="result" />

@@ -7,7 +7,8 @@ import type { LingqianItem } from '../types'
  * 两套主题共用 markup，样式由 :root[data-theme='*'] .lq-two-cols 区分。
  */
 interface Props {
-  item: LingqianItem | null
+  /** 已抽得的签；调用方用 v-if / v-else-if 保证非空 */
+  item: LingqianItem
 }
 defineProps<Props>()
 const { t } = useI18n()
@@ -20,7 +21,7 @@ const { t } = useI18n()
         <span class="lq-col-dot" />{{ t('lingqian.jieyue.label') }}
       </div>
       <p class="lq-col-body">
-        {{ item?.jieyue ?? t('lingqian.placeholder.jieyue') }}
+        {{ item.jieyue }}
       </p>
     </div>
 
@@ -29,7 +30,7 @@ const { t } = useI18n()
         <span class="lq-col-dot" />{{ t('lingqian.xianji.label') }}
       </div>
       <p class="lq-col-body">
-        {{ item?.xianji ?? t('lingqian.placeholder.xianji') }}
+        {{ item.xianji }}
       </p>
     </div>
   </section>

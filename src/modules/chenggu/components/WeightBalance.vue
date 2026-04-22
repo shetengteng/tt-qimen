@@ -5,7 +5,8 @@ import { useThemeStore } from '@/stores/theme'
 import type { ChengguResult } from '../types'
 
 interface Props {
-  result?: ChengguResult | null
+  /** 已排盘结果；调用方用 v-if="result" 保证非空 */
+  result: ChengguResult
 }
 const props = defineProps<Props>()
 
@@ -13,28 +14,16 @@ const { t } = useI18n()
 const themeStore = useThemeStore()
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
-/** 未排盘时的占位骨重（取原型样例中的 5.1 两） */
-const PLACEHOLDER = {
-  displayWeight: t('chenggu.placeholder.displayWeight'),
-  total: 5.1,
-  breakdown: {
-    year: 1.2,
-    month: 0.9,
-    day: 1.6,
-    hour: 1.4,
-  },
-}
-
-const displayWeight = computed(() => props.result?.displayWeight ?? PLACEHOLDER.displayWeight)
-const totalNumber = computed(() => props.result?.totalWeight ?? PLACEHOLDER.total)
+const displayWeight = computed(() => props.result.displayWeight)
+const totalNumber = computed(() => props.result.totalWeight)
 
 const parts = computed(() => {
-  const b = props.result?.breakdown
+  const b = props.result.breakdown
   return [
-    { key: 'year', value: b?.year.weight ?? PLACEHOLDER.breakdown.year },
-    { key: 'month', value: b?.month.weight ?? PLACEHOLDER.breakdown.month },
-    { key: 'day', value: b?.day.weight ?? PLACEHOLDER.breakdown.day },
-    { key: 'hour', value: b?.hour.weight ?? PLACEHOLDER.breakdown.hour },
+    { key: 'year', value: b.year.weight },
+    { key: 'month', value: b.month.weight },
+    { key: 'day', value: b.day.weight },
+    { key: 'hour', value: b.hour.weight },
   ]
 })
 </script>

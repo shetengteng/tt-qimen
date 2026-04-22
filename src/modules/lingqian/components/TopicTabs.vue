@@ -12,7 +12,8 @@ import { TOPIC_KEYS, type TopicKey } from '../core/lingqian'
  * 这里采用 tab，宽屏可后续迁移为列表（数据接口不变）。
  */
 interface Props {
-  item: LingqianItem | null
+  /** 已抽得的签；调用方用 v-if / v-else-if 保证非空 */
+  item: LingqianItem
   topic: TopicKey
 }
 const props = defineProps<Props>()
@@ -26,10 +27,7 @@ function pick(k: TopicKey) {
   emit('update:topic', k)
 }
 
-const currentText = computed(() => {
-  if (!props.item) return t('lingqian.placeholder.topic')
-  return props.item.topics[props.topic]
-})
+const currentText = computed(() => props.item.topics[props.topic])
 
 /** 单字 icon（与原型「谋/财/婚/疾/行」相同的视觉骨架） */
 const TOPIC_ICON: Readonly<Record<TopicKey, string>> = {
