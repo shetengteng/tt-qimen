@@ -30,18 +30,43 @@ const parts = computed(() => {
     { key: 'hour', value: b.hour.weight },
   ]
 })
+
+const hasResult = computed(() => props.result !== null && props.result !== undefined)
 </script>
 
 <template>
   <!-- 国风：铜金渐变天秤（来源：design/prototypes/guofeng/chenggu.html） -->
-  <div v-if="isGuofeng" class="cg-balance-scene">
+  <div
+    v-if="isGuofeng"
+    class="cg-balance-scene"
+    :class="{ 'cg-is-weighed': hasResult }"
+  >
+    <div class="cg-scene-halo" aria-hidden="true"></div>
+
     <div class="cg-scale">
-      <div class="cg-scale-pole"></div>
-      <div class="cg-scale-bar">
-        <div class="cg-scale-pan left"></div>
-        <div class="cg-scale-pan right"></div>
+      <div class="cg-scale-base" aria-hidden="true">
+        <span class="cg-scale-foot left"></span>
+        <span class="cg-scale-foot right"></span>
       </div>
+      <div class="cg-scale-pole">
+        <span class="cg-scale-cap" aria-hidden="true"></span>
+      </div>
+      <div class="cg-scale-bar">
+        <span class="cg-scale-pivot" aria-hidden="true"></span>
+        <div class="cg-scale-pan left">
+          <span class="cg-scale-rope" aria-hidden="true"></span>
+          <span class="cg-scale-ingot" aria-hidden="true"></span>
+        </div>
+        <div class="cg-scale-pan right">
+          <span class="cg-scale-rope" aria-hidden="true"></span>
+          <span class="cg-scale-ingot" aria-hidden="true"></span>
+        </div>
+      </div>
+      <ul class="cg-scale-particles" aria-hidden="true">
+        <li></li><li></li><li></li><li></li><li></li><li></li>
+      </ul>
     </div>
+
     <div v-if="result" class="cg-weight">
       <div class="cg-weight-value">{{ displayWeight }}</div>
       <div class="cg-weight-label">{{ t('chenggu.balance.label') }}</div>
@@ -55,15 +80,37 @@ const parts = computed(() => {
   </div>
 
   <!-- 简约：黑色细线 + 橙色秤盘（来源：design/prototypes/minimal/chenggu.html） -->
-  <div v-else class="cg-balance-scene">
+  <div
+    v-else
+    class="cg-balance-scene"
+    :class="{ 'cg-is-weighed': hasResult }"
+  >
+    <div class="cg-scene-halo" aria-hidden="true"></div>
+
     <div class="cg-scale">
-      <div class="cg-scale-base"></div>
-      <div class="cg-scale-pole"></div>
-      <div class="cg-scale-bar">
-        <div class="cg-scale-pan left"></div>
-        <div class="cg-scale-pan right"></div>
+      <div class="cg-scale-base" aria-hidden="true">
+        <span class="cg-scale-foot left"></span>
+        <span class="cg-scale-foot right"></span>
       </div>
+      <div class="cg-scale-pole">
+        <span class="cg-scale-cap" aria-hidden="true"></span>
+      </div>
+      <div class="cg-scale-bar">
+        <span class="cg-scale-pivot" aria-hidden="true"></span>
+        <div class="cg-scale-pan left">
+          <span class="cg-scale-rope" aria-hidden="true"></span>
+          <span class="cg-scale-ingot" aria-hidden="true"></span>
+        </div>
+        <div class="cg-scale-pan right">
+          <span class="cg-scale-rope" aria-hidden="true"></span>
+          <span class="cg-scale-ingot" aria-hidden="true"></span>
+        </div>
+      </div>
+      <ul class="cg-scale-particles" aria-hidden="true">
+        <li></li><li></li><li></li><li></li><li></li><li></li>
+      </ul>
     </div>
+
     <div v-if="result" class="cg-weight">
       <div class="cg-weight-value">{{ totalNumber.toFixed(1) }} {{ t('chenggu.balance.unit') }}</div>
       <div class="cg-weight-label">{{ t('chenggu.balance.labelMn') }}</div>

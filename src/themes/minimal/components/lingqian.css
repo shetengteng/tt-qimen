@@ -17,7 +17,18 @@
 }
 :root[data-theme='minimal'] .lq-input-hint strong { color: var(--mn-accent); }
 
-/* ---------- 摇签视觉场景 ---------- */
+/* ---------- 摇签视觉场景 ----------
+ * 层次：
+ *   .lq-shake-scene            外框 + 光晕
+ *     .lq-scene-halo           淡紫径向脉冲
+ *     .lq-tube-wrap            签筒 + 签条的定位参考
+ *       .lq-tube               紫调签筒（复合摇晃：俯仰+Y 弹跳+轻 scale）
+ *         .lq-tube-shine       竖向高光
+ *         ::after              "观音灵签"竖排（已有）
+ *       .lq-tube-stick s1/2/3  签条（各自基准 rotate + wobble，错峰抖动）
+ *     .lq-tube-shadow          地面阴影（跳起变淡）
+ *     .lq-scene-dust > li*6    淡紫尘粒
+ * ---------- */
 :root[data-theme='minimal'] .lq-shake-scene {
   max-width: 560px;
   margin: 0 auto var(--mn-space-10);
@@ -26,6 +37,25 @@
   background: linear-gradient(135deg, var(--mn-bg-elev), #f8f7f2);
   border: 1px solid var(--mn-border);
   border-radius: var(--mn-radius-xl);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 背景光晕 */
+:root[data-theme='minimal'] .lq-scene-halo {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 50% 45%, var(--mn-accent-soft), transparent 55%),
+    radial-gradient(circle at 50% 45%, rgba(59, 47, 99, 0.06), transparent 35%);
+  opacity: 0.6;
+  animation: lq-halo-breath-mn 4.6s ease-in-out infinite;
+}
+@keyframes lq-halo-breath-mn {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50%      { opacity: 0.8; transform: scale(1.05); }
 }
 
 :root[data-theme='minimal'] .lq-tube-wrap {
@@ -33,6 +63,7 @@
   height: 200px;
   margin: 0 auto var(--mn-space-6);
   position: relative;
+  z-index: 2;
 }
 
 :root[data-theme='minimal'] .lq-tube {
@@ -41,13 +72,36 @@
   background: linear-gradient(135deg, var(--mn-accent), var(--mn-accent-hover));
   border-radius: 8px 8px 60px 60px;
   position: relative;
-  box-shadow: 0 12px 32px rgba(59, 47, 99, 0.25);
-  animation: lq-shake-mn 2.5s ease-in-out infinite;
+  box-shadow:
+    0 12px 32px rgba(59, 47, 99, 0.25),
+    inset 0 3px 6px rgba(255, 255, 255, 0.08),
+    inset 0 -8px 16px rgba(20, 15, 40, 0.35);
+  transform-origin: 50% 100%;
+  animation: lq-shake-mn 2.8s cubic-bezier(0.36, 0, 0.4, 1) infinite;
 }
 
+/* 筒口暗影（签条插入处） */
+:root[data-theme='minimal'] .lq-tube::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 6px;
+  right: 6px;
+  height: 8px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.35), transparent);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* 多帧摇晃 */
 @keyframes lq-shake-mn {
-  0%, 100% { transform: rotate(-2deg); }
-  50%      { transform: rotate(2deg); }
+  0%    { transform: rotate(-2deg) translateY(0)    scale(1);     }
+  14%   { transform: rotate(-3.5deg) translateY(-3px) scale(1.01); }
+  30%   { transform: rotate(2deg)  translateY(-5px) scale(1.008); }
+  48%   { transform: rotate(3.5deg) translateY(-1px) scale(1);    }
+  66%   { transform: rotate(1deg)  translateY(-3px) scale(1.006); }
+  82%   { transform: rotate(-1.5deg) translateY(0) scale(1);      }
+  100%  { transform: rotate(-2deg) translateY(0)    scale(1);     }
 }
 
 :root[data-theme='minimal'] .lq-tube::after {
@@ -60,22 +114,152 @@
   writing-mode: vertical-rl;
   font-size: 18px;
   letter-spacing: 0.3em;
+  text-shadow: 0 1px 2px rgba(20, 15, 40, 0.35);
+  z-index: 1;
+  pointer-events: none;
 }
 
+/* 筒身高光 */
+:root[data-theme='minimal'] .lq-tube-shine {
+  position: absolute;
+  top: 14px;
+  left: 18%;
+  width: 9px;
+  height: calc(100% - 32px);
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.28) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 100%);
+  border-radius: 6px;
+  filter: blur(1px);
+  pointer-events: none;
+}
+
+/* ---------- 签条 ---------- */
 :root[data-theme='minimal'] .lq-tube-stick {
   position: absolute;
   top: -20px;
   width: 3px;
   height: 40px;
-  background: var(--mn-ink-soft);
+  background: linear-gradient(180deg, var(--mn-ink) 0%, var(--mn-ink-soft) 100%);
   border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(10, 10, 10, 0.18);
+  transform-origin: 50% 100%;
+  z-index: 3;
 }
-:root[data-theme='minimal'] .lq-tube-stick.s1 { left: 20%; transform: rotate(-5deg); }
-:root[data-theme='minimal'] .lq-tube-stick.s2 { left: 45%; top: -28px; }
-:root[data-theme='minimal'] .lq-tube-stick.s3 { left: 60%; transform: rotate(8deg); }
+/* 签条顶端紫色封头 */
+:root[data-theme='minimal'] .lq-tube-stick::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -1px;
+  right: -1px;
+  height: 5px;
+  background: var(--mn-accent);
+  border-radius: 2px 2px 1px 1px;
+  box-shadow: 0 0 4px rgba(59, 47, 99, 0.4);
+}
+
+:root[data-theme='minimal'] .lq-tube-stick.s1 {
+  left: 20%;
+  transform: rotate(-5deg);
+  animation: lq-stick-wobble-mn-1 2.8s ease-in-out infinite;
+}
+:root[data-theme='minimal'] .lq-tube-stick.s2 {
+  left: 45%;
+  top: -28px;
+  animation: lq-stick-wobble-mn-2 5.6s ease-in-out infinite;
+  animation-delay: -1s;
+}
+:root[data-theme='minimal'] .lq-tube-stick.s3 {
+  left: 60%;
+  transform: rotate(8deg);
+  animation: lq-stick-wobble-mn-3 2.8s ease-in-out infinite;
+  animation-delay: -0.5s;
+}
+
+@keyframes lq-stick-wobble-mn-1 {
+  0%, 100% { transform: rotate(-5deg)  translateY(0); }
+  50%      { transform: rotate(-9deg)  translateY(-3px); }
+}
+/* s2 是中间那根，偶发上浮更多（模拟即将跳出） */
+@keyframes lq-stick-wobble-mn-2 {
+  0%, 100% { transform: rotate(0deg)   translateY(0); }
+  35%      { transform: rotate(-3deg)  translateY(-5px); }
+  50%      { transform: rotate(-1deg)  translateY(-10px); }
+  65%      { transform: rotate(2deg)   translateY(-5px); }
+}
+@keyframes lq-stick-wobble-mn-3 {
+  0%, 100% { transform: rotate(8deg)   translateY(0); }
+  50%      { transform: rotate(12deg)  translateY(-2px); }
+}
+
+/* 地面阴影 */
+:root[data-theme='minimal'] .lq-tube-shadow {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--mn-space-10) - 6px);
+  width: 120px;
+  height: 10px;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center,
+    rgba(20, 15, 40, 0.28), transparent 70%);
+  filter: blur(3px);
+  z-index: 1;
+  animation: lq-shadow-mn 2.8s cubic-bezier(0.36, 0, 0.4, 1) infinite;
+  pointer-events: none;
+}
+@keyframes lq-shadow-mn {
+  0%    { transform: translateX(-50%) scaleX(1)    scaleY(1);   opacity: 0.9; }
+  14%   { transform: translateX(-50%) scaleX(1.08) scaleY(0.92); opacity: 0.75; }
+  30%   { transform: translateX(-50%) scaleX(1.18) scaleY(0.82); opacity: 0.55; }
+  48%   { transform: translateX(-50%) scaleX(1.05) scaleY(0.96); opacity: 0.82; }
+  66%   { transform: translateX(-50%) scaleX(1.12) scaleY(0.9); opacity: 0.6; }
+  82%   { transform: translateX(-50%) scaleX(1.03) scaleY(0.98); opacity: 0.86; }
+  100%  { transform: translateX(-50%) scaleX(1)    scaleY(1);   opacity: 0.9; }
+}
+
+/* 淡紫尘粒 */
+:root[data-theme='minimal'] .lq-scene-dust {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+  z-index: 1;
+}
+:root[data-theme='minimal'] .lq-scene-dust li {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--mn-accent);
+  opacity: 0;
+  animation: lq-dust-float-mn 5.2s ease-in-out infinite;
+}
+:root[data-theme='minimal'] .lq-scene-dust li:nth-child(1) { left: 32%; top: 58%; animation-delay: 0s;   }
+:root[data-theme='minimal'] .lq-scene-dust li:nth-child(2) { left: 42%; top: 36%; animation-delay: 0.8s; }
+:root[data-theme='minimal'] .lq-scene-dust li:nth-child(3) { left: 50%; top: 50%; animation-delay: 1.7s; }
+:root[data-theme='minimal'] .lq-scene-dust li:nth-child(4) { left: 60%; top: 32%; animation-delay: 2.5s; }
+:root[data-theme='minimal'] .lq-scene-dust li:nth-child(5) { left: 68%; top: 54%; animation-delay: 0.4s; }
+:root[data-theme='minimal'] .lq-scene-dust li:nth-child(6) { left: 28%; top: 34%; animation-delay: 3.2s; }
+
+@keyframes lq-dust-float-mn {
+  0%   { opacity: 0;   transform: translate(0, 0)       scale(0.6); }
+  25%  { opacity: 0.5; }
+  75%  { opacity: 0.3; }
+  100% { opacity: 0;   transform: translate(4px, -32px) scale(1);   }
+}
 
 @media (prefers-reduced-motion: reduce) {
-  :root[data-theme='minimal'] .lq-tube { animation: none; }
+  :root[data-theme='minimal'] .lq-tube,
+  :root[data-theme='minimal'] .lq-tube-stick,
+  :root[data-theme='minimal'] .lq-tube-shadow,
+  :root[data-theme='minimal'] .lq-scene-halo,
+  :root[data-theme='minimal'] .lq-scene-dust li {
+    animation: none !important;
+  }
 }
 
 /* ---------- 签文卡 ---------- */

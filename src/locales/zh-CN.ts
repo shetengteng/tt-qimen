@@ -368,6 +368,13 @@ export default {
       title: '我的八字命盘 · TT 占卜',
       text: '四柱 · 五行 · 十神 · 大运 · 流年。来自 TT 占卜的命盘解读。',
     },
+
+    source: {
+      prefix: '出处：',
+      classicalLabel: '古籍原文',
+      nonClassical: '产品模板 · 非古籍',
+      pending: '待审校',
+    },
   },
   ziwei: {
     title: '紫微斗数',

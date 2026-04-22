@@ -15,57 +15,249 @@
  *   cg-interpret-card      白话解读（朱色侧边）
  * ============================================ */
 
-/* ---- 两列布局（左输入 / 右天秤） ---- */
+/* ---- 两列布局（左输入 / 右天秤）
+ * align-items: stretch 让左右两列高度一致；
+ * 左侧包裹 div 内部转成 flex 列，使 BirthForm 根元素（.ds-input-card）填满格高度，
+ * 从而与右侧 .cg-balance-scene（min-height: 460px）视觉齐平。
+ * ---- */
 :root[data-theme='guofeng'] .cg-layout {
   max-width: 960px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--gf-space-xl);
-  align-items: start;
+  align-items: stretch;
+}
+:root[data-theme='guofeng'] .cg-layout > div:first-child {
+  display: flex;
+  flex-direction: column;
+}
+/* 覆盖 .ds-input-card 的 max-width / margin 限制：
+ * 默认 .ds-input-card 自带 max-width: 720px + margin: 0 auto var(--space-10)，
+ * 会让左卡宽度被截成 720px 内并水平居中、底部额外空出 40px 边距，
+ * 导致与右侧天秤视觉高度差 40px。此处强制铺满 grid 列。
+ */
+:root[data-theme='guofeng'] .cg-layout > div:first-child > .ds-input-card {
+  flex: 1;
+  width: 100%;
+  max-width: none;
+  margin: 0;
 }
 
-/* ---- 天秤场景卡 ---- */
+/* ---- 天秤场景卡 ----
+ * 层次：
+ *   .cg-balance-scene           外框（铜金卡）
+ *     .cg-scene-halo            背景脉冲光晕（伪元素）
+ *     .cg-scale                 秤的舞台（240x170）
+ *       .cg-scale-base          底座梯形（+ 两脚）
+ *       .cg-scale-pole          立柱（3px 铜色渐变 + 顶帽宝珠）
+ *       .cg-scale-bar           秤杆（摆动 -4°↔4°）
+ *         .cg-scale-pivot       中心铆钉（金色圆 + 内光）
+ *         .cg-scale-pan L/R     秤盘（反向旋转抵消秤杆，悬挂感）
+ *           .cg-scale-rope      秤绳（朱色细线，连接秤盘顶 → 秤杆）
+ *           .cg-scale-ingot     金色元宝（梯形，结果态显影）
+ *       .cg-scale-particles     金粉颗粒（6 粒，循环上浮）
+ * ---- */
 :root[data-theme='guofeng'] .cg-balance-scene {
   background: linear-gradient(135deg, #fdf5db, #f6ecd6);
   border: 1px solid var(--gf-gold);
   border-radius: var(--gf-radius-md);
   padding: var(--gf-space-xl);
-  min-height: 420px;
+  min-height: 460px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   position: relative;
+  overflow: hidden;
+}
+
+:root[data-theme='guofeng'] .cg-balance-scene::before,
+:root[data-theme='guofeng'] .cg-balance-scene::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+/* 四角铜纹（细金线） */
+:root[data-theme='guofeng'] .cg-balance-scene::before {
+  inset: 10px;
+  border: 1px dashed rgba(176, 141, 59, 0.35);
+  border-radius: calc(var(--gf-radius-md) - 2px);
+  opacity: 0.8;
+}
+/* 底部"尘土"阴影：让秤有落地感 */
+:root[data-theme='guofeng'] .cg-balance-scene::after {
+  left: 50%;
+  bottom: 24%;
+  width: 200px;
+  height: 14px;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, rgba(26, 22, 19, 0.18), transparent 70%);
+  filter: blur(2px);
+  z-index: 0;
+}
+
+:root[data-theme='guofeng'] .cg-scene-halo {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(212, 169, 74, 0.22), transparent 55%),
+    radial-gradient(circle at 50% 38%, rgba(194, 58, 42, 0.08), transparent 40%);
+  animation: cg-halo-breath 4.2s ease-in-out infinite;
+  z-index: 0;
+}
+
+@keyframes cg-halo-breath {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50%      { opacity: 1;   transform: scale(1.04); }
 }
 
 :root[data-theme='guofeng'] .cg-scale {
   width: 240px;
-  height: 160px;
+  height: 170px;
   position: relative;
-  margin: 0 auto;
+  margin: 8px auto 0;
+  z-index: 1;
 }
 
+/* ---- 底座 ---- */
+:root[data-theme='guofeng'] .cg-scale-base {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  width: 84px;
+  height: 10px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, #d4a94a 0%, #b08d3b 55%, #8a6b3a 100%);
+  border-radius: 3px 3px 2px 2px;
+  box-shadow:
+    0 2px 4px rgba(26, 22, 19, 0.25),
+    inset 0 1px 0 rgba(255, 249, 219, 0.5);
+}
+:root[data-theme='guofeng'] .cg-scale-base::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -6px;
+  width: 24px;
+  height: 8px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, #e7c268, #b08d3b);
+  border-radius: 3px 3px 0 0;
+  box-shadow: inset 0 1px 0 rgba(255, 249, 219, 0.6);
+}
+:root[data-theme='guofeng'] .cg-scale-foot {
+  position: absolute;
+  bottom: -4px;
+  width: 14px;
+  height: 5px;
+  background: linear-gradient(180deg, #b08d3b, #6d5424);
+  border-radius: 2px;
+}
+:root[data-theme='guofeng'] .cg-scale-foot.left  { left: 2px; }
+:root[data-theme='guofeng'] .cg-scale-foot.right { right: 2px; }
+
+/* ---- 立柱 ---- */
 :root[data-theme='guofeng'] .cg-scale-pole {
   position: absolute;
   top: 30px;
   left: 50%;
-  width: 1px;
-  height: 80px;
-  background: var(--gf-ink);
+  width: 3px;
+  height: 94px;
   transform: translateX(-50%);
+  background: linear-gradient(180deg, #d4a94a 0%, #b08d3b 50%, #8a6b3a 100%);
+  border-radius: 2px;
+  box-shadow:
+    inset 0 0 0 0.5px rgba(26, 22, 19, 0.25),
+    0 0 6px rgba(212, 169, 74, 0.3);
 }
 
+/* 立柱顶端宝珠（双层，上大下小） */
+:root[data-theme='guofeng'] .cg-scale-cap {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, #fff4d4, #d4a94a 55%, #8a6b3a 100%);
+  box-shadow:
+    0 2px 4px rgba(26, 22, 19, 0.25),
+    inset 0 -1px 2px rgba(26, 22, 19, 0.3);
+}
+:root[data-theme='guofeng'] .cg-scale-cap::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff4d4, #c23a2a 70%, #8f2116 100%);
+  box-shadow: 0 0 6px rgba(194, 58, 42, 0.4);
+}
+
+/* ---- 秤杆 ---- */
 :root[data-theme='guofeng'] .cg-scale-bar {
   position: absolute;
   top: 30px;
   left: 20px;
   right: 20px;
-  height: 3px;
-  background: var(--gf-ink);
+  height: 4px;
+  background: linear-gradient(180deg, #e7c268 0%, #b08d3b 50%, #6d5424 100%);
+  border-radius: 2px;
+  box-shadow:
+    0 1px 2px rgba(26, 22, 19, 0.3),
+    inset 0 0.5px 0 rgba(255, 249, 219, 0.55);
   transform: rotate(-4deg);
   transform-origin: center;
-  animation: cg-swing-gf 2.5s ease-in-out infinite alternate;
+  animation: cg-swing-gf 3.2s ease-in-out infinite alternate;
+  z-index: 2;
+}
+
+/* 秤杆两端的铜帽 */
+:root[data-theme='guofeng'] .cg-scale-bar::before,
+:root[data-theme='guofeng'] .cg-scale-bar::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff4d4, #b08d3b 65%, #6d5424 100%);
+  box-shadow: 0 1px 2px rgba(26, 22, 19, 0.4);
+}
+:root[data-theme='guofeng'] .cg-scale-bar::before { left: -4px; }
+:root[data-theme='guofeng'] .cg-scale-bar::after  { right: -4px; }
+
+/* 中心支点（铆钉） */
+:root[data-theme='guofeng'] .cg-scale-pivot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, #fff4d4 0%, #e7c268 40%, #b08d3b 75%, #6d5424 100%);
+  box-shadow:
+    0 0 0 1px rgba(138, 107, 58, 0.5),
+    0 2px 4px rgba(26, 22, 19, 0.35),
+    inset 0 0 2px rgba(26, 22, 19, 0.25);
+  z-index: 3;
+}
+:root[data-theme='guofeng'] .cg-scale-pivot::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(194, 58, 42, 0.35), transparent 70%);
 }
 
 @keyframes cg-swing-gf {
@@ -73,18 +265,161 @@
   100% { transform: rotate(4deg); }
 }
 
+/* 结果态：摆动幅度衰减（像已经称完、轻微呼吸） */
+:root[data-theme='guofeng'] .cg-balance-scene.cg-is-weighed .cg-scale-bar {
+  animation-name: cg-swing-gf-settle;
+  animation-duration: 4.8s;
+}
+@keyframes cg-swing-gf-settle {
+  0%   { transform: rotate(-1.4deg); }
+  100% { transform: rotate(1.4deg); }
+}
+
+/* ---- 秤盘 ----
+ * transform-origin 设在秤盘正上方 60px（对应绳索顶端、秤杆位置），
+ * 秤盘使用与秤杆反向、等幅、等周期的动画抵消秤杆旋转，
+ * 实现"秤盘位置跟随秤杆升降，但朝向始终朝下"的悬挂效果。
+ * ---- */
 :root[data-theme='guofeng'] .cg-scale-pan {
   position: absolute;
   top: 60px;
-  width: 50px;
-  height: 20px;
-  border: 1.5px solid var(--gf-cinnabar);
+  width: 54px;
+  height: 22px;
+  border: 1.5px solid rgba(194, 58, 42, 0.8);
   border-top: none;
-  border-radius: 0 0 25px 25px;
-  background: linear-gradient(180deg, rgba(194, 58, 42, 0.1), rgba(194, 58, 42, 0.05));
+  border-radius: 0 0 28px 28px;
+  background:
+    linear-gradient(180deg, rgba(231, 194, 104, 0.35) 0%, rgba(194, 58, 42, 0.18) 45%, rgba(143, 33, 22, 0.12) 100%),
+    linear-gradient(180deg, #fdf5db, #f6ecd6);
+  box-shadow:
+    inset 0 2px 4px rgba(143, 33, 22, 0.18),
+    0 2px 4px rgba(26, 22, 19, 0.15);
+  transform-origin: 50% -60px;
+  animation: cg-counter-gf 3.2s ease-in-out infinite alternate;
 }
-:root[data-theme='guofeng'] .cg-scale-pan.left  { left: 20px; }
-:root[data-theme='guofeng'] .cg-scale-pan.right { right: 20px; }
+:root[data-theme='guofeng'] .cg-scale-pan.left  { left: 16px; }
+:root[data-theme='guofeng'] .cg-scale-pan.right { right: 16px; }
+
+/* 秤盘内的高光弧（仿铜反光） */
+:root[data-theme='guofeng'] .cg-scale-pan::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, transparent, rgba(255, 249, 219, 0.75), transparent);
+  opacity: 0.9;
+}
+
+@keyframes cg-counter-gf {
+  0%   { transform: rotate(4deg); }
+  100% { transform: rotate(-4deg); }
+}
+
+:root[data-theme='guofeng'] .cg-balance-scene.cg-is-weighed .cg-scale-pan {
+  animation-name: cg-counter-gf-settle;
+  animation-duration: 4.8s;
+}
+@keyframes cg-counter-gf-settle {
+  0%   { transform: rotate(1.4deg); }
+  100% { transform: rotate(-1.4deg); }
+}
+
+/* ---- 秤绳（从秤盘顶部向上延伸到秤杆挂点） ---- */
+:root[data-theme='guofeng'] .cg-scale-rope {
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  width: 1.5px;
+  height: 60px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg,
+    rgba(143, 33, 22, 0.85) 0%,
+    rgba(194, 58, 42, 0.75) 60%,
+    rgba(194, 58, 42, 0.55) 100%);
+  border-radius: 1px;
+  box-shadow: 0 0 2px rgba(194, 58, 42, 0.3);
+}
+/* 绳结（秤盘顶端挂钩） */
+:root[data-theme='guofeng'] .cg-scale-rope::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -2px;
+  width: 4px;
+  height: 4px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, #c23a2a, #8f2116);
+}
+
+/* ---- 砝码（金色元宝，结果态显影） ---- */
+:root[data-theme='guofeng'] .cg-scale-ingot {
+  position: absolute;
+  left: 50%;
+  bottom: 4px;
+  width: 20px;
+  height: 10px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, #fff4d4 0%, #e7c268 35%, #b08d3b 100%);
+  border-radius: 3px 3px 6px 6px / 3px 3px 4px 4px;
+  clip-path: polygon(15% 0, 85% 0, 100% 100%, 0 100%);
+  box-shadow:
+    0 1px 2px rgba(26, 22, 19, 0.35),
+    inset 0 0.5px 0 rgba(255, 249, 219, 0.7);
+  opacity: 0;
+  transform-origin: 50% 100%;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+:root[data-theme='guofeng'] .cg-balance-scene.cg-is-weighed .cg-scale-ingot {
+  opacity: 1;
+  animation: cg-ingot-drop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+}
+@keyframes cg-ingot-drop {
+  0%   { opacity: 0; transform: translate(-50%, -24px) scale(0.7); }
+  60%  { opacity: 1; transform: translate(-50%, 2px) scale(1.08); }
+  100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+/* ---- 金粉粒子（6 粒，散落在秤两侧上方缓慢上浮） ---- */
+:root[data-theme='guofeng'] .cg-scale-particles {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+  z-index: 0;
+}
+:root[data-theme='guofeng'] .cg-scale-particles li {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff4d4, rgba(212, 169, 74, 0.6) 60%, transparent 100%);
+  opacity: 0;
+  animation: cg-particle-float 5s ease-in-out infinite;
+}
+:root[data-theme='guofeng'] .cg-scale-particles li:nth-child(1) { left: 14%; top: 78%; animation-delay: 0s;    width: 3px; height: 3px; }
+:root[data-theme='guofeng'] .cg-scale-particles li:nth-child(2) { left: 28%; top: 72%; animation-delay: 1.1s; }
+:root[data-theme='guofeng'] .cg-scale-particles li:nth-child(3) { left: 46%; top: 82%; animation-delay: 2.3s;  width: 3px; height: 3px; }
+:root[data-theme='guofeng'] .cg-scale-particles li:nth-child(4) { left: 62%; top: 70%; animation-delay: 0.6s; }
+:root[data-theme='guofeng'] .cg-scale-particles li:nth-child(5) { left: 78%; top: 76%; animation-delay: 1.8s;  width: 3px; height: 3px; }
+:root[data-theme='guofeng'] .cg-scale-particles li:nth-child(6) { left: 90%; top: 80%; animation-delay: 2.9s; }
+
+@keyframes cg-particle-float {
+  0%   { opacity: 0;   transform: translate(0, 0)     scale(0.6); }
+  15%  { opacity: 0.9; }
+  75%  { opacity: 0.7; }
+  100% { opacity: 0;   transform: translate(-6px, -44px) scale(1.1); }
+}
+
+/* 结果态：粒子更密 & 更快一次性绽放 */
+:root[data-theme='guofeng'] .cg-balance-scene.cg-is-weighed .cg-scale-particles li {
+  animation-duration: 3.8s;
+}
 
 :root[data-theme='guofeng'] .cg-weight {
   margin-top: var(--gf-space-xl);
@@ -292,6 +627,19 @@
   color: var(--gf-ink-soft);
   font-size: 13px;
   font-style: italic;
+}
+
+/* ---- Reduced motion：无障碍降级 ---- */
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme='guofeng'] .cg-scene-halo,
+  :root[data-theme='guofeng'] .cg-scale-bar,
+  :root[data-theme='guofeng'] .cg-scale-pan,
+  :root[data-theme='guofeng'] .cg-scale-particles li {
+    animation: none !important;
+    transform: none;
+  }
+  :root[data-theme='guofeng'] .cg-scale-pan.left  { transform: none; }
+  :root[data-theme='guofeng'] .cg-scale-pan.right { transform: none; }
 }
 
 /* ---- Mobile ---- */

@@ -738,6 +738,19 @@
   letter-spacing: 0.5px;
   cursor: help;
 }
+/* 非古籍 / 产品模板标识（与 gender-badge 同风格但淡化 · 虚线边框 + 70% 不透明度区分性质） */
+:root[data-theme='minimal'] .non-classical-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  font-size: 11px;
+  border: 1px dashed var(--mn-ink-soft);
+  border-radius: 999px;
+  color: var(--mn-ink-soft);
+  letter-spacing: 0.5px;
+  cursor: help;
+  opacity: 0.7;
+  font-weight: normal;
+}
 :root[data-theme='minimal'] .fortune-timeline {
   position: relative;
   padding-bottom: var(--mn-space-4);

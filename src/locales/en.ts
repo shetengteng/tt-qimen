@@ -366,6 +366,13 @@ export default {
       title: 'My Bazi Chart · TT Divination',
       text: 'Four pillars · Five elements · Ten gods · Fortune cycles. Brought to you by TT Divination.',
     },
+
+    source: {
+      prefix: 'Source: ',
+      classicalLabel: 'Classical source',
+      nonClassical: 'Product template · not classical',
+      pending: 'Under review',
+    },
   },
   ziwei: { title: 'Ziwei Dou Shu', subtitle: 'Twelve Palaces · Triple harmony & opposition' },
   liuren: {

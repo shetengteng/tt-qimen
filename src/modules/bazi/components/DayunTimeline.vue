@@ -120,6 +120,10 @@ const currentDetail = computed<CurrentDetailVm | null>(() => {
         class="gender-badge"
         :title="flowFortune.genderBadgeHint"
       >{{ genderBadgeText }}</span>
+      <span
+        class="non-classical-badge"
+        :title="t('bazi.source.nonClassical')"
+      >{{ t('bazi.source.nonClassical') }}</span>
     </div>
     <div class="section-subtitle">{{ flowFortune.subtitle }}</div>
 
@@ -164,6 +168,10 @@ const currentDetail = computed<CurrentDetailVm | null>(() => {
         class="gender-badge"
         :title="flowFortune.genderBadgeHint"
       >{{ genderBadgeText }}</span>
+      <span
+        class="non-classical-badge non-classical-badge-mn"
+        :title="t('bazi.source.nonClassical')"
+      >{{ t('bazi.source.nonClassical') }}</span>
     </div>
 
     <div class="fortune-timeline">

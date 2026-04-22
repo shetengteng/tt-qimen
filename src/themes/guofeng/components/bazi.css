@@ -724,6 +724,21 @@
   letter-spacing: 1px;
   cursor: help;
 }
+/* 非古籍 / 产品模板标识（与 gender-badge 同风格但淡化 · 虚线边框区分性质） */
+:root[data-theme='guofeng'] .non-classical-badge {
+  display: inline-block;
+  margin-left: 12px;
+  padding: 2px 10px;
+  font-size: 12px;
+  vertical-align: middle;
+  color: var(--gf-ink-soft);
+  border: 1px dashed var(--gf-ink-soft);
+  border-radius: 999px;
+  letter-spacing: 1px;
+  cursor: help;
+  opacity: 0.72;
+  font-weight: normal;
+}
 :root[data-theme='guofeng'] .fortune-section .section-subtitle {
   text-align: center;
   color: var(--gf-ink-soft);

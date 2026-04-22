@@ -2,10 +2,15 @@
  * 命盘简析模板（B 类公版文献整理）
  *
  * ⚠ 溯源状态：
- *   - `PARAGRAPH_1_BY_DAYMASTER`（50 段：10 干 × 5 旺衰）→ **未溯源**
- *     （缺 `extracted/07-daymaster-strength.md`，见 TODO T-2.2-A）
- *   - `PATTERN_HINT`（11 段）→ **未独立溯源**
- *     （与已 verified 的 patternLongInterpret 同源但未裁剪对齐，见 TODO T-2.2-C）
+ *   - `PARAGRAPH_1_BY_DAYMASTER`（50 段：10 干 × 5 旺衰）→ **非古籍 · 已抽检 P-6 合规**
+ *     （2026-04-22 T-2.2-D 完成：50 段以"五行意象 + 旺衰象意"为主体，
+ *      通篇古法术语（甲木/灯烛/江河/甘霖 / 根深/失令/刚极易折 …），
+ *      **无过窄现代词**；按 P-6 原则保持现状不做古法化改写；
+ *      待 T-2.2-A 新建 extracted/07-daymaster-strength.md 后，
+ *      可进一步由"意象描述"回填至"raw 锚点对照"。）
+ *   - `PATTERN_HINT`（11 段）→ **schema 已升级为 PatternHintEntry · 本身非古籍**
+ *     （2026-04-22 T-2.2-C 完成：isClassical: false + classicalRef/sourceRef 镜像 patternLongInterpret；
+ *      文案本身保留现代化简析定位 · 按 P-6 原则不做古法术语化改写 · 文案 P-6 审查走 T-2.2-D）
  *   - `ELEMENT_TIPS.industry` → **非古籍 · 五行象意现代推衍**
  *     （古籍无"五行 → 现代行业"直接映射表，见 TODO T-2.2-B）
  *
@@ -20,7 +25,7 @@
  * 当前现状：
  *   - 基础模板：`PARAGRAPH_1_TEMPLATE` / `PARAGRAPH_2_TEMPLATE`（占位符填充）
  *   - 差异化模板：`PARAGRAPH_1_BY_DAYMASTER`（50 段，已实现，非 MVP）
- *   - 格局提示：`PATTERN_HINT`（11 段，已实现）
+ *   - 格局提示：`PATTERN_HINT`（11 段 · PatternHintEntry schema · 附 classicalRef/sourceRef）
  *   - 五行 → 现代行业：`ELEMENT_TIPS`（5 段，其中 industry 为产品推衍）
  *
  * 后续如按"日主 × 旺衰 × 月令"继续细化（30~120 段），需先完成 extracted 溯源。
@@ -32,6 +37,23 @@
  * - UI 层可在相关提示上加"产品模板 · 非古籍"标识
  */
 export const INTERPRET_TEMPLATE_IS_CLASSICAL = false
+
+/**
+ * PARAGRAPH_1_BY_DAYMASTER 抽检状态（T-2.2-D 产出 · 2026-04-22）。
+ *
+ * - 'pending':                抽检未执行
+ * - 'non-classical-verified': 已抽检 · 非古籍但 P-6 合规（无过窄现代词）
+ * - 'non-classical-dirty':    已抽检 · 发现过窄现代词需改写
+ * - 'verified':               已挂 raw 锚点（需先完成 T-2.2-A 新建 extracted/07）
+ *
+ * 当前为 'non-classical-verified'：50 段通篇古法术语（甲木 / 灯烛 / 江河 /
+ * 根深 / 失令 / 刚极易折 …），无自媒体 / 投资 / 合伙 / IT 等过窄现代词。
+ */
+export const PARAGRAPH_1_BY_DAYMASTER_AUDIT_STATUS:
+  | 'pending'
+  | 'non-classical-verified'
+  | 'non-classical-dirty'
+  | 'verified' = 'non-classical-verified'
 
 import type { ElementName, StrengthLevel, PatternName } from '../types'
 
@@ -183,27 +205,151 @@ export function getParagraph1ByDayMaster(dayMaster: string, strength: StrengthLe
 }
 
 // ---------------------------------------------------------------------------
-// 第二段格局对应的 hint（10 段，按 PatternName）
+// 第二段格局对应的 hint（11 段，按 PatternName）
 // ---------------------------------------------------------------------------
 //
 // 段长约 70-90 字，已经把"格局意象 + 喜忌方向 + 行运提示"写入；
 // 调用方仍会在最后追加 "喜用属性参考：颜色/方位/行业"。
+//
+// 2026-04-22 T-2.2-C schema 升级：
+//   - 类型从 `Record<PatternName, string>` 升级为 `Record<PatternName, PatternHintEntry>`
+//   - 每条 hint 附 classicalRef / sourceRef，镜像自 patternLongInterpret 对应条目
+//   - `isClassical: false` + `auditStatus: 'non-classical'`：本条 hint 作为"现代化简析"不计入古籍
+//   - 原句文案本轮**保留现状**（按 P-6 原则禁止古代词替代 · 过窄现代词审查走 T-2.2-D）
+//   - `getPatternHint(pattern): string` 签名不变（内部改为 .hint 取值），调用点 0 改动
+//   - 新增 `getPatternHintEntry(pattern): PatternHintEntry | null` 供 UI 显示"深入阅读"链接
 
-const PATTERN_HINT: Record<PatternName, string> = {
-  正官格: '正官秉持纪律，宜得财生官、印护官，最忌伤官见官、七杀混杂。命主端方守正，行运逢印官财之地，名位与权衡可成；逢伤官、比劫之运，则需慎防口舌与官非。',
-  七杀格: '七杀威权刚烈，需食神或印星制化，方能由凶转吉。命主魄力强、敢任事；行运逢印化、食制之乡可立威权，逢杀重财生之运则风险骤增，宜避边缘险地。',
-  正财格: '正财勤俭安稳，宜身强能任，最喜见食神生财、官星护财。命主务实有度、聚财有方；行运逢比劫之乡需防破耗，逢财官印俱全之运可安享中富之福。',
-  偏财格: '偏财善财横财兼收，宜身强、忌比劫劫夺。命主慷慨豪爽、人缘极佳；行运逢财官之乡可一鸣惊人，逢比劫之运则需控制风险投资、慎防合伙纠纷。',
-  正印格: '正印学识深厚，宜官星生印，最忌财坏印。命主重学问、得长辈缘；行运逢官印相生可获文凭、晋升之喜，逢财旺破印之运则学业事业易现波折。',
-  偏印格: '偏印心思缜密，性情独立而带几分孤高。宜走技术、玄学、宗教、研究之路；行运逢七杀化印可得贵人，逢食神被夺（枭神夺食）则需防偏激与孤独。',
-  食神格: '食神温润有福，主生活安逸、食禄丰盈。宜身强而食神有气，最忌偏印夺食。行运逢食生财之乡可得艺名与口碑，逢七杀冲克之运则需养身安神、勿过劳。',
-  伤官格: '伤官才华横溢，性情率真。须配印或配财方为大用——伤官配印贵显，伤官生财富贵。行运逢印或财之地最佳，逢正官之乡则易招口舌与是非，慎言慎行。',
-  建禄格: '建禄自坐根气，性格独立自强、白手起家。宜行财官之运得用，最忌再逢比劫帮身、群比争财。命主中年后多有自创基业之象。',
-  月刃格: '月刃刚强果断，宜动不宜静。须有官杀制化方为大用，否则易冲撞惹祸。行运逢七杀官星之乡可立威立功，逢比劫又起之运则需谨防意外与争端。',
-  杂气格: '杂气格藏财官印于库中，需岁运冲开方显其用。命主早年多有不显之象，中年后渐露锋芒；逢冲库之年（辰戌冲、丑未冲）往往有重大转机。',
+/**
+ * 单条格局短提示结构。
+ *
+ * 定位：命盘简析第二段的中段文本，面向"产品入门用户"的现代化简述。
+ * 与已 verified 的 `patternLongInterpret`（180-220 字古法长解读）分层：
+ *   - 本条（70-90 字）= 现代化简析 · `isClassical: false`
+ *   - patternLong（180-220 字）= 古法详注 · `isClassical: true`
+ *
+ * classicalRef / sourceRef 镜像自 patternLongInterpret 对应条目，便于：
+ *   - UI 在简析下方渲染"深入阅读：《子平真诠》· XX"小字链接
+ *   - CI / 审计机器化校验：产品层简析始终指向古籍原文锚点
+ */
+export interface PatternHintEntry {
+  /** 现代化简析文本（70-90 字，产品层） */
+  hint: string
+  /** 关联的古籍原文关键句（镜像 patternLongInterpret[key].classical · 繁体忠于 raw） */
+  classicalRef: string
+  /** 关联的原文锚点（镜像 patternLongInterpret[key].source） */
+  sourceRef: string
+  /** 本条 hint 本身是否古籍可溯源（固定 false：现代化简析） */
+  isClassical: false
+  /** 审校状态（固定 'non-classical'：现代化产品模板） */
+  auditStatus: 'non-classical'
 }
 
-/** 取指定格局的 hint；未命中时返回通用语句 */
+export const PATTERN_HINT: Record<PatternName, PatternHintEntry> = {
+  正官格: {
+    hint: '正官秉持纪律，宜得财生官、印护官，最忌伤官见官、七杀混杂。命主端方守正，行运逢印官财之地，名位与权衡可成；逢伤官、比劫之运，则需慎防口舌与官非。',
+    classicalRef: '正官者分所當尊，如在國有君，在家有親，刑衝破害，以下犯上，烏乎可乎？',
+    sourceRef: '《子平真诠评注》· 三十一·论正官 / 三十二·论正官取运 · L219-230',
+    isClassical: false,
+    auditStatus: 'non-classical',
+  },
+  七杀格: {
+    hint: '七杀威权刚烈，需食神或印星制化，方能由凶转吉。命主魄力强、敢任事；行运逢印化、食制之乡可立威权，逢杀重财生之运则风险骤增，宜避边缘险地。',
+    classicalRef: '煞以攻身，似非美物，而大貴之格，多存七煞。蓋控制得宜，煞為我用。',
+    sourceRef: '《子平真诠评注》· 三十九·论偏官 / 四十·论偏官取运 · L282-298',
+    isClassical: false,
+    auditStatus: 'non-classical',
+  },
+  正财格: {
+    hint: '正财勤俭安稳，宜身强能任，最喜见食神生财、官星护财。命主务实有度、聚财有方；行运逢比劫之乡需防破耗，逢财官印俱全之运可安享中富之福。',
+    classicalRef: '財為我克，使用之物也，以能生官，所以為美；財喜根深，不宜太露。',
+    sourceRef: '《子平真诠评注》· 三十三·论财 / 三十四·论财取运 · L231-249',
+    isClassical: false,
+    auditStatus: 'non-classical',
+  },
+  偏财格: {
+    hint: '偏财善财横财兼收，宜身强、忌比劫劫夺。命主慷慨豪爽、人缘极佳；行运逢财官之乡可一鸣惊人，逢比劫之运则需控制风险投资、慎防合伙纠纷。',
+    classicalRef: '財與印不分偏正，同為一格而論之；財旺生官，露亦不忌。',
+    sourceRef: '《子平真诠评注》· 三十三·论财 · L232（財旺生官露亦不忌）/ 三十五·论印绶 · L250（财不分偏正语出此处）',
+    isClassical: false,
+    auditStatus: 'non-classical',
+  },
+  正印格: {
+    hint: '正印学识深厚，宜官星生印，最忌财坏印。命主重学问、得长辈缘；行运逢官印相生可获文凭、晋升之喜，逢财旺破印之运则学业事业易现波折。',
+    classicalRef: '印綬喜其生身，正偏同為美格，故財與印不分偏正，同為一格而論之。',
+    sourceRef: '《子平真诠评注》· 三十五·论印绶 / 三十六·论印绶取运 · L250-267',
+    isClassical: false,
+    auditStatus: 'non-classical',
+  },
+  偏印格: {
+    hint: '偏印心思缜密，性情独立而带几分孤高。宜走技术、玄学、宗教、研究之路；行运逢七杀化印可得贵人，逢食神被夺（枭神夺食）则需防偏激与孤独。',
+    classicalRef: '偏官本非美物，藉其生印，不得已而用之；身印並重而用七煞，非孤則貧矣。',
+    sourceRef: '《子平真诠评注》· 三十五·论印绶 / 三十六·论印绶取运 · L253-264',
+    isClassical: false,
+    auditStatus: 'non-classical',
+  },
+  食神格: {
+    hint: '食神温润有福，主生活安逸、食禄丰盈。宜身强而食神有气，最忌偏印夺食。行运逢食生财之乡可得艺名与口碑，逢七杀冲克之运则需养身安神、勿过劳。',
+    classicalRef: '食神本屬洩氣，以其能生正財，所以喜之。故食神生財，美格也。',
+    sourceRef: '《子平真诠评注》· 三十七·论食神 / 三十八·论食神取运 · L268-281',
+    isClassical: false,
+    auditStatus: 'non-classical',
+  },
+  伤官格: {
+    hint: '伤官才华横溢，性情率真。须配印或配财方为大用——伤官配印贵显，伤官生财富贵。行运逢印或财之地最佳，逢正官之乡则易招口舌与是非，慎言慎行。',
+    classicalRef: '傷官雖非吉神，實為秀氣，故文人學士，多於傷官格內得之。',
+    sourceRef: '《子平真诠评注》· 四十一·论伤官 / 四十二·论伤官取运 · L299-315',
+    isClassical: false,
+    auditStatus: 'non-classical',
+  },
+  建禄格: {
+    hint: '建禄自坐根气，性格独立自强、白手起家。宜行财官之运得用，最忌再逢比劫帮身、群比争财。命主中年后多有自创基业之象。',
+    classicalRef: '建祿者，月建逢祿堂也，祿即是劫；皆以透干支，別取財官煞食為用。',
+    sourceRef: '《子平真诠评注》· 四十五·论建禄月劫 / 四十六·论建禄月劫取运 · L325-344',
+    isClassical: false,
+    auditStatus: 'non-classical',
+  },
+  月刃格: {
+    hint: '月刃刚强果断，宜动不宜静。须有官杀制化方为大用，否则易冲撞惹祸。行运逢七杀官星之乡可立威立功，逢比劫又起之运则需谨防意外与争端。',
+    classicalRef: '陽刃者，劫我正財之神，乃正財之七煞也；不曰劫而曰刃，劫之甚也。',
+    sourceRef: '《子平真诠评注》· 四十三·论阳刃 / 四十四·论阳刃取运 · L316-324',
+    isClassical: false,
+    auditStatus: 'non-classical',
+  },
+  杂气格: {
+    hint: '杂气格藏财官印于库中，需岁运冲开方显其用。命主早年多有不显之象，中年后渐露锋芒；逢冲库之年（辰戌冲、丑未冲）往往有重大转机。',
+    classicalRef: '雜氣正官，透幹會支，最為貴格；用神已破，棄之以就外格，則謬之又謬矣。',
+    sourceRef: '《子平真诠评注》· L220（雜氣正官例）/ L172（棄用神就外格之謬）',
+    isClassical: false,
+    auditStatus: 'non-classical',
+  },
+}
+
+/**
+ * 取指定格局的 hint 文本（兼容签名 · 调用点 0 改动）。
+ *
+ * @param pattern 识别出的格局名
+ * @returns 70-90 字现代化简析文本；未命中时返回通用兜底
+ */
 export function getPatternHint(pattern: PatternName): string {
-  return PATTERN_HINT[pattern] ?? '命局格局以常规为主，财官印之间相对均衡，宜以稳健务实为原则。'
+  return (
+    PATTERN_HINT[pattern]?.hint
+    ?? '命局格局以常规为主，财官印之间相对均衡，宜以稳健务实为原则。'
+  )
+}
+
+/**
+ * 取指定格局的完整 hint 条目（含 classicalRef / sourceRef）。
+ *
+ * @param pattern 识别出的格局名
+ * @returns PatternHintEntry 结构；未命中时返回 null
+ *
+ * 使用示例（UI "深入阅读"链接）：
+ *   const entry = getPatternHintEntry(chart.pattern.name)
+ *   if (entry) {
+ *     showSimpleHint(entry.hint)
+ *     showInlineLink(`深入阅读：${entry.sourceRef}`)
+ *   }
+ */
+export function getPatternHintEntry(pattern: PatternName): PatternHintEntry | null {
+  return PATTERN_HINT[pattern] ?? null
 }

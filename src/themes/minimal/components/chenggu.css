@@ -11,47 +11,124 @@
  * 所有 token 均为 minimal/tokens.css 已定义变量。
  * ============================================ */
 
-/* ---- 两列布局 ---- */
+/* ---- 两列布局
+ * align-items: stretch 让左右两列高度一致；
+ * 左侧包裹 div 内部转成 flex 列，使 BirthForm 根元素（.ds-input-card）填满格高度，
+ * 从而与右侧 .cg-balance-scene（min-height: 460px）视觉齐平。
+ * ---- */
 :root[data-theme='minimal'] .cg-layout {
   max-width: 980px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 1.1fr;
   gap: var(--mn-space-8);
-  align-items: start;
+  align-items: stretch;
+}
+:root[data-theme='minimal'] .cg-layout > div:first-child {
+  display: flex;
+  flex-direction: column;
+}
+/* 覆盖 .ds-input-card 的 max-width / margin 限制：
+ * 默认 .ds-input-card 自带 max-width: 760px + margin: 0 auto var(--space-10)，
+ * 会让左卡宽度被截成 760px 内并水平居中、底部额外空出 40px 边距，
+ * 导致与右侧天秤视觉高度差 40px。此处强制铺满 grid 列。
+ */
+:root[data-theme='minimal'] .cg-layout > div:first-child > .ds-input-card {
+  flex: 1;
+  width: 100%;
+  max-width: none;
+  margin: 0;
 }
 
-/* ---- 天秤视觉 ---- */
+/* ---- 天秤视觉 ----
+ * 层次：
+ *   .cg-balance-scene        外框（米白卡 + 柔和光晕）
+ *     .cg-scene-halo         背景径向光晕（呼吸）
+ *     .cg-scale              200x150 舞台
+ *       .cg-scale-base       底座条（+ 左右小脚）
+ *       .cg-scale-pole       立柱（2px 黑色 + 顶帽圆点）
+ *       .cg-scale-bar        秤杆（2px，-3°↔3° 摆动）
+ *         .cg-scale-pivot    中心支点（4px 黑圆）
+ *         .cg-scale-pan L/R  秤盘（反向旋转抵消）
+ *           .cg-scale-rope   秤绳（1px 灰线）
+ *           .cg-scale-ingot  秤盘上的小圆点（结果态显影）
+ *       .cg-scale-particles  淡紫呼吸点（6 粒）
+ * ---- */
 :root[data-theme='minimal'] .cg-balance-scene {
   background: linear-gradient(135deg, var(--mn-bg-elev), #f8f7f2);
   border: 1px solid var(--mn-border);
   border-radius: var(--mn-radius-xl);
   padding: var(--mn-space-10);
   text-align: center;
-  min-height: 420px;
+  min-height: 460px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 底部阴影（让秤有站立感） */
+:root[data-theme='minimal'] .cg-balance-scene::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 24%;
+  width: 160px;
+  height: 10px;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, rgba(10, 10, 10, 0.1), transparent 70%);
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+:root[data-theme='minimal'] .cg-scene-halo {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 40%, var(--mn-accent-soft), transparent 55%),
+    radial-gradient(circle at 50% 40%, rgba(59, 47, 99, 0.05), transparent 40%);
+  opacity: 0.55;
+  animation: cg-halo-breath-mn 4.6s ease-in-out infinite;
+}
+@keyframes cg-halo-breath-mn {
+  0%, 100% { opacity: 0.45; transform: scale(1); }
+  50%      { opacity: 0.75; transform: scale(1.03); }
 }
 
 :root[data-theme='minimal'] .cg-scale {
   width: 200px;
-  height: 140px;
+  height: 150px;
   margin: 0 auto var(--mn-space-6);
   position: relative;
+  z-index: 1;
 }
 
+/* ---- 底座 ---- */
 :root[data-theme='minimal'] .cg-scale-base {
   position: absolute;
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 60px;
+  width: 72px;
   height: 3px;
   background: var(--mn-ink);
   border-radius: 2px;
+  box-shadow: 0 2px 4px rgba(10, 10, 10, 0.08);
 }
+:root[data-theme='minimal'] .cg-scale-foot {
+  position: absolute;
+  bottom: -3px;
+  width: 6px;
+  height: 3px;
+  background: var(--mn-ink);
+  border-radius: 0 0 3px 3px;
+}
+:root[data-theme='minimal'] .cg-scale-foot.left  { left: 6px; }
+:root[data-theme='minimal'] .cg-scale-foot.right { right: 6px; }
 
+/* ---- 立柱 ---- */
 :root[data-theme='minimal'] .cg-scale-pole {
   position: absolute;
   bottom: 3px;
@@ -60,8 +137,35 @@
   width: 2px;
   height: 90px;
   background: var(--mn-ink);
+  border-radius: 1px;
 }
 
+/* 立柱顶端圆帽 */
+:root[data-theme='minimal'] .cg-scale-cap {
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: var(--mn-ink);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.15);
+}
+:root[data-theme='minimal'] .cg-scale-cap::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: var(--mn-accent);
+  box-shadow: 0 0 6px rgba(59, 47, 99, 0.35);
+}
+
+/* ---- 秤杆 ---- */
 :root[data-theme='minimal'] .cg-scale-bar {
   position: absolute;
   top: 45px;
@@ -69,9 +173,42 @@
   right: 0;
   height: 2px;
   background: var(--mn-ink);
+  border-radius: 1px;
   transform: rotate(-3deg);
   transform-origin: center;
-  animation: cg-swing-mn 3s ease-in-out infinite alternate;
+  animation: cg-swing-mn 3.4s ease-in-out infinite alternate;
+  z-index: 2;
+}
+
+/* 秤杆两端端点 */
+:root[data-theme='minimal'] .cg-scale-bar::before,
+:root[data-theme='minimal'] .cg-scale-bar::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: var(--mn-ink);
+}
+:root[data-theme='minimal'] .cg-scale-bar::before { left: -2px; }
+:root[data-theme='minimal'] .cg-scale-bar::after  { right: -2px; }
+
+/* 中心支点 */
+:root[data-theme='minimal'] .cg-scale-pivot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: var(--mn-ink);
+  box-shadow:
+    0 0 0 2px var(--mn-bg-elev),
+    0 0 0 3px var(--mn-accent);
+  z-index: 3;
 }
 
 @keyframes cg-swing-mn {
@@ -79,18 +216,149 @@
   100% { transform: rotate(3deg); }
 }
 
+/* 结果态：幅度衰减 */
+:root[data-theme='minimal'] .cg-balance-scene.cg-is-weighed .cg-scale-bar {
+  animation-name: cg-swing-mn-settle;
+  animation-duration: 5s;
+}
+@keyframes cg-swing-mn-settle {
+  0%   { transform: rotate(-1deg); }
+  100% { transform: rotate(1deg); }
+}
+
+/* ---- 秤盘 ----
+ * 反向旋转抵消秤杆，transform-origin 在秤盘上方 30px（绳索顶部）。
+ * ---- */
 :root[data-theme='minimal'] .cg-scale-pan {
   position: absolute;
   top: 30px;
-  width: 44px;
-  height: 16px;
+  width: 46px;
+  height: 18px;
   border: 1.5px solid var(--mn-accent);
   border-top: none;
-  border-radius: 0 0 22px 22px;
-  background: var(--mn-accent-soft);
+  border-radius: 0 0 24px 24px;
+  background:
+    linear-gradient(180deg, var(--mn-accent-soft) 0%, rgba(231, 227, 241, 0.6) 100%);
+  box-shadow:
+    inset 0 1px 2px rgba(59, 47, 99, 0.1),
+    0 2px 4px rgba(10, 10, 10, 0.06);
+  transform-origin: 50% -30px;
+  animation: cg-counter-mn 3.4s ease-in-out infinite alternate;
 }
-:root[data-theme='minimal'] .cg-scale-pan.left  { left: 0; }
-:root[data-theme='minimal'] .cg-scale-pan.right { right: 0; }
+:root[data-theme='minimal'] .cg-scale-pan.left  { left: -3px; }
+:root[data-theme='minimal'] .cg-scale-pan.right { right: -3px; }
+
+/* 秤盘内的细高光 */
+:root[data-theme='minimal'] .cg-scale-pan::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  right: 5px;
+  top: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+}
+
+@keyframes cg-counter-mn {
+  0%   { transform: rotate(3deg); }
+  100% { transform: rotate(-3deg); }
+}
+
+:root[data-theme='minimal'] .cg-balance-scene.cg-is-weighed .cg-scale-pan {
+  animation-name: cg-counter-mn-settle;
+  animation-duration: 5s;
+}
+@keyframes cg-counter-mn-settle {
+  0%   { transform: rotate(1deg); }
+  100% { transform: rotate(-1deg); }
+}
+
+/* ---- 秤绳 ---- */
+:root[data-theme='minimal'] .cg-scale-rope {
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  width: 1px;
+  height: 30px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg,
+    var(--mn-ink-soft) 0%,
+    var(--mn-ink-muted) 100%);
+  opacity: 0.75;
+}
+:root[data-theme='minimal'] .cg-scale-rope::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -1px;
+  width: 3px;
+  height: 3px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: var(--mn-accent);
+}
+
+/* ---- 砝码：秤盘中央小圆点（结果态显影） ---- */
+:root[data-theme='minimal'] .cg-scale-ingot {
+  position: absolute;
+  left: 50%;
+  bottom: 3px;
+  width: 8px;
+  height: 8px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff, var(--mn-accent) 75%);
+  box-shadow: 0 1px 2px rgba(59, 47, 99, 0.3);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+:root[data-theme='minimal'] .cg-balance-scene.cg-is-weighed .cg-scale-ingot {
+  opacity: 1;
+  animation: cg-ingot-drop-mn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
+}
+@keyframes cg-ingot-drop-mn {
+  0%   { opacity: 0; transform: translate(-50%, -20px) scale(0.6); }
+  60%  { opacity: 1; transform: translate(-50%, 2px)  scale(1.1);  }
+  100% { opacity: 1; transform: translate(-50%, 0)    scale(1);    }
+}
+
+/* ---- 粒子：淡紫呼吸点 ---- */
+:root[data-theme='minimal'] .cg-scale-particles {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+  z-index: 0;
+}
+:root[data-theme='minimal'] .cg-scale-particles li {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--mn-accent);
+  opacity: 0;
+  animation: cg-particle-float-mn 5.5s ease-in-out infinite;
+}
+:root[data-theme='minimal'] .cg-scale-particles li:nth-child(1) { left: 16%; top: 76%; animation-delay: 0s;   }
+:root[data-theme='minimal'] .cg-scale-particles li:nth-child(2) { left: 30%; top: 70%; animation-delay: 1.2s; }
+:root[data-theme='minimal'] .cg-scale-particles li:nth-child(3) { left: 48%; top: 80%; animation-delay: 2.4s; }
+:root[data-theme='minimal'] .cg-scale-particles li:nth-child(4) { left: 64%; top: 68%; animation-delay: 0.7s; }
+:root[data-theme='minimal'] .cg-scale-particles li:nth-child(5) { left: 78%; top: 74%; animation-delay: 1.9s; }
+:root[data-theme='minimal'] .cg-scale-particles li:nth-child(6) { left: 90%; top: 78%; animation-delay: 3.0s; }
+
+@keyframes cg-particle-float-mn {
+  0%   { opacity: 0;    transform: translate(0, 0)       scale(0.6); }
+  20%  { opacity: 0.55; }
+  80%  { opacity: 0.35; }
+  100% { opacity: 0;    transform: translate(-4px, -40px) scale(1);   }
+}
+
+:root[data-theme='minimal'] .cg-balance-scene.cg-is-weighed .cg-scale-particles li {
+  animation-duration: 4.2s;
+}
 
 :root[data-theme='minimal'] .cg-weight {
   margin-top: var(--mn-space-6);
@@ -307,6 +575,19 @@
   color: var(--mn-ink-muted);
   font-style: italic;
   margin-top: var(--mn-space-4);
+}
+
+/* ---- Reduced motion：无障碍降级 ---- */
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme='minimal'] .cg-scene-halo,
+  :root[data-theme='minimal'] .cg-scale-bar,
+  :root[data-theme='minimal'] .cg-scale-pan,
+  :root[data-theme='minimal'] .cg-scale-particles li {
+    animation: none !important;
+    transform: none;
+  }
+  :root[data-theme='minimal'] .cg-scale-pan.left  { transform: none; }
+  :root[data-theme='minimal'] .cg-scale-pan.right { transform: none; }
 }
 
 /* ---- Mobile ---- */

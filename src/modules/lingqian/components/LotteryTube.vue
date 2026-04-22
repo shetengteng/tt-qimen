@@ -24,22 +24,42 @@ const isGuofeng = computed(() => themeStore.id === 'guofeng')
 <template>
   <!-- 国风 -->
   <div v-if="isGuofeng" class="lq-shake-scene">
+    <div class="lq-scene-halo" aria-hidden="true" />
+
     <div class="lq-tube">
+      <span class="lq-tube-shine" aria-hidden="true" />
+      <span class="lq-tube-grain" aria-hidden="true" />
       <div class="lq-tube-stick" />
       <div class="lq-tube-stick" />
       <div class="lq-tube-stick" />
       <div class="lq-tube-stick" />
       <div class="lq-tube-label">{{ t('lingqian.tubeLabel') }}</div>
     </div>
+
+    <div class="lq-tube-shadow" aria-hidden="true" />
+
+    <ul class="lq-scene-dust" aria-hidden="true">
+      <li></li><li></li><li></li><li></li><li></li><li></li>
+    </ul>
   </div>
 
   <!-- 简约 -->
   <div v-else class="lq-shake-scene">
+    <div class="lq-scene-halo" aria-hidden="true" />
+
     <div class="lq-tube-wrap">
-      <div class="lq-tube" />
+      <div class="lq-tube">
+        <span class="lq-tube-shine" aria-hidden="true" />
+      </div>
       <div class="lq-tube-stick s1" />
       <div class="lq-tube-stick s2" />
       <div class="lq-tube-stick s3" />
     </div>
+
+    <div class="lq-tube-shadow" aria-hidden="true" />
+
+    <ul class="lq-scene-dust" aria-hidden="true">
+      <li></li><li></li><li></li><li></li><li></li><li></li>
+    </ul>
   </div>
 </template>
