@@ -19,6 +19,7 @@ import type {
   DreamSearchResult,
 } from '../types'
 import { DREAM_ENTRIES } from '../data/dreams'
+import { SENSITIVE_WORDS } from '../data/sensitiveWords'
 
 const FUSE_OPTIONS: IFuseOptions<DreamEntry> = {
   keys: [
@@ -98,4 +99,24 @@ export function searchDream(rawQuery: string, opts: SearchOptions = {}): DreamSe
 /** 根据 id 直接取词条（供最近搜索 chip 快速回显详情） */
 export function getDreamById(id: string): DreamEntry | null {
   return DREAM_ENTRIES.find((x) => x.id === id) ?? null
+}
+
+/**
+ * 判断词条是否命中敏感词（用于详情卡追加"文化象征"柔性提示）。
+ *
+ * 命中策略：title / classical / keywords 任一字段包含任一敏感词。
+ * 不命中 modern / advice —— 那里已是现代化语言，命中率过高反而稀释提示意义。
+ */
+export function hasSensitiveContent(entry: DreamEntry | null | undefined): boolean {
+  if (!entry) return false
+  const haystack =
+    entry.title +
+    '|' +
+    entry.classical +
+    '|' +
+    entry.keywords.join(',')
+  for (const w of SENSITIVE_WORDS) {
+    if (haystack.includes(w)) return true
+  }
+  return false
 }

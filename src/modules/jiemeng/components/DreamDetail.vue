@@ -1,16 +1,24 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { DreamEntry } from '../types'
+import { hasSensitiveContent } from '../core/jiemeng'
 
 /**
  * 词条详情卡：古籍原文 + 现代解读 + 建议 + 免责警示。
  * 不使用 dialog，直接以内嵌卡片形式展示，便于分享卡抓取。
  */
-defineProps<{
+const props = defineProps<{
   entry: DreamEntry | null
 }>()
 
 const { t } = useI18n()
+
+/**
+ * 命中敏感词时追加柔性文化提示（仅 UI 层温和引导，不屏蔽词条）。
+ * 对应设计文档 §8 / todo T-16.4。
+ */
+const sensitive = computed(() => hasSensitiveContent(props.entry))
 </script>
 
 <template>
@@ -36,6 +44,10 @@ const { t } = useI18n()
           <strong>{{ t('jiemeng.detail.adviceLabel') }}</strong>{{ entry.advice }}
         </p>
       </div>
+    </div>
+
+    <div v-if="sensitive" class="jm-detail-sensitive">
+      {{ t('jiemeng.detail.sensitiveHint') }}
     </div>
 
     <div class="jm-detail-warning">

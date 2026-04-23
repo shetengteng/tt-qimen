@@ -422,6 +422,21 @@
   line-height: 1.6;
 }
 
+:root[data-theme='minimal'] .jm-detail-sensitive {
+  margin-top: var(--mn-space-6);
+  padding: var(--mn-space-3) var(--mn-space-4);
+  background-color: #eef2ff;
+  border-left: 3px solid #6366f1;
+  border-radius: var(--mn-radius-md);
+  font-size: 13px;
+  color: #3730a3;
+  line-height: 1.6;
+}
+
+:root[data-theme='minimal'] .jm-detail-sensitive + .jm-detail-warning {
+  margin-top: var(--mn-space-3);
+}
+
 /* ---------- 结果下方的分享操作 ---------- */
 :root[data-theme='minimal'] .jm-actions {
   max-width: 720px;

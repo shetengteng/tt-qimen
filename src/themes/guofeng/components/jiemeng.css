@@ -435,6 +435,21 @@
   line-height: 1.7;
 }
 
+:root[data-theme='guofeng'] .jm-detail-sensitive {
+  margin-top: var(--gf-space-md);
+  padding: var(--gf-space-sm) var(--gf-space-md);
+  font-size: 13px;
+  color: var(--gf-ink);
+  background: rgba(138, 119, 175, 0.08);
+  border-left: 2px solid var(--gf-cinnabar-deep);
+  border-radius: var(--gf-radius-sm);
+  line-height: 1.7;
+}
+
+:root[data-theme='guofeng'] .jm-detail-sensitive + .jm-detail-warning {
+  margin-top: var(--gf-space-sm);
+}
+
 /* ---------- 分享卡包装 ---------- */
 :root[data-theme='guofeng'] .jm-share-card {
   background: transparent;

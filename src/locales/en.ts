@@ -941,6 +941,7 @@ export default {
       classicalSource: 'Zhou Gong Jie Meng (public domain)',
       modern: 'Modern reading',
       adviceLabel: 'Tip: ',
+      sensitiveHint: '※ This entry preserves classical imagery involving death, illness, or spirits as traditional cultural symbols only. Please read them as symbols, not as omens.',
       warning: '⚠ Dream interpretations vary. Entries are cultural references only. If dreams disturb your daily life, please consult a mental-health professional.',
     },
 
