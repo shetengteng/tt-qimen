@@ -44,25 +44,32 @@ const centerpieceStage = ref<CenterpieceStage>('hidden')
  *   t=0     点击启签 · drawing=true · centerpieceStage='flying' · 签筒开始剧烈抖
  *   t=1500  centerpieceStage='showing'：放大签条落定、签号/等级/标题淡入
  *   t=1700  centerpieceStage='holding'：阅读停留 1500ms
- *   t=3200  centerpieceStage='fading'：特写淡出（400ms） + 触发 skeleton.start()
- *   t=3350  skeleton reveal：结果区淡入，与特写淡出 200ms 叠化
- *   t=3600  centerpieceStage='hidden' · drawing=false（回归静态摇晃）
+ *   t=3200  centerpieceStage='fading'：特写开始淡出（400ms）
+ *   t=3600  centerpieceStage='hidden' · drawing=false · 触发 skeleton.start()
+ *           · Vue <Transition> 开始 leave 过渡（300ms）
+ *   t=3950  Transition leave 完成、节点出 DOM · skeleton reveal · 结果区淡入
  *
- * reduced-motion 场景：整个仪式压缩到 400ms，特写仅做 fade-in/out、不做变换。
+ * 严格串行：用户要求"动画完全结束后再显示结果区"。skeleton.start() 放在 hidden 阶段，
+ * 内部 delay=350ms（= Transition leave 300ms + 50ms 缓冲）保证特写节点真正出 DOM 后
+ * 才揭示 banner，不再有任何叠化/抢节奏。
+ *
+ * reduced-motion 场景：整个仪式压缩到 ~1.5s，特写仅做 fade-in/out、不做变换；
+ * 结果区同样等 Transition 完全结束后再淡入，保持叙事完整。
  */
 const TIMELINE = {
   showing: 1500,
   holding: 1700,
   fading: 3200,
-  skeletonDelay: 150, // skeleton.start() → reveal 的间隔（与 fading 叠化）
   hidden: 3600,
+  // hidden → skeleton.reveal 的间隔（= Transition leave 300ms + 50ms 缓冲，确保 DOM 脱钩后再揭示）
+  skeletonDelayAfterHidden: 350,
 } as const
 const RM_TIMELINE = {
   showing: 200,
   holding: 300,
   fading: 800,
-  skeletonDelay: 80,
   hidden: 1200,
+  skeletonDelayAfterHidden: 250,
 } as const
 
 const paipanTimers: number[] = []
@@ -81,9 +88,11 @@ function prefersReducedMotion() {
 }
 
 const skeleton = useSkeletonReveal({
-  // delay 由外部调度决定何时调用 start()；这里只在 start 后再等 150ms reveal，
-  // 以实现"特写淡出"和"结果区淡入"200ms 叠化的过渡。
-  delay: TIMELINE.skeletonDelay,
+  // delay: centerpiece 进入 'hidden' 后，等 Vue <Transition> leave（300ms） + 50ms 缓冲 = 350ms
+  // 再让 reveal 翻转为 true，确保特写节点完全脱离视觉后才揭示结果区（严格 serial）。
+  // 具体何时调用 start() 见 onPaipan 里 hidden 阶段的 schedulePaipanStep。
+  // 注意：这里只用了非 RM 的 350ms；reduced-motion 用户视觉差异实际可忽略。
+  delay: TIMELINE.skeletonDelayAfterHidden,
   scrollOffset: 30,
   scrollHoldMs: 280,
 })
@@ -124,13 +133,11 @@ function onPaipan() {
   const timeline = prefersReducedMotion() ? RM_TIMELINE : TIMELINE
   schedulePaipanStep(() => { centerpieceStage.value = 'showing' }, timeline.showing)
   schedulePaipanStep(() => { centerpieceStage.value = 'holding' }, timeline.holding)
-  schedulePaipanStep(() => {
-    centerpieceStage.value = 'fading'
-    skeleton.start(() => resultBannerEl.value)
-  }, timeline.fading)
+  schedulePaipanStep(() => { centerpieceStage.value = 'fading' }, timeline.fading)
   schedulePaipanStep(() => {
     centerpieceStage.value = 'hidden'
     drawing.value = false
+    skeleton.start(() => resultBannerEl.value)
   }, timeline.hidden)
 }
 
