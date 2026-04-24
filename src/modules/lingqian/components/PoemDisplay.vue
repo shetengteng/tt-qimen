@@ -18,6 +18,16 @@ const themeStore = useThemeStore()
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
 const poemLines = computed(() => props.item.poem)
+
+/**
+ * 典故文本：优先取 item.diangu（公版文献的真实典故段，可能较长）；
+ * 若该签未载典故（极少数 fallback 情况），降级为 i18n 的 taleIntro 占位。
+ */
+const taleText = computed(() => {
+  const diangu = props.item.diangu?.trim()
+  if (diangu) return diangu
+  return t('lingqian.poem.taleIntro', { title: props.item.title })
+})
 </script>
 
 <template>
@@ -34,7 +44,7 @@ const poemLines = computed(() => props.item.poem)
 
     <div class="lq-tale">
       <strong>{{ t('lingqian.poem.taleLabel') }}</strong>
-      {{ t('lingqian.poem.taleIntro', { title: props.item.title }) }}
+      <span class="lq-tale-text">{{ taleText }}</span>
     </div>
 
     <div class="lq-poem-seal">
@@ -56,7 +66,7 @@ const poemLines = computed(() => props.item.poem)
     <div class="lq-tale">
       <div class="lq-tale-label">{{ t('lingqian.poem.taleLabelMn') }}</div>
       <p class="lq-tale-body">
-        {{ t('lingqian.poem.taleIntro', { title: props.item.title }) }}
+        {{ taleText }}
       </p>
     </div>
   </article>
