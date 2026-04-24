@@ -94,6 +94,29 @@
   gap: var(--space-2);
 }
 
+/* 下拉触发器：与 LingqianInput 里的 Select 视觉一致（shadcn 默认 + 主题色触感） */
+:root[data-theme='minimal'] .mn-toolbar [data-slot='select-trigger'] {
+  min-width: 64px;
+  min-height: 32px;
+  padding: 4px 10px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: rgba(255, 255, 255, 0.9);
+  color: rgba(15, 23, 42, 0.85);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  border-radius: 8px;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+:root[data-theme='minimal'] .mn-toolbar [data-slot='select-trigger']:hover,
+:root[data-theme='minimal'] .mn-toolbar [data-slot='select-trigger'][data-state='open'] {
+  background: rgba(248, 250, 252, 1);
+  border-color: rgba(15, 23, 42, 0.28);
+}
+:root[data-theme='minimal'] .mn-toolbar .layout-switch-label {
+  color: inherit;
+  font-weight: 500;
+}
+
 /* ============ Disclaimer ============ */
 :root[data-theme='minimal'] .mn-disclaimer {
   padding: var(--space-2) var(--space-6);

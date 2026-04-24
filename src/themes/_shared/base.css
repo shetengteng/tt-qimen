@@ -110,3 +110,54 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background-color: rgba(0, 0, 0, 0.35);
 }
+
+/* ============================================================
+ * Header 下拉切换（ThemeSwitch / LangSwitch）
+ *
+ * `<SelectContent>` 被 portal 到 body，所以样式必须放在全局层。
+ * 两主题共用同一套内容面板布局；字色/字族由主题级 overrides 补。
+ * ============================================================ */
+.layout-switch-content {
+  min-width: 140px;
+  padding: 4px;
+  border-radius: 10px;
+}
+.layout-switch-option {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.3;
+}
+.layout-switch-mark {
+  font-weight: 600;
+  font-size: 13px;
+}
+.layout-switch-full {
+  font-size: 12px;
+  opacity: 0.72;
+}
+.layout-switch-desc {
+  font-size: 12px;
+  opacity: 0.7;
+}
+/* 国风主题下拉面板：纸质感背景 + 金框 */
+:root[data-theme='guofeng'] .layout-switch-content {
+  background: linear-gradient(180deg, #fbf5e6, #f6ecd6);
+  border: 1px solid rgba(176, 141, 59, 0.45);
+  box-shadow: 0 8px 28px rgba(46, 30, 13, 0.2);
+  color: #2e1e0d;
+  font-family: var(--gf-serif, 'Noto Serif SC', serif);
+}
+:root[data-theme='guofeng'] .layout-switch-content [data-slot='select-item'][data-highlighted] {
+  background: rgba(176, 141, 59, 0.18);
+}
+/* 简约主题下拉面板：白底细描边 */
+:root[data-theme='minimal'] .layout-switch-content {
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  color: rgba(15, 23, 42, 0.88);
+}
+:root[data-theme='minimal'] .layout-switch-content [data-slot='select-item'][data-highlighted] {
+  background: rgba(99, 102, 241, 0.08);
+}

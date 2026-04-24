@@ -98,6 +98,31 @@
   gap: var(--space-2);
 }
 
+/* 下拉触发器：取代原来的 radiogroup 按钮组；宽度自适应内容，不挤占 nav
+ * 触发器放在 gf-toolbar 里；下拉内容（portal 到 body）由 .layout-switch-content 统一控制字体 */
+:root[data-theme='guofeng'] .gf-toolbar [data-slot='select-trigger'] {
+  min-width: 64px;
+  min-height: 32px;
+  padding: 4px 10px;
+  border: 1px solid rgba(176, 141, 59, 0.45);
+  background: rgba(246, 236, 214, 0.08);
+  color: var(--gf-rice, #f6ecd6);
+  font-family: var(--gf-serif, 'Noto Serif SC', serif);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  border-radius: 6px;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+:root[data-theme='guofeng'] .gf-toolbar [data-slot='select-trigger']:hover,
+:root[data-theme='guofeng'] .gf-toolbar [data-slot='select-trigger'][data-state='open'] {
+  background: rgba(246, 236, 214, 0.14);
+  border-color: rgba(176, 141, 59, 0.85);
+}
+:root[data-theme='guofeng'] .gf-toolbar .layout-switch-label {
+  color: inherit;
+  font-weight: 500;
+}
+
 /* ============ Disclaimer ============ */
 :root[data-theme='guofeng'] .gf-disclaimer {
   background: linear-gradient(90deg, rgba(176, 141, 59, 0.08), rgba(194, 58, 42, 0.05));
