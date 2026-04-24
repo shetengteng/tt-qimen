@@ -91,36 +91,21 @@
   border-radius: 1px;
 }
 
-/* ============ Toolbar in Header (Theme/Lang switch) ============ */
+/* ============ Toolbar in Header (Theme/Lang switch) ============
+ * Trigger 按钮 + 弹出面板的样式集中在 _shared/base.css
+ * 的 .layout-popover-* 系列里（按 data-theme attr 取色）。
+ *
+ * 关于 margin-left: auto：
+ * gf-header-inner 是 flex 且 flex-wrap: wrap，nav 9 项较宽时整行容易溢出，
+ * 此时 toolbar 会被换行到下一行。给 toolbar `margin-left: auto` 保证：
+ *   - 不 wrap：toolbar 仍贴右（space-between 也保证；auto 不会冲突）
+ *   - wrap 时：toolbar 在新行里靠右（视觉对齐 logo / nav 的右端，不出现在左下角）
+ */
 :root[data-theme='guofeng'] .gf-toolbar {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-}
-
-/* 下拉触发器：取代原来的 radiogroup 按钮组；宽度自适应内容，不挤占 nav
- * 触发器放在 gf-toolbar 里；下拉内容（portal 到 body）由 .layout-switch-content 统一控制字体 */
-:root[data-theme='guofeng'] .gf-toolbar [data-slot='select-trigger'] {
-  min-width: 64px;
-  min-height: 32px;
-  padding: 4px 10px;
-  border: 1px solid rgba(176, 141, 59, 0.45);
-  background: rgba(246, 236, 214, 0.08);
-  color: var(--gf-rice, #f6ecd6);
-  font-family: var(--gf-serif, 'Noto Serif SC', serif);
-  font-size: 13px;
-  letter-spacing: 0.06em;
-  border-radius: 6px;
-  transition: background 160ms ease, border-color 160ms ease;
-}
-:root[data-theme='guofeng'] .gf-toolbar [data-slot='select-trigger']:hover,
-:root[data-theme='guofeng'] .gf-toolbar [data-slot='select-trigger'][data-state='open'] {
-  background: rgba(246, 236, 214, 0.14);
-  border-color: rgba(176, 141, 59, 0.85);
-}
-:root[data-theme='guofeng'] .gf-toolbar .layout-switch-label {
-  color: inherit;
-  font-weight: 500;
+  margin-left: auto;
 }
 
 /* ============ Disclaimer ============ */

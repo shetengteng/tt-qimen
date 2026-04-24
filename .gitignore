@@ -20,6 +20,7 @@ src/components.d.ts
 sprint*.png
 sprint*.jpg
 *.tmp.png
+design/screenshots/
 
 # 用户交互轮询脚本（本地工具）
 userinput.py

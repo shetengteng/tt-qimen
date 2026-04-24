@@ -112,52 +112,213 @@ body {
 }
 
 /* ============================================================
- * Header 下拉切换（ThemeSwitch / LangSwitch）
+ * Header Icon 切换组件（ThemeSwitch / LangSwitch · 弹出面板版）
  *
- * `<SelectContent>` 被 portal 到 body，所以样式必须放在全局层。
- * 两主题共用同一套内容面板布局；字色/字族由主题级 overrides 补。
+ * 历史：原方案用 shadcn-vue Select。SelectValue 抓取选中 item 的 itemText，
+ * 自定义 SelectItem 没用 SelectItemText 时 trigger 显示空白（chevron + 空盒）。
+ * 改造为 reka-ui PopoverRoot + 自研 button trigger + 自研选项面板：
+ *   - trigger 是 32px icon button，文字/图标自由控制
+ *   - 面板 portal 到 body，全局样式在此（按 [data-theme] 区分主题）
+ *
+ * Trigger 复用类（两主题共享布局，颜色/字族由主题层覆盖）：
+ *   .layout-popover-trigger             32px 方/圆按钮基础态
+ *   .layout-popover-trigger--lang       语言专用（圆形 / 文字 only）
+ *   .layout-popover-trigger--theme      主题专用（icon + 字符）
+ *
+ * 面板（portal 到 body，按主题 attr 取色）：
+ *   .layout-popover-content
+ *   .layout-popover-list / .layout-popover-option
  * ============================================================ */
-.layout-switch-content {
-  min-width: 140px;
-  padding: 4px;
-  border-radius: 10px;
+
+/* === Trigger（基础态 · 两主题共享） === */
+.layout-popover-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 32px;
+  min-width: 32px;
+  padding: 0 8px;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
 }
-.layout-switch-option {
+.layout-popover-trigger--lang {
+  border-radius: 999px;
+}
+.layout-popover-trigger-icon {
+  flex: 0 0 auto;
+}
+.layout-popover-trigger-text {
+  display: inline-block;
+  letter-spacing: 0.02em;
+}
+
+/* === 面板（基础布局） === */
+.layout-popover-content {
+  z-index: 60;
+  min-width: 168px;
+  padding: 6px;
+  border-radius: 12px;
+  outline: none;
+  /* 入场动画 */
+  transform-origin: var(--reka-popover-content-transform-origin);
+  animation: layout-popover-in 140ms ease-out;
+}
+.layout-popover-content--theme {
+  min-width: 220px;
+}
+@keyframes layout-popover-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.layout-popover-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.layout-popover-option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color 0.16s ease,
+    color 0.16s ease,
+    border-color 0.16s ease;
+}
+.layout-popover-option-mark {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 12px;
+}
+.layout-popover-option-text {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 2px;
   line-height: 1.3;
 }
-.layout-switch-mark {
+.layout-popover-option-name {
   font-weight: 600;
   font-size: 13px;
 }
-.layout-switch-full {
-  font-size: 12px;
-  opacity: 0.72;
+.layout-popover-option-desc {
+  font-size: 11px;
+  opacity: 0.68;
 }
-.layout-switch-desc {
-  font-size: 12px;
-  opacity: 0.7;
+
+/* ============== 国风主题：金墨配色 + 行楷
+ * Header 背景是米色（rgba(246, 236, 214, 0.94)），所以 trigger 文字必须用深色，
+ * 否则会和背景融成一片（旧版 trigger 用 rice 淡米色，是早期对深色 header 的残留） ============== */
+:root[data-theme='guofeng'] .layout-popover-trigger {
+  border: 1px solid rgba(176, 141, 59, 0.55);
+  background: rgba(255, 251, 240, 0.55);
+  color: #6c2719;
+  font-family: var(--gf-serif, 'Noto Serif SC', serif);
 }
-/* 国风主题下拉面板：纸质感背景 + 金框 */
-:root[data-theme='guofeng'] .layout-switch-content {
+:root[data-theme='guofeng'] .layout-popover-trigger:hover,
+:root[data-theme='guofeng'] .layout-popover-trigger[data-state='open'] {
+  background: rgba(255, 251, 240, 0.95);
+  border-color: rgba(108, 39, 25, 0.7);
+  color: #6c2719;
+  box-shadow: 0 0 0 2px rgba(176, 141, 59, 0.22);
+}
+
+:root[data-theme='guofeng'] .layout-popover-content {
   background: linear-gradient(180deg, #fbf5e6, #f6ecd6);
-  border: 1px solid rgba(176, 141, 59, 0.45);
-  box-shadow: 0 8px 28px rgba(46, 30, 13, 0.2);
+  border: 1px solid rgba(176, 141, 59, 0.55);
+  box-shadow:
+    0 12px 32px rgba(46, 30, 13, 0.22),
+    0 0 0 1px rgba(176, 141, 59, 0.2) inset;
   color: #2e1e0d;
   font-family: var(--gf-serif, 'Noto Serif SC', serif);
 }
-:root[data-theme='guofeng'] .layout-switch-content [data-slot='select-item'][data-highlighted] {
-  background: rgba(176, 141, 59, 0.18);
+:root[data-theme='guofeng'] .layout-popover-option:hover {
+  background: rgba(176, 141, 59, 0.16);
 }
-/* 简约主题下拉面板：白底细描边 */
-:root[data-theme='minimal'] .layout-switch-content {
+:root[data-theme='guofeng'] .layout-popover-option.is-active {
+  background: rgba(176, 141, 59, 0.22);
+  border-color: rgba(176, 141, 59, 0.5);
+  color: #6c2719;
+}
+:root[data-theme='guofeng'] .layout-popover-option-mark {
+  background: rgba(108, 39, 25, 0.12);
+  color: #6c2719;
+  border: 1px solid rgba(108, 39, 25, 0.18);
+}
+:root[data-theme='guofeng'] .layout-popover-option.is-active .layout-popover-option-mark {
+  background: #6c2719;
+  color: #f6ecd6;
+  border-color: #6c2719;
+}
+
+/* ============== 简约主题：白底细描边 + 紫强调 ============== */
+:root[data-theme='minimal'] .layout-popover-trigger {
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  background: rgba(255, 255, 255, 0.85);
+  color: rgba(15, 23, 42, 0.78);
+}
+:root[data-theme='minimal'] .layout-popover-trigger:hover,
+:root[data-theme='minimal'] .layout-popover-trigger[data-state='open'] {
+  background: #ffffff;
+  border-color: rgba(99, 102, 241, 0.6);
+  color: rgba(99, 102, 241, 0.92);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.12);
+}
+
+:root[data-theme='minimal'] .layout-popover-content {
   background: #ffffff;
   border: 1px solid rgba(15, 23, 42, 0.1);
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.1);
   color: rgba(15, 23, 42, 0.88);
 }
-:root[data-theme='minimal'] .layout-switch-content [data-slot='select-item'][data-highlighted] {
-  background: rgba(99, 102, 241, 0.08);
+:root[data-theme='minimal'] .layout-popover-option:hover {
+  background: rgba(99, 102, 241, 0.06);
+}
+:root[data-theme='minimal'] .layout-popover-option.is-active {
+  background: rgba(99, 102, 241, 0.1);
+  border-color: rgba(99, 102, 241, 0.35);
+  color: rgba(67, 56, 202, 0.95);
+}
+:root[data-theme='minimal'] .layout-popover-option-mark {
+  background: rgba(15, 23, 42, 0.06);
+  color: rgba(15, 23, 42, 0.74);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+:root[data-theme='minimal'] .layout-popover-option.is-active .layout-popover-option-mark {
+  background: rgba(99, 102, 241, 0.95);
+  color: #ffffff;
+  border-color: rgba(99, 102, 241, 0.95);
 }
