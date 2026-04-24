@@ -933,11 +933,13 @@
   text-shadow: 0 2px 14px rgba(212, 169, 74, 0.55);
 }
 
-:root[data-theme='guofeng'] .lq-centerpiece-number-label {
+:root[data-theme='guofeng'] .lq-centerpiece-number-prefix,
+:root[data-theme='guofeng'] .lq-centerpiece-number-suffix {
   font-size: 22px;
-  letter-spacing: 0.4em;
+  letter-spacing: 0.35em;
   color: var(--gf-rice);
   opacity: 0.82;
+  font-family: var(--gf-font-serif, serif);
 }
 
 :root[data-theme='guofeng'] .lq-centerpiece-number-value {
@@ -949,28 +951,40 @@
   line-height: 1;
 }
 
+/*
+ * Level 徽章 · 国风主题：
+ *   - 通用背景由 0.55 深焦加厚至 0.82，避免透过去看到签条的金色；变体背景从 0.28 提至 0.72
+ *   - 文字色统一改走"米色"（gf-rice），保证在任一色背景上都亮；用 border 颜色表达三色
+ *   - 外加 box-shadow + text-shadow 让徽章脱离画面、像印章一样立起来
+ */
 :root[data-theme='guofeng'] .lq-centerpiece-level {
   padding: 6px 22px;
   border-radius: 18px;
   font-size: 16px;
+  font-weight: 500;
   letter-spacing: 0.2em;
   border: 1px solid currentColor;
-  background: rgba(10, 8, 6, 0.55);
+  background: rgba(10, 8, 6, 0.82);
+  color: var(--gf-rice);
+  box-shadow:
+    0 2px 10px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px rgba(212, 169, 74, 0.12);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
 }
 
 :root[data-theme='guofeng'] .lq-centerpiece-level.up {
-  color: var(--gf-jade);
-  background: rgba(74, 109, 93, 0.28);
+  background: rgba(46, 83, 67, 0.82);
+  border-color: var(--gf-jade);
 }
 
 :root[data-theme='guofeng'] .lq-centerpiece-level.mid {
-  color: var(--gf-gold);
-  background: rgba(176, 141, 59, 0.28);
+  background: rgba(93, 68, 27, 0.82);
+  border-color: var(--gf-gold);
 }
 
 :root[data-theme='guofeng'] .lq-centerpiece-level.down {
-  color: var(--gf-cinnabar);
-  background: rgba(194, 58, 42, 0.28);
+  background: rgba(110, 28, 18, 0.82);
+  border-color: var(--gf-cinnabar);
 }
 
 :root[data-theme='guofeng'] .lq-centerpiece-title {

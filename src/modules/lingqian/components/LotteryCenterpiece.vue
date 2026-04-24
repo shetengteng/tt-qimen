@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useThemeStore } from '@/stores/theme'
 import type { LingqianItem, LingqianLevel } from '../types'
 
 /**
@@ -33,8 +32,6 @@ interface Props {
 const props = defineProps<Props>()
 
 const { t } = useI18n()
-const themeStore = useThemeStore()
-const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
 const LEVEL_TIER: Readonly<Record<LingqianLevel, 'up' | 'mid' | 'down'>> = {
   上上: 'up',
@@ -79,15 +76,17 @@ const ariaLabel = computed(() => {
         </div>
 
         <div class="lq-centerpiece-info">
+          <!--
+            签号始终按 prefix + 数字 + suffix 顺序排（中文"第 72 签" / 英文"No. 72"），
+            保证数字在中间；主题差异由 CSS 承担（国风大字号 + 金色、简约小字号 + 灰白）。
+            原方案把国风单独走 qianLabel "第  签" 作为独立标签，数字被挤到尾部；已废弃。
+          -->
           <div class="lq-centerpiece-number">
-            <span v-if="isGuofeng" class="lq-centerpiece-number-label">
-              {{ t('lingqian.qianTitle.qianLabel') }}
-            </span>
-            <span v-else class="lq-centerpiece-number-prefix">
+            <span class="lq-centerpiece-number-prefix">
               {{ t('lingqian.qianTitle.qianPrefix') }}
             </span>
             <span class="lq-centerpiece-number-value">{{ item.id }}</span>
-            <span v-if="!isGuofeng" class="lq-centerpiece-number-suffix">
+            <span class="lq-centerpiece-number-suffix">
               {{ t('lingqian.qianTitle.qianSuffix') }}
             </span>
           </div>
