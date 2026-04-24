@@ -48,11 +48,16 @@ const rootClass = computed(() => ({
   [`lq-centerpiece--${props.stage}`]: true,
 }))
 const tierClass = computed(() => (props.item ? LEVEL_TIER[props.item.level] : 'mid'))
+/**
+ * 等级显示文本：i18n 把数据层中文 key（'上上'/'上吉'/...）转成当前语言的展示文案。
+ * 数据层之所以保持中文，是因为 LEVEL_TIER 表用中文做 key 来分配 up/mid/down 徽章色。
+ */
+const levelLabel = computed(() => (props.item ? t(`lingqian.level.${props.item.level}`) : ''))
 const ariaLabel = computed(() => {
   if (!props.item) return ''
   return t('lingqian.centerpiece.ariaLabel', {
     num: props.item.id,
-    level: props.item.level,
+    level: levelLabel.value,
     title: props.item.title,
   })
 })
@@ -92,7 +97,7 @@ const ariaLabel = computed(() => {
           </div>
 
           <span :class="['lq-centerpiece-level', tierClass]">
-            {{ item.level }}
+            {{ levelLabel }}
           </span>
 
           <div class="lq-centerpiece-title">{{ item.title }}</div>

@@ -33,7 +33,7 @@ const LEVEL_TIER: Readonly<Record<LingqianLevel, 'up' | 'mid' | 'down'>> = {
 }
 
 const numberText = computed(() => props.item.id)
-const levelText = computed(() => props.item.level)
+const levelText = computed(() => t(`lingqian.level.${props.item.level}`))
 const titleText = computed(() => props.item.title)
 const tierClass = computed(() => LEVEL_TIER[props.item.level])
 </script>

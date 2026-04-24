@@ -169,6 +169,7 @@ export function loadGuanyinData(locale: LingqianLocale = DEFAULT_LOCALE): Promis
 const LOCALE_IMPORTERS: Record<LingqianLocale, () => Promise<unknown>> = {
   'zh-CN': () => import('../data/guanyin.json'),
   'zh-TW': () => import('../data/guanyin.zh-TW.json'),
-  // en: 暂未提供英文数据集；加载时会触发 catch 回退到 zh-CN fallback 的简体
-  en: () => import('../data/guanyin.json'),
+  // en: 骨架版（level + poem 已就绪，jieyue/xianji/topics/diangu 暂为中文占位带 __todo_en 标记）
+  // 正文英文翻译由后续批次逐签填入 scripts/build-lingqian-en.mjs 的翻译表，完成后重跑脚本即可
+  en: () => import('../data/guanyin.en.json'),
 }

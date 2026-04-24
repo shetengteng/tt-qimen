@@ -285,7 +285,7 @@ watch(
             <div class="gf-divider">
               <span>◆ {{ t('lingqian.divider.qianTitle', {
                 num: result.item.id,
-                level: result.item.level,
+                level: t(`lingqian.level.${result.item.level}`),
               }) }} ◆</span>
             </div>
 

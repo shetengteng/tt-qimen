@@ -548,6 +548,20 @@ export default {
 
     tubeLabel: 'Guan Yin',
 
+    /**
+     * 6-tier level label dictionary.
+     * Data layer keeps Chinese keys ('上上'/'上吉'/...) so LEVEL_TIER lookup keeps working;
+     * UI displays English label via t('lingqian.level.{key}').
+     */
+    level: {
+      '上上': 'Excellent',
+      '上吉': 'Auspicious',
+      '中吉': 'Favorable',
+      '中平': 'Neutral',
+      '中凶': 'Cautionary',
+      '下下': 'Inauspicious',
+    },
+
     input: {
       title: 'What do you seek?',
       questionLabel: 'Your question (optional)',
