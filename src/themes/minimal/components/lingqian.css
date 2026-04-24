@@ -17,6 +17,22 @@
 }
 :root[data-theme='minimal'] .lq-input-hint strong { color: var(--mn-accent); }
 
+/* 限流温和提示：浅 accent 底 + 中性边框，与主 hint 色调同源不喧宾 */
+:root[data-theme='minimal'] .lq-rate-limit-hint {
+  font-size: 12px;
+  color: var(--mn-accent);
+  background: rgba(168, 85, 247, 0.06);
+  border: 1px solid rgba(168, 85, 247, 0.24);
+  border-radius: 6px;
+  padding: 6px 12px;
+  margin: calc(var(--mn-space-4) * -0.5) auto var(--mn-space-4);
+  text-align: center;
+  line-height: 1.55;
+  width: fit-content;
+  max-width: 92%;
+  letter-spacing: 0.01em;
+}
+
 /* ---------- 摇签视觉场景 ----------
  * 层次：
  *   .lq-shake-scene            外框 + 光晕

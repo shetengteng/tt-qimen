@@ -553,6 +553,7 @@ export default {
       hintBefore: '心中默念所求之事 ·',
       hintEmphasis: '三次深呼吸',
       hintAfter: '後輕按啟籤',
+      rateLimit: '你已求籤 {count} 次 · 心誠則靈 · 莫頻頻擾佛',
     },
 
     topic: {

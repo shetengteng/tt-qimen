@@ -47,5 +47,14 @@ export function useSkeletonReveal(opts: UseSkeletonRevealOptions = {}) {
     scrollTo(getInputCard?.() ?? null, 80)
   }
 
-  return { skeletonVisible, revealed, start, reset, scrollTo }
+  /**
+   * 直接把 revealed 翻到 true，跳过 skeleton → reveal 的延迟。
+   * 专为"从持久化快照恢复上一轮结果"这种无需仪式动画的场景准备。
+   */
+  function revealImmediately() {
+    skeletonVisible.value = false
+    revealed.value = true
+  }
+
+  return { skeletonVisible, revealed, start, reset, revealImmediately, scrollTo }
 }

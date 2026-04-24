@@ -556,6 +556,7 @@ export default {
       hintBefore: 'Silently recite your question ·',
       hintEmphasis: 'take three deep breaths',
       hintAfter: 'then gently tap Draw',
+      rateLimit: "You've drawn {count} times · Sincerity counts · No need to ask again right away",
     },
 
     topic: {

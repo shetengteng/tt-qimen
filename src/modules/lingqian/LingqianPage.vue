@@ -16,10 +16,24 @@ import JieyueXianji from './components/JieyueXianji.vue'
 import TopicTabs from './components/TopicTabs.vue'
 
 import { useLingqianStore } from './stores/lingqianStore'
-import { drawLingqian, loadGuanyinData, TOPIC_KEYS, type TopicKey } from './core/lingqian'
+import {
+  drawLingqian,
+  getLingqianItemById,
+  loadGuanyinData,
+  TOPIC_KEYS,
+  type LingqianLocale,
+  type TopicKey,
+} from './core/lingqian'
 import type { LingqianItem, LingqianResult } from './types'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
+
+/** 把 vue-i18n 的 locale 字符串窄化为 lingqian core 接受的 LingqianLocale（未知回落 zh-CN）。 */
+function normalizeLocale(v: unknown): LingqianLocale {
+  if (v === 'zh-TW' || v === 'en' || v === 'zh-CN') return v
+  return 'zh-CN'
+}
+const lingqianLocale = computed<LingqianLocale>(() => normalizeLocale(locale.value))
 const router = useRouter()
 const themeStore = useThemeStore()
 const lingqianStore = useLingqianStore()
@@ -104,28 +118,31 @@ function topicFromPreference(preferred: string): TopicKey {
 }
 
 function onPaipan() {
+  clearPaipanTimers()
+
+  // P4 快照恢复 / 上一次抽签遗留下来的 revealed=true + 旧 result：如果不先隐藏，下面写入 result.value
+  // 会立刻在"还未淡出"的结果区暴露新签，用户感知为"动画出现前就泄露了结果"。这里先重置 skeleton、
+  // 清空 result，等下面 draw 完再写入。inputCardEl 作为滚动锚，让视觉焦点回到签筒上方。
+  skeleton.reset(() => inputCardEl.value)
+  result.value = null
+
   let item: LingqianItem | null = null
   try {
-    item = drawLingqian({ lastId: lingqianStore.lastId })
+    item = drawLingqian({ lastId: lingqianStore.lastId, locale: lingqianLocale.value })
   } catch (err) {
     console.error('[lingqian] draw failed:', err)
     item = null
   }
 
   if (item) {
-    lingqianStore.recordDraw(item.id)
-    result.value = {
-      item,
-      drawnAt: Date.now(),
-      question: lingqianStore.question || undefined,
-      topic: lingqianStore.preferredTopic,
-    }
-    currentTopic.value = topicFromPreference(lingqianStore.preferredTopic)
-  } else {
-    result.value = null
+    const drawnAt = Date.now()
+    const topic = lingqianStore.preferredTopic
+    const question = lingqianStore.question || undefined
+    lingqianStore.recordDraw(item.id, { topic, question, drawnAt })
+    result.value = { item, drawnAt, question, topic }
+    currentTopic.value = topicFromPreference(topic)
   }
 
-  clearPaipanTimers()
   drawing.value = true
   centerpieceStage.value = 'flying'
   skeleton.scrollTo(tubeSceneEl.value, 80)
@@ -146,7 +163,37 @@ function onRepaipan() {
   result.value = null
   drawing.value = false
   centerpieceStage.value = 'hidden'
+  lingqianStore.clearLastResult()
   skeleton.reset(() => inputCardEl.value)
+}
+
+/**
+ * 刷新 / 切换窗口回来后，若 store 里有 lastResult，重建已抽结果并跳过全套抽签动画，
+ * 让用户看到上一次的签文（P4 · 按签 ID 缓存）。
+ *
+ * 关键点：
+ *   - 数据集加载要在 restore 之前完成（getLingqianItemById 读的是同 locale 缓存）
+ *   - 不触发 skeleton 动画：直接让 revealed 立即为 true，避免骨架闪一下
+ *   - 若缓存里找不到该 id（比如数据集版本更迭），清空快照避免脏状态
+ */
+function tryRestoreLastResult() {
+  const snap = lingqianStore.lastResult
+  if (!snap || snap.itemId <= 0) return
+  const item = getLingqianItemById(snap.itemId, lingqianLocale.value)
+  if (!item) {
+    lingqianStore.clearLastResult()
+    return
+  }
+  result.value = {
+    item,
+    drawnAt: snap.drawnAt,
+    question: snap.question || undefined,
+    topic: snap.topic,
+  }
+  currentTopic.value = topicFromPreference(snap.topic)
+  centerpieceStage.value = 'hidden'
+  drawing.value = false
+  skeleton.revealImmediately()
 }
 
 function go(name: 'home') {
@@ -173,7 +220,15 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
 
 onMounted(() => {
   currentTopic.value = topicFromPreference(lingqianStore.preferredTopic)
-  void loadGuanyinData()
+  void loadGuanyinData(lingqianLocale.value).then(() => {
+    tryRestoreLastResult()
+  })
+})
+
+// 语言切换：懒加载对应数据集；若当前已有结果，结果文本不会立即改变（上一轮抽得的 item 固定），
+// 用户点"再摇"/下次抽签时自动用新 locale 的数据。保持当前观感稳定。
+watch(lingqianLocale, (next) => {
+  void loadGuanyinData(next)
 })
 
 onUnmounted(() => {

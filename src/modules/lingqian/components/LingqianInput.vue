@@ -37,6 +37,17 @@ const TOPIC_OPTIONS: readonly LingqianTopicKey[] = [
   'family',
 ]
 
+/**
+ * 限流温和提示：每 10 次抽签提醒一次"心诚则灵，勿频繁"。
+ * 阈值设计：drawCount 大于 0 且能被 10 整除 → 显示；下一次 draw 后 %10=1，提示即自动隐藏。
+ * 这样既不阻塞用户、也不打扰，在"刚过整数次"时温和出现 1 条。
+ */
+const rateLimitHint = computed(() => {
+  const n = lingqianStore.drawCount
+  if (n > 0 && n % 10 === 0) return n
+  return 0
+})
+
 /** v-model 桥接：reka-ui Select 仅接受 string；此处与 store 直接双向同步 */
 const topicModel = computed<LingqianTopicKey>({
   get: () => lingqianStore.preferredTopic,
@@ -82,6 +93,10 @@ const topicModel = computed<LingqianTopicKey>({
       {{ t('lingqian.input.hintBefore') }}
       <strong>{{ t('lingqian.input.hintEmphasis') }}</strong>
       {{ t('lingqian.input.hintAfter') }}
+    </p>
+
+    <p v-if="rateLimitHint > 0" class="lq-rate-limit-hint" role="note">
+      {{ t('lingqian.input.rateLimit', { count: rateLimitHint }) }}
     </p>
 
     <div class="ds-input-actions">
@@ -130,6 +145,10 @@ const topicModel = computed<LingqianTopicKey>({
       {{ t('lingqian.input.hintBefore') }}
       <strong>{{ t('lingqian.input.hintEmphasis') }}</strong>
       {{ t('lingqian.input.hintAfter') }}
+    </p>
+
+    <p v-if="rateLimitHint > 0" class="lq-rate-limit-hint" role="note">
+      {{ t('lingqian.input.rateLimit', { count: rateLimitHint }) }}
     </p>
 
     <div class="ds-input-actions">

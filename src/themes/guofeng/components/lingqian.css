@@ -17,6 +17,22 @@
   color: var(--gf-cinnabar);
 }
 
+/* 限流温和提示：与 lq-input-hint 同基调，但用金色描边 + 古卷纸质感，语气"温和劝诫" */
+:root[data-theme='guofeng'] .lq-rate-limit-hint {
+  font-size: 12px;
+  color: var(--gf-cinnabar);
+  background: rgba(255, 245, 225, 0.55);
+  border: 1px solid var(--gf-gold);
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin: calc(var(--gf-space-md) * -0.4) auto var(--gf-space-md);
+  text-align: center;
+  line-height: 1.6;
+  width: fit-content;
+  max-width: 92%;
+  letter-spacing: 0.04em;
+}
+
 /* ---------- 摇签筒场景 ----------
  * 层次：
  *   .lq-shake-scene            外框 + 背景光晕

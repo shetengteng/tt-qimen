@@ -736,6 +736,7 @@ export default {
       hintBefore: '心中默念所求之事 ·',
       hintEmphasis: '三次深呼吸',
       hintAfter: '后轻按启签',
+      rateLimit: '你已求签 {count} 次 · 心诚则灵 · 莫频频扰佛',
     },
 
     topic: {
