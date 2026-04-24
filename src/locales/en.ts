@@ -634,6 +634,10 @@ export default {
       retry: 'Draw Again',
     },
 
+    centerpiece: {
+      ariaLabel: 'Lot #{num} · {level} · {title}',
+    },
+
     share: {
       title: 'My Guanyin Sacred Lot · TT Divination',
       text: 'Sincere intent · divine guidance · a Guanyin Sacred Lot from TT Divination.',

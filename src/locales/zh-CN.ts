@@ -814,6 +814,10 @@ export default {
       retry: '重新求签',
     },
 
+    centerpiece: {
+      ariaLabel: '第 {num} 签 · {level} · {title}',
+    },
+
     share: {
       title: '我的观音灵签 · TT 占卜',
       text: '虔诚一念 · 神明指引 · 来自 TT 占卜的观音灵签。',

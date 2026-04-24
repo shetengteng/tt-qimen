@@ -765,3 +765,261 @@
   :root[data-theme='guofeng'] .lq-two-cols     { grid-template-columns: 1fr; }
   :root[data-theme='guofeng'] .lq-card         { padding: var(--gf-space-xl) var(--gf-space-lg); }
 }
+
+/* ================================================================
+ * 中央特写（LotteryCenterpiece）· 国风主题
+ * stage 流程：flying(450ms) → showing(200ms) → holding(1500ms) → fading(400ms)
+ * ================================================================ */
+:root[data-theme='guofeng'] .lq-centerpiece {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+:root[data-theme='guofeng'] .lq-centerpiece-scrim {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(26, 22, 19, 0.62) 0%,
+    rgba(26, 22, 19, 0.78) 60%,
+    rgba(10, 8, 6, 0.88) 100%
+  );
+  opacity: 0;
+  transition: opacity 450ms ease-out;
+}
+
+:root[data-theme='guofeng'] .lq-centerpiece--flying .lq-centerpiece-scrim,
+:root[data-theme='guofeng'] .lq-centerpiece--showing .lq-centerpiece-scrim,
+:root[data-theme='guofeng'] .lq-centerpiece--holding .lq-centerpiece-scrim {
+  opacity: 1;
+}
+
+:root[data-theme='guofeng'] .lq-centerpiece--fading .lq-centerpiece-scrim {
+  opacity: 0;
+  transition: opacity 400ms ease-in;
+}
+
+:root[data-theme='guofeng'] .lq-centerpiece-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  padding: 0 24px;
+}
+
+:root[data-theme='guofeng'] .lq-centerpiece-stick {
+  position: relative;
+  width: 36px;
+  height: 260px;
+  border-radius: 6px;
+  background:
+    linear-gradient(180deg,
+      rgba(255, 249, 219, 0.28) 0%,
+      rgba(176, 141, 59, 0.0) 12%,
+      rgba(176, 141, 59, 0.0) 88%,
+      rgba(0, 0, 0, 0.32) 100%),
+    linear-gradient(180deg, #fbe9a8 0%, #d9a647 45%, #8a6b3a 100%);
+  border: 1.5px solid rgba(90, 66, 24, 0.65);
+  box-shadow:
+    0 6px 28px rgba(0, 0, 0, 0.45),
+    inset 0 2px 0 rgba(255, 255, 255, 0.4),
+    0 0 36px rgba(212, 169, 74, 0.55);
+  transform: translateY(60px) scale(0.5) rotate(-8deg);
+  opacity: 0;
+  transition:
+    transform 450ms cubic-bezier(0.16, 0.8, 0.3, 1),
+    opacity 450ms ease-out;
+}
+
+:root[data-theme='guofeng'] .lq-centerpiece-stick::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 36px;
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.65) 0%,
+    rgba(255, 255, 255, 0.12) 45%,
+    transparent 100%);
+  border-radius: 5px 5px 0 0;
+}
+
+:root[data-theme='guofeng'] .lq-centerpiece-stick-shine {
+  position: absolute;
+  left: 6px;
+  top: 20px;
+  bottom: 20px;
+  width: 6px;
+  border-radius: 3px;
+  background: linear-gradient(180deg,
+    rgba(255, 246, 205, 0.5) 0%,
+    rgba(255, 246, 205, 0) 100%);
+}
+
+:root[data-theme='guofeng'] .lq-centerpiece-stick-glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 236, 179, 0.5) 0%,
+    rgba(212, 169, 74, 0.18) 45%,
+    transparent 75%
+  );
+  filter: blur(8px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+:root[data-theme='guofeng'] .lq-centerpiece--showing .lq-centerpiece-stick,
+:root[data-theme='guofeng'] .lq-centerpiece--holding .lq-centerpiece-stick {
+  transform: translateY(0) scale(1) rotate(0deg);
+  opacity: 1;
+}
+
+:root[data-theme='guofeng'] .lq-centerpiece--showing .lq-centerpiece-stick-glow,
+:root[data-theme='guofeng'] .lq-centerpiece--holding .lq-centerpiece-stick-glow {
+  opacity: 1;
+  transition: opacity 300ms ease-out;
+}
+
+:root[data-theme='guofeng'] .lq-centerpiece--fading .lq-centerpiece-stick {
+  transform: translateY(-20px) scale(1.05) rotate(0deg);
+  opacity: 0;
+  transition:
+    transform 400ms ease-in,
+    opacity 400ms ease-in;
+}
+
+:root[data-theme='guofeng'] .lq-centerpiece-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 280ms ease-out 80ms,
+    transform 280ms cubic-bezier(0.2, 0.8, 0.3, 1) 80ms;
+}
+
+:root[data-theme='guofeng'] .lq-centerpiece--showing .lq-centerpiece-info,
+:root[data-theme='guofeng'] .lq-centerpiece--holding .lq-centerpiece-info {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+:root[data-theme='guofeng'] .lq-centerpiece--fading .lq-centerpiece-info {
+  opacity: 0;
+  transition: opacity 300ms ease-in;
+}
+
+:root[data-theme='guofeng'] .lq-centerpiece-number {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  color: var(--gf-gold);
+  text-shadow: 0 2px 14px rgba(212, 169, 74, 0.55);
+}
+
+:root[data-theme='guofeng'] .lq-centerpiece-number-label {
+  font-size: 22px;
+  letter-spacing: 0.4em;
+  color: var(--gf-rice);
+  opacity: 0.82;
+}
+
+:root[data-theme='guofeng'] .lq-centerpiece-number-value {
+  font-size: 56px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--gf-gold);
+  font-family: var(--gf-font-serif, serif);
+  line-height: 1;
+}
+
+:root[data-theme='guofeng'] .lq-centerpiece-level {
+  padding: 6px 22px;
+  border-radius: 18px;
+  font-size: 16px;
+  letter-spacing: 0.2em;
+  border: 1px solid currentColor;
+  background: rgba(10, 8, 6, 0.55);
+}
+
+:root[data-theme='guofeng'] .lq-centerpiece-level.up {
+  color: var(--gf-jade);
+  background: rgba(74, 109, 93, 0.28);
+}
+
+:root[data-theme='guofeng'] .lq-centerpiece-level.mid {
+  color: var(--gf-gold);
+  background: rgba(176, 141, 59, 0.28);
+}
+
+:root[data-theme='guofeng'] .lq-centerpiece-level.down {
+  color: var(--gf-cinnabar);
+  background: rgba(194, 58, 42, 0.28);
+}
+
+:root[data-theme='guofeng'] .lq-centerpiece-title {
+  color: var(--gf-rice);
+  font-family: var(--gf-font-serif, serif);
+  font-size: 32px;
+  letter-spacing: 0.3em;
+  text-align: center;
+  text-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.55),
+    0 0 18px rgba(212, 169, 74, 0.35);
+}
+
+/* Vue Transition 包装：整体 overlay 的入场/离场兜底 */
+.lq-centerpiece-fade-enter-from,
+.lq-centerpiece-fade-leave-to {
+  opacity: 0;
+}
+.lq-centerpiece-fade-enter-active,
+.lq-centerpiece-fade-leave-active {
+  transition: opacity 300ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme='guofeng'] .lq-centerpiece-stick,
+  :root[data-theme='guofeng'] .lq-centerpiece-info,
+  :root[data-theme='guofeng'] .lq-centerpiece-scrim {
+    transition: opacity 120ms linear !important;
+  }
+  :root[data-theme='guofeng'] .lq-centerpiece--flying .lq-centerpiece-stick,
+  :root[data-theme='guofeng'] .lq-centerpiece--showing .lq-centerpiece-stick,
+  :root[data-theme='guofeng'] .lq-centerpiece--holding .lq-centerpiece-stick {
+    transform: none;
+    opacity: 1;
+  }
+  :root[data-theme='guofeng'] .lq-centerpiece--flying .lq-centerpiece-info,
+  :root[data-theme='guofeng'] .lq-centerpiece--showing .lq-centerpiece-info,
+  :root[data-theme='guofeng'] .lq-centerpiece--holding .lq-centerpiece-info {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  :root[data-theme='guofeng'] .lq-centerpiece-stick {
+    width: 28px;
+    height: 200px;
+  }
+  :root[data-theme='guofeng'] .lq-centerpiece-number-value { font-size: 44px; }
+  :root[data-theme='guofeng'] .lq-centerpiece-title { font-size: 24px; letter-spacing: 0.24em; }
+  :root[data-theme='guofeng'] .lq-centerpiece-stage { gap: 22px; }
+}

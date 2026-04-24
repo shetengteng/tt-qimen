@@ -631,6 +631,10 @@ export default {
       retry: '重新求籤',
     },
 
+    centerpiece: {
+      ariaLabel: '第 {num} 籤 · {level} · {title}',
+    },
+
     share: {
       title: '我的觀音靈籤 · TT 占卜',
       text: '虔誠一念 · 神明指引 · 來自 TT 占卜的觀音靈籤。',

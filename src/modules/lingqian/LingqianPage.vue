@@ -9,6 +9,7 @@ import { useShareCard } from '@/composables/useShareCard'
 
 import LingqianInput from './components/LingqianInput.vue'
 import LotteryTube from './components/LotteryTube.vue'
+import LotteryCenterpiece, { type CenterpieceStage } from './components/LotteryCenterpiece.vue'
 import LingqianTitle from './components/LingqianTitle.vue'
 import PoemDisplay from './components/PoemDisplay.vue'
 import JieyueXianji from './components/JieyueXianji.vue'
@@ -32,23 +33,57 @@ const tubeSceneEl = ref<HTMLElement | null>(null)
 const result = shallowRef<LingqianResult | null>(null)
 const currentTopic = ref<TopicKey>('family')
 
-/** 抽签中标志：驱动 LotteryTube 的剧烈摇晃动画，并替代原全屏 skeleton 弹框 */
+/** 抽签中标志：驱动 LotteryTube 的剧烈摇晃动画 */
 const drawing = ref(false)
 
+/** 中央特写阶段：hidden → flying → showing → holding → fading → hidden */
+const centerpieceStage = ref<CenterpieceStage>('hidden')
+
 /**
- * 签条飞出动画节奏（与两主题 CSS `lq-main-fly-*` 对齐）：
- *   0-1500ms  摇筒
- *   750-1950ms 签条飞出 → 定格（1.2s，delay 0.75s）
- *   1500ms    skeleton reveal（结果区淡入）
- *   ~2100ms   签条收尾：drawing 关闭后 selector 失配、签条淡出
- * 若在 1500ms 就立刻 drawing=false，动画 selector 被移除，签条会从半飞状态硬切回原点。
- * 这里把 drawing 关闭延迟到动画落定之后，给观感留一个自然的高点停留。
+ * 抽签仪式时序（与两主题 CSS 对齐）：
+ *   t=0     点击启签 · drawing=true · centerpieceStage='flying' · 签筒开始剧烈抖
+ *   t=1500  centerpieceStage='showing'：放大签条落定、签号/等级/标题淡入
+ *   t=1700  centerpieceStage='holding'：阅读停留 1500ms
+ *   t=3200  centerpieceStage='fading'：特写淡出（400ms） + 触发 skeleton.start()
+ *   t=3350  skeleton reveal：结果区淡入，与特写淡出 200ms 叠化
+ *   t=3600  centerpieceStage='hidden' · drawing=false（回归静态摇晃）
+ *
+ * reduced-motion 场景：整个仪式压缩到 400ms，特写仅做 fade-in/out、不做变换。
  */
-const DRAWING_HOLD_MS = 2100
-let drawingHoldTimer: number | null = null
+const TIMELINE = {
+  showing: 1500,
+  holding: 1700,
+  fading: 3200,
+  skeletonDelay: 150, // skeleton.start() → reveal 的间隔（与 fading 叠化）
+  hidden: 3600,
+} as const
+const RM_TIMELINE = {
+  showing: 200,
+  holding: 300,
+  fading: 800,
+  skeletonDelay: 80,
+  hidden: 1200,
+} as const
+
+const paipanTimers: number[] = []
+function clearPaipanTimers() {
+  for (const id of paipanTimers) window.clearTimeout(id)
+  paipanTimers.length = 0
+}
+function schedulePaipanStep(fn: () => void, ms: number) {
+  const id = window.setTimeout(fn, ms)
+  paipanTimers.push(id)
+}
+
+function prefersReducedMotion() {
+  if (typeof window === 'undefined' || !window.matchMedia) return false
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
 
 const skeleton = useSkeletonReveal({
-  delay: 1500,
+  // delay 由外部调度决定何时调用 start()；这里只在 start 后再等 150ms reveal，
+  // 以实现"特写淡出"和"结果区淡入"200ms 叠化的过渡。
+  delay: TIMELINE.skeletonDelay,
   scrollOffset: 30,
   scrollHoldMs: 280,
 })
@@ -81,26 +116,29 @@ function onPaipan() {
     result.value = null
   }
 
+  clearPaipanTimers()
   drawing.value = true
-  if (drawingHoldTimer !== null) {
-    window.clearTimeout(drawingHoldTimer)
-    drawingHoldTimer = null
-  }
+  centerpieceStage.value = 'flying'
   skeleton.scrollTo(tubeSceneEl.value, 80)
-  skeleton.start(() => resultBannerEl.value)
-  drawingHoldTimer = window.setTimeout(() => {
+
+  const timeline = prefersReducedMotion() ? RM_TIMELINE : TIMELINE
+  schedulePaipanStep(() => { centerpieceStage.value = 'showing' }, timeline.showing)
+  schedulePaipanStep(() => { centerpieceStage.value = 'holding' }, timeline.holding)
+  schedulePaipanStep(() => {
+    centerpieceStage.value = 'fading'
+    skeleton.start(() => resultBannerEl.value)
+  }, timeline.fading)
+  schedulePaipanStep(() => {
+    centerpieceStage.value = 'hidden'
     drawing.value = false
-    drawingHoldTimer = null
-  }, DRAWING_HOLD_MS)
+  }, timeline.hidden)
 }
 
 function onRepaipan() {
+  clearPaipanTimers()
   result.value = null
   drawing.value = false
-  if (drawingHoldTimer !== null) {
-    window.clearTimeout(drawingHoldTimer)
-    drawingHoldTimer = null
-  }
+  centerpieceStage.value = 'hidden'
   skeleton.reset(() => inputCardEl.value)
 }
 
@@ -132,10 +170,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  if (drawingHoldTimer !== null) {
-    window.clearTimeout(drawingHoldTimer)
-    drawingHoldTimer = null
-  }
+  clearPaipanTimers()
 })
 
 watch(
@@ -289,7 +324,14 @@ watch(
     </div>
   </template>
 
-  <!-- 注：全屏 skeleton 遮罩已替换为签筒本体的"抽签中"剧烈摇晃动画（见 LotteryTube :drawing）。 -->
+  <!--
+    抽签仪式分三幕：
+      1. 签筒剧烈摇晃（LotteryTube :drawing）
+      2. 中央特写 overlay 上浮：签号 + 等级 + 典故标题（LotteryCenterpiece :stage）
+      3. 特写淡出 + 结果区淡入（200ms 叠化）
+    原全屏 skeleton 遮罩已退役。
+  -->
+  <LotteryCenterpiece :item="result?.item ?? null" :stage="centerpieceStage" />
 
   <ShareToast :state="toastState" />
 </template>
