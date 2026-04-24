@@ -18,7 +18,7 @@ import type {
   DreamEntry,
   DreamSearchResult,
 } from '../types'
-import { DREAM_ENTRIES } from '../data/dreams'
+import { DREAM_ENTRIES_GENERATED as DREAM_ENTRIES } from '../data/dreams.generated'
 import { SENSITIVE_WORDS } from '../data/sensitiveWords'
 
 const FUSE_OPTIONS: IFuseOptions<DreamEntry> = {

@@ -1,19 +1,25 @@
 #!/usr/bin/env node
 /**
- * 周公解梦 · 词条数据构建脚本（公版古籍原料 → 结构化 DreamEntry）
+ * 周公解梦 · 词条数据构建脚本（公版古籍原料 + 现代解读 drafts → 结构化 DreamEntry）
  *
  * 职责（仅限数据工程，不改运行时代码）：
  *   1) 扫描 design/jiemeng/raw/NN-{category}.md （设计空间，人类可读原料）
- *   2) 按 `### {title}` 标题块解析每条词条（字段格式见 raw/README.md）
- *   3) dry-run 模式（--dry 或默认）：只输出校验报告，不写文件
- *   4) 生成模式（--emit）：写入 src/modules/jiemeng/data/dreams.generated.ts
- *      —— 注意：当前 core/jiemeng.ts 尚未切换到 generated 入口，
- *      生成文件会被 git 跟踪但不参与运行时，留作后续启用。
+ *   2) 扫描 design/jiemeng/drafts/NN-{category}.md （现代解读 summary/modern/advice）
+ *   3) 按 `### {title}` 标题在 raw 与 drafts 间一一匹配合并
+ *   4) dry-run 模式（--dry 或默认）：只输出校验报告 + drafts 命中率，不写文件
+ *   5) 生成模式（--emit）：写入 src/modules/jiemeng/data/dreams.generated.ts
  *
  * 目录约定（与 design/bazi/ 同构）：
  *   design/jiemeng/raw/       人类编辑的原始语料（公版古籍）
+ *   design/jiemeng/drafts/    现代解读草稿（summary / modern / advice）
  *   design/jiemeng/extracted/ 留作未来提取产物（本脚本暂未使用）
  *   src/modules/jiemeng/data/ 运行时代码（dreams.ts 手写 + dreams.generated.ts 产出）
+ *
+ * 合并规则（T-16.10）：
+ *   - summary：drafts 命中则用 drafts（古籍 + 现代合并简述），否则 fallback 到 raw classical 前 80 字
+ *   - modern[]：drafts 命中则用 drafts 列表，否则空数组
+ *   - advice：drafts 命中则用 drafts 单行，否则省略（DreamEntry.advice 为可选）
+ *   - classical / classicalSource / keywords / tags：始终以 raw 为权威来源
  *
  * 设计约束（本轮范围最小化）：
  *   - 不依赖任何外部 npm 包，原生 Node >= 20
@@ -33,6 +39,7 @@ import { fileURLToPath } from 'node:url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(__dirname, '..', '..')
 const RAW_DIR = path.join(ROOT, 'design', 'jiemeng', 'raw')
+const DRAFTS_DIR = path.join(ROOT, 'design', 'jiemeng', 'drafts')
 const OUT_FILE = path.join(ROOT, 'src', 'modules', 'jiemeng', 'data', 'dreams.generated.ts')
 
 // ─────────────────────────────────────────────────────────────────────
@@ -108,6 +115,59 @@ function pickClassical(body) {
 }
 
 /**
+ * 解析 drafts/NN-{category}.md，把每条 `### 标题` 下的 summary / modern[] / advice 抽出来
+ *
+ * drafts 格式（与 drafts/README.md 对齐）：
+ *   ### {title}
+ *
+ *   **summary**: 单行文本（古籍 + 现代合并简述）
+ *
+ *   **modern**:
+ *   - 段 1
+ *   - 段 2
+ *
+ *   **advice**: 单行或多行文本
+ *
+ * @param {string} md
+ * @returns {Map<string, { summary: string, modern: string[], advice?: string }>}
+ */
+function parseDraftFile(md) {
+  /** @type {Map<string, { summary: string, modern: string[], advice?: string }>} */
+  const byTitle = new Map()
+  for (const block of splitEntries(md)) {
+    const body = block.body
+    const summary = pickMeta(body, 'summary') ?? ''
+    const advice = pickMeta(body, 'advice') ?? ''
+    // modern：从 **modern**: 行（或单独一行 **modern**:）开始，收集紧随的 - 开头列表项，
+    // 到下一个空行或下一个 **field**: 为止
+    const modern = []
+    const lines = body.split(/\r?\n/)
+    let inModern = false
+    for (const raw of lines) {
+      const line = raw.trimEnd()
+      if (/^\*\*modern\*\*:/i.test(line.trim())) {
+        inModern = true
+        continue
+      }
+      if (!inModern) continue
+      if (line.trim() === '') continue
+      if (/^\*\*(?:summary|advice|keywords|source|tags)\*\*:/i.test(line.trim())) break
+      const m = /^\s*[-*]\s+(.+)$/.exec(line)
+      if (m) modern.push(m[1].trim())
+      else break
+    }
+    if (summary || modern.length || advice) {
+      byTitle.set(block.title, {
+        summary,
+        modern,
+        advice: advice || undefined,
+      })
+    }
+  }
+  return byTitle
+}
+
+/**
  * title → stable id（中文友好）
  *   先拿"去除'梦见/梦'前缀的核心词"+ category 前缀，兜底用 hash
  * @param {string} title
@@ -135,7 +195,11 @@ function toId(title, category) {
  *   source: string,
  *   tags: string[],
  *   classical: string,
+ *   summary?: string,
+ *   modern?: string[],
+ *   advice?: string,
  *   _file: string,
+ *   _draftHit?: boolean,
  * }} ParsedEntry
  */
 
@@ -172,26 +236,42 @@ function emitTs(entries) {
   lines.push('/**')
   lines.push(' * 周公解梦 · 自动生成词条（由 scripts/jiemeng/build-dreams.mjs 构建）')
   lines.push(' *')
-  lines.push(' * 数据源：design/jiemeng/raw/*.md（公版《周公解梦》古籍原文）')
+  lines.push(' * 数据源：')
+  lines.push(' *   - design/jiemeng/raw/*.md     公版《周公解梦》+《梦林玄解》古籍原文')
+  lines.push(' *   - design/jiemeng/drafts/*.md  现代解读 summary / modern / advice（已通过 Codex 审校）')
   lines.push(' * 构建时间：' + new Date().toISOString())
   lines.push(' *')
-  lines.push(' * ⚠ 请勿手动编辑。如需新增词条，请修改 raw/*.md 后重新运行 build-dreams.mjs。')
-  lines.push(' * ⚠ 本文件当前尚未接入 core/jiemeng.ts，运行时仍使用手写 dreams.ts。')
+  lines.push(' * ⚠ 请勿手动编辑。如需新增词条，请修改 raw/*.md 或 drafts/*.md 后重新运行 build-dreams.mjs。')
   lines.push(' */')
   lines.push('')
   lines.push("import type { DreamEntry } from '../types'")
   lines.push('')
   lines.push('export const DREAM_ENTRIES_GENERATED: readonly DreamEntry[] = Object.freeze<DreamEntry[]>([')
   for (const e of entries) {
+    const classicalOneLine = e.classical.replace(/\n+/g, ' ')
+    const summary = e.summary && e.summary.trim()
+      ? e.summary
+      : classicalOneLine.slice(0, 80)
     lines.push('  {')
     lines.push(`    id: '${escape(e.id)}',`)
     lines.push(`    title: '${escape(e.title)}',`)
     lines.push(`    category: '${e.category}',`)
     lines.push(`    keywords: [${e.keywords.map((k) => `'${escape(k)}'`).join(', ')}],`)
-    lines.push(`    summary: '${escape(e.classical.slice(0, 80).replace(/\n/g, ' '))}',`)
-    lines.push(`    classical: '${escape(e.classical.replace(/\n+/g, ' '))}',`)
+    lines.push(`    summary: '${escape(summary)}',`)
+    lines.push(`    classical: '${escape(classicalOneLine)}',`)
     lines.push(`    classicalSource: '${escape(e.source || '《周公解梦》公版古籍')}',`)
-    lines.push('    modern: [],')
+    if (e.modern && e.modern.length) {
+      lines.push('    modern: [')
+      for (const p of e.modern) {
+        lines.push(`      '${escape(p)}',`)
+      }
+      lines.push('    ],')
+    } else {
+      lines.push('    modern: [],')
+    }
+    if (e.advice && e.advice.trim()) {
+      lines.push(`    advice: '${escape(e.advice.trim())}',`)
+    }
     if (e.tags.length) {
       lines.push(`    tags: [${e.tags.map((t) => `'${t}'`).join(', ')}],`)
     }
@@ -215,6 +295,22 @@ function main() {
     process.exit(1)
   }
 
+  // 预加载所有 drafts 文件（按 category 分桶，title → draft 数据）
+  /** @type {Record<string, Map<string, { summary: string, modern: string[], advice?: string }>>} */
+  const draftsByCategory = {}
+  /** @type {Set<string>} drafts 有标题但 raw 无对应的 orphan 告警集合（按 "category|title" 键） */
+  const orphanDrafts = new Set()
+  for (const file of Object.keys(FILE_CATEGORY_MAP)) {
+    const draftPath = path.join(DRAFTS_DIR, file)
+    const category = FILE_CATEGORY_MAP[file]
+    if (fs.existsSync(draftPath)) {
+      const draftMd = fs.readFileSync(draftPath, 'utf8')
+      draftsByCategory[category] = parseDraftFile(draftMd)
+    } else {
+      draftsByCategory[category] = new Map()
+    }
+  }
+
   /** @type {ParsedEntry[]} */
   const all = []
   /** @type {{ file: string, title: string, errors: string[] }[]} */
@@ -222,6 +318,8 @@ function main() {
   const seenIds = new Map()
   /** @type {Record<string, number>} */
   const byCategory = Object.fromEntries(CATEGORY_KEYS.map((k) => [k, 0]))
+  /** @type {Record<string, { total: number, hit: number }>} drafts 覆盖率统计（按 category） */
+  const draftHit = Object.fromEntries(CATEGORY_KEYS.map((k) => [k, { total: 0, hit: 0 }]))
 
   for (const file of Object.keys(FILE_CATEGORY_MAP)) {
     const full = path.join(RAW_DIR, file)
@@ -231,11 +329,16 @@ function main() {
     }
     const md = fs.readFileSync(full, 'utf8')
     const category = FILE_CATEGORY_MAP[file]
+    const draftMap = draftsByCategory[category]
+    /** @type {Set<string>} 当前 category 中已被 raw 消费掉的 draft 标题 */
+    const consumedDraftTitles = new Set()
 
     for (const raw of splitEntries(md)) {
       const keywordsStr = pickMeta(raw.body, 'keywords') ?? ''
       const tagsStr = pickMeta(raw.body, 'tags') ?? ''
       const source = pickMeta(raw.body, 'source') ?? ''
+      const draft = draftMap.get(raw.title)
+      if (draft) consumedDraftTitles.add(raw.title)
       const entry = {
         id: toId(raw.title, category),
         title: raw.title,
@@ -244,8 +347,15 @@ function main() {
         source,
         tags: tagsStr.split(',').map((s) => s.trim()).filter(Boolean),
         classical: pickClassical(raw.body),
+        summary: draft ? draft.summary : '',
+        modern: draft ? draft.modern : [],
+        advice: draft ? draft.advice : undefined,
         _file: file,
+        _draftHit: Boolean(draft),
       }
+
+      draftHit[category].total += 1
+      if (draft) draftHit[category].hit += 1
 
       const errors = lint(entry)
       if (seenIds.has(entry.id)) {
@@ -261,18 +371,34 @@ function main() {
         byCategory[category] += 1
       }
     }
+
+    // 收集 drafts 里有、raw 里无的 orphan 标题（提示使用者可能 draft 写错标题）
+    for (const t of draftMap.keys()) {
+      if (!consumedDraftTitles.has(t)) {
+        orphanDrafts.add(`${category}|${t}`)
+      }
+    }
   }
 
   // ──────── 报告 ────────
+  const totalAll = all.length
+  const totalHit = Object.values(draftHit).reduce((s, v) => s + v.hit, 0)
+  const totalCovered = totalAll > 0 ? ((totalHit / totalAll) * 100).toFixed(1) : '0.0'
+
   console.log('─'.repeat(60))
-  console.log(`周公解梦 · raw → DreamEntry 构建报告（mode=${mode}）`)
+  console.log(`周公解梦 · raw + drafts → DreamEntry 构建报告（mode=${mode}）`)
   console.log('─'.repeat(60))
-  console.log(`词条总数：${all.length}`)
+  console.log(`词条总数：${totalAll}`)
   console.log(`错误总数：${bad.length}`)
+  console.log(`drafts 覆盖：${totalHit} / ${totalAll}（${totalCovered}%）`)
   console.log('')
-  console.log('分类分布：')
+  console.log('分类分布（raw / drafts 命中）：')
   for (const k of CATEGORY_KEYS) {
-    console.log(`  ${k.padEnd(10)} ${String(byCategory[k]).padStart(4)} 条`)
+    const hit = draftHit[k]
+    const pct = hit.total > 0 ? ((hit.hit / hit.total) * 100).toFixed(0) : '0'
+    console.log(
+      `  ${k.padEnd(10)} ${String(byCategory[k]).padStart(4)} 条  (drafts ${String(hit.hit).padStart(3)}/${String(hit.total).padStart(3)} = ${pct.padStart(3)}%)`,
+    )
   }
 
   if (bad.length) {
@@ -285,6 +411,16 @@ function main() {
     }
   }
 
+  if (orphanDrafts.size) {
+    console.log('')
+    console.log('─'.repeat(60))
+    console.log(`drafts 中有、raw 中无的标题（${orphanDrafts.size} 条，疑似标题拼写不一致）：`)
+    for (const key of Array.from(orphanDrafts).sort()) {
+      const [cat, title] = key.split('|')
+      console.log(`  [${cat}] 《${title}》`)
+    }
+  }
+
   // ──────── 产出 ────────
   if (mode === 'emit') {
     if (bad.length) {
@@ -293,8 +429,7 @@ function main() {
     }
     const ts = emitTs(all)
     fs.writeFileSync(OUT_FILE, ts, 'utf8')
-    console.log(`\n✓ 已写入 ${path.relative(ROOT, OUT_FILE)}（${all.length} 条）`)
-    console.log('  ⚠ 请注意：core/jiemeng.ts 当前仍使用手写 dreams.ts，未切换到 generated。')
+    console.log(`\n✓ 已写入 ${path.relative(ROOT, OUT_FILE)}（${all.length} 条，drafts 命中 ${totalHit} 条）`)
   } else {
     console.log('')
     console.log(`(dry-run 模式；如需写入 dreams.generated.ts，请加 --emit)`)

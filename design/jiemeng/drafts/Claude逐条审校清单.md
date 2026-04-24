@@ -1,0 +1,531 @@
+# 周公解梦 drafts 逐条审校清单
+
+这份清单是对当前 `design/jiemeng/drafts/*.md` 的逐条状态版审校记录。  
+范围为当前 8 个 drafts 文件，共 495 条词条。
+
+状态说明：
+
+- `必须修改`：已确认存在与 raw 不符，或明显违反 README 规则的问题。
+- `建议修改`：不算硬错误，但表达偏强、越界或不够稳，建议 Claude 本轮顺手修掉。
+- `风格清理`：建议批量收紧 `advice` 语气，但不一定属于单条错误。
+- `通过`：本轮未发现明显问题。这里的“通过”表示当前轮次未发现优先级较高的问题，不等于永久免审。
+
+## 01-animal.md
+
+- [通过] [梦见蛇咬自己](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:9) | 本轮未发现明显问题
+- [建议修改] [梦见蛇吞物](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:19) | advice 过强
+- [通过] [梦见白蛇](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:29) | 本轮未发现明显问题
+- [通过] [梦见蛇化龙](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:39) | 本轮未发现明显问题
+- [通过] [梦见龙](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:49) | 本轮未发现明显问题
+- [通过] [梦见龙入井](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:59) | 本轮未发现明显问题
+- [通过] [梦见老虎](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:69) | 本轮未发现明显问题
+- [通过] [梦见虎走](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:79) | 本轮未发现明显问题
+- [通过] [梦见鱼](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:89) | 本轮未发现明显问题
+- [通过] [梦见鱼游](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:99) | 本轮未发现明显问题
+- [通过] [梦见马](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:109) | 本轮未发现明显问题
+- [通过] [梦见牛](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:119) | 本轮未发现明显问题
+- [通过] [梦见狗](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:129) | 本轮未发现明显问题
+- [通过] [梦见鸟](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:139) | 本轮未发现明显问题
+- [通过] [梦见凤凰](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:149) | 本轮未发现明显问题
+- [通过] [梦见鸡](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:159) | 本轮未发现明显问题
+- [通过] [梦见燕子](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:169) | 本轮未发现明显问题
+- [通过] [梦见鹤](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:179) | 本轮未发现明显问题
+- [通过] [梦见蛇绕身](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:193) | 本轮未发现明显问题
+- [通过] [梦见蛇入怀](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:203) | 本轮未发现明显问题
+- [通过] [梦见蛇黄白](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:213) | 本轮未发现明显问题
+- [通过] [梦见蛇赤黑](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:223) | 本轮未发现明显问题
+- [通过] [梦见蛇入灶](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:233) | 本轮未发现明显问题
+- [通过] [梦见蛇咬人](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:243) | 本轮未发现明显问题
+- [通过] [梦见多蛇](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:253) | 本轮未发现明显问题
+- [通过] [梦见龙入水](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:263) | 本轮未发现明显问题
+- [通过] [梦见龙入门](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:273) | 本轮未发现明显问题
+- [通过] [梦见龙死](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:283) | 本轮未发现明显问题
+- [通过] [梦见龙入市](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:293) | 本轮未发现明显问题
+- [通过] [梦见骑虎](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:303) | 本轮未发现明显问题
+- [通过] [梦见狼](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:313) | 本轮未发现明显问题
+- [通过] [梦见熊](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:323) | 本轮未发现明显问题
+- [通过] [梦见象](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:333) | 本轮未发现明显问题
+- [通过] [梦见狮子](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:343) | 本轮未发现明显问题
+- [通过] [梦见猴](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:353) | 本轮未发现明显问题
+- [通过] [梦见鹿](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:363) | 本轮未发现明显问题
+- [通过] [梦见兔](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:373) | 本轮未发现明显问题
+- [通过] [梦见骆驼](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:383) | 本轮未发现明显问题
+- [通过] [梦见豹](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:393) | 本轮未发现明显问题
+- [通过] [梦见麒麟](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:403) | 本轮未发现明显问题
+- [通过] [梦见黄牛](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:413) | 本轮未发现明显问题
+- [通过] [梦见水牛](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:423) | 本轮未发现明显问题
+- [通过] [梦见骑牛](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:433) | 本轮未发现明显问题
+- [通过] [梦见牛角有血](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:443) | 本轮未发现明显问题
+- [通过] [梦见马奔](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:453) | 本轮未发现明显问题
+- [通过] [梦见骑驴骡](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:463) | 本轮未发现明显问题
+- [通过] [梦见羊](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:473) | 本轮未发现明显问题
+- [通过] [梦见杀猪](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:483) | 本轮未发现明显问题
+- [通过] [梦见猪自死](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:493) | 本轮未发现明显问题
+- [通过] [梦见狗吠](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:503) | 本轮未发现明显问题
+- [通过] [梦见鸟入怀](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:513) | 本轮未发现明显问题
+- [通过] [梦见捉鸟](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:523) | 本轮未发现明显问题
+- [通过] [梦见鹰](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:533) | 本轮未发现明显问题
+- [通过] [梦见雀](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:543) | 本轮未发现明显问题
+- [通过] [梦见鸽（鸠）](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:553) | 本轮未发现明显问题
+- [通过] [梦见鸳鸯](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:563) | 本轮未发现明显问题
+- [通过] [梦见鹅鸭](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:573) | 本轮未发现明显问题
+- [通过] [梦见孔雀](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:583) | 本轮未发现明显问题
+- [通过] [梦见鹦鹉](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:593) | 本轮未发现明显问题
+- [通过] [梦见鸦](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:603) | 本轮未发现明显问题
+- [通过] [梦见鹊](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:613) | 本轮未发现明显问题
+- [通过] [梦见鲤鱼](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:623) | 本轮未发现明显问题
+- [通过] [梦见捞鱼](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:633) | 本轮未发现明显问题
+- [通过] [梦见鳖](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:643) | 本轮未发现明显问题
+- [通过] [梦见龟](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:653) | 本轮未发现明显问题
+- [通过] [梦见螃蟹](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:663) | 本轮未发现明显问题
+- [通过] [梦见蜘蛛](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/01-animal.md:673) | 本轮未发现明显问题
+
+## 02-people.md
+
+- [通过] [梦见死人](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:7) | 本轮未发现明显问题
+- [通过] [梦见已故亲人](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:17) | 本轮未发现明显问题
+- [必须修改] [梦见陌生人](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:27) | 与古文不符
+- [通过] [梦见小孩](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:37) | 本轮未发现明显问题
+- [通过] [梦见怀孕](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:47) | 本轮未发现明显问题
+- [建议修改] [梦见生子](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:57) | advice 推进感过强
+- [通过] [梦见朋友](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:67) | 本轮未发现明显问题
+- [通过] [梦见亲人团聚](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:77) | 本轮未发现明显问题
+- [通过] [梦见父母](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:87) | 本轮未发现明显问题
+- [通过] [梦见妻子](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:97) | 本轮未发现明显问题
+- [通过] [梦见情人](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:107) | 本轮未发现明显问题
+- [通过] [梦见长辈](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:117) | 本轮未发现明显问题
+- [通过] [梦见师长](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:127) | 本轮未发现明显问题
+- [通过] [梦见官吏](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:137) | 本轮未发现明显问题
+- [通过] [梦见旧识](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:147) | 本轮未发现明显问题
+- [通过] [梦见圣贤](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:157) | 本轮未发现明显问题
+- [通过] [梦见乞丐](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:167) | 本轮未发现明显问题
+- [通过] [梦见死人复活](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:177) | 本轮未发现明显问题
+- [通过] [梦见与亡父言](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:187) | 本轮未发现明显问题
+- [通过] [梦见祖先](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:197) | 本轮未发现明显问题
+- [通过] [梦见棺中人言](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:207) | 本轮未发现明显问题
+- [通过] [梦见办丧](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:217) | 本轮未发现明显问题
+- [通过] [梦见送葬](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:227) | 本轮未发现明显问题
+- [通过] [梦见自己哭](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:237) | 本轮未发现明显问题
+- [通过] [梦见他人哭](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:247) | 本轮未发现明显问题
+- [通过] [梦见歌舞](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:257) | 本轮未发现明显问题
+- [通过] [梦见自己唱歌](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:267) | 本轮未发现明显问题
+- [通过] [梦见乞食者](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:277) | 本轮未发现明显问题
+- [通过] [梦见外乡客](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:287) | 本轮未发现明显问题
+- [通过] [梦见军人](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:297) | 本轮未发现明显问题
+- [通过] [梦见公差](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:307) | 本轮未发现明显问题
+- [通过] [梦见盗贼](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:317) | 本轮未发现明显问题
+- [通过] [梦见美人](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:327) | 本轮未发现明显问题
+- [通过] [梦见老叟](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:337) | 本轮未发现明显问题
+- [通过] [梦见婴孩](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:347) | 本轮未发现明显问题
+- [通过] [梦见小孩哭](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:357) | 本轮未发现明显问题
+- [通过] [梦见抱小儿](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:367) | 本轮未发现明显问题
+- [通过] [梦见教子读书](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:377) | 本轮未发现明显问题
+- [通过] [梦见生男](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:387) | 本轮未发现明显问题
+- [通过] [梦见生女](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:397) | 本轮未发现明显问题
+- [通过] [梦见兄弟相打](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:407) | 本轮未发现明显问题
+- [通过] [梦见兄弟分别](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:417) | 本轮未发现明显问题
+- [通过] [梦见与夫相打](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:427) | 本轮未发现明显问题
+- [通过] [梦见与妻分钗](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:437) | 本轮未发现明显问题
+- [通过] [梦见夫妻入水](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:447) | 本轮未发现明显问题
+- [通过] [梦见夫妻同浴](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:457) | 本轮未发现明显问题
+- [通过] [梦见与异性同行](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:467) | 本轮未发现明显问题
+- [通过] [梦见与异性同坐](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:477) | 本轮未发现明显问题
+- [通过] [梦见拥抱](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:487) | 本轮未发现明显问题
+- [通过] [梦见与友相会](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:497) | 本轮未发现明显问题
+- [通过] [梦见与人对饮](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:507) | 本轮未发现明显问题
+- [通过] [梦见与人交易](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:517) | 本轮未发现明显问题
+- [通过] [梦见与人争吵](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:527) | 本轮未发现明显问题
+- [通过] [梦见与僧道言](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:537) | 本轮未发现明显问题
+- [通过] [梦见与神言](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:547) | 本轮未发现明显问题
+- [通过] [梦见与圣贤言](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:557) | 本轮未发现明显问题
+- [通过] [梦见白衣人](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:567) | 本轮未发现明显问题
+- [通过] [梦见使者](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:577) | 本轮未发现明显问题
+- [通过] [梦见太子](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:587) | 本轮未发现明显问题
+- [通过] [梦见王侯](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:597) | 本轮未发现明显问题
+- [通过] [梦见皇帝](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:607) | 本轮未发现明显问题
+- [通过] [梦见将军](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:617) | 本轮未发现明显问题
+- [通过] [梦见贵人](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/02-people.md:627) | 本轮未发现明显问题
+
+## 03-nature.md
+
+- [通过] [梦见水](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:7) | 本轮未发现明显问题
+- [建议修改] [梦见洪水](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:17) | advice 任务化
+- [通过] [梦见火](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:27) | 本轮未发现明显问题
+- [通过] [梦见太阳](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:37) | 本轮未发现明显问题
+- [通过] [梦见月亮](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:47) | 本轮未发现明显问题
+- [建议修改] [梦见打雷](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:57) | advice 过强
+- [通过] [梦见下雨](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:67) | 本轮未发现明显问题
+- [通过] [梦见下雪](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:77) | 本轮未发现明显问题
+- [通过] [梦见星辰](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:87) | 本轮未发现明显问题
+- [通过] [梦见云](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:97) | 本轮未发现明显问题
+- [通过] [梦见风](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:107) | 本轮未发现明显问题
+- [通过] [梦见山](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:117) | 本轮未发现明显问题
+- [通过] [梦见大地](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:127) | 本轮未发现明显问题
+- [建议修改] [梦见海](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:137) | 表达绝对化
+- [通过] [梦见彩虹](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:147) | 本轮未发现明显问题
+- [通过] [梦见天晴](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:157) | 本轮未发现明显问题
+- [通过] [梦见水中行](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:167) | 本轮未发现明显问题
+- [通过] [梦见过河](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:177) | 本轮未发现明显问题
+- [通过] [梦见溪流](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:187) | 本轮未发现明显问题
+- [通过] [梦见湖海](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:197) | 本轮未发现明显问题
+- [通过] [梦见井水溢](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:207) | 本轮未发现明显问题
+- [通过] [梦见火烧山](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:217) | 本轮未发现明显问题
+- [通过] [梦见火烧屋](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:227) | 本轮未发现明显问题
+- [通过] [梦见日初升](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:237) | 本轮未发现明显问题
+- [通过] [梦见日落](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:247) | 本轮未发现明显问题
+- [通过] [梦见日蚀](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:257) | 本轮未发现明显问题
+- [通过] [梦见月圆](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:267) | 本轮未发现明显问题
+- [通过] [梦见月落](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:277) | 本轮未发现明显问题
+- [通过] [梦见星陨](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:287) | 本轮未发现明显问题
+- [通过] [梦见流星](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:297) | 本轮未发现明显问题
+- [通过] [梦见北斗](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:307) | 本轮未发现明显问题
+- [通过] [梦见银河](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:317) | 本轮未发现明显问题
+- [通过] [梦见天裂](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:327) | 本轮未发现明显问题
+- [通过] [梦见登天](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:337) | 本轮未发现明显问题
+- [通过] [梦见持星](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:347) | 本轮未发现明显问题
+- [通过] [梦见五色云](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:357) | 本轮未发现明显问题
+- [通过] [梦见黑云](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:367) | 本轮未发现明显问题
+- [通过] [梦见浓雾](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:377) | 本轮未发现明显问题
+- [通过] [梦见霜降](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:387) | 本轮未发现明显问题
+- [通过] [梦见霞光](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:397) | 本轮未发现明显问题
+- [通过] [梦见露水](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:407) | 本轮未发现明显问题
+- [通过] [梦见冰雹](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:417) | 本轮未发现明显问题
+- [通过] [梦见暴雨](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:427) | 本轮未发现明显问题
+- [通过] [梦见霹雳](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:437) | 本轮未发现明显问题
+- [通过] [梦见闪电](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:447) | 本轮未发现明显问题
+- [通过] [梦见赤虹](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:457) | 本轮未发现明显问题
+- [通过] [梦见黑虹](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:467) | 本轮未发现明显问题
+- [通过] [梦见登山](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:477) | 本轮未发现明显问题
+- [通过] [梦见下山](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:487) | 本轮未发现明显问题
+- [通过] [梦见山崩](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:497) | 本轮未发现明显问题
+- [通过] [梦见登岩](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:507) | 本轮未发现明显问题
+- [通过] [梦见走平地](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:517) | 本轮未发现明显问题
+- [通过] [梦见地动](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:527) | 本轮未发现明显问题
+- [通过] [梦见地陷](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:537) | 本轮未发现明显问题
+- [通过] [梦见走泥泞](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:547) | 本轮未发现明显问题
+- [通过] [梦见过桥](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:557) | 本轮未发现明显问题
+- [通过] [梦见枯木](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:567) | 本轮未发现明显问题
+- [通过] [梦见花开](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:577) | 本轮未发现明显问题
+- [通过] [梦见果实落](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:587) | 本轮未发现明显问题
+- [通过] [梦见竹生](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:597) | 本轮未发现明显问题
+- [通过] [梦见松柏](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:607) | 本轮未发现明显问题
+- [通过] [梦见兰草](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:617) | 本轮未发现明显问题
+- [通过] [梦见拾花](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:627) | 本轮未发现明显问题
+- [通过] [梦见折花](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/03-nature.md:637) | 本轮未发现明显问题
+
+## 04-body.md
+
+- [通过] [梦见掉牙](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:7) | 本轮未发现明显问题
+- [通过] [梦见头发](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:17) | 本轮未发现明显问题
+- [通过] [梦见眼睛](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:27) | 本轮未发现明显问题
+- [通过] [梦见流血](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:37) | 本轮未发现明显问题
+- [通过] [梦见裸体](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:47) | 本轮未发现明显问题
+- [通过] [梦见洗澡](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:57) | 本轮未发现明显问题
+- [通过] [梦见生病](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:67) | 本轮未发现明显问题
+- [通过] [梦见受伤](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:77) | 本轮未发现明显问题
+- [通过] [梦见衰老](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:87) | 本轮未发现明显问题
+- [通过] [梦见美貌](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:97) | 本轮未发现明显问题
+- [通过] [梦见丑容](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:107) | 本轮未发现明显问题
+- [建议修改] [梦见出汗](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:117) | advice 过度具体
+- [建议修改] [梦见吃东西](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:127) | 现实引导过具体
+- [通过] [梦见呕吐](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:137) | 本轮未发现明显问题
+- [通过] [梦见心脏](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:147) | 本轮未发现明显问题
+- [通过] [梦见缺齿](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:157) | 本轮未发现明显问题
+- [通过] [梦见齿生](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:167) | 本轮未发现明显问题
+- [通过] [梦见白发](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:177) | 本轮未发现明显问题
+- [通过] [梦见秃头](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:187) | 本轮未发现明显问题
+- [通过] [梦见生角](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:197) | 本轮未发现明显问题
+- [通过] [梦见梳头](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:207) | 本轮未发现明显问题
+- [通过] [梦见洗头](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:217) | 本轮未发现明显问题
+- [通过] [梦见眼亮](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:227) | 本轮未发现明显问题
+- [通过] [梦见眼盲](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:237) | 本轮未发现明显问题
+- [通过] [梦见鼻血](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:247) | 本轮未发现明显问题
+- [通过] [梦见耳聋](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:257) | 本轮未发现明显问题
+- [通过] [梦见手指折](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:267) | 本轮未发现明显问题
+- [通过] [梦见脚痛](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:277) | 本轮未发现明显问题
+- [通过] [梦见身肥](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:287) | 本轮未发现明显问题
+- [通过] [梦见身瘦](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:297) | 本轮未发现明显问题
+- [通过] [梦见生翼](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:307) | 本轮未发现明显问题
+- [通过] [梦见身受戒](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:317) | 本轮未发现明显问题
+- [通过] [梦见戴冠](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:327) | 本轮未发现明显问题
+- [通过] [梦见失冠](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:337) | 本轮未发现明显问题
+- [通过] [梦见红衣](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:347) | 本轮未发现明显问题
+- [通过] [梦见白衣](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:357) | 本轮未发现明显问题
+- [通过] [梦见黑衣](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:367) | 本轮未发现明显问题
+- [通过] [梦见青衣](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:377) | 本轮未发现明显问题
+- [通过] [梦见黄衣](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:387) | 本轮未发现明显问题
+- [通过] [梦见绣衣](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:397) | 本轮未发现明显问题
+- [通过] [梦见破衣](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:407) | 本轮未发现明显问题
+- [通过] [梦见新衣](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:417) | 本轮未发现明显问题
+- [通过] [梦见女着官服](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:427) | 本轮未发现明显问题
+- [通过] [梦见解带](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:437) | 本轮未发现明显问题
+- [通过] [梦见新鞋](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:447) | 本轮未发现明显问题
+- [通过] [梦见破鞋](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:457) | 本轮未发现明显问题
+- [通过] [梦见失履](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:467) | 本轮未发现明显问题
+- [通过] [梦见草鞋](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:477) | 本轮未发现明显问题
+- [通过] [梦见脱鞋](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:487) | 本轮未发现明显问题
+- [通过] [梦见赤足](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:497) | 本轮未发现明显问题
+- [通过] [梦见戴镜](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:507) | 本轮未发现明显问题
+- [通过] [梦见戴印](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:517) | 本轮未发现明显问题
+- [通过] [梦见沐浴贵客](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:527) | 本轮未发现明显问题
+- [通过] [梦见照镜](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/04-body.md:537) | 本轮未发现明显问题
+
+## 05-life.md
+
+- [风格清理] [梦见飞翔](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:7) | 建议收紧 advice 语气
+- [通过] [梦见被追逐](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:17) | 本轮未发现明显问题
+- [必须修改] [梦见考试](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:27) | summary 口径偏差
+- [通过] [梦见结婚](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:37) | 本轮未发现明显问题
+- [必须修改] [梦见迷路](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:47) | summary 口径偏差
+- [通过] [梦见坠落](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:57) | 本轮未发现明显问题
+- [通过] [梦见赛跑](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:67) | 本轮未发现明显问题
+- [建议修改] [梦见争吵](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:77) | 可能放大现实冲突
+- [通过] [梦见打架](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:87) | 本轮未发现明显问题
+- [通过] [梦见舞蹈](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:97) | 本轮未发现明显问题
+- [风格清理] [梦见唱歌](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:107) | 建议收紧 advice 语气
+- [通过] [梦见吃饭](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:117) | 本轮未发现明显问题
+- [风格清理] [梦见睡觉](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:127) | 建议收紧 advice 语气
+- [风格清理] [梦见写字](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:137) | 建议收紧 advice 语气
+- [风格清理] [梦见读书](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:147) | 建议收紧 advice 语气
+- [风格清理] [梦见旅行](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:157) | 建议收紧 advice 语气
+- [通过] [梦见喝酒醉](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:167) | 本轮未发现明显问题
+- [通过] [梦见喝水](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:177) | 本轮未发现明显问题
+- [通过] [梦见吃肉](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:187) | 本轮未发现明显问题
+- [通过] [梦见吃饼](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:197) | 本轮未发现明显问题
+- [通过] [梦见吃瓜](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:207) | 本轮未发现明显问题
+- [通过] [梦见吃枣](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:217) | 本轮未发现明显问题
+- [通过] [梦见吃桑椹](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:227) | 本轮未发现明显问题
+- [通过] [梦见吃菜](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:237) | 本轮未发现明显问题
+- [通过] [梦见吃葱韭](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:247) | 本轮未发现明显问题
+- [通过] [梦见吃饭碗空](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:257) | 本轮未发现明显问题
+- [通过] [梦见请客](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:267) | 本轮未发现明显问题
+- [通过] [梦见赴宴](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:277) | 本轮未发现明显问题
+- [通过] [梦见呕吐](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:287) | 本轮未发现明显问题
+- [通过] [梦见种田](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:297) | 本轮未发现明显问题
+- [通过] [梦见耕地](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:307) | 本轮未发现明显问题
+- [通过] [梦见割禾](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:317) | 本轮未发现明显问题
+- [通过] [梦见五谷丰登](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:327) | 本轮未发现明显问题
+- [通过] [梦见买田](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:337) | 本轮未发现明显问题
+- [通过] [梦见五谷散落](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:347) | 本轮未发现明显问题
+- [通过] [梦见米堆](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:357) | 本轮未发现明显问题
+- [通过] [梦见麦麸](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:367) | 本轮未发现明显问题
+- [通过] [梦见拾米](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:377) | 本轮未发现明显问题
+- [通过] [梦见种菜](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:387) | 本轮未发现明显问题
+- [通过] [梦见树苗萌芽](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:397) | 本轮未发现明显问题
+- [通过] [梦见麻丛](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:407) | 本轮未发现明显问题
+- [通过] [梦见行路](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:417) | 本轮未发现明显问题
+- [通过] [梦见过市](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:427) | 本轮未发现明显问题
+- [通过] [梦见赶集](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:437) | 本轮未发现明显问题
+- [通过] [梦见买货](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:447) | 本轮未发现明显问题
+- [通过] [梦见卖货](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:457) | 本轮未发现明显问题
+- [通过] [梦见做生意](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:467) | 本轮未发现明显问题
+- [通过] [梦见被驱赶](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:477) | 本轮未发现明显问题
+- [通过] [梦见早起](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:487) | 本轮未发现明显问题
+- [通过] [梦见困倦](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:497) | 本轮未发现明显问题
+- [通过] [梦见做工](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:507) | 本轮未发现明显问题
+- [通过] [梦见祭灶](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:517) | 本轮未发现明显问题
+- [通过] [梦见缝衣](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:527) | 本轮未发现明显问题
+- [通过] [梦见纺织](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/05-life.md:537) | 本轮未发现明显问题
+
+## 06-ghost.md
+
+- [通过] [梦见鬼](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:10) | 本轮未发现明显问题
+- [通过] [梦见神仙](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:20) | 本轮未发现明显问题
+- [必须修改] [梦见佛像](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:30) | 违反神怪题材规则
+- [通过] [梦见与鬼言](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:40) | 本轮未发现明显问题
+- [通过] [梦见驱鬼](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:50) | 本轮未发现明显问题
+- [通过] [梦见道士](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:60) | 本轮未发现明显问题
+- [通过] [梦见和尚](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:70) | 本轮未发现明显问题
+- [通过] [梦见土地公](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:80) | 本轮未发现明显问题
+- [必须修改] [梦见财神](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:90) | 建议越界
+- [通过] [梦见龙王](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:100) | 本轮未发现明显问题
+- [通过] [梦见观音](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:110) | 本轮未发现明显问题
+- [通过] [梦见拜神](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:120) | 本轮未发现明显问题
+- [通过] [梦见祭祖](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:130) | 本轮未发现明显问题
+- [通过] [梦见妖怪](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:140) | 本轮未发现明显问题
+- [通过] [梦见异象](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:150) | 本轮未发现明显问题
+- [通过] [梦见女鬼](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:160) | 本轮未发现明显问题
+- [通过] [梦见冤鬼](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:170) | 本轮未发现明显问题
+- [通过] [梦见鬼追](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:180) | 本轮未发现明显问题
+- [通过] [梦见鬼笑](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:190) | 本轮未发现明显问题
+- [通过] [梦见与鬼斗](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:200) | 本轮未发现明显问题
+- [通过] [梦见祭鬼](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:210) | 本轮未发现明显问题
+- [通过] [梦见送鬼](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:220) | 本轮未发现明显问题
+- [通过] [梦见仙女](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:230) | 本轮未发现明显问题
+- [通过] [梦见仙翁](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:240) | 本轮未发现明显问题
+- [通过] [梦见入仙境](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:250) | 本轮未发现明显问题
+- [通过] [梦见弥勒佛](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:260) | 本轮未发现明显问题
+- [通过] [梦见菩萨](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:270) | 本轮未发现明显问题
+- [通过] [梦见罗汉](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:280) | 本轮未发现明显问题
+- [通过] [梦见烧香](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:290) | 本轮未发现明显问题
+- [通过] [梦见拜佛](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:300) | 本轮未发现明显问题
+- [通过] [梦见念经](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:310) | 本轮未发现明显问题
+- [通过] [梦见受戒](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:320) | 本轮未发现明显问题
+- [通过] [梦见入庙](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:330) | 本轮未发现明显问题
+- [通过] [梦见见仙人](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:340) | 本轮未发现明显问题
+- [通过] [梦见画神像](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:350) | 本轮未发现明显问题
+- [通过] [梦见关帝](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:360) | 本轮未发现明显问题
+- [通过] [梦见妈祖](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:370) | 本轮未发现明显问题
+- [通过] [梦见城隍](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:380) | 本轮未发现明显问题
+- [通过] [梦见灶王](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:390) | 本轮未发现明显问题
+- [通过] [梦见门神](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:400) | 本轮未发现明显问题
+- [通过] [梦见井神](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:410) | 本轮未发现明显问题
+- [通过] [梦见树神](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:420) | 本轮未发现明显问题
+- [通过] [梦见山神](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:430) | 本轮未发现明显问题
+- [通过] [梦见雷神](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:440) | 本轮未发现明显问题
+- [通过] [梦见月老](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/06-ghost.md:450) | 本轮未发现明显问题
+
+## 07-building.md
+
+- [风格清理] [梦见房子](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:7) | 建议收紧 advice 语气
+- [通过] [梦见桥](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:17) | 本轮未发现明显问题
+- [风格清理] [梦见坟墓](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:27) | 建议收紧 advice 语气
+- [通过] [梦见城池](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:37) | 本轮未发现明显问题
+- [通过] [梦见楼阁](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:47) | 本轮未发现明显问题
+- [风格清理] [梦见宫殿](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:57) | 建议收紧 advice 语气
+- [通过] [梦见庙宇](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:67) | 本轮未发现明显问题
+- [通过] [梦见门](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:77) | 本轮未发现明显问题
+- [通过] [梦见窗户](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:87) | 本轮未发现明显问题
+- [通过] [梦见墙壁](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:97) | 本轮未发现明显问题
+- [通过] [梦见道路](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:107) | 本轮未发现明显问题
+- [风格清理] [梦见井](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:117) | 建议收紧 advice 语气
+- [通过] [梦见厨房](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:127) | 本轮未发现明显问题
+- [通过] [梦见床](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:137) | 本轮未发现明显问题
+- [通过] [梦见教堂](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:147) | 本轮未发现明显问题
+- [风格清理] [梦见学校](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:157) | 建议收紧 advice 语气
+- [通过] [梦见屋宅更新](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:167) | 本轮未发现明显问题
+- [通过] [梦见屋宅破败](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:177) | 本轮未发现明显问题
+- [通过] [梦见屋顶生草](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:187) | 本轮未发现明显问题
+- [通过] [梦见屋顶生树](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:197) | 本轮未发现明显问题
+- [通过] [梦见屋漏](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:207) | 本轮未发现明显问题
+- [通过] [梦见盖屋](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:217) | 本轮未发现明显问题
+- [通过] [梦见拆屋](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:227) | 本轮未发现明显问题
+- [通过] [梦见迁居](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:237) | 本轮未发现明显问题
+- [通过] [梦见与人争屋](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:247) | 本轮未发现明显问题
+- [通过] [梦见房梁折](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:257) | 本轮未发现明显问题
+- [通过] [梦见入宫](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:267) | 本轮未发现明显问题
+- [通过] [梦见上楼](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:277) | 本轮未发现明显问题
+- [通过] [梦见高堂](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:287) | 本轮未发现明显问题
+- [通过] [梦见广厦](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:297) | 本轮未发现明显问题
+- [通过] [梦见登台](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:307) | 本轮未发现明显问题
+- [通过] [梦见登塔](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:317) | 本轮未发现明显问题
+- [通过] [梦见登城](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:327) | 本轮未发现明显问题
+- [通过] [梦见入府](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:337) | 本轮未发现明显问题
+- [通过] [梦见入仓库](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:347) | 本轮未发现明显问题
+- [通过] [梦见开门](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:357) | 本轮未发现明显问题
+- [通过] [梦见关门](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:367) | 本轮未发现明显问题
+- [通过] [梦见门破](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:377) | 本轮未发现明显问题
+- [通过] [梦见两扇门](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:387) | 本轮未发现明显问题
+- [通过] [梦见门前生草](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:397) | 本轮未发现明显问题
+- [通过] [梦见城门开](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:407) | 本轮未发现明显问题
+- [通过] [梦见小门](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:417) | 本轮未发现明显问题
+- [通过] [梦见井水溢](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:427) | 本轮未发现明显问题
+- [通过] [梦见井干](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:437) | 本轮未发现明显问题
+- [通过] [梦见井中鱼](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:447) | 本轮未发现明显问题
+- [通过] [梦见取井水](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:457) | 本轮未发现明显问题
+- [通过] [梦见井中照影](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:467) | 本轮未发现明显问题
+- [通过] [梦见灶火明](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:477) | 本轮未发现明显问题
+- [通过] [梦见灶破](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:487) | 本轮未发现明显问题
+- [通过] [梦见入厨](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:497) | 本轮未发现明显问题
+- [通过] [梦见上厕](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:507) | 本轮未发现明显问题
+- [通过] [梦见入粪坑](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:517) | 本轮未发现明显问题
+- [通过] [梦见过断桥](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:527) | 本轮未发现明显问题
+- [通过] [梦见修桥](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:537) | 本轮未发现明显问题
+- [通过] [梦见桥上行](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:547) | 本轮未发现明显问题
+- [通过] [梦见入墓](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:557) | 本轮未发现明显问题
+- [通过] [梦见开棺](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:567) | 本轮未发现明显问题
+- [通过] [梦见祭墓](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:577) | 本轮未发现明显问题
+- [通过] [梦见棺自出](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:587) | 本轮未发现明显问题
+- [通过] [梦见迁葬](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:597) | 本轮未发现明显问题
+- [通过] [梦见送殡](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:607) | 本轮未发现明显问题
+- [通过] [梦见上香](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:617) | 本轮未发现明显问题
+- [通过] [梦见图书馆](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/07-building.md:627) | 本轮未发现明显问题
+
+## 08-other.md
+
+- [通过] [梦见捡钱](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:11) | 本轮未发现明显问题
+- [通过] [梦见镜子](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:21) | 本轮未发现明显问题
+- [通过] [梦见船](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:31) | 本轮未发现明显问题
+- [通过] [梦见走路](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:41) | 本轮未发现明显问题
+- [风格清理] [梦见衣服](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:51) | 建议收紧 advice 语气
+- [通过] [梦见鞋](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:61) | 本轮未发现明显问题
+- [风格清理] [梦见书](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:71) | 建议收紧 advice 语气
+- [风格清理] [梦见笔](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:81) | 建议收紧 advice 语气
+- [风格清理] [梦见宝物](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:91) | 建议收紧 advice 语气
+- [风格清理] [梦见花朵](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:101) | 建议收紧 advice 语气
+- [通过] [梦见树木](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:111) | 本轮未发现明显问题
+- [通过] [梦见果实](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:121) | 本轮未发现明显问题
+- [风格清理] [梦见礼物](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:131) | 建议收紧 advice 语气
+- [风格清理] [梦见信件](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:141) | 建议收紧 advice 语气
+- [风格清理] [梦见钥匙](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:151) | 建议收紧 advice 语气
+- [风格清理] [梦见笑声](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:161) | 建议收紧 advice 语气
+- [通过] [梦见哭泣](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:171) | 本轮未发现明显问题
+- [通过] [梦见金山](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:181) | 本轮未发现明显问题
+- [通过] [梦见捡银](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:191) | 本轮未发现明显问题
+- [通过] [梦见拾珠](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:201) | 本轮未发现明显问题
+- [通过] [梦见戴玉](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:211) | 本轮未发现明显问题
+- [通过] [梦见还钱](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:221) | 本轮未发现明显问题
+- [通过] [梦见分财](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:231) | 本轮未发现明显问题
+- [通过] [梦见铜器](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:241) | 本轮未发现明显问题
+- [通过] [梦见铁器](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:251) | 本轮未发现明显问题
+- [通过] [梦见绫锦](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:261) | 本轮未发现明显问题
+- [通过] [梦见绢帛](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:271) | 本轮未发现明显问题
+- [通过] [梦见拾绳](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:281) | 本轮未发现明显问题
+- [通过] [梦见镜破](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:291) | 本轮未发现明显问题
+- [通过] [梦见照镜暗](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:301) | 本轮未发现明显问题
+- [通过] [梦见釵动](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:311) | 本轮未发现明显问题
+- [通过] [梦见拾簪](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:321) | 本轮未发现明显问题
+- [通过] [梦见胭脂](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:331) | 本轮未发现明显问题
+- [通过] [梦见梳篦](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:341) | 本轮未发现明显问题
+- [通过] [梦见绣花针](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:351) | 本轮未发现明显问题
+- [通过] [梦见安新床](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:361) | 本轮未发现明显问题
+- [通过] [梦见床破](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:371) | 本轮未发现明显问题
+- [通过] [梦见帐裂](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:381) | 本轮未发现明显问题
+- [通过] [梦见铺新席](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:391) | 本轮未发现明显问题
+- [通过] [梦见碗碟破](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:401) | 本轮未发现明显问题
+- [通过] [梦见盆中水](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:411) | 本轮未发现明显问题
+- [通过] [梦见秤](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:421) | 本轮未发现明显问题
+- [通过] [梦见绳锯](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:431) | 本轮未发现明显问题
+- [通过] [梦见乘船渡河](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:441) | 本轮未发现明显问题
+- [通过] [梦见船破](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:451) | 本轮未发现明显问题
+- [通过] [梦见船入门](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:461) | 本轮未发现明显问题
+- [通过] [梦见乘车](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:471) | 本轮未发现明显问题
+- [通过] [梦见车破](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:481) | 本轮未发现明显问题
+- [通过] [梦见马驾车](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:491) | 本轮未发现明显问题
+- [通过] [梦见羊驾车](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:501) | 本轮未发现明显问题
+- [通过] [梦见拔刀](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:511) | 本轮未发现明显问题
+- [通过] [梦见持剑](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:521) | 本轮未发现明显问题
+- [通过] [梦见折刀](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:531) | 本轮未发现明显问题
+- [通过] [梦见磨剑](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:541) | 本轮未发现明显问题
+- [通过] [梦见铠甲](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:551) | 本轮未发现明显问题
+- [通过] [梦见弓矢](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:561) | 本轮未发现明显问题
+- [通过] [梦见擂鼓](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:571) | 本轮未发现明显问题
+- [通过] [梦见鸣钟](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:581) | 本轮未发现明显问题
+- [通过] [梦见鼓不鸣](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:591) | 本轮未发现明显问题
+- [通过] [梦见旌旗](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:601) | 本轮未发现明显问题
+- [通过] [梦见伞盖](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:611) | 本轮未发现明显问题
+- [通过] [梦见捧经书](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:621) | 本轮未发现明显问题
+- [通过] [梦见五色纸](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:631) | 本轮未发现明显问题
+- [通过] [梦见笔断](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:641) | 本轮未发现明显问题
+- [通过] [梦见教书](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:651) | 本轮未发现明显问题
+- [通过] [梦见执笏](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:661) | 本轮未发现明显问题
+- [通过] [梦见佩印](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:671) | 本轮未发现明显问题
+- [通过] [梦见曆日](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:681) | 本轮未发现明显问题
+- [通过] [梦见书信通达](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:691) | 本轮未发现明显问题
+- [通过] [梦见杀人](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:701) | 本轮未发现明显问题
+- [通过] [梦见被杀](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:711) | 本轮未发现明显问题
+- [通过] [梦见自杀](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:721) | 本轮未发现明显问题
+- [通过] [梦见见血](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:731) | 本轮未发现明显问题
+- [通过] [梦见受刑](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:741) | 本轮未发现明显问题
+- [通过] [梦见入狱](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:751) | 本轮未发现明显问题
+- [通过] [梦见出狱](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:761) | 本轮未发现明显问题
+- [通过] [梦见枷锁](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:771) | 本轮未发现明显问题
+- [通过] [梦见杖责](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:781) | 本轮未发现明显问题
+- [通过] [梦见绳缚](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:791) | 本轮未发现明显问题
+- [通过] [梦见盗贼入宅](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:801) | 本轮未发现明显问题
+- [通过] [梦见踩屎](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:811) | 本轮未发现明显问题
+- [通过] [梦见尿污衣](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:821) | 本轮未发现明显问题
+- [通过] [梦见入泥](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:831) | 本轮未发现明显问题
+- [通过] [梦见洗衣](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:841) | 本轮未发现明显问题
+- [通过] [梦见湿衣](/Users/TerrellShe/Documents/personal/tt-projects/tt-divination/design/jiemeng/drafts/08-other.md:851) | 本轮未发现明显问题
+
