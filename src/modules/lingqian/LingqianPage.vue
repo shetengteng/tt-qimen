@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, shallowRef, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
@@ -35,13 +35,22 @@ const currentTopic = ref<TopicKey>('family')
 /** 抽签中标志：驱动 LotteryTube 的剧烈摇晃动画，并替代原全屏 skeleton 弹框 */
 const drawing = ref(false)
 
+/**
+ * 签条飞出动画节奏（与两主题 CSS `lq-main-fly-*` 对齐）：
+ *   0-1500ms  摇筒
+ *   750-1950ms 签条飞出 → 定格（1.2s，delay 0.75s）
+ *   1500ms    skeleton reveal（结果区淡入）
+ *   ~2100ms   签条收尾：drawing 关闭后 selector 失配、签条淡出
+ * 若在 1500ms 就立刻 drawing=false，动画 selector 被移除，签条会从半飞状态硬切回原点。
+ * 这里把 drawing 关闭延迟到动画落定之后，给观感留一个自然的高点停留。
+ */
+const DRAWING_HOLD_MS = 2100
+let drawingHoldTimer: number | null = null
+
 const skeleton = useSkeletonReveal({
   delay: 1500,
   scrollOffset: 30,
   scrollHoldMs: 280,
-  onReveal: () => {
-    drawing.value = false
-  },
 })
 
 function topicFromPreference(preferred: string): TopicKey {
@@ -73,13 +82,25 @@ function onPaipan() {
   }
 
   drawing.value = true
+  if (drawingHoldTimer !== null) {
+    window.clearTimeout(drawingHoldTimer)
+    drawingHoldTimer = null
+  }
   skeleton.scrollTo(tubeSceneEl.value, 80)
   skeleton.start(() => resultBannerEl.value)
+  drawingHoldTimer = window.setTimeout(() => {
+    drawing.value = false
+    drawingHoldTimer = null
+  }, DRAWING_HOLD_MS)
 }
 
 function onRepaipan() {
   result.value = null
   drawing.value = false
+  if (drawingHoldTimer !== null) {
+    window.clearTimeout(drawingHoldTimer)
+    drawingHoldTimer = null
+  }
   skeleton.reset(() => inputCardEl.value)
 }
 
@@ -108,6 +129,13 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
 onMounted(() => {
   currentTopic.value = topicFromPreference(lingqianStore.preferredTopic)
   void loadGuanyinData()
+})
+
+onUnmounted(() => {
+  if (drawingHoldTimer !== null) {
+    window.clearTimeout(drawingHoldTimer)
+    drawingHoldTimer = null
+  }
 })
 
 watch(

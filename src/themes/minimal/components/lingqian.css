@@ -302,7 +302,9 @@
   opacity: 0;
   z-index: 3;
   pointer-events: none;
-  transition: opacity 0.45s ease-out;
+  transition:
+    opacity 0.45s ease-out,
+    transform 0.6s cubic-bezier(0.4, 0, 0.6, 1);
 }
 :root[data-theme='minimal'] .lq-main-stick::before {
   content: "";
