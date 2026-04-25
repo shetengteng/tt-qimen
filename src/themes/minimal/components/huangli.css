@@ -741,6 +741,10 @@
       font-size: 12px;
     }
     .hl-cal-title { font-size: 15px; flex: 1; text-align: center; }
+    /* PopoverTrigger 渲染的 .hl-cal-title-btn 是 inline-flex，
+     * 上面的 text-align:center 对 flex 容器无效，文字会黏在 flex-start（左侧），
+     * 表现为"年月文本靠左"。这里显式 justify-content:center 让文字 + caret 真正居中。 */
+    .hl-cal-title-btn { justify-content: center; }
     .hl-cal-grid { gap: 2px; }
     .hl-cal-wk {
       padding: 2px 0;
