@@ -4,6 +4,13 @@ import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { useXingmingStore } from '../stores/xingmingStore'
 import type { Gender } from '../types'
 
@@ -27,10 +34,15 @@ const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
 const store = useXingmingStore()
 
+/** 年份 select sentinel：reka-ui SelectItem 不允许空字符串 value，故用占位符表示"未指定"。 */
+const UNSPECIFIED_YEAR = '__unspecified__'
+
 const surname = ref(store.input.surname)
 const givenName = ref(store.input.givenName)
 const gender = ref<Gender>(store.input.gender)
-const birthYearStr = ref(store.input.birthYear == null ? '' : String(store.input.birthYear))
+const birthYearStr = ref(
+  store.input.birthYear == null ? UNSPECIFIED_YEAR : String(store.input.birthYear),
+)
 
 watch(
   () => store.input,
@@ -38,14 +50,26 @@ watch(
     surname.value = v.surname
     givenName.value = v.givenName
     gender.value = v.gender
-    birthYearStr.value = v.birthYear == null ? '' : String(v.birthYear)
+    birthYearStr.value = v.birthYear == null ? UNSPECIFIED_YEAR : String(v.birthYear)
   },
   { deep: true },
 )
 
+/**
+ * 年份候选：当前年 → 1900（倒序，常用年份在上）。与 BirthForm 同款实现，便于用户跨模块复用记忆。
+ * 首项使用 sentinel `__unspecified__` 让用户显式选回"未指定"。
+ */
+const currentYear = new Date().getFullYear()
+const yearOptions = computed<string[]>(() => {
+  const list: string[] = []
+  for (let y = currentYear; y >= 1900; y--) list.push(String(y))
+  return list
+})
+
 function commitAndEmit() {
-  const trimmedYear = birthYearStr.value.trim()
-  const year = trimmedYear ? Number(trimmedYear) : null
+  const raw = birthYearStr.value
+  const year =
+    raw === UNSPECIFIED_YEAR || raw === '' ? null : Number(raw)
   store.update({
     surname: surname.value.trim(),
     givenName: givenName.value.trim(),
@@ -106,13 +130,17 @@ function genderLabel(g: Gender) {
       </div>
       <div class="ds-input-group">
         <Label>{{ t('xingming.field.birthYear') }}</Label>
-        <input
-          v-model="birthYearStr"
-          type="text"
-          inputmode="numeric"
-          :placeholder="t('xingming.placeholder.birthYear')"
-          maxlength="4"
-        />
+        <Select v-model="birthYearStr">
+          <SelectTrigger class="w-full">
+            <SelectValue :placeholder="t('xingming.placeholder.birthYear')" />
+          </SelectTrigger>
+          <SelectContent class="max-h-72">
+            <SelectItem :value="UNSPECIFIED_YEAR">
+              {{ t('xingming.birthYearOption.unspecified') }}
+            </SelectItem>
+            <SelectItem v-for="y in yearOptions" :key="y" :value="y">{{ y }}</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
     </div>
 
@@ -167,13 +195,17 @@ function genderLabel(g: Gender) {
       </div>
       <div class="ds-input-group">
         <Label>{{ t('xingming.field.birthYear') }}</Label>
-        <input
-          v-model="birthYearStr"
-          type="text"
-          inputmode="numeric"
-          :placeholder="t('xingming.placeholder.birthYear')"
-          maxlength="4"
-        />
+        <Select v-model="birthYearStr">
+          <SelectTrigger class="w-full">
+            <SelectValue :placeholder="t('xingming.placeholder.birthYear')" />
+          </SelectTrigger>
+          <SelectContent class="max-h-72">
+            <SelectItem :value="UNSPECIFIED_YEAR">
+              {{ t('xingming.birthYearOption.unspecified') }}
+            </SelectItem>
+            <SelectItem v-for="y in yearOptions" :key="y" :value="y">{{ y }}</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
     </div>
 
@@ -205,6 +237,20 @@ function genderLabel(g: Gender) {
  */
 .xm-row-meta {
   grid-template-columns: 1fr 1fr;
+}
+
+/**
+ * Grid cell 防溢出：HTML <input> 默认宽度 ≈ 150px（基于 `size` 属性），
+ * 在窄屏 grid cell（< 150px）里会撑爆 cell。
+ * 1) `.ds-input-group` 显式 `min-width: 0`：解除 grid item 默认 `min-width: auto` 限制
+ * 2) `.ds-input-group input`: `width: 100%` 让 input 受 cell 约束
+ * 注：`box-sizing: border-box` 由通用层 base.css `*` 已保证，不重复声明。
+ */
+.ds-input-group {
+  min-width: 0;
+}
+.ds-input-group input {
+  width: 100%;
 }
 
 /**
