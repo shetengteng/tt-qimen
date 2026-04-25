@@ -35,6 +35,7 @@ export default {
     xingming: 'NameNumerology',
     huangli: 'Almanac',
     jiemeng: 'Dreams',
+    menu: 'Menu',
   },
 
   home: {
@@ -738,6 +739,13 @@ export default {
         fair: 'Fair',
         poor: 'Weak',
       },
+      badgeWord: {
+        excellent: 'a broad and balanced configuration',
+        good: 'a well-matched configuration',
+        fair: 'a moderate configuration',
+        poor: 'a configuration that needs more cultivation',
+      },
+      summary: '"{name}" shows {badgeWord}: Man-Grid {renElement} · {renLevel}, Total-Grid {zongElement} · {zongLevel}; overall score {score} / 100.',
     },
 
     skeleton: {
@@ -846,17 +854,34 @@ export default {
       next: 'Next',
       prevMonthFmt: 'Mo {month}',
       nextMonthFmt: 'Mo {month}',
+      prevMonthAria: 'Switch to month {month} (previous)',
+      nextMonthAria: 'Switch to month {month} (next)',
       weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
       legendHuangdao: 'Yellow-Path',
       legendHeidao: 'Black-Path',
       legendGood: 'Matches chosen matter',
       matterHintPrefix: 'Filter:',
       clearMatter: 'Clear filter',
+      gridAria: '{year}-{month} calendar grid',
+      dayAriaFmt: '{year}-{month}-{day} {weekday}',
+      todayLabel: 'Today',
+      matchLabel: 'Matches chosen matter',
+      outOfMonthLabel: 'Other month',
+      nextGoodFmt: 'Next ✓ day: {month}/{day}',
+      nextGoodAria: 'Jump to {month}/{day} (next day matching chosen matter)',
+      openPickerAria: 'Open month/year picker (currently {year}-{month})',
+      pickerYearFmt: '{year}',
+      pickerMonthFmt: 'Mo {month}',
+      pickerYearListAria: 'Year list',
+      pickerMonthGridAria: 'Month grid',
+      pickerPrevYearAria: 'Switch to {year}',
+      pickerNextYearAria: 'Switch to {year}',
     },
 
     detail: {
       title: 'Selected Day · Detail',
-      closeAria: 'Close',
+      dialogTitle: 'Almanac Detail',
+      closeAria: 'Close detail',
       duty: 'Duty Star',
       dutyIntroFmt: 'Day of {duty}',
       gods: 'Auspicious',
@@ -950,6 +975,10 @@ export default {
       countFmt: '{n} entries',
     },
 
+    entry: {
+      detailCta: 'View details',
+    },
+
     empty: {
       title: 'No matching entries',
       desc: 'Try a different keyword, or pick a category above to browse.',
@@ -962,6 +991,8 @@ export default {
       adviceLabel: 'Tip: ',
       sensitiveHint: '※ This entry preserves classical imagery involving death, illness, or spirits as traditional cultural symbols only. Please read them as symbols, not as omens.',
       warning: '⚠ Dream interpretations vary. Entries are cultural references only. If dreams disturb your daily life, please consult a mental-health professional.',
+      dialogTitle: 'Entry detail',
+      closeAria: 'Close detail',
     },
 
     tag: {

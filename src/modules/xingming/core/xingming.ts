@@ -24,10 +24,15 @@ import type {
   GridInfo,
   GridName,
   Level,
+  OverallBadgeKey,
   XingmingInput,
   XingmingResult,
 } from '../types'
-import { getNumerology, getElementByNumber } from '../data/numerology'
+import {
+  getNumerologyAsync,
+  getElementByNumber,
+  type NumerologyLocale,
+} from '../data/numerology'
 import { getStrokesDetailBatch } from './strokes'
 
 /** 汉字范围校验（CJK 统一汉字基本区） */
@@ -70,9 +75,12 @@ const GRID_WEIGHT: Record<GridName, number> = {
   wai: 0.15,
 }
 
-function makeGridInfo(num: number): GridInfo {
+async function makeGridInfo(
+  num: number,
+  locale: NumerologyLocale,
+): Promise<GridInfo> {
   const normalized = normalizeGridNumber(num)
-  const entry = getNumerology(normalized)
+  const entry = await getNumerologyAsync(normalized, locale)
   if (!entry) {
     throw new Error(`[xingming] numerology entry missing for ${normalized}`)
   }
@@ -98,21 +106,12 @@ function scoreToBadge(score: number): XingmingResult['overallBadge'] {
   return '差'
 }
 
-/** 综合评价一句话 */
-function buildOverallSummary(
-  fullName: string,
-  grids: Record<GridName, GridInfo>,
-  score: number,
-): string {
-  const ren = grids.ren.entry
-  const zong = grids.zong.entry
-  const badge = scoreToBadge(score)
-  const badgeWord =
-    badge === '优' ? '格局开阔'
-    : badge === '良' ? '搭配良好'
-    : badge === '中' ? '中规中矩'
-    : '需多磨砺'
-  return `"${fullName}"整体五格${badgeWord}，人格 ${ren.element} · ${ren.level}，总格 ${zong.element} · ${zong.level}；综合评分 ${score} / 100。`
+/** 综合评分 → 档位 i18n key（与 overallBadge 中文标签 1:1 对应） */
+function scoreToBadgeKey(score: number): OverallBadgeKey {
+  if (score >= 90) return 'excellent'
+  if (score >= 75) return 'good'
+  if (score >= 60) return 'fair'
+  return 'poor'
 }
 
 /**
@@ -155,9 +154,10 @@ function computeFiveGridNumbers(
   return { tian, ren, di, wai, zong }
 }
 
-/** 主函数：姓名 → 完整结果（异步） */
+/** 主函数：姓名 → 完整结果（异步）；locale 决定 81 数理读取的语言版本 */
 export async function calculateXingming(
   input: XingmingInput,
+  locale: NumerologyLocale = 'zh-CN',
 ): Promise<XingmingResult> {
   const surname = input.surname.trim()
   const givenName = input.givenName.trim()
@@ -191,17 +191,18 @@ export async function calculateXingming(
 
   const numbers = computeFiveGridNumbers(strokes, surnameLen, givenLen)
 
-  const grids: Record<GridName, GridInfo> = {
-    tian: makeGridInfo(numbers.tian),
-    ren: makeGridInfo(numbers.ren),
-    di: makeGridInfo(numbers.di),
-    wai: makeGridInfo(numbers.wai),
-    zong: makeGridInfo(numbers.zong),
-  }
+  const [tian, ren, di, wai, zong] = await Promise.all([
+    makeGridInfo(numbers.tian, locale),
+    makeGridInfo(numbers.ren, locale),
+    makeGridInfo(numbers.di, locale),
+    makeGridInfo(numbers.wai, locale),
+    makeGridInfo(numbers.zong, locale),
+  ])
+  const grids: Record<GridName, GridInfo> = { tian, ren, di, wai, zong }
 
   const overallScore = computeOverallScore(grids)
   const overallBadge = scoreToBadge(overallScore)
-  const overallSummary = buildOverallSummary(fullName, grids, overallScore)
+  const overallBadgeKey = scoreToBadgeKey(overallScore)
 
   return {
     fullName,
@@ -211,7 +212,7 @@ export async function calculateXingming(
     grids,
     overallScore,
     overallBadge,
-    overallSummary,
+    overallBadgeKey,
   }
 }
 

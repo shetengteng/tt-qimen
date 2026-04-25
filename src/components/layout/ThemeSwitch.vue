@@ -57,7 +57,8 @@ function pick(id: ThemeId) {
         class="layout-popover-content layout-popover-content--theme"
         :side-offset="6"
         align="end"
-        :collision-padding="8"
+        :avoid-collisions="true"
+        :collision-padding="12"
       >
         <ul class="layout-popover-list">
           <li v-for="id in theme.list" :key="id">

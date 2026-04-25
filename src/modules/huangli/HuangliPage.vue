@@ -14,8 +14,8 @@
  *        - ShenshaCards
  *        - MatterGrid
  *        - MiniCalendar
- *        - DayDetailCard（可选：点击月历某日后显示）
  *   4. 动作栏（分享/保存/回到今日）
+ *   5. DayDetailDialog（点击月历某日后弹框展示，独立于分享卡）
  */
 import { computed, ref, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -30,7 +30,7 @@ import YijiCards from './components/YijiCards.vue'
 import ShenshaCards from './components/ShenshaCards.vue'
 import MatterGrid from './components/MatterGrid.vue'
 import MiniCalendar from './components/MiniCalendar.vue'
-import DayDetailCard from './components/DayDetailCard.vue'
+import DayDetailDialog from './components/DayDetailDialog.vue'
 
 import { useHuangliStore } from './stores/huangliStore'
 import { getHuangliDay } from './core/huangli'
@@ -56,8 +56,25 @@ const day = computed<HuangliDay | null>(() => {
   }
 })
 
-/** 详情卡：点击月历某日后才展开；再次点击同一日 / 关闭按钮则隐藏 */
+/**
+ * 详情：点击月历某日后弹框展示；再点 X / 遮罩 / Esc 都可关闭。
+ * detailDay 与 detailOpen 双向绑定 —— v-model:open=false 即清空 detailDay。
+ *
+ * 同时把"当前 dialog 显示的日"传回 MiniCalendar 用 outline ring 高亮，
+ * dialog 关闭时 detailDay=null → selectedDateKey=null → ring 消失。
+ */
 const detailDay = shallowRef<HuangliDay | null>(null)
+const detailOpen = computed({
+  get: () => detailDay.value !== null,
+  set: (v: boolean) => {
+    if (!v) detailDay.value = null
+  },
+})
+const selectedDateKey = computed<string | null>(() => {
+  const d = detailDay.value
+  if (!d) return null
+  return `${d.year}-${d.month}-${d.day}`
+})
 function onCalendarClick(md: HuangliMonthDay) {
   try {
     const d = getHuangliDay(md.year, md.month, md.day)
@@ -121,8 +138,7 @@ function onSave() { saveCard(shareCardEl.value, buildShareOpts()) }
           <div class="gf-divider"><span>{{ t('huangli.matters.sectionTitle') }}</span></div>
           <MatterGrid :day="day" />
           <div class="gf-divider"><span>{{ t('huangli.calendar.divider') }}</span></div>
-          <MiniCalendar @day-click="onCalendarClick" />
-          <DayDetailCard v-if="detailDay" :day="detailDay" @close="onDetailClose" />
+          <MiniCalendar :selected-date-key="selectedDateKey" @day-click="onCalendarClick" />
         </div>
 
         <div class="action-bar">
@@ -168,8 +184,7 @@ function onSave() { saveCard(shareCardEl.value, buildShareOpts()) }
           <YijiCards :day="day" />
           <ShenshaCards :day="day" />
           <MatterGrid :day="day" />
-          <MiniCalendar @day-click="onCalendarClick" />
-          <DayDetailCard v-if="detailDay" :day="detailDay" @close="onDetailClose" />
+          <MiniCalendar :selected-date-key="selectedDateKey" @day-click="onCalendarClick" />
         </div>
 
         <div class="actions mn-container">
@@ -182,6 +197,12 @@ function onSave() { saveCard(shareCardEl.value, buildShareOpts()) }
       </template>
     </main>
   </template>
+
+  <DayDetailDialog
+    v-model:open="detailOpen"
+    :day="detailDay"
+    @close="onDetailClose"
+  />
 
   <ShareToast :state="toastState" />
 </template>

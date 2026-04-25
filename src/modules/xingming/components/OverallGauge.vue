@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
 import type { GridName, XingmingResult } from '../types'
+import { elementI18nPath } from '../utils/i18nHelpers'
 
 interface Props {
   result: XingmingResult
@@ -57,10 +58,31 @@ const scoreItems = computed<ScoreItem[]>(() =>
   }),
 )
 
-/** 综合档位文案 */
-const badgeLabel = computed(() => {
-  const b = props.result.overallBadge
-  return t(`xingming.overall.badge.${b === '优' ? 'excellent' : b === '良' ? 'good' : b === '中' ? 'fair' : 'poor'}`)
+/** 综合档位文案（短标签：优/良/中/差） */
+const badgeLabel = computed(() =>
+  t(`xingming.overall.badge.${props.result.overallBadgeKey}`),
+)
+
+/**
+ * 综合评价一句话：
+ * "「{name}」整体五格{badgeWord}，人格 {renElement} · {renLevel}，总格 {zongElement} · {zongLevel}；综合评分 {score} / 100。"
+ *
+ * 用 i18n 模板拼接，避免在 core 算法层硬编码中文文本。
+ * badgeWord 见 `xingming.overall.badgeWord.{key}`（"格局开阔" / "搭配良好" / ...）。
+ */
+const overallSummary = computed(() => {
+  const r = props.result
+  const ren = r.grids.ren.entry
+  const zong = r.grids.zong.entry
+  return t('xingming.overall.summary', {
+    name: r.fullName,
+    badgeWord: t(`xingming.overall.badgeWord.${r.overallBadgeKey}`),
+    renElement: t(elementI18nPath(ren.element)),
+    renLevel: t(`xingming.levels.${ren.level}`),
+    zongElement: t(elementI18nPath(zong.element)),
+    zongLevel: t(`xingming.levels.${zong.level}`),
+    score: r.overallScore,
+  })
 })
 </script>
 
@@ -107,7 +129,7 @@ const badgeLabel = computed(() => {
       </div>
     </div>
 
-    <p class="xm-score-desc">{{ result.overallSummary }}</p>
+    <p class="xm-score-desc">{{ overallSummary }}</p>
   </div>
 
   <!-- 简约 -->
@@ -148,6 +170,6 @@ const badgeLabel = computed(() => {
       </div>
     </div>
 
-    <p class="xm-score-desc">{{ result.overallSummary }}</p>
+    <p class="xm-score-desc">{{ overallSummary }}</p>
   </div>
 </template>

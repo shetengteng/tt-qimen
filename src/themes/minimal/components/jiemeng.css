@@ -292,6 +292,42 @@
   border-color: rgba(59, 47, 99, 0.2);
 }
 
+/* ---------- 词条卡底栏 (tags + 详情 CTA) ---------- */
+:root[data-theme='minimal'] .jm-entry-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mn-space-2);
+  margin-top: var(--mn-space-3);
+  flex-wrap: wrap;
+}
+:root[data-theme='minimal'] .jm-entry-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--mn-accent);
+  background: var(--mn-accent-soft);
+  border: 1px solid rgba(99, 102, 241, 0.18);
+  border-radius: 999px;
+  white-space: nowrap;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+:root[data-theme='minimal'] .jm-entry:hover .jm-entry-cta {
+  background: var(--mn-accent);
+  color: #fff;
+  border-color: var(--mn-accent);
+}
+:root[data-theme='minimal'] .jm-entry:hover .jm-entry-cta-arrow {
+  transform: translateX(2px);
+}
+:root[data-theme='minimal'] .jm-entry-cta-arrow {
+  display: inline-block;
+  transition: transform 0.18s ease;
+}
+
 /* ---------- 空态 ---------- */
 :root[data-theme='minimal'] .jm-empty {
   padding: var(--mn-space-10) var(--mn-space-5);
@@ -461,4 +497,37 @@
 @media (max-width: 480px) {
   :root[data-theme='minimal'] .jm-cat-grid { grid-template-columns: repeat(2, 1fr); }
   :root[data-theme='minimal'] .jm-results-head { flex-direction: column; align-items: flex-start; gap: 6px; }
+}
+
+/* ============================================================
+ * 详情 Dialog · 简约主题外观
+ *   骨架在 _shared/base.css，这里只负责颜色 / 边框 / 字体。
+ * ============================================================ */
+:root[data-theme='minimal'] .jm-dialog-content--mn {
+  background: #ffffff;
+  border: 1px solid var(--mn-border);
+  box-shadow:
+    0 24px 48px rgba(15, 23, 42, 0.18),
+    0 4px 12px rgba(15, 23, 42, 0.08);
+  color: var(--mn-ink);
+}
+:root[data-theme='minimal'] .jm-dialog-content--mn .jm-dialog-head {
+  background: #ffffff;
+  border-bottom: 1px solid var(--mn-border);
+  color: var(--mn-ink);
+}
+:root[data-theme='minimal'] .jm-dialog-content--mn .jm-dialog-title {
+  font-weight: 600;
+}
+:root[data-theme='minimal'] .jm-dialog-content--mn .jm-dialog-close {
+  color: var(--mn-ink-soft);
+}
+:root[data-theme='minimal'] .jm-dialog-content--mn .jm-dialog-close:hover {
+  background: var(--mn-bg);
+  color: var(--mn-accent);
+  border-color: var(--mn-border);
+}
+:root[data-theme='minimal'] .jm-dialog-content--mn .jm-dialog-foot {
+  background: #ffffff;
+  border-top: 1px solid var(--mn-border);
 }

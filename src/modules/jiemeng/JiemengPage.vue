@@ -10,7 +10,7 @@ import DreamInput from './components/DreamInput.vue'
 import RecentSearches from './components/RecentSearches.vue'
 import CategoryGrid from './components/CategoryGrid.vue'
 import DreamResultList from './components/DreamResultList.vue'
-import DreamDetail from './components/DreamDetail.vue'
+import DreamDetailDialog from './components/DreamDetailDialog.vue'
 
 import { useJiemengStore } from './stores/jiemengStore'
 import {
@@ -27,6 +27,10 @@ import type { DreamCategoryKey, DreamEntry } from './types'
  *   - 搜索：query 非空 → fuse.search（若同时选中 category，则再按类过滤）
  *   - 分类浏览：query 为空 + 选中 category → DREAM_ENTRIES 按类过滤
  *   - 都为空 → 隐藏结果区，只展示分类网格（鼓励用户操作）
+ *
+ * 详情交互：
+ *   - 选中 entry 后，详情通过 DreamDetailDialog（reka-ui Dialog）弹层展示
+ *   - 关闭弹层即清空 store.selectedId（v-model:open 双向同步）
  */
 const { t } = useI18n()
 const router = useRouter()
@@ -35,12 +39,17 @@ const store = useJiemengStore()
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
 const resultsEl = ref<HTMLElement | null>(null)
-const detailEl = ref<HTMLElement | null>(null)
-const shareCardEl = ref<HTMLElement | null>(null)
+const dialogRef = ref<InstanceType<typeof DreamDetailDialog> | null>(null)
 
 const selectedEntry = computed<DreamEntry | null>(() =>
   store.selectedId ? getDreamById(store.selectedId) : null,
 )
+const detailOpen = computed({
+  get: () => selectedEntry.value !== null,
+  set: (v: boolean) => {
+    if (!v) store.setSelectedId(null)
+  },
+})
 
 const displayItems = computed<readonly DreamEntry[]>(() => {
   const q = store.query.trim()
@@ -53,7 +62,6 @@ const displayItems = computed<readonly DreamEntry[]>(() => {
   return []
 })
 
-const hasDisplayItems = computed(() => displayItems.value.length > 0)
 const hasActiveFilter = computed(
   () => !!store.query.trim() || store.activeCategory !== null,
 )
@@ -87,11 +95,9 @@ function onPickCategory(key: DreamCategoryKey) {
 }
 function onPickEntry(entry: DreamEntry) {
   store.setSelectedId(entry.id)
-  nextTick(() => scrollTo(detailEl.value))
 }
-function onCloseDetail() {
+function onAnother() {
   store.setSelectedId(null)
-  nextTick(() => scrollTo(resultsEl.value))
 }
 
 function go(name: 'home') {
@@ -107,11 +113,14 @@ function buildShareOpts() {
     text: t('jiemeng.share.text'),
   }
 }
+function getShareCardEl(): HTMLElement | null {
+  return dialogRef.value?.shareCardEl ?? null
+}
 function onShare() {
-  shareCard(shareCardEl.value, buildShareOpts())
+  shareCard(getShareCardEl(), buildShareOpts())
 }
 function onSave() {
-  saveCard(shareCardEl.value, buildShareOpts())
+  saveCard(getShareCardEl(), buildShareOpts())
 }
 </script>
 
@@ -139,31 +148,6 @@ function onSave() {
           @pick="onPickEntry"
         />
       </div>
-
-      <template v-if="selectedEntry">
-        <div class="gf-divider jm-detail-divider">
-          <span>◆ {{ selectedEntry.title }} ◆</span>
-        </div>
-        <div ref="detailEl">
-          <div ref="shareCardEl" class="jm-share-card">
-            <div class="gf-container" style="padding-top: 0;">
-              <DreamDetail :entry="selectedEntry" />
-            </div>
-          </div>
-
-          <div class="action-bar">
-            <button type="button" class="gf-btn" @click="onShare">
-              {{ t('jiemeng.btn.shareIcon') }} {{ t('jiemeng.btn.share') }}
-            </button>
-            <button type="button" class="gf-btn gf-btn-outline" @click="onSave">
-              {{ t('jiemeng.btn.saveIcon') }} {{ t('jiemeng.btn.save') }}
-            </button>
-            <button type="button" class="gf-btn gf-btn-outline" @click="onCloseDetail">
-              {{ t('jiemeng.btn.anotherIcon') }} {{ t('jiemeng.btn.another') }}
-            </button>
-          </div>
-        </div>
-      </template>
     </div>
   </main>
 
@@ -194,22 +178,17 @@ function onSave() {
           @pick="onPickEntry"
         />
       </div>
-
-      <template v-if="selectedEntry">
-        <div ref="detailEl">
-          <div ref="shareCardEl" class="jm-share-card">
-            <DreamDetail :entry="selectedEntry" />
-          </div>
-
-          <div class="actions jm-actions">
-            <button type="button" class="mn-btn" @click="onShare">{{ t('jiemeng.btn.share') }}</button>
-            <button type="button" class="mn-btn mn-btn-outline" @click="onSave">{{ t('jiemeng.btn.save') }}</button>
-            <button type="button" class="mn-btn mn-btn-ghost" @click="onCloseDetail">{{ t('jiemeng.btn.another') }}</button>
-          </div>
-        </div>
-      </template>
     </main>
   </template>
+
+  <DreamDetailDialog
+    ref="dialogRef"
+    v-model:open="detailOpen"
+    :entry="selectedEntry"
+    @share="onShare"
+    @save="onSave"
+    @another="onAnother"
+  />
 
   <ShareToast :state="toastState" />
 </template>

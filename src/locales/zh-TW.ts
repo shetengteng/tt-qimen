@@ -35,6 +35,7 @@ export default {
     xingming: '姓名',
     huangli: '黃曆',
     jiemeng: '解夢',
+    menu: '導覽選單',
   },
 
   home: {
@@ -731,6 +732,13 @@ export default {
         fair: '中',
         poor: '差',
       },
+      badgeWord: {
+        excellent: '格局開闊',
+        good: '搭配良好',
+        fair: '中規中矩',
+        poor: '需多磨礪',
+      },
+      summary: '「{name}」整體五格{badgeWord}，人格 {renElement} · {renLevel}，總格 {zongElement} · {zongLevel}；綜合評分 {score} / 100。',
     },
 
     skeleton: {
@@ -839,17 +847,34 @@ export default {
       next: '下月',
       prevMonthFmt: '{month} 月',
       nextMonthFmt: '{month} 月',
+      prevMonthAria: '切換到 {month} 月（上月）',
+      nextMonthAria: '切換到 {month} 月（下月）',
       weekdays: ['日', '一', '二', '三', '四', '五', '六'],
       legendHuangdao: '黃道日',
       legendHeidao: '黑道日',
       legendGood: '符合所選事由',
       matterHintPrefix: '當前篩選：',
       clearMatter: '清除篩選',
+      gridAria: '{year} 年 {month} 月 月曆',
+      dayAriaFmt: '{year} 年 {month} 月 {day} 日 週{weekday}',
+      todayLabel: '今日',
+      matchLabel: '符合所選事由',
+      outOfMonthLabel: '非本月',
+      nextGoodFmt: '下一個 ✓ 日：{month} 月 {day} 日',
+      nextGoodAria: '跳轉到 {month} 月 {day} 日（下一個符合所選事由的日子）',
+      openPickerAria: '打開年月選擇器（當前 {year} 年 {month} 月）',
+      pickerYearFmt: '{year} 年',
+      pickerMonthFmt: '{month} 月',
+      pickerYearListAria: '年份列表',
+      pickerMonthGridAria: '月份網格',
+      pickerPrevYearAria: '切換到 {year} 年',
+      pickerNextYearAria: '切換到 {year} 年',
     },
 
     detail: {
       title: '所選日 · 詳情',
-      closeAria: '關閉',
+      dialogTitle: '黃曆詳情',
+      closeAria: '關閉詳情',
       duty: '十二建星',
       dutyIntroFmt: '{duty}日',
       gods: '吉神',
@@ -943,6 +968,10 @@ export default {
       countFmt: '共 {n} 條詞條',
     },
 
+    entry: {
+      detailCta: '查看詳情',
+    },
+
     empty: {
       title: '沒有找到相關詞條',
       desc: '試試換個關鍵詞，或點擊上方的分類卡片瀏覽所有詞條。',
@@ -955,6 +984,8 @@ export default {
       adviceLabel: '建議：',
       sensitiveHint: '※ 本詞條含古籍中關於死亡、病痛、鬼神等文化象徵的原始表述，僅為傳統意象記錄，請以象徵視角理解，不作為現實預兆。',
       warning: '⚠ 夢境解讀因人而異，古籍僅供參考。若夢境頻繁困擾現實生活，建議諮詢專業心理諮詢師。',
+      dialogTitle: '詞條詳情',
+      closeAria: '關閉詳情',
     },
 
     tag: {

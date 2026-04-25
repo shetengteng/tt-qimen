@@ -66,6 +66,9 @@ export interface XingmingInput {
   birthYear?: number | null
 }
 
+/** 综合评分档位 key（用于 i18n 拼接，避免中文硬编码穿透到 UI） */
+export type OverallBadgeKey = 'excellent' | 'good' | 'fair' | 'poor'
+
 /** 完整结果 */
 export interface XingmingResult {
   /** 全名（姓 + 名拼接） */
@@ -82,8 +85,8 @@ export interface XingmingResult {
   overallScore: number
   /** 综合评分档位（对应 6 档的简化 4 档显示：优/良/中/差） */
   overallBadge: '优' | '良' | '中' | '差'
-  /** 综合评价一句话 */
-  overallSummary: string
+  /** 综合评分档位 key（i18n 用） */
+  overallBadgeKey: OverallBadgeKey
 }
 
 /** 加载状态（UI 侧骨架屏用） */

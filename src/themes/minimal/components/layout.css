@@ -38,6 +38,16 @@
   flex-wrap: wrap;
 }
 
+/* Header 右端集合：[Nav][Lang][Theme] 一组靠右；ml:auto 把它从 logo 推到右边。 */
+:root[data-theme='minimal'] .mn-header-end {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-left: auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 :root[data-theme='minimal'] .mn-logo {
   font-size: 18px;
   font-weight: 600;
@@ -89,12 +99,16 @@
 }
 
 /* Trigger 按钮 + 弹出面板的样式集中在 _shared/base.css 的 .layout-popover-* 系列。
- * margin-left: auto 解释见 guofeng/components/layout.css 同位置注释。 */
+ * Toolbar 不再独占 margin-left: auto —— 整组 [Nav][Lang][Theme] 由 .mn-header-end 推到右边。 */
 :root[data-theme='minimal'] .mn-toolbar {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  margin-left: auto;
+}
+
+/* Nav: desktop / mobile 切换；响应式开关在文件底部 @media。 */
+:root[data-theme='minimal'] .mn-nav-mobile {
+  display: none;
 }
 
 /* ============ Disclaimer ============ */
@@ -313,8 +327,15 @@
   :root[data-theme='minimal'] .mn-container-sm {
     padding: 0 var(--space-4);
   }
-  :root[data-theme='minimal'] .mn-nav {
+  /* 桌面横列 nav 隐藏，下拉 nav 显示 */
+  :root[data-theme='minimal'] .mn-nav--desktop {
     display: none;
+  }
+  :root[data-theme='minimal'] .mn-nav-mobile {
+    display: inline-flex;
+  }
+  :root[data-theme='minimal'] .mn-header-end {
+    gap: var(--space-2);
   }
   :root[data-theme='minimal'] .mn-title {
     font-size: 32px;

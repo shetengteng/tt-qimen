@@ -337,6 +337,31 @@
     color: var(--mn-ink);
   }
 
+  /* P1-F：标题改为按钮（去原生 button 样式） */
+  .hl-cal-title-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: var(--mn-radius-sm);
+    transition: background-color 0.15s;
+    font-family: inherit;
+  }
+  .hl-cal-title-btn:hover {
+    background-color: var(--mn-bg-soft, var(--mn-accent-soft));
+  }
+  .hl-cal-title-btn:focus-visible {
+    outline: 2px solid var(--mn-accent);
+    outline-offset: 2px;
+  }
+  .hl-cal-title-caret {
+    font-size: 12px;
+    color: var(--mn-ink-muted);
+  }
+
   .hl-cal-filter {
     margin: 0 0 var(--mn-space-4);
     padding: 8px 12px;
@@ -403,15 +428,47 @@
     color: white;
     font-weight: 600;
   }
+  .hl-cal-day.is-today .hl-cal-day-num {
+    font-weight: 700;
+  }
 
   .hl-cal-day.is-match {
     background-color: var(--mn-accent-soft);
     box-shadow: inset 0 0 0 1.5px var(--mn-accent);
   }
 
+  /* P0-C：today × match 重叠时把内圈白环加粗 + 全实心，防止 today 紫底被淡化 */
   .hl-cal-day.is-today.is-match {
-    box-shadow: inset 0 0 0 1.5px #ffffff99;
+    background-color: var(--mn-accent);
+    box-shadow: inset 0 0 0 2.5px #ffffff;
   }
+
+  /* P1-H：选中态 = 当前 dialog 显示的日，加细 outline ring（与 hover 区分） */
+  .hl-cal-day.is-selected {
+    box-shadow: 0 0 0 2px var(--mn-accent);
+  }
+  .hl-cal-day.is-today.is-selected {
+    box-shadow: 0 0 0 2px var(--mn-accent), inset 0 0 0 2px #ffffff;
+  }
+
+  /* P0-B：键盘焦点 ring */
+  .hl-cal-day:focus-visible {
+    outline: 2px solid var(--mn-accent);
+    outline-offset: 2px;
+  }
+
+  /* P1-G：activeMatter 命中时右上 ✓ 角标 */
+  .hl-cal-day-check {
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    font-size: 10px;
+    line-height: 1;
+    color: var(--mn-accent);
+    font-weight: 700;
+    pointer-events: none;
+  }
+  .hl-cal-day.is-today .hl-cal-day-check { color: #ffffff; }
 
   .hl-cal-day.is-huangdao::before {
     content: '';
@@ -621,18 +678,289 @@
     .hl-today-card {
       grid-template-columns: 1fr;
       gap: var(--mn-space-4);
-      text-align: center;
-      padding: var(--mn-space-6);
+      padding: var(--mn-space-5);
     }
     .hl-today-date {
+      text-align: center;
       padding-right: 0;
       border-right: none;
       border-bottom: 1px solid var(--mn-border);
       padding-bottom: var(--mn-space-4);
     }
-    .hl-today-info { align-items: center; }
-    .hl-info-line { grid-template-columns: 1fr; text-align: center; gap: var(--mn-space-1); }
+    /**
+     * Mobile：保持 .hl-info-line 双列对齐，避免 label/value 强制换行
+     * 拉高卡片高度。label 列收窄到 64，文字自然左对齐扫读更顺。
+     */
+    .hl-today-info {
+      align-items: stretch;
+      gap: var(--mn-space-2);
+    }
+    .hl-info-line {
+      grid-template-columns: 64px 1fr;
+      gap: var(--mn-space-3);
+      font-size: 13px;
+      text-align: left;
+    }
+    .hl-today-day { font-size: 64px; }
+    .hl-today-big {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
     .hl-yiji-section { grid-template-columns: 1fr; }
     .hl-dd-row { grid-template-columns: 1fr; }
   }
+
+  /**
+   * 移动端 ≤480px 月历收缩（含 iPhone 主流尺寸 390/414）：
+   *   原桌面 day(.hl-cal-day) padding=4 + font=13 + lunar=10 + aspect-ratio:1，
+   *   在 390/414 视口下 grid 的 1fr 列宽会被反算撑到 ~47px，
+   *   `7×47 + 6×gap` 超出 .hl-cal 内部可用宽度，导致最右一列被裁切。
+   *   收紧 padding / gap / 字号让 day 计算宽 < 容器/7。
+   */
+  @media (max-width: 480px) {
+    .hl-cal { padding: var(--mn-space-3); }
+    .hl-cal-head {
+      gap: var(--mn-space-2);
+      margin-bottom: var(--mn-space-2);
+    }
+    .hl-cal-head .mn-btn {
+      padding: 4px 10px;
+      font-size: 12px;
+    }
+    .hl-cal-title { font-size: 15px; flex: 1; text-align: center; }
+    .hl-cal-grid { gap: 2px; }
+    .hl-cal-wk {
+      padding: 2px 0;
+      font-size: 10px;
+    }
+    .hl-cal-day {
+      padding: 2px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+    .hl-cal-day-lunar { font-size: 9px; margin-top: 1px; }
+    .hl-cal-day.is-huangdao::before,
+    .hl-cal-day.is-heidao::before {
+      bottom: 2px;
+      width: 3px;
+      height: 3px;
+    }
+  }
+
+  /**
+   * 极窄机型 ≤360px：在上面的基础上再收一档。
+   */
+  @media (max-width: 360px) {
+    .hl-cal { padding: var(--mn-space-2); }
+    .hl-cal-head .mn-btn {
+      padding: 4px 8px;
+      font-size: 11px;
+    }
+    .hl-cal-title { font-size: 13px; }
+    .hl-cal-grid { gap: 1px; }
+    .hl-cal-day {
+      padding: 1px;
+      font-size: 11px;
+    }
+    .hl-cal-day-lunar { font-size: 8px; }
+  }
+}
+
+/* ============================================================
+ * 详情 Dialog · 简约主题外观
+ *   骨架在 _shared/base.css 的 .jm-dialog-* （通用 app dialog skeleton）
+ *   这里只负责颜色 / 边框 / 字体 / 嵌入卡片的间距重置
+ * ============================================================ */
+:root[data-theme='minimal'] .hl-dialog-content--mn {
+  background: #ffffff;
+  border: 1px solid var(--mn-border);
+  box-shadow:
+    0 24px 48px rgba(15, 23, 42, 0.18),
+    0 4px 12px rgba(15, 23, 42, 0.08);
+  color: var(--mn-ink);
+}
+:root[data-theme='minimal'] .hl-dialog-content--mn .jm-dialog-head {
+  background: #ffffff;
+  border-bottom: 1px solid var(--mn-border);
+  color: var(--mn-ink);
+}
+:root[data-theme='minimal'] .hl-dialog-content--mn .jm-dialog-title {
+  font-weight: 600;
+}
+:root[data-theme='minimal'] .hl-dialog-content--mn .jm-dialog-close {
+  color: var(--mn-ink-soft);
+}
+:root[data-theme='minimal'] .hl-dialog-content--mn .jm-dialog-close:hover {
+  background: var(--mn-bg);
+  color: var(--mn-accent);
+  border-color: var(--mn-border);
+}
+:root[data-theme='minimal'] .hl-dialog-content--mn .jm-dialog-body {
+  background: transparent;
+}
+:root[data-theme='minimal'] .hl-dialog-content--mn .hl-detail-card--embedded {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+:root[data-theme='minimal'] .hl-dialog-content--mn .hl-detail-subhead {
+  display: flex;
+  align-items: baseline;
+  gap: var(--mn-space-3, 12px);
+  padding-bottom: var(--mn-space-2, 8px);
+  margin-bottom: var(--mn-space-3, 12px);
+  border-bottom: 1px solid var(--mn-border);
+  color: var(--mn-ink-soft);
+  font-size: 13px;
+}
+:root[data-theme='minimal'] .hl-dialog-content--mn .hl-detail-subhead .hl-detail-date {
+  color: var(--mn-ink);
+  font-weight: 600;
+}
+
+/* ============================================================
+ * P1-J：月历卡 sticky header 偏移补偿
+ * ============================================================ */
+:root[data-theme='minimal'] .hl-cal {
+  scroll-margin-top: 80px;
+}
+
+/* ============================================================
+ * P1-I：「下一个 ✓ 日」跳转按钮
+ * ============================================================ */
+:root[data-theme='minimal'] .hl-cal-next-good {
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid var(--mn-border);
+  color: var(--mn-accent);
+  border-radius: var(--mn-radius-sm);
+  padding: 4px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+:root[data-theme='minimal'] .hl-cal-next-good:hover {
+  background: var(--mn-accent-soft);
+  border-color: var(--mn-accent);
+}
+:root[data-theme='minimal'] .hl-cal-next-good:focus-visible {
+  outline: 2px solid var(--mn-accent);
+  outline-offset: 2px;
+}
+:root[data-theme='minimal'] .hl-cal-legend {
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ============================================================
+ * P1-F：年月选择器 popover 主题样式
+ * ============================================================ */
+:root[data-theme='minimal'] .hl-mp-content--mn {
+  z-index: 200;
+  width: min(320px, calc(100vw - 24px));
+  background: #ffffff;
+  border: 1px solid var(--mn-border);
+  border-radius: var(--mn-radius-lg);
+  box-shadow:
+    0 16px 40px rgba(15, 23, 42, 0.12),
+    0 2px 8px rgba(15, 23, 42, 0.06);
+  color: var(--mn-ink);
+  padding: 12px;
+}
+:root[data-theme='minimal'] .hl-mp-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--mn-border);
+}
+:root[data-theme='minimal'] .hl-mp-year-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--mn-ink);
+}
+:root[data-theme='minimal'] .hl-mp-year-btn {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--mn-border);
+  background: transparent;
+  border-radius: var(--mn-radius-sm);
+  color: var(--mn-ink-muted);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+}
+:root[data-theme='minimal'] .hl-mp-year-btn:hover {
+  background: var(--mn-accent-soft);
+  color: var(--mn-accent);
+}
+:root[data-theme='minimal'] .hl-mp-year-list {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 4px 0 8px;
+  margin: 0 -4px 8px;
+  list-style: none;
+  border-bottom: 1px solid var(--mn-border);
+  scrollbar-width: thin;
+}
+:root[data-theme='minimal'] .hl-mp-year-cell {
+  flex: none;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 4px 10px;
+  border-radius: var(--mn-radius-sm);
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--mn-ink-muted);
+}
+:root[data-theme='minimal'] .hl-mp-year-cell:hover {
+  background: var(--mn-accent-soft);
+  color: var(--mn-ink);
+}
+:root[data-theme='minimal'] .hl-mp-year-cell.is-active {
+  background: var(--mn-accent);
+  color: #ffffff;
+  font-weight: 600;
+}
+:root[data-theme='minimal'] .hl-mp-month-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+:root[data-theme='minimal'] .hl-mp-month-cell {
+  background: transparent;
+  border: 1px solid var(--mn-border);
+  padding: 8px 4px;
+  border-radius: var(--mn-radius-sm);
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--mn-ink);
+  text-align: center;
+}
+:root[data-theme='minimal'] .hl-mp-month-cell:hover {
+  background: var(--mn-accent-soft);
+  border-color: var(--mn-accent);
+}
+:root[data-theme='minimal'] .hl-mp-month-cell.is-current {
+  background: var(--mn-accent);
+  color: #ffffff;
+  border-color: var(--mn-accent);
+  font-weight: 700;
+}
+:root[data-theme='minimal'] .hl-mp-month-cell.is-this-month:not(.is-current) {
+  border-color: var(--mn-accent);
+  color: var(--mn-accent);
+}
+:root[data-theme='minimal'] .hl-mp-year-btn:focus-visible,
+:root[data-theme='minimal'] .hl-mp-year-cell:focus-visible,
+:root[data-theme='minimal'] .hl-mp-month-cell:focus-visible {
+  outline: 2px solid var(--mn-accent);
+  outline-offset: 1px;
 }

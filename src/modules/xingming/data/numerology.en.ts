@@ -1,0 +1,100 @@
+/**
+ * 81 numerology entries · English locale overrides
+ *
+ * 翻译策略（skeleton-only，与产品定调一致）：
+ *  - 仅覆盖 summary 字段（一句话定性，约 8-15 词）
+ *  - description 保留 undefined，UI 在 EN 下应隐藏长描述段落，只展示 summary
+ *  - 保留中文文化意象（"Phoenix Bathing"/"Sunrise"），不强行直译
+ */
+
+export interface NumerologyOverride {
+  summary?: string
+  description?: string
+}
+
+const RAW: NumerologyOverride[] = [
+  { summary: 'Genesis · the number of new beginnings' },
+  { summary: 'Chaos parted · the number of instability' },
+  { summary: 'Three Talents formed · the number of progress' },
+  { summary: 'Imperfection · the number of hardship' },
+  { summary: 'Yin-Yang harmony · the number of fortune and longevity' },
+  { summary: 'Hall of treasures · the number of accumulated virtue' },
+  { summary: 'Sharp resolve · the number of independent authority' },
+  { summary: 'Wealth from all sides · will of solid stone' },
+  { summary: 'Boat in storm · the number of trials' },
+  { summary: 'Final void · the number of emptiness and reset' },
+  { summary: 'Rain on parched seedlings · the number of revival' },
+  { summary: 'A dry well · the number of weak foundations' },
+  { summary: 'Spring peony · the number of brilliant intellect' },
+  { summary: 'Broken omen · the number of solitude' },
+  { summary: 'Fortune and longevity together · the number of completeness' },
+  { summary: 'Aided by patrons · the number of bearing burdens with virtue' },
+  { summary: 'Strong breakthrough · the number of public over private' },
+  { summary: 'Strength tempered with grace · the number of attainment' },
+  { summary: 'Storm-tossed · the number of repeated setbacks' },
+  { summary: 'Gold buried indoors · the number of futile effort' },
+  { summary: 'Bright moon at zenith · the number of independent authority' },
+  { summary: 'Autumn grass meets frost · the number of midway defeat' },
+  { summary: 'Sunrise in the east · the number of soaring momentum' },
+  { summary: 'Path to prosperity · the number of broad reputation' },
+  { summary: 'Quick wit · the number of brilliant talent' },
+  { summary: 'Strange and uncanny · the number of tragic heroes' },
+  { summary: 'Rise then fall · the number of midway interruption' },
+  { summary: 'Pride and waves · the number of repeated turbulence' },
+  { summary: 'Deep strategy · the number of abundant wealth' },
+  { summary: 'Drifting fortunes · the number of mixed blessings' },
+  { summary: 'Wisdom and courage · the number of fame and gain' },
+  { summary: 'Dragon in the pond · the number of timely luck' },
+  { summary: 'Sunrise to heaven · the number of household prosperity' },
+  { summary: 'Calamity at the gate · the number of broken omens' },
+  { summary: 'Calm and gentle · the number of elegant harmony' },
+  { summary: 'Repeated waves · the number of chivalric heroes' },
+  { summary: 'Manifest authority · the number of independent power' },
+  { summary: 'Iron filed to a needle · the number of patient craft' },
+  { summary: 'Wealth and glory · the number of grand power' },
+  { summary: 'Withdraw to safety · the number of constant change' },
+  { summary: 'Towering virtue · the number of pure yang excellence' },
+  { summary: 'Ten arts unmastered · the number of breadth without depth' },
+  { summary: 'Scattered fortune · flowers in night rain' },
+  { summary: 'Brow furrowed · the number of obstructed progress' },
+  { summary: 'Sails in the wind · the number of household blessing' },
+  { summary: 'A treasure-laden boat sinks · the number of unstable rise and fall' },
+  { summary: 'Stone turned to gold · the number of bloom and fruit' },
+  { summary: 'Virtue and wisdom together · the number of swift ascent' },
+  { summary: 'Fortunes hard to read · the number of restless change' },
+  { summary: 'Small gain, large loss · the number of one rise one fall' },
+  { summary: 'Rise and decline mixed · the number of half-life prosperity' },
+  { summary: 'Foresight · the number of seizing the moment' },
+  { summary: 'Hollow within, full without · the number of outward calm and inner toil' },
+  { summary: 'Number of trials · the number of damages and difficulty' },
+  { summary: 'Good and bad mingled · the number of inner emptiness behind outer beauty' },
+  { summary: 'Rowing in waves · the number of negative omens' },
+  { summary: 'Spring blossom, autumn fruit · pine in cold snow' },
+  { summary: 'Hardship then fortune · seedling meeting late autumn' },
+  { summary: 'Cold cicada in mournful wind · the number of frustrated solitude' },
+  { summary: 'Darkness without light · the number of wavering uncertainty' },
+  { summary: 'Fame and gain · the number of independent walking' },
+  { summary: 'Weak foundations · the number of decaying roots' },
+  { summary: 'All matters favourable · the number of wealth and glory' },
+  { summary: 'Nineteen of twenty fail · the number of repeated setbacks' },
+  { summary: 'Smooth in all things · the number of household prosperity' },
+  { summary: 'Withered pine on a cliff · the number of inner-outer discord' },
+  { summary: 'Achievement through clarity · hall of treasures gathered' },
+  { summary: 'Founding home and trade · wisdom and courage united' },
+  { summary: 'Restless · the number of dead-end paths' },
+  { summary: 'Withered chrysanthemum in frost · the number of bleak loneliness' },
+  { summary: 'Late bloomer · the number of stored vitality' },
+  { summary: 'Sweet then bitter · the number of mixed blessings' },
+  { summary: 'Plain and at ease · the number free from disaster' },
+  { summary: 'Powerlessness · the number of sinking spirit' },
+  { summary: 'Old ways preserved · the number of safe household stability' },
+  { summary: 'Bankruptcy and dispersion · the number of inner-outer discord' },
+  { summary: 'Hardship first, sweetness later · household fortune blooms first' },
+  { summary: 'Twilight troubles · the number of bloom-then-fade' },
+  { summary: 'Adversity unrelieved · the number of poverty and hardship' },
+  { summary: 'Ill stars at the helm · the number of all-around difficulty' },
+  { summary: 'Number of all treasures · returning to the source as one' },
+]
+
+/** 1..81 的英文覆盖（数组下标 = number-1） */
+export const NUMEROLOGY_EN: readonly NumerologyOverride[] = Object.freeze(RAW)

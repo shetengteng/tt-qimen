@@ -374,6 +374,31 @@
     letter-spacing: 0.1em;
   }
 
+  /* P1-F：标题改为按钮形态（去掉原生 button 默认样式 + 加 caret + hover/focus 反馈） */
+  .hl-cal-title-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background-color 0.15s;
+  }
+  .hl-cal-title-btn:hover {
+    background-color: rgba(176, 141, 59, 0.1);
+  }
+  .hl-cal-title-btn:focus-visible {
+    outline: 2px solid var(--gf-cinnabar);
+    outline-offset: 2px;
+  }
+  .hl-cal-title-caret {
+    font-size: 12px;
+    color: var(--gf-ink-soft);
+    letter-spacing: 0;
+  }
+
   .hl-cal-filter {
     margin: 0 0 var(--gf-space-md);
     padding: 6px 12px;
@@ -435,12 +460,15 @@
     opacity: 0.3;
   }
 
-  .hl-cal-day.is-huangdao {
-    border-color: var(--gf-jade);
+  /* P0-D：黄道改用金色数字标识，不再加全格边框（降噪） */
+  .hl-cal-day.is-huangdao .hl-cal-day-num {
+    color: var(--gf-gold);
   }
 
+  /* P0-D：黑道仅保留细红框（1.5px → 1px） */
   .hl-cal-day.is-heidao {
     border-color: var(--gf-cinnabar);
+    border-width: 1px;
   }
 
   .hl-cal-day.is-match {
@@ -452,6 +480,33 @@
     color: var(--gf-rice);
     border-color: var(--gf-cinnabar-deep);
   }
+  /* today 数字必须白色（覆盖 is-huangdao 的金色） */
+  .hl-cal-day.is-today .hl-cal-day-num { color: var(--gf-rice); }
+
+  /* P1-H：选中态 = 当前 dialog 显示的日，加细金色 outline ring */
+  .hl-cal-day.is-selected {
+    box-shadow: 0 0 0 2px var(--gf-gold);
+  }
+
+  /* P0-B：键盘焦点 ring（不抢戏，仅在 :focus-visible 显示） */
+  .hl-cal-day:focus-visible {
+    outline: 2px solid var(--gf-cinnabar);
+    outline-offset: 2px;
+  }
+
+  /* P1-G：activeMatter 命中时右上 ✓ 角标 */
+  .hl-cal-day { position: relative; }
+  .hl-cal-day-check {
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    font-size: 10px;
+    line-height: 1;
+    color: var(--gf-jade);
+    font-weight: 700;
+    pointer-events: none;
+  }
+  .hl-cal-day.is-today .hl-cal-day-check { color: var(--gf-rice); }
 
   .hl-cal-day-num {
     font-size: 14px;
@@ -653,18 +708,314 @@
     .hl-today-card {
       grid-template-columns: 1fr;
       gap: var(--gf-space-md);
-      text-align: center;
-      padding: var(--gf-space-lg);
+      padding: var(--gf-space-md);
     }
     .hl-today-date {
+      text-align: center;
       padding-right: 0;
       border-right: none;
       border-bottom: 1px solid rgba(176, 141, 59, 0.3);
       padding-bottom: var(--gf-space-md);
     }
-    .hl-today-info { align-items: center; }
-    .hl-info-line { justify-content: center; }
+    /**
+     * Mobile：今日大卡瘦身
+     *  - day 数字 88 → 60（保留醒目，省垂直空间）
+     *  - .hl-info-line 左对齐 + label 收窄到 60，避免居中后散乱
+     *  - 圆形「建除」chip 100 → 72
+     *  - .hl-today-info gap 收紧到 sm
+     */
+    .hl-today-day { font-size: 60px; }
+    .hl-today-full { margin-top: var(--gf-space-xs); font-size: 13px; }
+    .hl-today-lunar { font-size: 15px; }
+    .hl-today-info {
+      align-items: stretch;
+      gap: var(--gf-space-sm);
+    }
+    .hl-info-line {
+      justify-content: flex-start;
+      font-size: 13px;
+    }
+    .hl-info-label {
+      min-width: 60px;
+      font-size: 12px;
+    }
+    .hl-info-ganzhi { font-size: 16px; }
+    .hl-today-big {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .hl-big-label { margin-bottom: var(--gf-space-xs); }
+    .hl-big-value { width: 72px; height: 72px; font-size: 26px; }
     .hl-yiji-section { grid-template-columns: 1fr; }
     .hl-dd-row { grid-template-columns: 1fr; }
   }
+
+  /**
+   * 移动端 ≤480px 月历专用收缩：
+   * 原默认 padding/gap/字号在 7 列 grid 下会撑出视口（390 视口溢出 28px、320 溢出 210px）。
+   * 这里把容器 padding、grid gap、按钮 padding 与字号统一收紧，保证 7 列等宽放下且农历小字保留。
+   */
+  @media (max-width: 480px) {
+    .hl-cal {
+      padding: 12px;
+      border-radius: var(--gf-radius-sm);
+    }
+    .hl-cal-head {
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .hl-cal-head .gf-btn {
+      padding: 4px 8px;
+      font-size: 12px;
+      min-width: 0;
+    }
+    .hl-cal-title {
+      font-size: 15px;
+      letter-spacing: 0.05em;
+      flex: 1;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .hl-cal-grid { gap: 2px; }
+    .hl-cal-wk {
+      padding: 2px 0;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+    }
+    .hl-cal-day {
+      padding: 2px;
+      border-width: 1px;
+      border-radius: 3px;
+      min-width: 0;
+    }
+    .hl-cal-day-num { font-size: 12px; }
+    .hl-cal-day-lunar { font-size: 9px; margin-top: 1px; }
+    .hl-cal-legend {
+      gap: var(--gf-space-sm);
+      flex-wrap: wrap;
+    }
+  }
+
+  /**
+   * 极窄屏 ≤360px：进一步压缩 padding/gap/字号，杜绝整页横向溢出。
+   */
+  @media (max-width: 360px) {
+    .hl-cal { padding: 8px; }
+    .hl-cal-grid { gap: 1px; }
+    .hl-cal-wk { font-size: 9px; padding: 1px 0; letter-spacing: 0.05em; }
+    .hl-cal-day { padding: 1px; border-radius: 2px; }
+    .hl-cal-day-num { font-size: 11px; }
+    .hl-cal-day-lunar { font-size: 8px; margin-top: 0; }
+    .hl-cal-head .gf-btn { padding: 3px 6px; font-size: 11px; }
+    .hl-cal-title { font-size: 13px; letter-spacing: 0; }
+  }
+}
+
+/* ============================================================
+ * 详情 Dialog · 国风主题外观
+ *   骨架在 _shared/base.css 的 .jm-dialog-* （通用 app dialog skeleton）
+ *   这里只负责颜色 / 边框 / 字体 / 嵌入卡片的间距重置
+ * ============================================================ */
+:root[data-theme='guofeng'] .hl-dialog-content--gf {
+  background: linear-gradient(180deg, #fffbe9 0%, #faf2dc 100%);
+  border: 1px solid rgba(176, 141, 59, 0.45);
+  box-shadow:
+    0 24px 60px rgba(108, 39, 25, 0.22),
+    0 4px 16px rgba(108, 39, 25, 0.12);
+  color: var(--gf-ink);
+  font-family: var(--gf-font-serif);
+}
+:root[data-theme='guofeng'] .hl-dialog-content--gf .jm-dialog-head {
+  background: rgba(255, 251, 233, 0.92);
+  border-bottom: 1px solid rgba(176, 141, 59, 0.28);
+  color: var(--gf-cinnabar);
+  letter-spacing: 0.06em;
+}
+:root[data-theme='guofeng'] .hl-dialog-content--gf .jm-dialog-title {
+  font-weight: 700;
+}
+:root[data-theme='guofeng'] .hl-dialog-content--gf .jm-dialog-close {
+  color: var(--gf-ink-soft);
+}
+:root[data-theme='guofeng'] .hl-dialog-content--gf .jm-dialog-close:hover {
+  background: rgba(194, 58, 42, 0.1);
+  color: var(--gf-cinnabar);
+  border-color: rgba(194, 58, 42, 0.2);
+}
+:root[data-theme='guofeng'] .hl-dialog-content--gf .jm-dialog-body {
+  background: transparent;
+}
+/* 嵌入到 dialog 时去除 detail card 的外阴影/底色，避免与 dialog 容器叠 */
+:root[data-theme='guofeng'] .hl-dialog-content--gf .hl-detail-card--embedded {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+:root[data-theme='guofeng'] .hl-dialog-content--gf .hl-detail-subhead {
+  display: flex;
+  align-items: baseline;
+  gap: var(--gf-space-md, 12px);
+  padding-bottom: var(--gf-space-sm, 8px);
+  margin-bottom: var(--gf-space-md, 12px);
+  border-bottom: 1px dashed rgba(176, 141, 59, 0.28);
+  color: var(--gf-ink-soft);
+  font-size: 13px;
+}
+:root[data-theme='guofeng'] .hl-dialog-content--gf .hl-detail-subhead .hl-detail-date {
+  color: var(--gf-cinnabar);
+  font-weight: 600;
+}
+
+/* ============================================================
+ * P1-J：月历卡上 sticky header 偏移补偿（点击锚点 / scrollIntoView 时不被 header 遮）
+ * ============================================================ */
+:root[data-theme='guofeng'] .hl-cal {
+  scroll-margin-top: 80px;
+}
+
+/* ============================================================
+ * P1-I：「下一个 ✓ 日」跳转按钮（在 legend 行内）
+ * ============================================================ */
+:root[data-theme='guofeng'] .hl-cal-next-good {
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid rgba(176, 141, 59, 0.4);
+  color: var(--gf-cinnabar);
+  border-radius: var(--gf-radius-sm);
+  padding: 4px 10px;
+  font-size: 12px;
+  font-family: var(--gf-font-serif);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+:root[data-theme='guofeng'] .hl-cal-next-good:hover {
+  background: rgba(194, 58, 42, 0.08);
+  border-color: var(--gf-cinnabar);
+}
+:root[data-theme='guofeng'] .hl-cal-next-good:focus-visible {
+  outline: 2px solid var(--gf-cinnabar);
+  outline-offset: 2px;
+}
+:root[data-theme='guofeng'] .hl-cal-legend {
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ============================================================
+ * P1-F：年月选择器 popover 主题样式
+ * ============================================================ */
+:root[data-theme='guofeng'] .hl-mp-content--gf {
+  z-index: 200;
+  width: min(320px, calc(100vw - 24px));
+  background: linear-gradient(180deg, #fffbe9 0%, #faf2dc 100%);
+  border: 1px solid rgba(176, 141, 59, 0.45);
+  border-radius: var(--gf-radius-md);
+  box-shadow:
+    0 16px 40px rgba(108, 39, 25, 0.18),
+    0 2px 8px rgba(108, 39, 25, 0.08);
+  color: var(--gf-ink);
+  font-family: var(--gf-font-serif);
+  padding: 12px;
+}
+:root[data-theme='guofeng'] .hl-mp-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed rgba(176, 141, 59, 0.3);
+}
+:root[data-theme='guofeng'] .hl-mp-year-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gf-cinnabar);
+  letter-spacing: 0.08em;
+}
+:root[data-theme='guofeng'] .hl-mp-year-btn {
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(176, 141, 59, 0.35);
+  background: transparent;
+  border-radius: 4px;
+  color: var(--gf-ink-soft);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+}
+:root[data-theme='guofeng'] .hl-mp-year-btn:hover {
+  background: rgba(176, 141, 59, 0.1);
+  color: var(--gf-cinnabar);
+}
+:root[data-theme='guofeng'] .hl-mp-year-list {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 4px 0 8px;
+  margin: 0 -4px 8px;
+  list-style: none;
+  border-bottom: 1px dashed rgba(176, 141, 59, 0.2);
+  scrollbar-width: thin;
+}
+:root[data-theme='guofeng'] .hl-mp-year-cell {
+  flex: none;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--gf-ink-soft);
+  font-family: var(--gf-font-serif);
+}
+:root[data-theme='guofeng'] .hl-mp-year-cell:hover {
+  background: rgba(176, 141, 59, 0.1);
+  color: var(--gf-ink);
+}
+:root[data-theme='guofeng'] .hl-mp-year-cell.is-active {
+  background: var(--gf-cinnabar);
+  color: var(--gf-rice);
+  border-color: var(--gf-cinnabar-deep);
+  font-weight: 600;
+}
+:root[data-theme='guofeng'] .hl-mp-month-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+:root[data-theme='guofeng'] .hl-mp-month-cell {
+  background: transparent;
+  border: 1px solid rgba(176, 141, 59, 0.25);
+  padding: 8px 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--gf-ink);
+  font-family: var(--gf-font-serif);
+  text-align: center;
+}
+:root[data-theme='guofeng'] .hl-mp-month-cell:hover {
+  background: rgba(176, 141, 59, 0.12);
+  border-color: rgba(176, 141, 59, 0.5);
+}
+:root[data-theme='guofeng'] .hl-mp-month-cell.is-current {
+  background: var(--gf-cinnabar);
+  color: var(--gf-rice);
+  border-color: var(--gf-cinnabar-deep);
+  font-weight: 700;
+}
+:root[data-theme='guofeng'] .hl-mp-month-cell.is-this-month:not(.is-current) {
+  border-color: var(--gf-cinnabar);
+  color: var(--gf-cinnabar);
+}
+:root[data-theme='guofeng'] .hl-mp-year-btn:focus-visible,
+:root[data-theme='guofeng'] .hl-mp-year-cell:focus-visible,
+:root[data-theme='guofeng'] .hl-mp-month-cell:focus-visible {
+  outline: 2px solid var(--gf-cinnabar);
+  outline-offset: 1px;
 }

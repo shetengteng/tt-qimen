@@ -35,12 +35,16 @@ def main() -> int:
         page.wait_for_load_state("networkidle")
         page.wait_for_timeout(400)
 
-        triggers = page.locator(".layout-popover-trigger")
-        if triggers.count() != 2:
-            print(f"❌ trigger 数量异常：期望 2，实际 {triggers.count()}")
+        # 精确按修饰类锁定：`--lang` / `--theme` / `--nav`，避免新增的 nav popover 冲入
+        lang_btn = page.locator(".layout-popover-trigger--lang").first
+        theme_btn = page.locator(".layout-popover-trigger--theme").first
+        nav_count = page.locator(".layout-popover-trigger--nav").count()
+        if lang_btn.count() != 1 or theme_btn.count() != 1:
+            print(
+                "❌ trigger 数量异常："
+                f"lang={lang_btn.count()}, theme={theme_btn.count()}, nav={nav_count}"
+            )
             return 1
-        lang_btn = triggers.nth(0)
-        theme_btn = triggers.nth(1)
 
         # === 语言切换：zh-CN → en ===
         lang_btn.click()

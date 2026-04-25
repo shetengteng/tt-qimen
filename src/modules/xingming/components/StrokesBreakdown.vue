@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
 import type { XingmingResult } from '../types'
+import { elementI18nPath } from '../utils/i18nHelpers'
 
 interface Props {
   result: XingmingResult
@@ -34,7 +35,7 @@ const chars = computed(() => props.result.chars)
           {{ t('xingming.breakdown.kangxi') }}
           <strong class="xm-char-num">{{ c.kangxi }}</strong>
         </div>
-        <div class="xm-char-element">{{ c.element }}</div>
+        <div class="xm-char-element">{{ t(elementI18nPath(c.element)) }}</div>
       </div>
     </div>
     <p class="xm-breakdown-note">
@@ -56,7 +57,7 @@ const chars = computed(() => props.result.chars)
           {{ t('xingming.breakdown.kangxi') }}
           <strong class="xm-char-num">{{ c.kangxi }}</strong>
         </div>
-        <span class="xm-char-element">{{ c.element }}</span>
+        <span class="xm-char-element">{{ t(elementI18nPath(c.element)) }}</span>
       </div>
     </div>
     <p class="xm-breakdown-note">

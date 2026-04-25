@@ -83,14 +83,19 @@ function escapeRegExp(s: string): string {
           <span class="jm-entry-category">{{ t(`jiemeng.category.${entry.category}`) }}</span>
         </div>
         <p class="jm-entry-summary">{{ entry.summary }}</p>
-        <div v-if="entry.tags?.length" class="jm-entry-tags">
-          <span
-            v-for="tag in entry.tags"
-            :key="tag"
-            class="jm-entry-tag"
-            :class="`tag-${tag}`"
-          >
-            {{ t(`jiemeng.tag.${tag}`) }}
+        <div class="jm-entry-foot">
+          <div v-if="entry.tags?.length" class="jm-entry-tags">
+            <span
+              v-for="tag in entry.tags"
+              :key="tag"
+              class="jm-entry-tag"
+              :class="`tag-${tag}`"
+            >
+              {{ t(`jiemeng.tag.${tag}`) }}
+            </span>
+          </div>
+          <span class="jm-entry-cta" aria-hidden="true">
+            {{ t('jiemeng.entry.detailCta') }} <span class="jm-entry-cta-arrow">→</span>
           </span>
         </div>
       </button>

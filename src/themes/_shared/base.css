@@ -121,9 +121,10 @@ body {
  *   - 面板 portal 到 body，全局样式在此（按 [data-theme] 区分主题）
  *
  * Trigger 复用类（两主题共享布局，颜色/字族由主题层覆盖）：
- *   .layout-popover-trigger             32px 方/圆按钮基础态
- *   .layout-popover-trigger--lang       语言专用（圆形 / 文字 only）
+ *   .layout-popover-trigger             32px 圆角方形按钮基础态（icon + 字符）
+ *   .layout-popover-trigger--lang       语言专用（icon + 短标）
  *   .layout-popover-trigger--theme      主题专用（icon + 字符）
+ *   .layout-popover-trigger--nav        移动端导航专用（当前页名 + chevron，宽度自适应）
  *
  * 面板（portal 到 body，按主题 attr 取色）：
  *   .layout-popover-content
@@ -151,20 +152,39 @@ body {
     border-color 0.18s ease,
     box-shadow 0.18s ease;
 }
-.layout-popover-trigger--lang {
-  border-radius: 999px;
-}
 .layout-popover-trigger-icon {
   flex: 0 0 auto;
+}
+.layout-popover-trigger-chevron {
+  flex: 0 0 auto;
+  opacity: 0.7;
+  transition: transform 0.18s ease;
+}
+.layout-popover-trigger[data-state='open'] .layout-popover-trigger-chevron {
+  transform: rotate(180deg);
 }
 .layout-popover-trigger-text {
   display: inline-block;
   letter-spacing: 0.02em;
 }
+/* Nav trigger 是「当前页名」可变长文本，min-width 32px 不够，需要让它按内容延展 */
+.layout-popover-trigger--nav {
+  padding: 0 10px;
+  min-width: 0;
+  max-width: 60vw;
+}
+.layout-popover-trigger--nav .layout-popover-trigger-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 /* === 面板（基础布局） === */
 .layout-popover-content {
-  z-index: 60;
+  /* z-index: 200 远高于 header (100) 和模块内的 sticky/分层元素，
+   * 同时 reka-ui 会把这个值同步到外层 [data-reka-popper-content-wrapper] 上
+   * （wrapper 是 portal 到 body 的 fixed 容器，决定整体 stacking）。 */
+  z-index: 200;
   min-width: 168px;
   padding: 6px;
   border-radius: 12px;
@@ -175,6 +195,9 @@ body {
 }
 .layout-popover-content--theme {
   min-width: 220px;
+}
+.layout-popover-content--nav {
+  min-width: 160px;
 }
 @keyframes layout-popover-in {
   from {
@@ -258,10 +281,12 @@ body {
 
 :root[data-theme='guofeng'] .layout-popover-content {
   background: linear-gradient(180deg, #fbf5e6, #f6ecd6);
-  border: 1px solid rgba(176, 141, 59, 0.55);
+  /* border 加深到 0.85：之前 0.55 在浅米黄背景下接近隐形，
+   * 用户视觉感受是「上边框没了」，提高 alpha 让边框可清晰辨识。 */
+  border: 1px solid rgba(108, 39, 25, 0.45);
   box-shadow:
     0 12px 32px rgba(46, 30, 13, 0.22),
-    0 0 0 1px rgba(176, 141, 59, 0.2) inset;
+    0 0 0 1px rgba(176, 141, 59, 0.32) inset;
   color: #2e1e0d;
   font-family: var(--gf-serif, 'Noto Serif SC', serif);
 }
@@ -300,8 +325,10 @@ body {
 
 :root[data-theme='minimal'] .layout-popover-content {
   background: #ffffff;
-  border: 1px solid rgba(15, 23, 42, 0.1);
-  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.1);
+  /* border 加深到 0.18：之前 0.1 太淡，用户视觉上感受是「上边框没了」，
+   * 提高对比度让边框可辨识。 */
+  border: 1px solid rgba(15, 23, 42, 0.18);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
   color: rgba(15, 23, 42, 0.88);
 }
 :root[data-theme='minimal'] .layout-popover-option:hover {
@@ -321,4 +348,156 @@ body {
   background: rgba(99, 102, 241, 0.95);
   color: #ffffff;
   border-color: rgba(99, 102, 241, 0.95);
+}
+
+/* ============================================================
+ * 解梦 · 详情 Dialog 基础样式（共享）
+ * 主题色 / 边框 / 字体由各主题的 jiemeng.css 覆盖。
+ * 这里只承担：层级、布局骨架、滚动条、移动端全屏、动画。
+ * ============================================================ */
+.jm-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(2px);
+  animation: jm-dialog-overlay-in 160ms ease-out;
+}
+
+.jm-dialog-content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 301;
+  width: min(720px, calc(100vw - 32px));
+  max-height: calc(100vh - 64px);
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  overflow: hidden;
+  animation: jm-dialog-content-in 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.jm-dialog-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.jm-dialog-title {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: 1.4;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.jm-dialog-close {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  color: inherit;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.jm-dialog-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 18px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.jm-dialog-foot {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 18px;
+  flex-wrap: wrap;
+}
+
+.jm-dialog-foot .jm-action-btn {
+  flex: none;
+}
+
+@media (max-width: 640px) {
+  .jm-dialog-content {
+    top: auto;
+    left: 0;
+    bottom: 0;
+    transform: translateY(0);
+    width: 100vw;
+    max-height: 92vh;
+    border-radius: 16px 16px 0 0;
+    animation: jm-dialog-content-in-mobile 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .jm-dialog-head,
+  .jm-dialog-foot {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .jm-dialog-body {
+    padding: 16px;
+  }
+  .jm-dialog-foot {
+    justify-content: stretch;
+  }
+  .jm-dialog-foot .jm-action-btn {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+}
+
+@keyframes jm-dialog-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes jm-dialog-content-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -46%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@keyframes jm-dialog-content-in-mobile {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

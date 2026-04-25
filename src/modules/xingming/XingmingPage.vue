@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, ref, shallowRef } from 'vue'
+import { computed, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
+import { useLocaleStore } from '@/stores/locale'
 import ShareToast from '@/components/common/ShareToast.vue'
 import { useSkeletonReveal } from '@/composables/useSkeletonReveal'
 import { useShareCard } from '@/composables/useShareCard'
@@ -14,11 +15,13 @@ import OverallGauge from './components/OverallGauge.vue'
 import { useXingmingStore } from './stores/xingmingStore'
 import { calculateXingming } from './core/xingming'
 import { StrokesNotFoundError } from './core/strokes'
+import type { NumerologyLocale } from './data/numerology'
 import type { XingmingResult } from './types'
 
 const { t } = useI18n()
 const router = useRouter()
 const themeStore = useThemeStore()
+const localeStore = useLocaleStore()
 const store = useXingmingStore()
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
@@ -35,10 +38,19 @@ const skeleton = useSkeletonReveal({
   scrollHoldMs: 280,
 })
 
-async function onCalculate() {
-  errorMessage.value = null
+/** 把 locale store id 收敛为 81 数理表支持的 locale；其它/未知值回退到简体 */
+function asNumerologyLocale(id: string): NumerologyLocale {
+  if (id === 'zh-TW' || id === 'en') return id
+  return 'zh-CN'
+}
+
+async function runCalculate(silent = false) {
+  if (!silent) errorMessage.value = null
   try {
-    result.value = await calculateXingming(store.input)
+    result.value = await calculateXingming(
+      store.input,
+      asNumerologyLocale(localeStore.id),
+    )
   } catch (err) {
     if (err instanceof StrokesNotFoundError) {
       errorMessage.value = t('xingming.computeError.rareChar', { char: err.char })
@@ -50,8 +62,20 @@ async function onCalculate() {
     console.error('[xingming] calculate failed:', err)
     result.value = null
   }
+}
+
+async function onCalculate() {
+  await runCalculate(false)
   skeleton.start(() => resultBannerEl.value)
 }
+
+// 已有结果时，跟随 locale 切换静默重算（不重放骨架动画）
+watch(
+  () => localeStore.id,
+  async () => {
+    if (result.value) await runCalculate(true)
+  },
+)
 
 function onRecalculate() {
   result.value = null

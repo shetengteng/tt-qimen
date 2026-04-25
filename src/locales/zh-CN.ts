@@ -35,6 +35,7 @@ export default {
     xingming: '姓名',
     huangli: '黄历',
     jiemeng: '解梦',
+    menu: '导航菜单',
   },
 
   home: {
@@ -914,6 +915,13 @@ export default {
         fair: '中',
         poor: '差',
       },
+      badgeWord: {
+        excellent: '格局开阔',
+        good: '搭配良好',
+        fair: '中规中矩',
+        poor: '需多磨砺',
+      },
+      summary: '"{name}" 整体五格{badgeWord}，人格 {renElement} · {renLevel}，总格 {zongElement} · {zongLevel}；综合评分 {score} / 100。',
     },
 
     skeleton: {
@@ -1022,17 +1030,34 @@ export default {
       next: '下月',
       prevMonthFmt: '{month} 月',
       nextMonthFmt: '{month} 月',
+      prevMonthAria: '切换到 {month} 月（上月）',
+      nextMonthAria: '切换到 {month} 月（下月）',
       weekdays: ['日', '一', '二', '三', '四', '五', '六'],
       legendHuangdao: '黄道日',
       legendHeidao: '黑道日',
       legendGood: '符合所选事由',
       matterHintPrefix: '当前筛选：',
       clearMatter: '清除筛选',
+      gridAria: '{year} 年 {month} 月 月历',
+      dayAriaFmt: '{year} 年 {month} 月 {day} 日 周{weekday}',
+      todayLabel: '今日',
+      matchLabel: '符合所选事由',
+      outOfMonthLabel: '非本月',
+      nextGoodFmt: '下一个 ✓ 日：{month} 月 {day} 日',
+      nextGoodAria: '跳转到 {month} 月 {day} 日（下一个符合所选事由的日子）',
+      openPickerAria: '打开年月选择器（当前 {year} 年 {month} 月）',
+      pickerYearFmt: '{year} 年',
+      pickerMonthFmt: '{month} 月',
+      pickerYearListAria: '年份列表',
+      pickerMonthGridAria: '月份网格',
+      pickerPrevYearAria: '切换到 {year} 年',
+      pickerNextYearAria: '切换到 {year} 年',
     },
 
     detail: {
       title: '所选日 · 详情',
-      closeAria: '关闭',
+      dialogTitle: '黄历详情',
+      closeAria: '关闭详情',
       duty: '十二建星',
       dutyIntroFmt: '{duty}日',
       gods: '吉神',
@@ -1126,6 +1151,10 @@ export default {
       countFmt: '共 {n} 条词条',
     },
 
+    entry: {
+      detailCta: '查看详情',
+    },
+
     empty: {
       title: '没有找到相关词条',
       desc: '试试换个关键词，或点击上方的分类卡片浏览所有词条。',
@@ -1138,6 +1167,8 @@ export default {
       adviceLabel: '建议：',
       sensitiveHint: '※ 本词条包含古籍原始表述中的死亡、病痛、鬼神等文化象征，仅为传统意象记录，请以象征视角理解，不作为现实预兆。',
       warning: '⚠ 梦境解读因人而异，古籍仅供参考。若梦境频繁困扰现实生活，建议咨询专业心理咨询师。',
+      dialogTitle: '词条详情',
+      closeAria: '关闭详情',
     },
 
     tag: {

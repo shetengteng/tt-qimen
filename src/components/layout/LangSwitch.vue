@@ -4,18 +4,21 @@ import { useI18n } from 'vue-i18n'
 import { useLocaleStore } from '@/stores/locale'
 import type { Locale } from '@/locales'
 import { PopoverRoot, PopoverTrigger, PopoverPortal, PopoverContent } from 'reka-ui'
+import { Languages } from 'lucide-vue-next'
 
 /**
  * 语言切换 · Icon 触发 + 弹出面板版（reka-ui PopoverRoot）。
  *
  * 设计目标：
  *   - 取代 shadcn-vue Select 那套 SelectValue 抓不到自定义 itemText 导致 trigger 空白的方案
- *   - Trigger 是一个 32px 圆形/方形 icon button，里面只放当前语言的 1-2 字短标（简/繁/EN），
- *     视觉对齐 toolbar 中其它 icon 控件，比 60px 宽下拉条干净
+ *   - Trigger 是一个 32px 圆角方形 icon button（与 ThemeSwitch 视觉对齐），
+ *     内含 Languages 图标 + 当前语言短标（简/繁/EN）
  *   - 弹出面板自研结构（不走 SelectItem），可自由排版：左短标徽章 + 右全名
  *   - 主题样式由 .layout-popover-trigger / .layout-popover-content 类承载，
  *     由两套主题 CSS 各自精修；Popover content portal 到 body，全局样式在
  *     `_shared/base.css` 按 `[data-theme]` 区分
+ *   - PopoverContent 用 `align="end"`：trigger 在 toolbar 最右侧，向左展开
+ *     避免弹层超出视口被裁切
  */
 
 const { t } = useI18n()
@@ -48,6 +51,7 @@ function pick(id: Locale) {
         :aria-label="ariaLabel"
         :data-active-id="locale.id"
       >
+        <Languages class="layout-popover-trigger-icon" :size="16" aria-hidden="true" />
         <span class="layout-popover-trigger-text">{{ currentShort }}</span>
       </button>
     </PopoverTrigger>
@@ -55,8 +59,9 @@ function pick(id: Locale) {
       <PopoverContent
         class="layout-popover-content layout-popover-content--lang"
         :side-offset="6"
-        align="start"
-        :collision-padding="8"
+        align="end"
+        :avoid-collisions="true"
+        :collision-padding="12"
       >
         <ul class="layout-popover-list">
           <li v-for="id in locale.list" :key="id">

@@ -15,9 +15,14 @@ import { useI18n } from 'vue-i18n'
 import { DUTY_MEANING } from '../data/dutyMeaning'
 import type { HuangliDay } from '../types'
 
-const props = defineProps<{
-  day: HuangliDay
-}>()
+const props = withDefaults(
+  defineProps<{
+    day: HuangliDay
+    /** 当被 Dialog 嵌入时，隐藏自身 head（dialog 已提供 title + close） */
+    embedded?: boolean
+  }>(),
+  { embedded: false },
+)
 
 const emit = defineEmits<{
   (e: 'close'): void
@@ -75,8 +80,8 @@ const luckyHoursText = computed(() =>
 </script>
 
 <template>
-  <div class="hl-detail-card">
-    <div class="hl-detail-head">
+  <div :class="['hl-detail-card', { 'hl-detail-card--embedded': embedded }]">
+    <div v-if="!embedded" class="hl-detail-head">
       <div>
         <span class="hl-detail-date">{{ headDate }}</span>
         <span class="hl-detail-lunar">{{ headLunar }}</span>
@@ -89,6 +94,10 @@ const luckyHoursText = computed(() =>
       >
         ×
       </button>
+    </div>
+    <div v-else class="hl-detail-subhead">
+      <span class="hl-detail-date">{{ headDate }}</span>
+      <span class="hl-detail-lunar">{{ headLunar }}</span>
     </div>
 
     <div class="hl-detail-body">

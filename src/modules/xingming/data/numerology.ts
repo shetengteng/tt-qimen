@@ -589,10 +589,63 @@ export const NUMEROLOGY: readonly NumerologyEntry[] = Object.freeze([
   },
 ]) as readonly NumerologyEntry[]
 
-/** 按数字查询 81 数理条目；越界返回 null */
+/**
+ * 支持的 locale 标记。
+ * `zh-CN` 为简体真源，`zh-TW`/`en` 为覆盖层；缺失字段回退到简体。
+ */
+export type NumerologyLocale = 'zh-CN' | 'zh-TW' | 'en'
+
+/**
+ * 按数字 + locale 查询 81 数理条目；越界返回 null。
+ *
+ * - `zh-CN`：直接返回 `NUMEROLOGY[n-1]`（简体真源）。
+ * - `zh-TW`：用 `numerology.zhTW.ts` 覆盖层（运行时 chinese-conv 转换）。
+ * - `en`：用 `numerology.en.ts` 覆盖层（人工翻译 summary，description 回退中文）。
+ *
+ * 任意 locale 缺失字段都回退到简体，保证 UI 永不空白。
+ *
+ * 注：覆盖层为同步加载（每份 ~10KB，按需加载意义不大），与 i18n locale 切换路径一致。
+ */
+export async function getNumerologyAsync(
+  n: number,
+  locale: NumerologyLocale = 'zh-CN',
+): Promise<NumerologyEntry | null> {
+  if (!Number.isInteger(n) || n < 1 || n > 81) return null
+  const base = NUMEROLOGY[n - 1]
+  if (!base) return null
+  if (locale === 'zh-CN') return base
+
+  const overrides = await loadOverrides(locale)
+  const ovr = overrides[n - 1] ?? {}
+  return {
+    ...base,
+    summary: ovr.summary ?? base.summary,
+    description: ovr.description ?? base.description,
+  }
+}
+
+/** 同步版本：仅 zh-CN，其它 locale 返回简体回退（用于不能 await 的旧调用方） */
 export function getNumerology(n: number): NumerologyEntry | null {
   if (!Number.isInteger(n) || n < 1 || n > 81) return null
   return NUMEROLOGY[n - 1] ?? null
+}
+
+let zhTwCache: ReadonlyArray<{ summary?: string; description?: string }> | null = null
+let enCache: ReadonlyArray<{ summary?: string; description?: string }> | null = null
+
+async function loadOverrides(
+  locale: 'zh-TW' | 'en',
+): Promise<ReadonlyArray<{ summary?: string; description?: string }>> {
+  if (locale === 'zh-TW') {
+    if (zhTwCache) return zhTwCache
+    const mod = await import('./numerology.zhTW')
+    zhTwCache = mod.NUMEROLOGY_ZHTW
+    return zhTwCache
+  }
+  if (enCache) return enCache
+  const mod = await import('./numerology.en')
+  enCache = mod.NUMEROLOGY_EN
+  return enCache
 }
 
 /** 按末位推衍五行：1/2=木 3/4=火 5/6=土 7/8=金 9/0=水 */

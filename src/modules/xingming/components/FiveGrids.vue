@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
 import type { GridName, XingmingResult } from '../types'
+import { elementI18nPath } from '../utils/i18nHelpers'
 
 interface Props {
   result: XingmingResult
@@ -82,7 +83,7 @@ function gridInfo(name: GridName) {
           <div class="xm-ge-name">{{ t(`xingming.grids.${cell.gridName}`) }}</div>
           <div class="xm-ge-num">{{ gridInfo(cell.gridName!).number }}</div>
           <span :class="['xm-ge-element', badgeClassGf(gridInfo(cell.gridName!).entry.level)]">
-            {{ gridInfo(cell.gridName!).entry.element }} ·
+            {{ t(elementI18nPath(gridInfo(cell.gridName!).entry.element)) }} ·
             {{ t(`xingming.levels.${gridInfo(cell.gridName!).entry.level}`) }}
           </span>
         </div>
@@ -102,7 +103,7 @@ function gridInfo(name: GridName) {
           <div class="xm-ge-name">{{ t(`xingming.grids.${cell.gridName}`) }}</div>
           <div class="xm-ge-num">{{ gridInfo(cell.gridName!).number }}</div>
           <span :class="['xm-ge-verdict', verdictClassMn(gridInfo(cell.gridName!).entry.level)]">
-            {{ gridInfo(cell.gridName!).entry.element }}·{{ t(`xingming.levels.${gridInfo(cell.gridName!).entry.level}`) }}
+            {{ t(elementI18nPath(gridInfo(cell.gridName!).entry.element)) }}·{{ t(`xingming.levels.${gridInfo(cell.gridName!).entry.level}`) }}
           </span>
         </div>
       </template>

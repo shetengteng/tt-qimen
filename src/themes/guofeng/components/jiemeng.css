@@ -298,6 +298,46 @@
   border-color: rgba(176, 141, 59, 0.3);
 }
 
+/* ---------- 词条卡底栏 (tags + 详情 CTA) ---------- */
+:root[data-theme='guofeng'] .jm-entry-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gf-space-sm);
+  margin-top: var(--gf-space-sm);
+  flex-wrap: wrap;
+}
+:root[data-theme='guofeng'] .jm-entry-foot .jm-entry-tags {
+  margin-top: 0;
+}
+:root[data-theme='guofeng'] .jm-entry-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-size: 13px;
+  color: var(--gf-cinnabar);
+  background: rgba(194, 58, 42, 0.08);
+  border: 1px solid rgba(194, 58, 42, 0.22);
+  border-radius: 999px;
+  font-family: var(--gf-font-serif);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+:root[data-theme='guofeng'] .jm-entry:hover .jm-entry-cta {
+  background: var(--gf-cinnabar);
+  color: #fff;
+  border-color: var(--gf-cinnabar);
+}
+:root[data-theme='guofeng'] .jm-entry:hover .jm-entry-cta-arrow {
+  transform: translateX(2px);
+}
+:root[data-theme='guofeng'] .jm-entry-cta-arrow {
+  display: inline-block;
+  transition: transform 0.18s ease;
+}
+
 /* ---------- 空态 ---------- */
 :root[data-theme='guofeng'] .jm-empty {
   padding: var(--gf-space-xl) var(--gf-space-md);
@@ -465,4 +505,39 @@
 @media (max-width: 480px) {
   :root[data-theme='guofeng'] .jm-cat-grid { grid-template-columns: repeat(2, 1fr); }
   :root[data-theme='guofeng'] .jm-results-head { flex-direction: column; align-items: flex-start; gap: 6px; }
+}
+
+/* ============================================================
+ * 详情 Dialog · 国风主题外观
+ *   骨架在 _shared/base.css，这里只负责颜色 / 边框 / 字体。
+ * ============================================================ */
+:root[data-theme='guofeng'] .jm-dialog-content--gf {
+  background: linear-gradient(180deg, #fffbe9 0%, #faf2dc 100%);
+  border: 1px solid rgba(176, 141, 59, 0.45);
+  box-shadow:
+    0 24px 60px rgba(108, 39, 25, 0.22),
+    0 4px 16px rgba(108, 39, 25, 0.12);
+  color: var(--gf-ink);
+  font-family: var(--gf-font-serif);
+}
+:root[data-theme='guofeng'] .jm-dialog-content--gf .jm-dialog-head {
+  background: rgba(255, 251, 233, 0.92);
+  border-bottom: 1px solid rgba(176, 141, 59, 0.28);
+  color: var(--gf-cinnabar);
+  letter-spacing: 0.06em;
+}
+:root[data-theme='guofeng'] .jm-dialog-content--gf .jm-dialog-title {
+  font-weight: 700;
+}
+:root[data-theme='guofeng'] .jm-dialog-content--gf .jm-dialog-close {
+  color: var(--gf-ink-soft);
+}
+:root[data-theme='guofeng'] .jm-dialog-content--gf .jm-dialog-close:hover {
+  background: rgba(194, 58, 42, 0.1);
+  color: var(--gf-cinnabar);
+  border-color: rgba(194, 58, 42, 0.2);
+}
+:root[data-theme='guofeng'] .jm-dialog-content--gf .jm-dialog-foot {
+  background: rgba(255, 251, 233, 0.92);
+  border-top: 1px solid rgba(176, 141, 59, 0.28);
 }
