@@ -500,6 +500,18 @@
 
   .hl-cal-day.is-today .hl-cal-day-lunar { color: rgba(255, 255, 255, 0.85); }
 
+  /* B3：节气日的农历那一行 = 紫色 + dotted 提示可点科普 */
+  .hl-cal-day.is-solar-term .hl-cal-day-lunar {
+    color: var(--mn-accent);
+    text-decoration: underline dotted color-mix(in srgb, var(--mn-accent) 50%, transparent);
+    text-underline-offset: 2px;
+    font-weight: 600;
+  }
+  .hl-cal-day.is-solar-term.is-today .hl-cal-day-lunar {
+    color: rgba(255, 255, 255, 0.95);
+    text-decoration-color: rgba(255, 255, 255, 0.6);
+  }
+
   .hl-cal-legend {
     display: flex;
     justify-content: center;
@@ -963,4 +975,263 @@
 :root[data-theme='minimal'] .hl-mp-month-cell:focus-visible {
   outline: 2px solid var(--mn-accent);
   outline-offset: 1px;
+}
+
+/* ============================================================
+ * B3：节气科普卡 SolarTermDialog（简约）
+ * ============================================================ */
+:root[data-theme='minimal'] .hl-term-card {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  color: var(--mn-ink);
+}
+:root[data-theme='minimal'] .hl-term-pinyin {
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: var(--mn-accent);
+  text-transform: capitalize;
+}
+:root[data-theme='minimal'] .hl-term-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+:root[data-theme='minimal'] .hl-term-section h4 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--mn-ink);
+  border-bottom: 1px solid var(--mn-line);
+  padding-bottom: 4px;
+  letter-spacing: 0.05em;
+}
+:root[data-theme='minimal'] .hl-term-meaning {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--mn-ink);
+}
+:root[data-theme='minimal'] .hl-term-phenomena {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+:root[data-theme='minimal'] .hl-term-phenomena li {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--mn-ink);
+}
+:root[data-theme='minimal'] .hl-term-phenomena li > span:first-child {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 20px;
+  height: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 50%;
+  background: var(--mn-accent);
+  color: var(--mn-bg);
+}
+:root[data-theme='minimal'] .hl-term-customs {
+  list-style: disc;
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--mn-ink);
+}
+:root[data-theme='minimal'] .hl-term-customs li::marker {
+  color: var(--mn-accent);
+}
+:root[data-theme='minimal'] .hl-term-empty {
+  font-size: 13px;
+  color: var(--mn-ink-muted);
+  text-align: center;
+  padding: 20px 0;
+}
+
+/* ============================================================
+ * R3：12 时辰吉凶圆盘 LuckyHoursDial（简约）
+ * ============================================================ */
+:root[data-theme='minimal'] .hl-dial {
+  --hl-dial-radius: 110px;
+  --hl-dial-cell-size: 38px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 0 8px;
+}
+:root[data-theme='minimal'] .hl-dial-ring {
+  position: relative;
+  width: calc(var(--hl-dial-radius) * 2 + var(--hl-dial-cell-size) + 8px);
+  height: calc(var(--hl-dial-radius) * 2 + var(--hl-dial-cell-size) + 8px);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, color-mix(in srgb, var(--mn-accent) 6%, transparent), transparent 70%);
+  border: 1px dashed var(--mn-line);
+  margin: 0 auto;
+}
+:root[data-theme='minimal'] .hl-dial-cell {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--hl-dial-cell-size);
+  height: var(--hl-dial-cell-size);
+  margin: calc(var(--hl-dial-cell-size) * -0.5) 0 0 calc(var(--hl-dial-cell-size) * -0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid var(--mn-line);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--mn-ink);
+  background: var(--mn-bg);
+  cursor: pointer;
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+:root[data-theme='minimal'] .hl-dial-cell.is-huangdao {
+  background: color-mix(in srgb, var(--mn-accent) 10%, var(--mn-bg));
+  border-color: color-mix(in srgb, var(--mn-accent) 35%, transparent);
+  color: var(--mn-accent);
+}
+:root[data-theme='minimal'] .hl-dial-cell.is-heidao {
+  background: color-mix(in srgb, var(--mn-ink) 4%, var(--mn-bg));
+  border-color: color-mix(in srgb, var(--mn-ink) 18%, transparent);
+  color: var(--mn-ink-muted);
+}
+:root[data-theme='minimal'] .hl-dial-cell.is-current {
+  box-shadow: 0 0 0 3px var(--mn-accent), 0 0 12px color-mix(in srgb, var(--mn-accent) 35%, transparent);
+  z-index: 2;
+  font-weight: 700;
+}
+:root[data-theme='minimal'] .hl-dial-cell.is-focus {
+  box-shadow: 0 0 0 2px var(--mn-accent);
+  z-index: 1;
+}
+:root[data-theme='minimal'] .hl-dial-cell:focus-visible {
+  outline: 2px solid var(--mn-accent);
+  outline-offset: 2px;
+}
+:root[data-theme='minimal'] .hl-dial-cell-name {
+  display: block;
+}
+:root[data-theme='minimal'] .hl-dial-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(var(--hl-dial-radius) - 30px);
+  text-align: center;
+  color: var(--mn-ink);
+}
+:root[data-theme='minimal'] .hl-dial-now {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+:root[data-theme='minimal'] .hl-dial-now-label {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--mn-accent);
+}
+:root[data-theme='minimal'] .hl-dial-now-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--mn-ink);
+}
+:root[data-theme='minimal'] .hl-dial-now-pill,
+:root[data-theme='minimal'] .hl-dial-detail-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  border: 1px solid currentColor;
+}
+:root[data-theme='minimal'] .hl-dial-now-pill.is-huangdao,
+:root[data-theme='minimal'] .hl-dial-detail-pill.is-huangdao {
+  color: var(--mn-accent);
+  background: color-mix(in srgb, var(--mn-accent) 10%, transparent);
+}
+:root[data-theme='minimal'] .hl-dial-now-pill.is-heidao,
+:root[data-theme='minimal'] .hl-dial-detail-pill.is-heidao {
+  color: var(--mn-ink-muted);
+  background: color-mix(in srgb, var(--mn-ink) 6%, transparent);
+}
+:root[data-theme='minimal'] .hl-dial-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+:root[data-theme='minimal'] .hl-dial-summary-num {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--mn-accent);
+}
+:root[data-theme='minimal'] .hl-dial-summary-num span {
+  font-size: 14px;
+  color: var(--mn-ink-muted);
+  font-weight: 500;
+}
+:root[data-theme='minimal'] .hl-dial-summary-label {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--mn-ink-muted);
+}
+:root[data-theme='minimal'] .hl-dial-detail {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--mn-line);
+  background: var(--mn-bg);
+  border-radius: 8px;
+  font-size: 13px;
+}
+:root[data-theme='minimal'] .hl-dial-detail-name {
+  font-weight: 700;
+  color: var(--mn-accent);
+}
+:root[data-theme='minimal'] .hl-dial-detail-meta {
+  color: var(--mn-ink-muted);
+}
+:root[data-theme='minimal'] .hl-dial-hint {
+  font-size: 11px;
+  color: var(--mn-ink-muted);
+  letter-spacing: 0.06em;
+}
+:root[data-theme='minimal'] .hl-dd-shichen-fallback {
+  margin-top: 8px;
+  font-size: 12px;
+}
+:root[data-theme='minimal'] .hl-dd-shichen-fallback summary {
+  cursor: pointer;
+  color: var(--mn-ink-muted);
+  padding: 4px 0;
+}
+
+@media (max-width: 480px) {
+  :root[data-theme='minimal'] .hl-dial {
+    --hl-dial-radius: 88px;
+    --hl-dial-cell-size: 32px;
+  }
+  :root[data-theme='minimal'] .hl-dial-cell { font-size: 13px; }
+  :root[data-theme='minimal'] .hl-dial-now-name { font-size: 18px; }
+  :root[data-theme='minimal'] .hl-dial-summary-num { font-size: 22px; }
 }

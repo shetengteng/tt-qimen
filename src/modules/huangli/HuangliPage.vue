@@ -23,6 +23,7 @@ import { useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
 import ShareToast from '@/components/common/ShareToast.vue'
 import { useShareCard } from '@/composables/useShareCard'
+import { FortuneError, type FortuneErrorCode } from '@/lib/errors'
 
 import DateQueryCard from './components/DateQueryCard.vue'
 import TodayCard from './components/TodayCard.vue'
@@ -31,6 +32,7 @@ import ShenshaCards from './components/ShenshaCards.vue'
 import MatterGrid from './components/MatterGrid.vue'
 import MiniCalendar from './components/MiniCalendar.vue'
 import DayDetailDialog from './components/DayDetailDialog.vue'
+import SolarTermDialog from './components/SolarTermDialog.vue'
 
 import { useHuangliStore } from './stores/huangliStore'
 import { getHuangliDay } from './core/huangli'
@@ -44,14 +46,49 @@ const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
 const shareCardEl = ref<HTMLElement | null>(null)
 
-const computeError = ref<string | null>(null)
+interface ComputeErrorState {
+  code: FortuneErrorCode
+  details?: Readonly<Record<string, unknown>>
+}
+
+const computeError = ref<ComputeErrorState | null>(null)
+
+/**
+ * 把 catch 到的 err 归一化为 ComputeErrorState：
+ *   - FortuneError: 直接取 code/details
+ *   - 其他 Error: 兜底为 'unknown'
+ */
+function toComputeError(err: unknown): ComputeErrorState {
+  if (FortuneError.is(err)) {
+    return { code: err.code, details: err.details }
+  }
+  return { code: 'unknown' }
+}
+
+/** 根据 code 取对应 i18n hint 文案（含参数插值，如年份范围）。 */
+const computeErrorHint = computed<string>(() => {
+  const e = computeError.value
+  if (!e) return ''
+  switch (e.code) {
+    case 'invalid-input':
+      return t('huangli.computeError.byCode.invalidInput')
+    case 'out-of-range': {
+      const min = (e.details?.supportedMin as number | undefined) ?? 1901
+      const max = (e.details?.supportedMax as number | undefined) ?? 2099
+      return t('huangli.computeError.byCode.outOfRange', { min, max })
+    }
+    default:
+      return t('huangli.computeError.byCode.unknown')
+  }
+})
+
 const day = computed<HuangliDay | null>(() => {
   try {
     computeError.value = null
     return getHuangliDay(store.year, store.month, store.day)
   } catch (err) {
     console.error('[huangli] compute day failed:', err)
-    computeError.value = err instanceof Error ? err.message : String(err)
+    computeError.value = toComputeError(err)
     return null
   }
 })
@@ -75,17 +112,57 @@ const selectedDateKey = computed<string | null>(() => {
   if (!d) return null
   return `${d.year}-${d.month}-${d.day}`
 })
+/**
+ * 节气科普 dialog 状态（B3）。
+ * 双 dialog 不同时开，避免 reka-ui 焦点冲突。
+ */
+const termName = shallowRef<string | null>(null)
+const pendingDay = shallowRef<HuangliDay | null>(null)
+const termOpen = computed({
+  get: () => termName.value !== null,
+  set: (v: boolean) => {
+    if (!v) termName.value = null
+  },
+})
+
+/**
+ * 月历 cell 点击：
+ *   - 节气日 → 优先弹科普卡（pendingDay 暂存当日数据，便于后续 view-day 跳转）
+ *   - 普通日 → 直接弹日详情
+ */
 function onCalendarClick(md: HuangliMonthDay) {
+  let d: HuangliDay
   try {
-    const d = getHuangliDay(md.year, md.month, md.day)
-    detailDay.value = d
+    d = getHuangliDay(md.year, md.month, md.day)
   } catch (err) {
-    console.error('[huangli] open day detail failed:', err)
+    if (FortuneError.is(err)) {
+      console.warn('[huangli] open day detail blocked by FortuneError:', err.code, err.details)
+    } else {
+      console.error('[huangli] open day detail failed:', err)
+    }
     detailDay.value = null
+    return
+  }
+  if (md.solarTerm) {
+    pendingDay.value = d
+    termName.value = md.solarTerm
+  } else {
+    detailDay.value = d
   }
 }
 function onDetailClose() {
   detailDay.value = null
+}
+/**
+ * 用户在节气科普卡里点「查看当日详情」：
+ *   1. 关掉 SolarTermDialog
+ *   2. 打开 DayDetailDialog 显示当日完整黄历
+ */
+function onTermViewDay() {
+  const d = pendingDay.value
+  termName.value = null
+  pendingDay.value = null
+  if (d) detailDay.value = d
 }
 
 function onBackToToday() {
@@ -124,7 +201,7 @@ function onSave() { saveCard(shareCardEl.value, buildShareOpts()) }
 
       <div v-if="computeError" class="compute-error-card">
         <h3>◈ {{ t('huangli.computeError.title') }}</h3>
-        <p>{{ t('huangli.computeError.hint') }}</p>
+        <p>{{ computeErrorHint }}</p>
         <button class="gf-btn gf-btn-outline" @click="onBackToToday">
           ↻ {{ t('huangli.computeError.retry') }}
         </button>
@@ -172,7 +249,7 @@ function onSave() { saveCard(shareCardEl.value, buildShareOpts()) }
 
       <div v-if="computeError" class="compute-error-card mn">
         <h3>{{ t('huangli.computeError.title') }}</h3>
-        <p>{{ t('huangli.computeError.hint') }}</p>
+        <p>{{ computeErrorHint }}</p>
         <button class="mn-btn mn-btn-outline" @click="onBackToToday">
           {{ t('huangli.computeError.retry') }}
         </button>
@@ -202,6 +279,12 @@ function onSave() { saveCard(shareCardEl.value, buildShareOpts()) }
     v-model:open="detailOpen"
     :day="detailDay"
     @close="onDetailClose"
+  />
+
+  <SolarTermDialog
+    v-model:open="termOpen"
+    :term-name="termName"
+    @view-day="onTermViewDay"
   />
 
   <ShareToast :state="toastState" />

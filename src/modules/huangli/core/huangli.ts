@@ -10,6 +10,7 @@
  */
 
 import { SolarDay } from 'tyme4ts'
+import { FortuneError } from '@/lib/errors'
 import type {
   Ecliptic,
   HourStar,
@@ -20,6 +21,66 @@ import type {
   TwelveDuty,
 } from '../types'
 import { judgeMatter } from '../data/matterKeywords'
+
+/** tyme4ts 当前实际可处理的安全公历年份范围（保守值；超出可能被 tyme4ts 内部拒绝或返回脏数据）。 */
+const SAFE_YEAR_MIN = 1901
+const SAFE_YEAR_MAX = 2099
+
+/**
+ * 验证 (year, month, day) 是否在受支持的范围与日历里合法存在。
+ * 不合法时抛 `FortuneError`，由调用方做 friendly 文案降级。
+ */
+function assertValidYmd(year: number, month: number, day: number): void {
+  if (!Number.isInteger(year) || !Number.isInteger(month) || !Number.isInteger(day)) {
+    throw new FortuneError({
+      module: 'huangli',
+      code: 'invalid-input',
+      message: `non-integer ymd: ${year}/${month}/${day}`,
+      details: { year, month, day },
+    })
+  }
+  if (year < SAFE_YEAR_MIN || year > SAFE_YEAR_MAX) {
+    throw new FortuneError({
+      module: 'huangli',
+      code: 'out-of-range',
+      message: `year ${year} outside [${SAFE_YEAR_MIN}, ${SAFE_YEAR_MAX}]`,
+      details: { year, supportedMin: SAFE_YEAR_MIN, supportedMax: SAFE_YEAR_MAX },
+    })
+  }
+  if (month < 1 || month > 12) {
+    throw new FortuneError({
+      module: 'huangli',
+      code: 'invalid-input',
+      message: `month ${month} not in [1,12]`,
+      details: { year, month, day },
+    })
+  }
+  // 用 Date 二次确认 (year,month,day) 在公历里实存（如 2026-02-30 不存在）
+  const probe = new Date(year, month - 1, day)
+  if (
+    probe.getFullYear() !== year ||
+    probe.getMonth() !== month - 1 ||
+    probe.getDate() !== day
+  ) {
+    throw new FortuneError({
+      module: 'huangli',
+      code: 'invalid-input',
+      message: `${year}-${month}-${day} is not a real calendar date`,
+      details: { year, month, day },
+    })
+  }
+}
+
+/** 把 tyme4ts 内部抛出的 RangeError / SyntaxError 等统一包成 FortuneError。 */
+function wrapTymeError(err: unknown, year: number, month: number, day?: number): never {
+  throw new FortuneError({
+    module: 'huangli',
+    code: 'unknown',
+    message: `tyme4ts threw on ${year}-${month}${day ? `-${day}` : ''}`,
+    cause: err,
+    details: { year, month, day },
+  })
+}
 
 const WEEKDAY_ZH = ['日', '一', '二', '三', '四', '五', '六'] as const
 
@@ -48,10 +109,21 @@ function namesOf<T extends { getName: () => string }>(list: T[]): string[] {
 // ---------------------------------------------------------------------------
 
 /**
- * 单日黄历数据。越界或非法日期抛异常（调用方处理）。
+ * 单日黄历数据。
+ *
+ * 抛 `FortuneError` 的场景：
+ *   - 输入非整数 / 月份越界 / 公历不存在的日期（`code: 'invalid-input'`）
+ *   - 年份超出 1901-2099 安全范围（`code: 'out-of-range'`）
+ *   - tyme4ts 内部异常（`code: 'unknown'`，`cause` 保留原始 Error）
  */
 export function getHuangliDay(year: number, month: number, day: number): HuangliDay {
-  const sd = SolarDay.fromYmd(year, month, day)
+  assertValidYmd(year, month, day)
+  let sd: SolarDay
+  try {
+    sd = SolarDay.fromYmd(year, month, day)
+  } catch (err) {
+    wrapTymeError(err, year, month, day)
+  }
   const scd = sd.getSixtyCycleDay()
   const cycle = scd.getSixtyCycle()
   const stem = cycle.getHeavenStem()
@@ -178,7 +250,10 @@ function toMonthDay(
   // 显示优先级：节气交接当天 > 农历初一（显示月名）> 普通农历日名
   let lunarShort = ld.getName()
   const termDay = sd.getTermDay()
-  if (termDay && termDay.getDayIndex() === 0) {
+  // 当 termDay.getDayIndex() === 0 时表示「该日是节气交接当天」
+  const isTermStart = !!termDay && termDay.getDayIndex() === 0
+  const solarTerm = isTermStart ? termDay.getName() : null
+  if (isTermStart) {
     lunarShort = termDay.getName()
   } else if (ld.getName() === '初一') {
     lunarShort = ld.getLunarMonth().getName()
@@ -194,16 +269,26 @@ function toMonthDay(
     ecliptic,
     recommends: namesOf(scd.getRecommends()),
     avoids: namesOf(scd.getAvoids()),
+    solarTerm,
   }
 }
 
 /**
  * 生成 42 格（6×7）月历，起始于"本月 1 日所在周的周日"。
  * 约定：周日为一周开始（与原型 HTML 一致）。
+ *
+ * 抛 `FortuneError` 的场景：
+ *   - year/month 非法或越界（同 getHuangliDay）
+ *   - 跨月格涉及 tyme4ts 抛错（rare）
  */
 export function getHuangliMonth(year: number, month: number): HuangliMonth {
-  const first = firstDayOfMonth(year, month)
-  // 本月 1 号对应的星期（0=周日）
+  assertValidYmd(year, month, 1)
+  let first: SolarDay
+  try {
+    first = firstDayOfMonth(year, month)
+  } catch (err) {
+    wrapTymeError(err, year, month)
+  }
   const firstWeek = first.getWeek().getIndex()
   const total = daysInMonth(year, month)
 
@@ -233,7 +318,12 @@ export function getHuangliMonth(year: number, month: number): HuangliMonth {
         d = dayNumber - total
       }
     }
-    const sd = SolarDay.fromYmd(y, m, d)
+    let sd: SolarDay
+    try {
+      sd = SolarDay.fromYmd(y, m, d)
+    } catch (err) {
+      wrapTymeError(err, y, m, d)
+    }
     days.push(toMonthDay(sd, y, m, d, inMonth, todayIso))
   }
 

@@ -677,7 +677,10 @@ export default {
     placeholder: {
       surname: 'e.g. 李',
       givenName: 'e.g. 文轩',
-      birthYear: 'e.g. 1995 (optional)',
+      birthYear: 'Optional · pick a year',
+    },
+    birthYearOption: {
+      unspecified: 'Not specified',
     },
     gender: {
       male: 'Male',
@@ -912,6 +915,33 @@ export default {
       title: 'Invalid Date',
       hint: 'Please check year / month / day (supported range: 1901\u20132099).',
       retry: 'Back to today',
+      byCode: {
+        invalidInput: 'Date is not a valid calendar date (e.g. Feb 30 does not exist). Please check year/month/day and try again.',
+        outOfRange: 'Year is outside the supported almanac range ({min}\u2013{max}). Please pick a date within range.',
+        unknown: 'Almanac computation failed. Please check the date and try again, or go back to today.',
+      },
+    },
+
+    solarTerm: {
+      dialogTitle: 'Solar Term · {name}',
+      closeAria: 'Close solar term info',
+      viewDayBtn: 'View almanac of this day',
+      notFound: 'No description available for this solar term yet.',
+      meaningLabel: 'Meaning',
+      phenomenaLabel: 'Three pentads (phenology)',
+      customsLabel: 'Customs & wellness',
+      season: { spring: 'Spring', summer: 'Summer', autumn: 'Autumn', winter: 'Winter' },
+    },
+
+    luckyHours: {
+      dial: {
+        ringAria: '12 shichen lucky/unlucky dial',
+        cellAria: '{name} ({ganzhi} · {star}), {ecliptic}',
+        nowLabel: 'Now',
+        summaryLabel: 'Lucky hours',
+        hintTapCell: 'Tap a sector for details',
+        fallbackSummary: 'Show full list',
+      },
     },
 
     share: {

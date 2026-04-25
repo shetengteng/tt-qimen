@@ -13,6 +13,8 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { DUTY_MEANING } from '../data/dutyMeaning'
+import { translateGod, type GodLocale } from '../data/godNames'
+import LuckyHoursDial from './LuckyHoursDial.vue'
 import type { HuangliDay } from '../types'
 
 const props = withDefaults(
@@ -28,7 +30,22 @@ const emit = defineEmits<{
   (e: 'close'): void
 }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
+
+/** 把 vue-i18n 当前 locale 收敛到 godNames 支持的三档之一。 */
+const godLocale = computed<GodLocale>(() => {
+  const code = locale.value
+  if (code.startsWith('zh-TW') || code === 'zh-Hant') return 'zh-TW'
+  if (code.startsWith('en')) return 'en'
+  return 'zh-CN'
+})
+
+const godsLocalized = computed(() =>
+  props.day.gods.map((g) => ({ raw: g, label: translateGod(g, godLocale.value) })),
+)
+const fiendsLocalized = computed(() =>
+  props.day.fiends.map((f) => ({ raw: f, label: translateGod(f, godLocale.value) })),
+)
 
 const eclipticText = computed(() =>
   props.day.ecliptic === '黄道'
@@ -77,6 +94,13 @@ const luckyHoursText = computed(() =>
     ? t('huangli.detail.empty')
     : props.day.luckyHours.map((h) => `${h.name}(${h.ganzhi} · ${h.star})`).join(' / '),
 )
+
+/** R3：圆盘需要 isToday 来高亮当前时辰 */
+const isTodayProp = computed<boolean>(() => {
+  const now = new Date()
+  const todayIso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+  return props.day.dateIso === todayIso
+})
 </script>
 
 <template>
@@ -113,8 +137,8 @@ const luckyHoursText = computed(() =>
         <div class="hl-dd-section hl-dd-section--half">
           <div class="hl-dd-head">{{ t('huangli.detail.gods') }}</div>
           <div class="hl-dd-content">
-            <template v-if="day.gods.length > 0">
-              <span v-for="g in day.gods" :key="`g-${g}`" class="hl-dd-tag hl-dd-tag--good">{{ g }}</span>
+            <template v-if="godsLocalized.length > 0">
+              <span v-for="g in godsLocalized" :key="`g-${g.raw}`" class="hl-dd-tag hl-dd-tag--good">{{ g.label }}</span>
             </template>
             <span v-else class="hl-dd-empty">{{ t('huangli.detail.empty') }}</span>
           </div>
@@ -122,8 +146,8 @@ const luckyHoursText = computed(() =>
         <div class="hl-dd-section hl-dd-section--half">
           <div class="hl-dd-head">{{ t('huangli.detail.fiends') }}</div>
           <div class="hl-dd-content">
-            <template v-if="day.fiends.length > 0">
-              <span v-for="f in day.fiends" :key="`f-${f}`" class="hl-dd-tag hl-dd-tag--warn">{{ f }}</span>
+            <template v-if="fiendsLocalized.length > 0">
+              <span v-for="f in fiendsLocalized" :key="`f-${f.raw}`" class="hl-dd-tag hl-dd-tag--warn">{{ f.label }}</span>
             </template>
             <span v-else class="hl-dd-empty">{{ t('huangli.detail.empty') }}</span>
           </div>
@@ -177,7 +201,12 @@ const luckyHoursText = computed(() =>
 
       <div class="hl-dd-section">
         <div class="hl-dd-head">{{ t('huangli.detail.luckyHours') }}</div>
-        <div class="hl-dd-content">{{ luckyHoursText }}</div>
+        <!-- R3：12 时辰圆盘可视化 -->
+        <LuckyHoursDial :hours="day.hours" :is-today="isTodayProp" />
+        <details class="hl-dd-shichen-fallback">
+          <summary>{{ t('huangli.luckyHours.dial.fallbackSummary') }}</summary>
+          <div class="hl-dd-content">{{ luckyHoursText }}</div>
+        </details>
       </div>
     </div>
   </div>

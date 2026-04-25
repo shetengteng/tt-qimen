@@ -5,12 +5,20 @@
  * 设计文档 §4.7：按日期工作，与生辰无关；不依赖 BirthInput。
  *
  * 存储 key：`tt-divination:huangli-state`
+ *
+ * 2026-04-25 增强（R1）：
+ *   - 加月历缓存 `monthCache`（in-memory LRU，容量 6）
+ *   - 切换 store.year/month 时翻看历史月份不再重复调用 tyme4ts
+ *   - 缓存仅存活在内存，不持久化（节省 localStorage 空间，且数据是计算结果可重建）
  */
 
 import { defineStore } from 'pinia'
 import { useStorage } from '@vueuse/core'
-import { computed } from 'vue'
-import type { HuangliMatterKey } from '../types'
+import { computed, shallowRef } from 'vue'
+import type { HuangliMatterKey, HuangliMonth } from '../types'
+import { getHuangliMonth } from '../core/huangli'
+
+const MONTH_CACHE_CAPACITY = 6
 
 const STORAGE_KEY = 'tt-divination:huangli-state'
 
@@ -31,6 +39,10 @@ function today(): { year: number; month: number; day: number } {
   }
 }
 
+function monthKey(y: number, m: number): string {
+  return `${y}-${String(m).padStart(2, '0')}`
+}
+
 export const useHuangliStore = defineStore('huangli', () => {
   const state = useStorage<HuangliStoredState>(
     STORAGE_KEY,
@@ -38,6 +50,54 @@ export const useHuangliStore = defineStore('huangli', () => {
     undefined,
     { mergeDefaults: true },
   )
+
+  /**
+   * 月历缓存（in-memory LRU，按 `${year}-${month}` hash）。
+   * 用 shallowRef 持有 Map，避免 Pinia 深度响应大对象（HuangliMonth.days 42 项）影响性能。
+   * Map 自带插入顺序，淘汰最早的 key 即可实现 LRU。
+   */
+  const monthCache = shallowRef(new Map<string, HuangliMonth>())
+  // 命中统计（仅用于诊断与 Playwright 探针验证）
+  let cacheHits = 0
+  let cacheMisses = 0
+
+  function getMonthCached(y: number, m: number): HuangliMonth {
+    const key = monthKey(y, m)
+    const cache = monthCache.value
+    const hit = cache.get(key)
+    if (hit) {
+      cacheHits++
+      // LRU touch：先 delete 再 set，使其挪到最尾（最近使用）
+      cache.delete(key)
+      cache.set(key, hit)
+      return hit
+    }
+    cacheMisses++
+    const fresh = getHuangliMonth(y, m)
+    cache.set(key, fresh)
+    while (cache.size > MONTH_CACHE_CAPACITY) {
+      const oldestKey = cache.keys().next().value
+      if (oldestKey === undefined) break
+      cache.delete(oldestKey)
+    }
+    return fresh
+  }
+
+  /** 仅诊断 / 测试用。 */
+  function _cacheStats() {
+    return {
+      hits: cacheHits,
+      misses: cacheMisses,
+      size: monthCache.value.size,
+      keys: Array.from(monthCache.value.keys()),
+    }
+  }
+
+  function clearMonthCache() {
+    monthCache.value = new Map<string, HuangliMonth>()
+    cacheHits = 0
+    cacheMisses = 0
+  }
 
   function setDate(y: number, m: number, d: number) {
     state.value.year = y
@@ -80,6 +140,9 @@ export const useHuangliStore = defineStore('huangli', () => {
     setToToday,
     setActiveMatter,
     shiftMonth,
+    getMonthCached,
+    clearMonthCache,
+    _cacheStats,
   }
 })
 

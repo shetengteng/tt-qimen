@@ -14,7 +14,6 @@ import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
 import { useHuangliStore } from '../stores/huangliStore'
 import {
-  getHuangliMonth,
   findGoodDaysByMatter,
 } from '../core/huangli'
 import type { HuangliMonth, HuangliMonthDay } from '../types'
@@ -39,7 +38,7 @@ const weekdays = computed<string[]>(() => {
   return raw.map((v) => (typeof v === 'string' ? v : rt(v as Parameters<typeof rt>[0])))
 })
 
-const monthData = computed<HuangliMonth>(() => getHuangliMonth(store.year, store.month))
+const monthData = computed<HuangliMonth>(() => store.getMonthCached(store.year, store.month))
 
 const goodSetByMatter = computed<Set<number>>(() => {
   const m = store.activeMatter
@@ -212,6 +211,7 @@ function dayAriaLabel(d: HuangliMonthDay): string {
     parts.push(d.ecliptic === '黄道' ? t('huangli.calendar.legendHuangdao') : t('huangli.calendar.legendHeidao'))
     if (d.isToday) parts.push(t('huangli.calendar.todayLabel'))
     if (goodSetByMatter.value.has(d.day)) parts.push(t('huangli.calendar.matchLabel'))
+    if (d.solarTerm) parts.push(t('huangli.solarTerm.dialogTitle', { name: d.solarTerm }))
   } else {
     parts.push(t('huangli.calendar.outOfMonthLabel'))
   }
@@ -247,7 +247,7 @@ const nextGoodDay = computed<NextGoodHit | null>(() => {
   const startD = store.day
 
   function searchInMonth(y: number, mo: number, fromDay: number): NextGoodHit | null {
-    const md = getHuangliMonth(y, mo)
+    const md = store.getMonthCached(y, mo)
     const goods = findGoodDaysByMatter(md, m as Parameters<typeof findGoodDaysByMatter>[1])
     const hit = goods.find((g) => (y > startY || mo > startM) ? true : g > fromDay)
     if (hit === undefined) return null
@@ -369,6 +369,7 @@ function onPickMonth(y: number, m: number) {
           { 'is-heidao': d.inMonth && d.ecliptic === '黑道' },
           { 'is-match': d.inMonth && goodSetByMatter.has(d.day) },
           { 'is-selected': isSelected(d) },
+          { 'is-solar-term': d.inMonth && !!d.solarTerm },
         ]"
         @click="onDayClick(d)"
         @keydown="onDayKeydown($event, d, idx)"

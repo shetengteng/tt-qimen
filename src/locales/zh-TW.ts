@@ -670,7 +670,10 @@ export default {
     placeholder: {
       surname: '如：李',
       givenName: '如：文軒',
-      birthYear: '如：1995（可選）',
+      birthYear: '可選 · 選擇年份',
+    },
+    birthYearOption: {
+      unspecified: '未指定',
     },
     gender: {
       male: '男',
@@ -905,6 +908,33 @@ export default {
       title: '日期無效',
       hint: '請檢查年 / 月 / 日是否合法（支援範圍：1901–2099）。',
       retry: '返回今日',
+      byCode: {
+        invalidInput: '日期格式不合法（如 2026-02-30 不存在）。請檢查年 / 月 / 日後重試。',
+        outOfRange: '該年份超出黃曆支援範圍（{min}–{max} 年）。請改用範圍內的日期。',
+        unknown: '未能完成黃曆推演。請檢查日期後重試，或返回今日。',
+      },
+    },
+
+    solarTerm: {
+      dialogTitle: '節氣 · {name}',
+      closeAria: '關閉節氣科普',
+      viewDayBtn: '查看當日黃曆',
+      notFound: '暫無該節氣的科普資料。',
+      meaningLabel: '節氣含義',
+      phenomenaLabel: '物候三候',
+      customsLabel: '民俗與養生',
+      season: { spring: '春', summer: '夏', autumn: '秋', winter: '冬' },
+    },
+
+    luckyHours: {
+      dial: {
+        ringAria: '12 時辰吉凶圓盤',
+        cellAria: '{name}（{ganzhi} · {star}），{ecliptic}',
+        nowLabel: '此時',
+        summaryLabel: '黃道時辰',
+        hintTapCell: '點擊扇區查看時辰詳情',
+        fallbackSummary: '查看完整列表',
+      },
     },
 
     share: {

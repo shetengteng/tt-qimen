@@ -853,7 +853,10 @@ export default {
     placeholder: {
       surname: '如：李',
       givenName: '如：文轩',
-      birthYear: '如：1995（可选）',
+      birthYear: '可选 · 选择年份',
+    },
+    birthYearOption: {
+      unspecified: '未指定',
     },
     gender: {
       male: '男',
@@ -1088,6 +1091,33 @@ export default {
       title: '日期无效',
       hint: '请检查年 / 月 / 日是否合法（支持范围：1901–2099）。',
       retry: '返回今日',
+      byCode: {
+        invalidInput: '日期格式不合法（如 2026-02-30 不存在）。请检查年 / 月 / 日后重试。',
+        outOfRange: '该年份超出黄历支持范围（{min}–{max} 年）。请改用范围内的日期。',
+        unknown: '未能完成黄历推演。请检查日期后重试，或返回今日。',
+      },
+    },
+
+    solarTerm: {
+      dialogTitle: '节气 · {name}',
+      closeAria: '关闭节气科普',
+      viewDayBtn: '查看当日黄历',
+      notFound: '暂无该节气的科普资料。',
+      meaningLabel: '节气含义',
+      phenomenaLabel: '物候三候',
+      customsLabel: '民俗与养生',
+      season: { spring: '春', summer: '夏', autumn: '秋', winter: '冬' },
+    },
+
+    luckyHours: {
+      dial: {
+        ringAria: '12 时辰吉凶圆盘',
+        cellAria: '{name}（{ganzhi} · {star}），{ecliptic}',
+        nowLabel: '此时',
+        summaryLabel: '黄道时辰',
+        hintTapCell: '点击扇区查看时辰详情',
+        fallbackSummary: '查看完整列表',
+      },
     },
 
     share: {

@@ -71,6 +71,11 @@ export interface HuangliMonthDay {
   recommends: readonly string[]
   /** 忌关键词集合（短版） */
   avoids: readonly string[]
+  /**
+   * 当日是否为节气交接日；若是则为节气名（如 '清明'/'冬至'），否则 null。
+   * UI 据此判定是否为该格添加节气科普卡入口（B3，2026-04-25 新增）。
+   */
+  solarTerm: string | null
 }
 
 /** 单日完整黄历数据（今日卡 / 详情卡用） */
