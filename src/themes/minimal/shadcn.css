@@ -67,19 +67,44 @@
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-md);
   border-radius: var(--radius-md);
-  /* 限定弹出层最高 320px：年份 127 项时默认会撑到 viewport 高度，
-   * 此处显式收紧并打开滚动，避免下拉吞掉整个屏幕。
-   * 必须用 !important：reka-ui 在打开瞬间会写 inline style="max-height: 100%"，
-   * 普通选择器会被 inline style 覆盖。 */
+  /* 限定弹出层最高 320px。
+   * 注意：popper 模式下真正的滚动容器是 SelectViewport（data-position 子节点），
+   * SelectContent 自身需 overflow: hidden 才能让上下箭头固定在容器顶/底。
+   * !important：reka-ui 打开瞬间会写 inline style="max-height: 100%" 覆盖普通规则。 */
   max-height: 320px !important;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
-/* popper 模式下隐藏 reka-ui 内置的上/下滚动箭头，
- * 让用户直接看到原生滚动条，符合现代下拉的交互直觉。 */
-:root[data-theme='minimal'] [data-slot='select-content']:not([data-align-trigger='true']) [data-slot='select-scroll-up-button'],
-:root[data-theme='minimal'] [data-slot='select-content']:not([data-align-trigger='true']) [data-slot='select-scroll-down-button'] {
-  display: none;
+/* SelectContent portal wrapper 默认 z-index: 50，会被 layout-popover-content
+ * (z-index: 200) 与 hl-mp-content 等嵌套 popover 盖住。
+ * Select 弹出在 popover 之内时，必须高于 popover wrapper，否则上半部分会被吃掉，
+ * 视觉上像"年份下拉头部展示不全"。
+ * 提到 250：高于所有 popover/dropdown，低于 dialog overlay (300) 与 dialog content (301)。 */
+:root[data-theme='minimal'] [data-reka-popper-content-wrapper]:has([data-slot='select-content']) {
+  z-index: 250 !important;
+}
+
+/* popper 模式下保留 reka-ui 内置的上/下滚动箭头。
+ * 它们是 SelectContent 的 flex sibling，只在内容溢出方向自动显示。
+ * 原因：长列表（年份 21 项 × 32px > 320px max-h）打开时 reka-ui 会
+ * 自动滚动到选中项让其居中，导致顶部 / 底部多项被裁剪在可视区之外，
+ * 加上 macOS overlay scrollbar 平时不可见，用户无从感知"上 / 下还有内容"，
+ * 视觉上像是"头部 / 尾部展示不全"。 */
+:root[data-theme='minimal'] [data-slot='select-content'] [data-slot='select-scroll-up-button'],
+:root[data-theme='minimal'] [data-slot='select-content'] [data-slot='select-scroll-down-button'] {
+  background-color: var(--color-bg-elev);
+  color: var(--color-text-soft);
+  height: 22px;
+  cursor: pointer;
+  border-radius: 0;
+}
+:root[data-theme='minimal'] [data-slot='select-content'] [data-slot='select-scroll-up-button'] {
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 4px 6px -4px rgba(15, 23, 42, 0.08);
+}
+:root[data-theme='minimal'] [data-slot='select-content'] [data-slot='select-scroll-down-button'] {
+  border-top: 1px solid var(--color-border);
+  box-shadow: 0 -4px 6px -4px rgba(15, 23, 42, 0.08);
 }
 
 /* 自定义滚动条：与简约紫色配色协调。
