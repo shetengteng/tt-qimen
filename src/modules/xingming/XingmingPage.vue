@@ -15,6 +15,7 @@ import OverallGauge from './components/OverallGauge.vue'
 import { useXingmingStore } from './stores/xingmingStore'
 import { calculateXingming } from './core/xingming'
 import { StrokesNotFoundError } from './core/strokes'
+import { FortuneError, type FortuneErrorCode } from '@/lib/errors'
 import type { NumerologyLocale } from './data/numerology'
 import type { XingmingResult } from './types'
 
@@ -32,6 +33,55 @@ const shareCardEl = ref<HTMLElement | null>(null)
 const result = shallowRef<XingmingResult | null>(null)
 const errorMessage = ref<string | null>(null)
 
+/**
+ * 结构化错误状态（仅 FortuneError 路径用）；rareChar / 兜底走 errorMessage 字符串。
+ * 同时存在两条管道是历史遗留 + 体验考量：
+ *   - StrokesNotFoundError 已有定向 friendly 文案 + char 参数化，单独保留
+ *   - FortuneError 走 byCode i18n 模板，未来加 locale 切换更自然
+ */
+interface ComputeErrorState {
+  code: FortuneErrorCode
+  details?: Readonly<Record<string, unknown>>
+}
+const computeError = ref<ComputeErrorState | null>(null)
+
+/** 从任意 err 归一化为 ComputeErrorState（仅 FortuneError 时返回 non-null）。 */
+function toComputeError(err: unknown): ComputeErrorState | null {
+  if (FortuneError.is(err)) {
+    return { code: err.code, details: err.details }
+  }
+  return null
+}
+
+/** 根据 code + details 取对应 i18n hint 文案。 */
+const computeErrorHint = computed<string>(() => {
+  const e = computeError.value
+  if (!e) return errorMessage.value ?? t('xingming.computeError.hint')
+  const d = e.details ?? {}
+  switch (e.code) {
+    case 'invalid-input': {
+      const reason = d.reason as string | undefined
+      const field = d.field as string | undefined
+      if (reason === 'non-cjk' && field) {
+        return t(`xingming.computeError.byCode.nonCjk.${field}`)
+      }
+      if (reason === 'empty' && field) {
+        return t(`xingming.computeError.byCode.empty.${field}`)
+      }
+      if (reason === 'length' && field) {
+        return t(`xingming.computeError.byCode.length.${field}`)
+      }
+      return t('xingming.computeError.byCode.invalidInput')
+    }
+    case 'dep-load-failed':
+      return t('xingming.computeError.byCode.depLoadFailed')
+    case 'invariant':
+      return t('xingming.computeError.byCode.invariant')
+    default:
+      return t('xingming.computeError.byCode.unknown')
+  }
+})
+
 const skeleton = useSkeletonReveal({
   delay: 1500,
   scrollOffset: 30,
@@ -45,21 +95,30 @@ function asNumerologyLocale(id: string): NumerologyLocale {
 }
 
 async function runCalculate(silent = false) {
-  if (!silent) errorMessage.value = null
+  if (!silent) {
+    errorMessage.value = null
+    computeError.value = null
+  }
   try {
     result.value = await calculateXingming(
       store.input,
       asNumerologyLocale(localeStore.id),
     )
+    computeError.value = null
+    errorMessage.value = null
   } catch (err) {
     if (err instanceof StrokesNotFoundError) {
       errorMessage.value = t('xingming.computeError.rareChar', { char: err.char })
-    } else if (err instanceof Error) {
-      errorMessage.value = err.message
+      computeError.value = null
+    } else if (FortuneError.is(err)) {
+      computeError.value = toComputeError(err)
+      errorMessage.value = null
+      console.warn('[xingming] FortuneError:', err.code, err.details)
     } else {
-      errorMessage.value = t('xingming.computeError.hint')
+      computeError.value = { code: 'unknown' }
+      errorMessage.value = null
+      console.error('[xingming] calculate failed (non-FortuneError):', err)
     }
-    console.error('[xingming] calculate failed:', err)
     result.value = null
   }
 }
@@ -80,6 +139,7 @@ watch(
 function onRecalculate() {
   result.value = null
   errorMessage.value = null
+  computeError.value = null
   skeleton.reset(() => inputCardEl.value)
 }
 
@@ -104,7 +164,10 @@ function onSave() {
 }
 
 const showComputeError = computed(
-  () => skeleton.revealed.value && result.value === null,
+  () =>
+    skeleton.revealed.value
+    && result.value === null
+    && (errorMessage.value !== null || computeError.value !== null),
 )
 </script>
 
@@ -138,7 +201,7 @@ const showComputeError = computed(
     <div v-if="skeleton.revealed.value" class="result-zone revealed">
       <div v-if="showComputeError" class="compute-error-card">
         <h3>◈ {{ t('xingming.computeError.title') }}</h3>
-        <p>{{ errorMessage || t('xingming.computeError.hint') }}</p>
+        <p>{{ computeErrorHint }}</p>
         <button class="gf-btn gf-btn-outline" @click="onRecalculate">
           ✎ {{ t('xingming.computeError.retry') }}
         </button>
@@ -210,7 +273,7 @@ const showComputeError = computed(
       <main v-if="showComputeError" class="mn-container">
         <div class="compute-error-card mn">
           <h3>{{ t('xingming.computeError.title') }}</h3>
-          <p>{{ errorMessage || t('xingming.computeError.hint') }}</p>
+          <p>{{ computeErrorHint }}</p>
           <button class="mn-btn mn-btn-outline" @click="onRecalculate">
             {{ t('xingming.computeError.retry') }}
           </button>

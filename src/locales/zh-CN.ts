@@ -937,6 +937,24 @@ export default {
       hint: '姓名输入有误，请检查后重试。',
       retry: '重新推演',
       rareChar: '未收录字：{char}（暂不支持生僻字）',
+      byCode: {
+        invalidInput: '姓名输入不合法，请检查后重试。',
+        invariant: '内部计算异常（请把姓名截图反馈给我们以便修复）。',
+        depLoadFailed: '笔画字库加载失败，请检查网络后重试。',
+        unknown: '未能完成姓名推演，请检查输入后重试。',
+        empty: {
+          surname: '请填写姓氏。',
+          givenName: '请填写名字。',
+        },
+        nonCjk: {
+          surname: '姓氏仅支持中文汉字（不支持英文 / 数字 / 符号）。',
+          givenName: '名字仅支持中文汉字（不支持英文 / 数字 / 符号）。',
+        },
+        length: {
+          surname: '仅支持单姓或复姓（1-2 字）。',
+          givenName: '仅支持单字或双字名（1-2 字）。',
+        },
+      },
     },
 
     share: {

@@ -754,6 +754,24 @@ export default {
       hint: '姓名輸入有誤，請檢查後重試。',
       retry: '重新推演',
       rareChar: '未收錄字：{char}（暫不支援生僻字）',
+      byCode: {
+        invalidInput: '姓名輸入不合法，請檢查後重試。',
+        invariant: '內部計算異常（請把姓名截圖回饋給我們以便修復）。',
+        depLoadFailed: '筆畫字庫載入失敗，請檢查網路後重試。',
+        unknown: '未能完成姓名推演，請檢查輸入後重試。',
+        empty: {
+          surname: '請填寫姓氏。',
+          givenName: '請填寫名字。',
+        },
+        nonCjk: {
+          surname: '姓氏僅支援中文漢字（不支援英文 / 數字 / 符號）。',
+          givenName: '名字僅支援中文漢字（不支援英文 / 數字 / 符號）。',
+        },
+        length: {
+          surname: '僅支援單姓或複姓（1-2 字）。',
+          givenName: '僅支援單字或雙字名（1-2 字）。',
+        },
+      },
     },
 
     share: {

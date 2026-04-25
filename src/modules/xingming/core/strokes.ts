@@ -13,8 +13,16 @@
  *   - 首屏不加载此包；仅在用户点击"解名"触发首次查询时 await import
  */
 
+import { FortuneError } from '@/lib/errors'
 import { getKangxiCorrection } from '../data/strokesFallback'
 
+/**
+ * 未收录字异常（独立类型，UI 单独消费 → friendly "暂未收录该字" 文案）。
+ *
+ * 保留为独立类型而非 `FortuneError('invalid-input')` 的原因：
+ *   - UI 需要 `char` 字段做参数化文案（"未收录字：X"）
+ *   - 命中率低但触发后用户明确知道是哪个字的问题，价值高于 code 一致化
+ */
 export class StrokesNotFoundError extends Error {
   readonly char: string
   constructor(char: string) {
@@ -30,11 +38,25 @@ let cachedFn: StrokeFn | null = null
 
 async function loadStrokeFn(): Promise<StrokeFn> {
   if (cachedFn) return cachedFn
-  const mod = await import('chinese-character-strokes')
-  const m = mod as unknown as Record<string, unknown> & { default?: Record<string, unknown> }
+  let mod: unknown
+  try {
+    mod = await import('chinese-character-strokes')
+  } catch (cause) {
+    throw new FortuneError({
+      module: 'xingming',
+      code: 'dep-load-failed',
+      message: '[xingming] failed to load chinese-character-strokes',
+      cause,
+    })
+  }
+  const m = mod as Record<string, unknown> & { default?: Record<string, unknown> }
   const fn = (m['取笔顺'] ?? m.default?.['取笔顺']) as StrokeFn | undefined
   if (typeof fn !== 'function') {
-    throw new Error('chinese-character-strokes 模块加载异常：找不到"取笔顺"函数')
+    throw new FortuneError({
+      module: 'xingming',
+      code: 'dep-load-failed',
+      message: '[xingming] chinese-character-strokes export "取笔顺" missing',
+    })
   }
   cachedFn = fn
   return fn

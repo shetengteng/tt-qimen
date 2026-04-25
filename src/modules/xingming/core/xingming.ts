@@ -34,13 +34,23 @@ import {
   type NumerologyLocale,
 } from '../data/numerology'
 import { getStrokesDetailBatch } from './strokes'
+import { FortuneError } from '@/lib/errors'
 
 /** 汉字范围校验（CJK 统一汉字基本区） */
 const CJK_REGEX = /^[\u4e00-\u9fff]+$/
 
-function assertCjk(text: string, label: string): void {
+/**
+ * 校验输入文本仅含 CJK 字符。失败时抛 `FortuneError('invalid-input')`，
+ * details 中携带 field（surname/givenName）+ raw 原文，UI 层可按需展示。
+ */
+function assertCjk(text: string, field: 'surname' | 'givenName'): void {
   if (!CJK_REGEX.test(text)) {
-    throw new Error(`${label}仅支持中文汉字`)
+    throw new FortuneError({
+      module: 'xingming',
+      code: 'invalid-input',
+      message: `[xingming] non-CJK ${field}: ${JSON.stringify(text)}`,
+      details: { field, reason: 'non-cjk', raw: text },
+    })
   }
 }
 
@@ -82,7 +92,12 @@ async function makeGridInfo(
   const normalized = normalizeGridNumber(num)
   const entry = await getNumerologyAsync(normalized, locale)
   if (!entry) {
-    throw new Error(`[xingming] numerology entry missing for ${normalized}`)
+    throw new FortuneError({
+      module: 'xingming',
+      code: 'invariant',
+      message: `[xingming] numerology entry missing for ${normalized}`,
+      details: { gridNumber: num, normalized, locale },
+    })
   }
   return { number: num, entry }
 }
@@ -162,16 +177,40 @@ export async function calculateXingming(
   const surname = input.surname.trim()
   const givenName = input.givenName.trim()
 
-  if (!surname) throw new Error('请填写姓氏')
-  if (!givenName) throw new Error('请填写名字')
-  assertCjk(surname, '姓氏')
-  assertCjk(givenName, '名字')
+  if (!surname) {
+    throw new FortuneError({
+      module: 'xingming',
+      code: 'invalid-input',
+      message: '[xingming] empty surname',
+      details: { field: 'surname', reason: 'empty' },
+    })
+  }
+  if (!givenName) {
+    throw new FortuneError({
+      module: 'xingming',
+      code: 'invalid-input',
+      message: '[xingming] empty givenName',
+      details: { field: 'givenName', reason: 'empty' },
+    })
+  }
+  assertCjk(surname, 'surname')
+  assertCjk(givenName, 'givenName')
 
   if (surname.length < 1 || surname.length > 2) {
-    throw new Error('仅支持单姓或复姓（1-2 字）')
+    throw new FortuneError({
+      module: 'xingming',
+      code: 'invalid-input',
+      message: `[xingming] surname length out of [1,2]: ${surname.length}`,
+      details: { field: 'surname', reason: 'length', length: surname.length },
+    })
   }
   if (givenName.length < 1 || givenName.length > 2) {
-    throw new Error('仅支持单字或双字名（1-2 字）')
+    throw new FortuneError({
+      module: 'xingming',
+      code: 'invalid-input',
+      message: `[xingming] givenName length out of [1,2]: ${givenName.length}`,
+      details: { field: 'givenName', reason: 'length', length: givenName.length },
+    })
   }
 
   const surnameLen = surname.length as 1 | 2

@@ -761,6 +761,24 @@ export default {
       hint: 'Invalid name input. Please check and try again.',
       retry: 'Try again',
       rareChar: 'Character not indexed: {char} (rare character not yet supported)',
+      byCode: {
+        invalidInput: 'Invalid name input. Please check and try again.',
+        invariant: 'Internal computation error (please report with a screenshot of the name).',
+        depLoadFailed: 'Failed to load the stroke dictionary. Check your network and try again.',
+        unknown: 'Unable to complete the analysis. Please check the input and try again.',
+        empty: {
+          surname: 'Please enter a surname.',
+          givenName: 'Please enter a given name.',
+        },
+        nonCjk: {
+          surname: 'Surname must be Chinese characters only (no Latin letters / digits / symbols).',
+          givenName: 'Given name must be Chinese characters only (no Latin letters / digits / symbols).',
+        },
+        length: {
+          surname: 'Surname must be 1-2 Chinese characters.',
+          givenName: 'Given name must be 1-2 Chinese characters.',
+        },
+      },
     },
 
     share: {
