@@ -460,15 +460,23 @@
     opacity: 0.3;
   }
 
-  /* P0-D：黄道改用金色数字标识，不再加全格边框（降噪） */
+  /* 黄道日：金色数字 + 底部细金线（双重视觉信号，避免米色背景下金字辨识度过低） */
   .hl-cal-day.is-huangdao .hl-cal-day-num {
     color: var(--gf-gold);
+    font-weight: 700;
+  }
+  .hl-cal-day.is-huangdao {
+    border-bottom: 2px solid var(--gf-gold);
   }
 
-  /* P0-D：黑道仅保留细红框（1.5px → 1px） */
+  /* 黑道日：保留细红框（1.5px → 1px） */
   .hl-cal-day.is-heidao {
     border-color: var(--gf-cinnabar);
     border-width: 1px;
+  }
+  /* 当一格同时是 today 时，今日的 radial 渐变背景已盖过黄道金线，无需额外处理 */
+  .hl-cal-day.is-today.is-huangdao {
+    border-bottom-color: var(--gf-cinnabar-deep);
   }
 
   .hl-cal-day.is-match {
@@ -557,7 +565,7 @@
     border-radius: 2px;
   }
 
-  .hl-cal-dot--hd    { border: 1.5px solid var(--gf-jade); }
+  .hl-cal-dot--hd    { background-color: var(--gf-gold); }
   .hl-cal-dot--hei   { border: 1.5px solid var(--gf-cinnabar); }
   .hl-cal-dot--match { background-color: rgba(176, 141, 59, 0.4); }
 
@@ -919,6 +927,7 @@
 /* ============================================================
  * P1-F：年月选择器 popover 主题样式
  * ============================================================ */
+/* 年月选择器 popover：基于 shadcn-vue Select 重构（年/月并排 + 今日/确定） */
 :root[data-theme='guofeng'] .hl-mp-content--gf {
   z-index: 200;
   width: min(320px, calc(100vw - 24px));
@@ -930,104 +939,75 @@
     0 2px 8px rgba(108, 39, 25, 0.08);
   color: var(--gf-ink);
   font-family: var(--gf-font-serif);
-  padding: 12px;
+  padding: 14px;
 }
-:root[data-theme='guofeng'] .hl-mp-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-  padding-bottom: 8px;
-  border-bottom: 1px dashed rgba(176, 141, 59, 0.3);
-}
-:root[data-theme='guofeng'] .hl-mp-year-text {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--gf-cinnabar);
-  letter-spacing: 0.08em;
-}
-:root[data-theme='guofeng'] .hl-mp-year-btn {
-  width: 28px;
-  height: 28px;
-  border: 1px solid rgba(176, 141, 59, 0.35);
-  background: transparent;
-  border-radius: 4px;
-  color: var(--gf-ink-soft);
-  cursor: pointer;
-  font-size: 16px;
-  line-height: 1;
-}
-:root[data-theme='guofeng'] .hl-mp-year-btn:hover {
-  background: rgba(176, 141, 59, 0.1);
-  color: var(--gf-cinnabar);
-}
-:root[data-theme='guofeng'] .hl-mp-year-list {
-  display: flex;
-  gap: 4px;
-  overflow-x: auto;
-  padding: 4px 0 8px;
-  margin: 0 -4px 8px;
-  list-style: none;
-  border-bottom: 1px dashed rgba(176, 141, 59, 0.2);
-  scrollbar-width: thin;
-}
-:root[data-theme='guofeng'] .hl-mp-year-cell {
-  flex: none;
-  background: transparent;
-  border: 1px solid transparent;
-  padding: 4px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-  color: var(--gf-ink-soft);
-  font-family: var(--gf-font-serif);
-}
-:root[data-theme='guofeng'] .hl-mp-year-cell:hover {
-  background: rgba(176, 141, 59, 0.1);
-  color: var(--gf-ink);
-}
-:root[data-theme='guofeng'] .hl-mp-year-cell.is-active {
-  background: var(--gf-cinnabar);
-  color: var(--gf-rice);
-  border-color: var(--gf-cinnabar-deep);
-  font-weight: 600;
-}
-:root[data-theme='guofeng'] .hl-mp-month-grid {
+:root[data-theme='guofeng'] .hl-mp-row {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
 }
-:root[data-theme='guofeng'] .hl-mp-month-cell {
-  background: transparent;
-  border: 1px solid rgba(176, 141, 59, 0.25);
-  padding: 8px 4px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 13px;
+:root[data-theme='guofeng'] .hl-mp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+:root[data-theme='guofeng'] .hl-mp-label {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--gf-ink-soft);
+  font-family: var(--gf-font-serif);
+}
+:root[data-theme='guofeng'] .hl-mp-select-trigger {
+  border: 1px solid rgba(176, 141, 59, 0.4);
+  background: rgba(255, 251, 233, 0.7);
   color: var(--gf-ink);
   font-family: var(--gf-font-serif);
-  text-align: center;
+  font-size: 13px;
+  height: 32px;
+  border-radius: 4px;
 }
-:root[data-theme='guofeng'] .hl-mp-month-cell:hover {
-  background: rgba(176, 141, 59, 0.12);
-  border-color: rgba(176, 141, 59, 0.5);
+:root[data-theme='guofeng'] .hl-mp-select-trigger:hover {
+  border-color: var(--gf-gold);
+  background: rgba(255, 251, 233, 0.9);
 }
-:root[data-theme='guofeng'] .hl-mp-month-cell.is-current {
+:root[data-theme='guofeng'] .hl-mp-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  border-top: 1px dashed rgba(176, 141, 59, 0.3);
+  padding-top: 10px;
+}
+:root[data-theme='guofeng'] .hl-mp-action {
+  flex: 1;
+  height: 30px;
+  border-radius: 4px;
+  font-family: var(--gf-font-serif);
+  font-size: 13px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s;
+}
+:root[data-theme='guofeng'] .hl-mp-action--ghost {
+  background: transparent;
+  color: var(--gf-ink-soft);
+  border-color: rgba(176, 141, 59, 0.35);
+}
+:root[data-theme='guofeng'] .hl-mp-action--ghost:hover {
+  background: rgba(176, 141, 59, 0.1);
+  color: var(--gf-cinnabar);
+  border-color: var(--gf-gold);
+}
+:root[data-theme='guofeng'] .hl-mp-action--primary {
   background: var(--gf-cinnabar);
   color: var(--gf-rice);
   border-color: var(--gf-cinnabar-deep);
-  font-weight: 700;
+  font-weight: 600;
 }
-:root[data-theme='guofeng'] .hl-mp-month-cell.is-this-month:not(.is-current) {
-  border-color: var(--gf-cinnabar);
-  color: var(--gf-cinnabar);
+:root[data-theme='guofeng'] .hl-mp-action--primary:hover {
+  background: var(--gf-cinnabar-deep);
 }
-:root[data-theme='guofeng'] .hl-mp-year-btn:focus-visible,
-:root[data-theme='guofeng'] .hl-mp-year-cell:focus-visible,
-:root[data-theme='guofeng'] .hl-mp-month-cell:focus-visible {
+:root[data-theme='guofeng'] .hl-mp-action:focus-visible {
   outline: 2px solid var(--gf-cinnabar);
   outline-offset: 1px;
 }

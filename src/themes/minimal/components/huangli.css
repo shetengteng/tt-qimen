@@ -869,6 +869,7 @@
 /* ============================================================
  * P1-F：年月选择器 popover 主题样式
  * ============================================================ */
+/* 年月选择器 popover：基于 shadcn-vue Select 重构（年/月并排 + 今日/确定） */
 :root[data-theme='minimal'] .hl-mp-content--mn {
   z-index: 200;
   width: min(320px, calc(100vw - 24px));
@@ -879,100 +880,71 @@
     0 16px 40px rgba(15, 23, 42, 0.12),
     0 2px 8px rgba(15, 23, 42, 0.06);
   color: var(--mn-ink);
-  padding: 12px;
+  padding: 14px;
 }
-:root[data-theme='minimal'] .hl-mp-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--mn-border);
-}
-:root[data-theme='minimal'] .hl-mp-year-text {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--mn-ink);
-}
-:root[data-theme='minimal'] .hl-mp-year-btn {
-  width: 28px;
-  height: 28px;
-  border: 1px solid var(--mn-border);
-  background: transparent;
-  border-radius: var(--mn-radius-sm);
-  color: var(--mn-ink-muted);
-  cursor: pointer;
-  font-size: 16px;
-  line-height: 1;
-}
-:root[data-theme='minimal'] .hl-mp-year-btn:hover {
-  background: var(--mn-accent-soft);
-  color: var(--mn-accent);
-}
-:root[data-theme='minimal'] .hl-mp-year-list {
-  display: flex;
-  gap: 4px;
-  overflow-x: auto;
-  padding: 4px 0 8px;
-  margin: 0 -4px 8px;
-  list-style: none;
-  border-bottom: 1px solid var(--mn-border);
-  scrollbar-width: thin;
-}
-:root[data-theme='minimal'] .hl-mp-year-cell {
-  flex: none;
-  background: transparent;
-  border: 1px solid transparent;
-  padding: 4px 10px;
-  border-radius: var(--mn-radius-sm);
-  cursor: pointer;
-  font-size: 12px;
-  color: var(--mn-ink-muted);
-}
-:root[data-theme='minimal'] .hl-mp-year-cell:hover {
-  background: var(--mn-accent-soft);
-  color: var(--mn-ink);
-}
-:root[data-theme='minimal'] .hl-mp-year-cell.is-active {
-  background: var(--mn-accent);
-  color: #ffffff;
-  font-weight: 600;
-}
-:root[data-theme='minimal'] .hl-mp-month-grid {
+:root[data-theme='minimal'] .hl-mp-row {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
 }
-:root[data-theme='minimal'] .hl-mp-month-cell {
-  background: transparent;
+:root[data-theme='minimal'] .hl-mp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+:root[data-theme='minimal'] .hl-mp-label {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--mn-ink-muted);
+}
+:root[data-theme='minimal'] .hl-mp-select-trigger {
   border: 1px solid var(--mn-border);
-  padding: 8px 4px;
-  border-radius: var(--mn-radius-sm);
-  cursor: pointer;
-  font-size: 13px;
+  background: #ffffff;
   color: var(--mn-ink);
-  text-align: center;
+  font-size: 13px;
+  height: 32px;
+  border-radius: var(--mn-radius-sm);
 }
-:root[data-theme='minimal'] .hl-mp-month-cell:hover {
-  background: var(--mn-accent-soft);
+:root[data-theme='minimal'] .hl-mp-select-trigger:hover {
   border-color: var(--mn-accent);
 }
-:root[data-theme='minimal'] .hl-mp-month-cell.is-current {
+:root[data-theme='minimal'] .hl-mp-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  border-top: 1px solid var(--mn-border);
+  padding-top: 10px;
+}
+:root[data-theme='minimal'] .hl-mp-action {
+  flex: 1;
+  height: 30px;
+  border-radius: var(--mn-radius-sm);
+  font-size: 13px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s;
+}
+:root[data-theme='minimal'] .hl-mp-action--ghost {
+  background: transparent;
+  color: var(--mn-ink-muted);
+  border-color: var(--mn-border);
+}
+:root[data-theme='minimal'] .hl-mp-action--ghost:hover {
+  background: var(--mn-accent-soft);
+  color: var(--mn-accent);
+  border-color: var(--mn-accent);
+}
+:root[data-theme='minimal'] .hl-mp-action--primary {
   background: var(--mn-accent);
   color: #ffffff;
   border-color: var(--mn-accent);
-  font-weight: 700;
+  font-weight: 600;
 }
-:root[data-theme='minimal'] .hl-mp-month-cell.is-this-month:not(.is-current) {
-  border-color: var(--mn-accent);
-  color: var(--mn-accent);
+:root[data-theme='minimal'] .hl-mp-action--primary:hover {
+  background: var(--mn-accent-strong, var(--mn-accent));
 }
-:root[data-theme='minimal'] .hl-mp-year-btn:focus-visible,
-:root[data-theme='minimal'] .hl-mp-year-cell:focus-visible,
-:root[data-theme='minimal'] .hl-mp-month-cell:focus-visible {
+:root[data-theme='minimal'] .hl-mp-action:focus-visible {
   outline: 2px solid var(--mn-accent);
   outline-offset: 1px;
 }
