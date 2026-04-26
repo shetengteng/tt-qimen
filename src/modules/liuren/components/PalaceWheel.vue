@@ -13,17 +13,24 @@ import type { PalaceName } from '../types'
  *   - 国风：圆环 + 中心大字（最终命中宫）
  *   - 简约：3×2 网格 + 命中 ✓ 角标
  *
- * 未起卦时不显示中心大字；命中宫以 active 高亮。
+ * 交互：起卦完成后（current 非空），点击非命中宫 → emit('preview', name) 让父组件
+ *      把 AspectReading 切到该宫的解读；点击命中宫 → emit('preview', null) 退出预览。
+ *      preview 与 current 的视觉区分：current 用红色高亮、preview 用金色描边。
  *
  * 本地化策略：宫名 displayName 通过 getPalaceDisplayName(name, locale) 取，tag 通过 getLocalizedPalace 取。
  */
 interface Props {
   /** 当前命中的宫名（未起卦为 null） */
   current: PalaceName | null
+  /** 当前预览中的宫名（点击非命中宫位后），与 current 不同时高亮 */
+  preview?: PalaceName | null
   /** 三步路径（可选，未使用时数组为空，组件不做特殊可视化） */
   path?: readonly PalaceName[]
 }
 const props = defineProps<Props>()
+const emit = defineEmits<{
+  (e: 'preview', name: PalaceName | null): void
+}>()
 
 const { t } = useI18n()
 const themeStore = useThemeStore()
@@ -43,6 +50,8 @@ const palaces = computed(() =>
       element: p.element,
       jiXiong: p.jiXiong,
       active: props.current === name,
+      previewing: !!props.preview && props.preview === name && props.current !== name,
+      clickable: props.current != null,
     }
   }),
 )
@@ -54,6 +63,19 @@ const currentPalace = computed(() =>
 const currentDisplayName = computed(() =>
   props.current ? getPalaceDisplayName(props.current, locale.value) : null,
 )
+
+function onPalaceClick(name: PalaceName) {
+  if (props.current == null) return // 未起卦时不可交互
+  if (props.current === name) {
+    emit('preview', null) // 点命中宫 → 退出预览
+    return
+  }
+  if (props.preview === name) {
+    emit('preview', null) // 再次点击预览中的宫 → 退出预览
+    return
+  }
+  emit('preview', name)
+}
 </script>
 
 <template>
@@ -69,8 +91,13 @@ const currentDisplayName = computed(() =>
         v-for="p in palaces"
         :key="p.name"
         class="lr-palace"
-        :class="{ active: p.active }"
+        :class="{ active: p.active, previewing: p.previewing, clickable: p.clickable }"
         :data-pos="p.idx"
+        :role="p.clickable ? 'button' : undefined"
+        :tabindex="p.clickable ? 0 : undefined"
+        @click="onPalaceClick(p.name)"
+        @keydown.enter.prevent="onPalaceClick(p.name)"
+        @keydown.space.prevent="onPalaceClick(p.name)"
       >
         <div class="lr-palace-name">{{ p.displayName }}</div>
         <div class="lr-palace-badge">{{ p.tag }}</div>
@@ -85,8 +112,13 @@ const currentDisplayName = computed(() =>
         v-for="p in palaces"
         :key="p.name"
         class="lr-palace"
-        :class="{ active: p.active }"
+        :class="{ active: p.active, previewing: p.previewing, clickable: p.clickable }"
         :data-pos="p.idx"
+        :role="p.clickable ? 'button' : undefined"
+        :tabindex="p.clickable ? 0 : undefined"
+        @click="onPalaceClick(p.name)"
+        @keydown.enter.prevent="onPalaceClick(p.name)"
+        @keydown.space.prevent="onPalaceClick(p.name)"
       >
         <span class="lr-palace-num">{{ p.idx }}</span>
         <div class="lr-palace-name">{{ p.displayName }}</div>

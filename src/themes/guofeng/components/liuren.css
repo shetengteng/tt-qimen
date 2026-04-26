@@ -137,6 +137,20 @@
   transform: scale(1.05);
 }
 
+:root[data-theme='guofeng'] .lr-palace.clickable {
+  cursor: pointer;
+}
+
+:root[data-theme='guofeng'] .lr-palace.previewing {
+  border-color: var(--gf-gold);
+  box-shadow: 0 6px 16px rgba(176, 141, 59, 0.4);
+  background: linear-gradient(135deg, rgba(246, 236, 214, 0.85), rgba(246, 236, 214, 0.6));
+}
+
+:root[data-theme='guofeng'] .lr-palace.previewing .lr-palace-name {
+  color: var(--gf-gold);
+}
+
 :root[data-theme='guofeng'] .lr-palace-name {
   font-size: 22px;
   color: var(--gf-ink);
@@ -196,6 +210,28 @@
 :root[data-theme='guofeng'] .lr-aspect-tab:hover:not(.active) {
   border-color: var(--gf-gold);
   color: var(--gf-ink);
+}
+
+/* ---------- Preview banner（点击非命中宫预览） ---------- */
+:root[data-theme='guofeng'] .lr-preview-banner {
+  max-width: 720px;
+  margin: 0 auto var(--gf-space-md);
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gf-space-md);
+  background: rgba(246, 236, 214, 0.6);
+  border: 1px dashed var(--gf-gold);
+  border-radius: var(--gf-radius-sm);
+  color: var(--gf-ink);
+  font-family: var(--gf-font-serif);
+  font-size: 14px;
+}
+
+:root[data-theme='guofeng'] .lr-preview-banner .gf-btn-sm {
+  padding: 6px 14px;
+  font-size: 13px;
 }
 
 /* ---------- 解读卡 ---------- */

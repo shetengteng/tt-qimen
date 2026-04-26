@@ -16,8 +16,8 @@ import AspectReading from './components/AspectReading.vue'
 import { useLiurenStore } from './stores/liurenStore'
 import { calculateLiuren } from './core/liuren'
 import { seedFromDate, formatCustomLabel } from './core/immediate'
-import type { Aspect, LiurenResult } from './types'
-import { type LiurenLocale } from './data/palacesLocale'
+import type { Aspect, LiurenResult, PalaceName } from './types'
+import { getLocalizedPalace, type LiurenLocale } from './data/palacesLocale'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -31,6 +31,12 @@ const resultBannerEl = ref<HTMLElement | null>(null)
 const shareCardEl = ref<HTMLElement | null>(null)
 
 const result = shallowRef<LiurenResult | null>(null)
+/**
+ * 预览态：用户点击非命中宫位时记录，AspectReading 显示该宫的解读；
+ * 退出预览（点命中宫 / 重置 / 重起卦）时设为 null。
+ * 不污染 result 与 lastComputed —— 只是 UI 临时视图。
+ */
+const previewedPalace = shallowRef<PalaceName | null>(null)
 
 const skeleton = useSkeletonReveal({
   delay: 1500,
@@ -128,6 +134,7 @@ watch(
 
 function onRepaipan() {
   result.value = null
+  previewedPalace.value = null
   liurenStore.clearComputed()
   skeleton.reset(() => inputCardEl.value)
 }
@@ -138,6 +145,27 @@ function onUpdateAspect(v: Aspect) {
     result.value = { ...result.value, aspect: v }
   }
 }
+
+function onPreviewPalace(name: PalaceName | null) {
+  previewedPalace.value = name
+}
+
+/**
+ * 给 AspectReading 的 result：默认走 result，如果 previewedPalace 有值则替换 palace 为该宫的本地化版本。
+ * path / steps / lunarDateLabel 等 result 字段保留不变（保持上下文一致）。
+ */
+const displayedResult = computed<LiurenResult | null>(() => {
+  if (!result.value) return null
+  if (!previewedPalace.value || previewedPalace.value === result.value.palace.name) {
+    return result.value
+  }
+  const localePalace = getLocalizedPalace(previewedPalace.value, localeStore.id as LiurenLocale)
+  return { ...result.value, palace: localePalace }
+})
+
+const isPreviewing = computed(
+  () => previewedPalace.value != null && result.value != null && previewedPalace.value !== result.value.palace.name,
+)
 
 function go(name: 'home') {
   router.push({ name })
@@ -204,14 +232,26 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
         </button>
       </div>
 
-      <template v-else-if="result">
+      <template v-else-if="result && displayedResult">
         <div ref="shareCardEl" class="liuren-share-card">
           <div class="gf-container" style="padding-top: 0;">
-            <PalaceWheel :current="result.palace.name" :path="result.path" />
+            <PalaceWheel
+              :current="result.palace.name"
+              :preview="previewedPalace"
+              :path="result.path"
+              @preview="onPreviewPalace"
+            />
+
+            <div v-if="isPreviewing" class="lr-preview-banner">
+              <span>{{ t('liuren.preview.viewing', { palace: displayedResult.palace.name }) }}</span>
+              <button type="button" class="gf-btn gf-btn-outline gf-btn-sm" @click="onPreviewPalace(null)">
+                {{ t('liuren.preview.back') }}
+              </button>
+            </div>
 
             <AspectReading
               :aspect="liurenStore.aspect"
-              :result="result"
+              :result="displayedResult"
               @update:aspect="onUpdateAspect"
             />
           </div>
@@ -276,13 +316,26 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
         </div>
       </main>
 
-      <template v-else-if="result">
+      <template v-else-if="result && displayedResult">
         <div ref="shareCardEl" class="liuren-share-card">
           <main class="mn-container" style="padding-top: 0;">
-            <PalaceWheel :current="result.palace.name" :path="result.path" />
+            <PalaceWheel
+              :current="result.palace.name"
+              :preview="previewedPalace"
+              :path="result.path"
+              @preview="onPreviewPalace"
+            />
+
+            <div v-if="isPreviewing" class="lr-preview-banner mn">
+              <span>{{ t('liuren.preview.viewing', { palace: displayedResult.palace.name }) }}</span>
+              <button type="button" class="mn-btn mn-btn-outline" @click="onPreviewPalace(null)">
+                {{ t('liuren.preview.back') }}
+              </button>
+            </div>
+
             <AspectReading
               :aspect="liurenStore.aspect"
-              :result="result"
+              :result="displayedResult"
               @update:aspect="onUpdateAspect"
             />
           </main>

@@ -454,6 +454,11 @@ export default {
       reading: '請先「即刻起卦」或「自訂時間」起一卦，此處將顯示對應宮位的解讀。',
     },
 
+    preview: {
+      viewing: '正在查看「{palace}」宮的解讀（非本卦命中宮）',
+      back: '返回本卦',
+    },
+
     computeError: {
       title: '起卦未成',
       hint: '輸入資料有誤，請檢查月/日/時辰後重試。',

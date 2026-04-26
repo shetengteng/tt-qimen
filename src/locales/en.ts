@@ -457,6 +457,11 @@ export default {
       reading: 'Cast now or pick a custom time to see the reading for the matched palace.',
     },
 
+    preview: {
+      viewing: 'Previewing palace "{palace}" — not the cast result',
+      back: 'Back to cast',
+    },
+
     computeError: {
       title: 'Reading failed',
       hint: 'Invalid input — please check month, day, and hour and try again.',

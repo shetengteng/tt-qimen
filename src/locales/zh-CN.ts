@@ -618,6 +618,11 @@ export default {
       reading: '请先「即刻起卦」或「自定时间」起一卦，此处将显示对应宫位的解读。',
     },
 
+    preview: {
+      viewing: '正在查看「{palace}」宫的解读（非本卦命中宫）',
+      back: '返回本卦',
+    },
+
     computeError: {
       title: '起卦未成',
       hint: '输入数据有误，请检查月/日/时辰后重试。',
