@@ -3,6 +3,7 @@ import { ConfigProvider } from 'reka-ui'
 import { useUrlSync } from '@/composables/useUrlSync'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
+import AppErrorBoundary from '@/components/common/AppErrorBoundary.vue'
 
 useUrlSync()
 </script>
@@ -15,7 +16,9 @@ useUrlSync()
   -->
   <ConfigProvider :scroll-body="false">
     <AppHeader />
-    <RouterView />
+    <AppErrorBoundary>
+      <RouterView />
+    </AppErrorBoundary>
     <AppFooter />
   </ConfigProvider>
 </template>

@@ -7,6 +7,7 @@ import { PopoverRoot, PopoverTrigger, PopoverPortal, PopoverContent } from 'reka
 import { ChevronDown } from 'lucide-vue-next'
 import ThemeSwitch from './ThemeSwitch.vue'
 import LangSwitch from './LangSwitch.vue'
+import DisclaimerBanner from '@/components/common/DisclaimerBanner.vue'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -58,7 +59,7 @@ function pickRoute(item: NavItem) {
 
 <template>
   <template v-if="isGuofeng">
-    <div class="gf-disclaimer">{{ t('disclaimer') }}</div>
+    <DisclaimerBanner />
     <header class="gf-header">
       <div class="gf-header-inner">
         <a
@@ -129,7 +130,7 @@ function pickRoute(item: NavItem) {
   </template>
 
   <template v-else>
-    <div class="mn-disclaimer">{{ t('disclaimer') }}</div>
+    <DisclaimerBanner />
     <header class="mn-header">
       <div class="mn-header-inner">
         <a

@@ -22,7 +22,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from playwright.async_api import async_playwright, Page  # noqa: E402
 
-BASE = 'http://localhost:5174'
+BASE = 'http://localhost:5180'
 RESULTS: list[dict] = []
 
 
@@ -33,14 +33,17 @@ def record(name: str, ok: bool, detail: str = '') -> None:
 
 
 async def navigate_hash(page: Page, hash_path: str) -> None:
-    """先 goto 到 root，再用 page.evaluate 设置 hash 触发 vue-router 切换"""
+    """先 goto root（带 query+localStorage 启动），再 set hash 触发 vue-router 切换。
+
+    注意：直接 page.goto(BASE/#/chenggu) 在 chromium 中会被 reset 为 #/，
+    而 set hash 配合 wait 才稳定切换到目标路由。
+    """
     cur = page.url
-    if not cur.startswith(BASE) or cur == 'about:blank' or '/#/' not in cur:
-        await page.goto(BASE + '/', wait_until='networkidle')
-        await asyncio.sleep(0.5)
-    # 用赋值 + history.pushState 双保险
-    await page.evaluate(f'(p) => {{ window.location.hash = p }}', f'#{hash_path}')
-    await asyncio.sleep(2.5)  # 让 route 切换 + module locale lazy-load 完成
+    if not cur.startswith(BASE):
+        await page.goto(f'{BASE}/', wait_until='load')
+        await asyncio.sleep(0.3)
+    await page.evaluate('(p) => { window.location.hash = p }', f'#{hash_path}')
+    await asyncio.sleep(2.0)
 
 
 async def test_qrcode_visible(page: Page) -> None:
@@ -55,7 +58,10 @@ async def test_qrcode_visible(page: Page) -> None:
         await btn.wait_for(state='visible', timeout=15000)
     except Exception:
         buttons = await page.locator('button').all_inner_texts()
-        print('  [debug] visible buttons:', buttons[:10])
+        print('  [debug] visible buttons:', buttons[:15])
+        # 已是结果态？检查 share-card 是否已存在
+        already = await page.locator('.chenggu-share-card').count()
+        print(f'  [debug] share-card already mounted? count={already}')
         raise
     await btn.click()
     # 等骨架揭幕（1.5s + buffer）
@@ -119,24 +125,26 @@ async def test_deeplink_hydrate(page: Page) -> None:
 
 
 async def test_locale_switch(page: Page) -> None:
-    """4) zh-TW 切换后 hint 文本繁体化"""
-    # 切换 locale via localStorage + reload
-    await page.evaluate('''() => localStorage.setItem('tt-qimen:locale', '"zh-TW"')''')
+    """4) zh-TW / en 切换后 hint 文本对应变化
+
+    注意：useLocale 用 useStorage 自定义 serializer，存的是裸字符串 'zh-TW'，
+    不是 JSON 串 '"zh-TW"'。
+    """
+    await page.evaluate('''() => localStorage.setItem('tt-qimen:locale', 'zh-TW')''')
     await page.reload(wait_until='networkidle')
     await page.wait_for_selector('.share-qrcode-hint', timeout=10000)
     hint = await page.locator('.share-qrcode-hint').inner_text()
     is_trad = '掃' in hint or '裝置' in hint or '一鍵' in hint
     record('4. zh-TW 切换后 hint 繁体化', is_trad, hint[:60])
 
-    await page.evaluate('''() => localStorage.setItem('tt-qimen:locale', '"en"')''')
+    await page.evaluate('''() => localStorage.setItem('tt-qimen:locale', 'en')''')
     await page.reload(wait_until='networkidle')
     await page.wait_for_selector('.share-qrcode-hint', timeout=10000)
     hint_en = await page.locator('.share-qrcode-hint').inner_text()
     is_en = 'Scan' in hint_en or 'recreate' in hint_en or 'reading' in hint_en.lower()
     record('4. en 切换后 hint 英文化', is_en, hint_en[:60])
 
-    # 还原 zh-CN
-    await page.evaluate('''() => localStorage.setItem('tt-qimen:locale', '"zh-CN"')''')
+    await page.evaluate('''() => localStorage.setItem('tt-qimen:locale', 'zh-CN')''')
 
 
 async def main() -> int:
@@ -150,7 +158,10 @@ async def main() -> int:
           try { localStorage.clear() } catch (e) {}
           try { sessionStorage.clear() } catch (e) {}
         }''')
-        await page.evaluate('''() => localStorage.setItem('tt-qimen:locale', JSON.stringify('zh-CN'))''')
+        await page.evaluate('''() => localStorage.setItem('tt-qimen:locale', 'zh-CN')''')
+        # 设完 storage 必须 reload，否则 useStorage 读到的还是初始 'en'（基于 navigator.language）
+        await page.reload(wait_until='load')
+        await asyncio.sleep(0.5)
 
         try:
             print('\n[1] 二维码可见性')

@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
 import { useLocaleStore } from '@/stores/locale'
 import ShareToast from '@/components/common/ShareToast.vue'
+import SharePreviewDialog from '@/components/common/SharePreviewDialog.vue'
+import ResultBanner from '@/components/common/ResultBanner.vue'
 import { useSkeletonReveal } from '@/composables/useSkeletonReveal'
 import { useShareCard } from '@/composables/useShareCard'
+import { buildShareUrl, normalizeQuery, readIntInRange } from '@/lib/shareUrl'
 
 import LiurenInput from './components/LiurenInput.vue'
 import TimeBar from './components/TimeBar.vue'
@@ -20,6 +23,7 @@ import type { Aspect, LiurenResult, PalaceName } from './types'
 import { getLocalizedPalace, type LiurenLocale } from './data/palacesLocale'
 
 const { t } = useI18n()
+const route = useRoute()
 const router = useRouter()
 const themeStore = useThemeStore()
 const liurenStore = useLiurenStore()
@@ -56,6 +60,32 @@ onMounted(() => {
   timer = window.setInterval(() => {
     now.value = new Date()
   }, 60_000)
+
+  /**
+   * 扫码 deeplink hydrate：URL 带 mode/aspect/month/day/hourIndex 时优先消费，
+   * 写入 liurenStore 后立即 paipan（覆盖默认的 shouldRestore 静默恢复）。
+   *
+   * question 不放入 query —— 太长，且属于个人心念，不在分享内容里复刻。
+   */
+  const q = normalizeQuery(route.query as Record<string, string | string[] | undefined>)
+  const hasInputs = 'mode' in q || 'month' in q
+  if (hasInputs) {
+    if (q.mode === 'custom' || q.mode === 'immediate') {
+      liurenStore.setMode(q.mode)
+    }
+    if (q.aspect && ['overall', 'love', 'career', 'wealth', 'health'].includes(q.aspect)) {
+      liurenStore.setAspect(q.aspect as Aspect)
+    }
+    const c = liurenStore.custom
+    liurenStore.setCustom({
+      month: readIntInRange(q, 'month', 1, 12, c.month),
+      day: readIntInRange(q, 'day', 1, 30, c.day),
+      hourIndex: readIntInRange(q, 'hourIndex', 1, 12, c.hourIndex),
+    })
+    void Promise.resolve().then(() => onPaipan(false))
+    return
+  }
+
   /**
    * 缓存恢复：仅 custom 模式 + lastComputed 与当前 store 一致时静默重算并跳过骨架。
    * immediate 模式刷新就丢弃 result（避免显示昨日的卦）；用户需点击"起卦"获得当前时间的占卜。
@@ -171,7 +201,7 @@ function go(name: 'home') {
   router.push({ name })
 }
 
-const { toastState, shareCard, saveCard } = useShareCard()
+const { toastState, shareCard, saveCard, previewCard } = useShareCard()
 function buildShareOpts() {
   const seed = liurenStore.mode === 'immediate' ? seedFromDate(new Date()) : customSeed.value
   return {
@@ -179,6 +209,37 @@ function buildShareOpts() {
     title: t('liuren.share.title'),
     text: t('liuren.share.text'),
   }
+}
+
+/**
+ * Deeplink 参数：
+ *  - immediate 模式：只带 mode（重新进入仍按当前时间起卦，时间维度自然变化即合理）
+ *  - custom 模式：mode + aspect + 农历 month/day/hourIndex（足够复算 + 用户可见）
+ *
+ * question 不进 query：私人心念，且通常较长。
+ */
+const shareUrl = computed(() => {
+  const m = liurenStore.mode
+  if (m === 'immediate') {
+    return buildShareUrl('liuren', { mode: 'immediate', aspect: liurenStore.aspect })
+  }
+  const c = liurenStore.custom
+  return buildShareUrl('liuren', {
+    mode: 'custom',
+    aspect: liurenStore.aspect,
+    month: c.month,
+    day: c.day,
+    hourIndex: c.hourIndex,
+  })
+})
+
+const previewOpen = ref(false)
+const previewImage = ref('')
+
+async function onPreview() {
+  previewImage.value = ''
+  previewOpen.value = true
+  previewImage.value = await previewCard(shareCardEl.value, {})
 }
 function onShare() {
   shareCard(shareCardEl.value, buildShareOpts())
@@ -214,13 +275,8 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
       </div>
     </div>
 
-    <div v-if="skeleton.revealed.value" ref="resultBannerEl" class="result-banner revealed">
-      <h2 class="result-banner-title">
-        <span class="result-banner-decor">◈</span>
-        {{ t('liuren.resultBanner.title') }}
-        <span class="result-banner-decor">◈</span>
-      </h2>
-      <div class="result-banner-subtitle">{{ t('liuren.resultBanner.subtitle') }}</div>
+    <div v-if="skeleton.revealed.value" ref="resultBannerEl">
+      <ResultBanner title-key="liuren.resultBanner.title" subtitle-key="liuren.resultBanner.subtitle" />
     </div>
 
     <div v-if="skeleton.revealed.value" class="result-zone revealed">
@@ -258,11 +314,8 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
         </div>
 
         <div class="action-bar">
-          <button type="button" class="gf-btn" @click="onShare">
+          <button type="button" class="gf-btn" @click="onPreview">
             {{ t('liuren.btn.shareIcon') }} {{ t('liuren.btn.share') }}
-          </button>
-          <button type="button" class="gf-btn gf-btn-outline" @click="onSave">
-            {{ t('liuren.btn.saveIcon') }} {{ t('liuren.btn.save') }}
           </button>
           <button type="button" class="gf-btn gf-btn-outline" @click="onRepaipan">
             {{ t('liuren.btn.repaipanIcon') }} {{ t('liuren.btn.repaipan') }}
@@ -299,10 +352,8 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
       </div>
     </main>
 
-    <div v-if="skeleton.revealed.value" ref="resultBannerEl" class="result-banner revealed">
-      <h2 class="result-banner-title">{{ t('liuren.resultBanner.title') }}</h2>
-      <div class="result-banner-sub">{{ t('liuren.resultBanner.subtitle') }}</div>
-      <div class="result-banner-line" />
+    <div v-if="skeleton.revealed.value" ref="resultBannerEl">
+      <ResultBanner title-key="liuren.resultBanner.title" subtitle-key="liuren.resultBanner.subtitle" />
     </div>
 
     <div v-if="skeleton.revealed.value" class="result-zone revealed">
@@ -342,8 +393,7 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
         </div>
 
         <div class="actions mn-container">
-          <button type="button" class="mn-btn" @click="onShare">{{ t('liuren.btn.share') }}</button>
-          <button type="button" class="mn-btn mn-btn-outline" @click="onSave">{{ t('liuren.btn.save') }}</button>
+          <button type="button" class="mn-btn" @click="onPreview">{{ t('liuren.btn.share') }}</button>
           <button type="button" class="mn-btn mn-btn-ghost" @click="onRepaipan">{{ t('liuren.btn.repaipan') }}</button>
         </div>
       </template>
@@ -363,4 +413,13 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
   </div>
 
   <ShareToast :state="toastState" />
+
+  <SharePreviewDialog
+    v-model:open="previewOpen"
+    :image="previewImage"
+    :share-url="shareUrl"
+    :disabled="!previewImage"
+    @save="onSave"
+    @share="onShare"
+  />
 </template>

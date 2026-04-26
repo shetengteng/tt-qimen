@@ -55,6 +55,7 @@ import { detectPattern } from './pattern'
 import { detectShensha } from './shensha'
 import { getDecadeHint } from '../data/fortuneHints'
 import { getFlowYearHint } from '../data/flowYearHints'
+import { FortuneError } from '@/lib/errors'
 import {
   PARAGRAPH_1_TEMPLATE,
   PARAGRAPH_2_TEMPLATE,
@@ -98,9 +99,28 @@ const SEASON_WEIGHT = 1.5
 
 /**
  * 八字主入口。
- * 任何输入异常都抛出，调用方需在 try/catch 里处理。
+ *
+ * 异常策略（统一为 FortuneError）：
+ *   - tyme4ts 因非法日期 / 跨范围而抛出原生 RangeError 等 → wrap 为 FortuneError
+ *     code: 'invalid-input'，并把原 err 放入 cause 保留调试上下文
+ *   - UI 层调用方在 try/catch 里可统一用 `FortuneError.is(err)` 区分类型
  */
 export function calculateBazi(birth: BirthInput): BaziChart {
+  try {
+    return calculateBaziInternal(birth)
+  } catch (err) {
+    if (FortuneError.is(err)) throw err
+    throw new FortuneError({
+      module: 'bazi',
+      code: 'invalid-input',
+      message: `[bazi] calculate failed: ${(err as Error)?.message ?? 'unknown'}`,
+      cause: err,
+      details: { birth: { ...birth } },
+    })
+  }
+}
+
+function calculateBaziInternal(birth: BirthInput): BaziChart {
   const solar = toSolarTime(birth)
   const eightChar = toEightChar(solar, birth)
 

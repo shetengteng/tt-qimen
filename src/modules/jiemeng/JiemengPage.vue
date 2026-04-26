@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { computed, nextTick, ref } from 'vue'
+import { computed, nextTick, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
 import ShareToast from '@/components/common/ShareToast.vue'
+import SharePreviewDialog from '@/components/common/SharePreviewDialog.vue'
 import { useShareCard } from '@/composables/useShareCard'
+import { buildShareUrl, normalizeQuery } from '@/lib/shareUrl'
 
 import DreamInput from './components/DreamInput.vue'
 import RecentSearches from './components/RecentSearches.vue'
@@ -20,6 +22,20 @@ import {
 } from './core/jiemeng'
 import type { DreamCategoryKey, DreamEntry } from './types'
 
+const DREAM_CATEGORY_KEYS: readonly DreamCategoryKey[] = [
+  'animal',
+  'people',
+  'nature',
+  'body',
+  'life',
+  'ghost',
+  'building',
+  'other',
+]
+function isDreamCategoryKey(value: string): value is DreamCategoryKey {
+  return (DREAM_CATEGORY_KEYS as readonly string[]).includes(value)
+}
+
 /**
  * 解梦模块主页：搜索 / 分类浏览 / 词条详情 / 最近搜索 · 单列垂直流。
  *
@@ -33,6 +49,7 @@ import type { DreamCategoryKey, DreamEntry } from './types'
  *   - 关闭弹层即清空 store.selectedId（v-model:open 双向同步）
  */
 const { t } = useI18n()
+const route = useRoute()
 const router = useRouter()
 const themeStore = useThemeStore()
 const store = useJiemengStore()
@@ -104,7 +121,7 @@ function go(name: 'home') {
   router.push({ name })
 }
 
-const { toastState, shareCard, saveCard } = useShareCard()
+const { toastState, shareCard, saveCard, previewCard } = useShareCard()
 function buildShareOpts() {
   const e = selectedEntry.value
   return {
@@ -122,6 +139,47 @@ function onShare() {
 function onSave() {
   saveCard(getShareCardEl(), buildShareOpts())
 }
+
+const shareUrl = computed(() => {
+  const e = selectedEntry.value
+  if (!e) return buildShareUrl('jiemeng')
+  return buildShareUrl('jiemeng', { id: e.id })
+})
+
+const previewOpen = ref(false)
+const previewImage = ref('')
+async function onPreview() {
+  const el = getShareCardEl()
+  if (!el) return
+  previewImage.value = ''
+  previewOpen.value = true
+  try {
+    previewImage.value = await previewCard(el, { fileName: buildShareOpts().fileName })
+  } catch (err) {
+    console.error('[jiemeng] preview failed:', err)
+    previewOpen.value = false
+  }
+}
+
+onMounted(() => {
+  const q = normalizeQuery(route.query)
+  if (Object.keys(q).length === 0) return
+  const id = q.id
+  if (id) {
+    const found = getDreamById(id)
+    if (found) {
+      store.setSelectedId(found.id)
+      return
+    }
+  }
+  if (q.q) {
+    store.setQuery(q.q)
+  }
+  const cat = q.category
+  if (cat && isDreamCategoryKey(cat)) {
+    store.setActiveCategory(cat)
+  }
+})
 </script>
 
 <template>

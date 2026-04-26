@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
 import { useLocaleStore } from '@/stores/locale'
 import ShareToast from '@/components/common/ShareToast.vue'
+import SharePreviewDialog from '@/components/common/SharePreviewDialog.vue'
+import ResultBanner from '@/components/common/ResultBanner.vue'
 import { useSkeletonReveal } from '@/composables/useSkeletonReveal'
 import { useShareCard } from '@/composables/useShareCard'
+import { buildShareUrl, normalizeQuery, readIntInRange } from '@/lib/shareUrl'
 import NameInput from './components/NameInput.vue'
 import StrokesBreakdown from './components/StrokesBreakdown.vue'
 import FiveGrids from './components/FiveGrids.vue'
@@ -21,6 +24,7 @@ import type { NumerologyLocale } from './data/numerology'
 import type { XingmingResult } from './types'
 
 const { t } = useI18n()
+const route = useRoute()
 const router = useRouter()
 const themeStore = useThemeStore()
 const localeStore = useLocaleStore()
@@ -142,12 +146,34 @@ watch(
 )
 
 /**
- * onMounted 缓存恢复（2026-04-26 P-A 缓存轮）：
- *   - 若 store 中存在 lastComputed 快照、且与当前 input 一致 → silent runCalculate + revealImmediately
- *   - 用户体验：刷新页面 / 跨 session 进入，上次结果直接出现在视野，无需再点"开始测名"
- *   - 失败的输入不会被恢复（runCalculate 失败时主动 clearComputed，见上方）
+ * onMounted 缓存恢复（2026-04-26 P-A 缓存轮）+ 扫码 deeplink hydrate：
+ *   - URL 带 surname/givenName 等字段时优先消费，写入 store 后立即 runCalculate
+ *   - 否则走原有缓存恢复路径（lastComputed 与当前 input 一致 → silent runCalculate）
+ *
+ * 失败的输入不会被恢复（runCalculate 失败时主动 clearComputed）。
  */
 onMounted(async () => {
+  const q = normalizeQuery(route.query as Record<string, string | string[] | undefined>)
+  const hasInputs = 'surname' in q || 'givenName' in q
+  if (hasInputs) {
+    const surname = (q.surname || '').slice(0, 2).trim()
+    const givenName = (q.givenName || '').slice(0, 2).trim()
+    if (surname && givenName) {
+      const birthYear = readIntInRange(q, 'birthYear', 1900, 2100, 0)
+      store.update({
+        surname,
+        givenName,
+        gender: q.gender === 'female' ? 'female' : 'male',
+        birthYear: birthYear > 0 ? birthYear : null,
+      })
+      await runCalculate(true)
+      if (result.value) {
+        skeleton.revealImmediately()
+      }
+      return
+    }
+  }
+
   if (store.shouldRestore()) {
     await runCalculate(true)
     if (result.value) {
@@ -168,7 +194,7 @@ function go(name: 'home') {
   router.push({ name })
 }
 
-const { toastState, shareCard, saveCard } = useShareCard()
+const { toastState, shareCard, saveCard, previewCard } = useShareCard()
 function buildShareOpts() {
   const fullName = store.input.surname + store.input.givenName
   return {
@@ -176,6 +202,29 @@ function buildShareOpts() {
     title: t('xingming.share.title'),
     text: t('xingming.share.text'),
   }
+}
+
+/**
+ * Deeplink 参数：surname/givenName 是中文字符，URLSearchParams 会自动 percent-encode；
+ * birthYear 可选（仅五行起名扩展用，且影响很小，但仍纳入以确保扫码后命名口径一致）。
+ */
+const shareUrl = computed(() => {
+  const i = store.input
+  return buildShareUrl('xingming', {
+    surname: i.surname,
+    givenName: i.givenName,
+    gender: i.gender,
+    birthYear: i.birthYear ?? null,
+  })
+})
+
+const previewOpen = ref(false)
+const previewImage = ref('')
+
+async function onPreview() {
+  previewImage.value = ''
+  previewOpen.value = true
+  previewImage.value = await previewCard(shareCardEl.value, {})
 }
 function onShare() {
   shareCard(shareCardEl.value, buildShareOpts())
@@ -210,13 +259,8 @@ const showComputeError = computed(
       </div>
     </div>
 
-    <div v-if="skeleton.revealed.value" ref="resultBannerEl" class="result-banner revealed">
-      <h2 class="result-banner-title">
-        <span class="result-banner-decor">◈</span>
-        {{ t('xingming.resultBanner.title') }}
-        <span class="result-banner-decor">◈</span>
-      </h2>
-      <div class="result-banner-subtitle">{{ t('xingming.resultBanner.subtitle') }}</div>
+    <div v-if="skeleton.revealed.value" ref="resultBannerEl">
+      <ResultBanner title-key="xingming.resultBanner.title" subtitle-key="xingming.resultBanner.subtitle" />
     </div>
 
     <div v-if="skeleton.revealed.value" class="result-zone revealed">
@@ -253,11 +297,8 @@ const showComputeError = computed(
         </div>
 
         <div class="action-bar">
-          <button type="button" class="gf-btn" @click="onShare">
+          <button type="button" class="gf-btn" @click="onPreview">
             ◈ {{ t('xingming.btn.share') }}
-          </button>
-          <button type="button" class="gf-btn gf-btn-outline" @click="onSave">
-            ◐ {{ t('xingming.btn.save') }}
           </button>
           <button type="button" class="gf-btn gf-btn-outline" @click="onRecalculate">
             ✎ {{ t('xingming.btn.recalculate') }}
@@ -288,10 +329,8 @@ const showComputeError = computed(
       </div>
     </main>
 
-    <div v-if="skeleton.revealed.value" ref="resultBannerEl" class="result-banner revealed">
-      <h2 class="result-banner-title">{{ t('xingming.resultBanner.title') }}</h2>
-      <div class="result-banner-sub">{{ t('xingming.resultBanner.subtitle') }}</div>
-      <div class="result-banner-line" />
+    <div v-if="skeleton.revealed.value" ref="resultBannerEl">
+      <ResultBanner title-key="xingming.resultBanner.title" subtitle-key="xingming.resultBanner.subtitle" />
     </div>
 
     <div v-if="skeleton.revealed.value" class="result-zone revealed">
@@ -335,8 +374,7 @@ const showComputeError = computed(
         </div>
 
         <div class="actions mn-container">
-          <button type="button" class="mn-btn" @click="onShare">{{ t('xingming.btn.share') }}</button>
-          <button type="button" class="mn-btn mn-btn-outline" @click="onSave">{{ t('xingming.btn.save') }}</button>
+          <button type="button" class="mn-btn" @click="onPreview">{{ t('xingming.btn.share') }}</button>
           <button type="button" class="mn-btn mn-btn-ghost" @click="onRecalculate">{{ t('xingming.btn.recalculate') }}</button>
         </div>
       </template>
@@ -356,4 +394,13 @@ const showComputeError = computed(
   </div>
 
   <ShareToast :state="toastState" />
+
+  <SharePreviewDialog
+    v-model:open="previewOpen"
+    :image="previewImage"
+    :share-url="shareUrl"
+    :disabled="!previewImage"
+    @save="onSave"
+    @share="onShare"
+  />
 </template>

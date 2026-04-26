@@ -28,6 +28,30 @@ const routes: RouteRecordRaw[] = [
     meta: { titleKey: `${m.id}.title`, moduleId: m.id, order: m.order },
   })),
   {
+    path: '/about',
+    name: 'about',
+    component: () => import('@/modules/legal/AboutPage.vue'),
+    meta: { titleKey: 'about.title' },
+  },
+  {
+    path: '/disclaimer',
+    name: 'disclaimer',
+    component: () => import('@/modules/legal/DisclaimerPage.vue'),
+    meta: { titleKey: 'disclaimerPage.title' },
+  },
+  {
+    path: '/data-source',
+    name: 'data-source',
+    component: () => import('@/modules/legal/DataSourcePage.vue'),
+    meta: { titleKey: 'dataSourcePage.title' },
+  },
+  {
+    path: '/privacy',
+    name: 'privacy',
+    component: () => import('@/modules/legal/PrivacyPage.vue'),
+    meta: { titleKey: 'privacyPage.title' },
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'not-found',
     component: () => import('@/modules/_404.vue'),

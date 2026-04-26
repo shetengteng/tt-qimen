@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import { computed, provide, ref, shallowRef } from 'vue'
+import { computed, onMounted, provide, ref, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
 import { BIRTH_STORE_KEY } from '@/composables/useBirthStore'
-import BirthForm from '@/modules/bazi/components/BirthForm.vue'
+import BirthForm from '@/components/common/BirthForm.vue'
 import CollapsibleSection from '@/components/common/CollapsibleSection.vue'
 import ShareToast from '@/components/common/ShareToast.vue'
+import SharePreviewDialog from '@/components/common/SharePreviewDialog.vue'
+import ResultBanner from '@/components/common/ResultBanner.vue'
 import { useSkeletonReveal } from '@/composables/useSkeletonReveal'
 import { useShareCard } from '@/composables/useShareCard'
+import { buildShareUrl, normalizeQuery, readIntInRange } from '@/lib/shareUrl'
 import ZiweiMeta from './components/ZiweiMeta.vue'
 import SihuaLegend from './components/SihuaLegend.vue'
 import SanfangToggle from './components/SanfangToggle.vue'
@@ -21,6 +24,7 @@ import { useZiweiStore } from './stores/ziweiStore'
 import type { ZiweiChart } from './types'
 
 const { t } = useI18n()
+const route = useRoute()
 const router = useRouter()
 const themeStore = useThemeStore()
 const ziweiStore = useZiweiStore()
@@ -68,7 +72,7 @@ function go(name: 'home') {
  * 包裹整个 result-zone 内容（不含 actions）。
  */
 const shareCardEl = ref<HTMLElement | null>(null)
-const { toastState, shareCard, saveCard } = useShareCard()
+const { toastState, shareCard, saveCard, previewCard } = useShareCard()
 function buildShareOpts() {
   const b = ziweiStore.birth
   const mm = String(b.month).padStart(2, '0')
@@ -79,12 +83,54 @@ function buildShareOpts() {
     text: t('ziwei.share.text'),
   }
 }
+
+/**
+ * Deeplink 参数：紫微斗数算法以时辰（小时）为最小粒度，无须 minute；
+ * longitude / birthplace 仅 UI 展示，不参与计算，不放入 query。
+ */
+const shareUrl = computed(() => {
+  const b = ziweiStore.birth
+  return buildShareUrl('ziwei', {
+    calendar: b.calendar,
+    year: b.year,
+    month: b.month,
+    day: b.day,
+    hour: b.hour,
+    gender: b.gender,
+  })
+})
+
+const previewOpen = ref(false)
+const previewImage = ref('')
+
+async function onPreview() {
+  previewImage.value = ''
+  previewOpen.value = true
+  previewImage.value = await previewCard(shareCardEl.value, {})
+}
 function onShare() {
   shareCard(shareCardEl.value, buildShareOpts())
 }
 function onSave() {
   saveCard(shareCardEl.value, buildShareOpts())
 }
+
+onMounted(() => {
+  const q = normalizeQuery(route.query as Record<string, string | string[] | undefined>)
+  const hasInputs = ['year', 'month', 'day', 'hour'].some((k) => k in q)
+  if (!hasInputs) return
+
+  const b = ziweiStore.birth
+  ziweiStore.update({
+    calendar: q.calendar === 'lunar' ? 'lunar' : 'solar',
+    year: readIntInRange(q, 'year', 1900, 2100, b.year),
+    month: readIntInRange(q, 'month', 1, 12, b.month),
+    day: readIntInRange(q, 'day', 1, 31, b.day),
+    hour: readIntInRange(q, 'hour', 0, 23, b.hour),
+    gender: q.gender === 'female' ? 'female' : 'male',
+  })
+  void Promise.resolve().then(() => onPaipan())
+})
 
 </script>
 
@@ -106,13 +152,8 @@ function onSave() {
       </div>
     </div>
 
-    <div v-if="skeleton.revealed.value" ref="resultBannerEl" class="result-banner revealed">
-      <h2 class="result-banner-title">
-        <span class="result-banner-decor">◈</span>
-        {{ t('ziwei.resultBanner.title') }}
-        <span class="result-banner-decor">◈</span>
-      </h2>
-      <div class="result-banner-subtitle">{{ t('ziwei.resultBanner.subtitle') }}</div>
+    <div v-if="skeleton.revealed.value" ref="resultBannerEl">
+      <ResultBanner title-key="ziwei.resultBanner.title" subtitle-key="ziwei.resultBanner.subtitle" />
     </div>
 
     <div v-if="skeleton.revealed.value" class="result-zone revealed">
@@ -146,11 +187,8 @@ function onSave() {
       </div><!-- /ziwei-share-card -->
 
       <div class="action-bar">
-        <button type="button" class="gf-btn" @click="onShare">
+        <button type="button" class="gf-btn" @click="onPreview">
           {{ t('ziwei.btn.shareIcon') }} {{ t('ziwei.btn.share') }}
-        </button>
-        <button type="button" class="gf-btn gf-btn-outline" @click="onSave">
-          {{ t('ziwei.btn.saveIcon') }} {{ t('ziwei.btn.save') }}
         </button>
         <button type="button" class="gf-btn gf-btn-outline" @click="onRepaipan">
           {{ t('ziwei.btn.repaipanIcon') }} {{ t('ziwei.btn.repaipan') }}
@@ -180,10 +218,8 @@ function onSave() {
       </div>
     </main>
 
-    <div v-if="skeleton.revealed.value" ref="resultBannerEl" class="result-banner revealed">
-      <h2 class="result-banner-title">{{ t('ziwei.resultBanner.title') }}</h2>
-      <div class="result-banner-sub">{{ t('ziwei.resultBanner.subtitle') }}</div>
-      <div class="result-banner-line" />
+    <div v-if="skeleton.revealed.value" ref="resultBannerEl">
+      <ResultBanner title-key="ziwei.resultBanner.title" subtitle-key="ziwei.resultBanner.subtitle" />
     </div>
 
     <div v-if="skeleton.revealed.value" class="result-zone revealed">
@@ -215,8 +251,7 @@ function onSave() {
       </div><!-- /ziwei-share-card -->
 
       <div class="actions mn-container">
-        <button type="button" class="mn-btn" @click="onShare">{{ t('ziwei.btn.share') }}</button>
-        <button type="button" class="mn-btn mn-btn-outline" @click="onSave">{{ t('ziwei.btn.save') }}</button>
+        <button type="button" class="mn-btn" @click="onPreview">{{ t('ziwei.btn.share') }}</button>
         <button type="button" class="mn-btn mn-btn-ghost" @click="onRepaipan">{{ t('ziwei.btn.repaipan') }}</button>
       </div>
     </div>
@@ -236,4 +271,14 @@ function onSave() {
 
   <!-- 分享 / 保存的反馈 toast（fixed 定位） -->
   <ShareToast :state="toastState" />
+
+  <!-- 分享卡预览对话框 -->
+  <SharePreviewDialog
+    v-model:open="previewOpen"
+    :image="previewImage"
+    :share-url="shareUrl"
+    :disabled="!previewImage"
+    @save="onSave"
+    @share="onShare"
+  />
 </template>

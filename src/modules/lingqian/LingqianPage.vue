@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
 import ShareToast from '@/components/common/ShareToast.vue'
+import SharePreviewDialog from '@/components/common/SharePreviewDialog.vue'
+import ResultBanner from '@/components/common/ResultBanner.vue'
 import { useSkeletonReveal } from '@/composables/useSkeletonReveal'
 import { useShareCard } from '@/composables/useShareCard'
+import { buildShareUrl, normalizeQuery, readIntInRange } from '@/lib/shareUrl'
 
 import LingqianInput from './components/LingqianInput.vue'
 import LotteryTube from './components/LotteryTube.vue'
@@ -34,6 +37,7 @@ function normalizeLocale(v: unknown): LingqianLocale {
   return 'zh-CN'
 }
 const lingqianLocale = computed<LingqianLocale>(() => normalizeLocale(locale.value))
+const route = useRoute()
 const router = useRouter()
 const themeStore = useThemeStore()
 const lingqianStore = useLingqianStore()
@@ -200,7 +204,7 @@ function go(name: 'home') {
   router.push({ name })
 }
 
-const { toastState, shareCard, saveCard } = useShareCard()
+const { toastState, shareCard, saveCard, previewCard } = useShareCard()
 function buildShareOpts() {
   const item = result.value?.item
   return {
@@ -208,6 +212,28 @@ function buildShareOpts() {
     title: t('lingqian.share.title'),
     text: t('lingqian.share.text'),
   }
+}
+
+/**
+ * Deeplink 参数：本次抽到的签号 + topic（解读侧重）。
+ * 不带 question —— 个人心念。
+ */
+const shareUrl = computed(() => {
+  const item = result.value?.item
+  if (!item) return buildShareUrl('lingqian')
+  return buildShareUrl('lingqian', {
+    id: item.id,
+    topic: result.value?.topic ?? lingqianStore.preferredTopic,
+  })
+})
+
+const previewOpen = ref(false)
+const previewImage = ref('')
+
+async function onPreview() {
+  previewImage.value = ''
+  previewOpen.value = true
+  previewImage.value = await previewCard(shareCardEl.value, {})
 }
 function onShare() {
   shareCard(shareCardEl.value, buildShareOpts())
@@ -218,9 +244,30 @@ function onSave() {
 
 const showComputeError = computed(() => skeleton.revealed.value && result.value === null)
 
+/**
+ * 扫码 deeplink hydrate：URL 带 ?id=NN[&topic=...] 时，加载数据集后直接还原该签结果，
+ * 跳过抽签动画（视为"看分享卡"模式）。
+ *
+ * 不动 store.lastResult —— 视图层用临时 result 显示，避免污染用户自己上次抽到的签。
+ */
 onMounted(() => {
   currentTopic.value = topicFromPreference(lingqianStore.preferredTopic)
+  const q = normalizeQuery(route.query as Record<string, string | string[] | undefined>)
+  const deepId = readIntInRange(q, 'id', 1, 100, 0)
+
   void loadGuanyinData(lingqianLocale.value).then(() => {
+    if (deepId > 0) {
+      const item = getLingqianItemById(deepId, lingqianLocale.value)
+      if (item) {
+        const topic = topicFromPreference(q.topic ?? lingqianStore.preferredTopic)
+        result.value = { item, drawnAt: Date.now(), topic }
+        currentTopic.value = topic
+        centerpieceStage.value = 'hidden'
+        drawing.value = false
+        skeleton.revealImmediately()
+        return
+      }
+    }
     tryRestoreLastResult()
   })
 })
@@ -261,13 +308,8 @@ watch(
       </div>
     </div>
 
-    <div v-if="skeleton.revealed.value" ref="resultBannerEl" class="result-banner revealed">
-      <h2 class="result-banner-title">
-        <span class="result-banner-decor">◈</span>
-        {{ t('lingqian.resultBanner.title') }}
-        <span class="result-banner-decor">◈</span>
-      </h2>
-      <div class="result-banner-subtitle">{{ t('lingqian.resultBanner.subtitle') }}</div>
+    <div v-if="skeleton.revealed.value" ref="resultBannerEl">
+      <ResultBanner title-key="lingqian.resultBanner.title" subtitle-key="lingqian.resultBanner.subtitle" />
     </div>
 
     <div v-if="skeleton.revealed.value" class="result-zone revealed">
@@ -306,11 +348,8 @@ watch(
         </div>
 
         <div class="action-bar">
-          <button type="button" class="gf-btn" @click="onShare">
+          <button type="button" class="gf-btn" @click="onPreview">
             {{ t('lingqian.btn.shareIcon') }} {{ t('lingqian.btn.share') }}
-          </button>
-          <button type="button" class="gf-btn gf-btn-outline" @click="onSave">
-            {{ t('lingqian.btn.saveIcon') }} {{ t('lingqian.btn.save') }}
           </button>
           <button type="button" class="gf-btn gf-btn-outline" @click="onRepaipan">
             {{ t('lingqian.btn.repaipanIcon') }} {{ t('lingqian.btn.repaipan') }}
@@ -341,10 +380,8 @@ watch(
       </div>
     </main>
 
-    <div v-if="skeleton.revealed.value" ref="resultBannerEl" class="result-banner revealed">
-      <h2 class="result-banner-title">{{ t('lingqian.resultBanner.title') }}</h2>
-      <div class="result-banner-sub">{{ t('lingqian.resultBanner.subtitle') }}</div>
-      <div class="result-banner-line" />
+    <div v-if="skeleton.revealed.value" ref="resultBannerEl">
+      <ResultBanner title-key="lingqian.resultBanner.title" subtitle-key="lingqian.resultBanner.subtitle" />
     </div>
 
     <div v-if="skeleton.revealed.value" class="result-zone revealed">
@@ -378,8 +415,7 @@ watch(
         </div>
 
         <div class="actions mn-container">
-          <button type="button" class="mn-btn" @click="onShare">{{ t('lingqian.btn.share') }}</button>
-          <button type="button" class="mn-btn mn-btn-outline" @click="onSave">{{ t('lingqian.btn.save') }}</button>
+          <button type="button" class="mn-btn" @click="onPreview">{{ t('lingqian.btn.share') }}</button>
           <button type="button" class="mn-btn mn-btn-ghost" @click="onRepaipan">{{ t('lingqian.btn.repaipan') }}</button>
         </div>
       </template>
@@ -396,4 +432,13 @@ watch(
   <LotteryCenterpiece :item="result?.item ?? null" :stage="centerpieceStage" />
 
   <ShareToast :state="toastState" />
+
+  <SharePreviewDialog
+    v-model:open="previewOpen"
+    :image="previewImage"
+    :share-url="shareUrl"
+    :disabled="!previewImage"
+    @save="onSave"
+    @share="onShare"
+  />
 </template>

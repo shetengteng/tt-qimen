@@ -5,10 +5,10 @@ import { useRoute, useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
 import { useLocaleStore } from '@/stores/locale'
 import { BIRTH_STORE_KEY } from '@/composables/useBirthStore'
-import BirthForm from '@/modules/bazi/components/BirthForm.vue'
+import BirthForm from '@/components/common/BirthForm.vue'
 import ShareToast from '@/components/common/ShareToast.vue'
-import ShareQrcode from '@/components/common/ShareQrcode.vue'
 import SharePreviewDialog from '@/components/common/SharePreviewDialog.vue'
+import ResultBanner from '@/components/common/ResultBanner.vue'
 import { useSkeletonReveal } from '@/composables/useSkeletonReveal'
 import { useShareCard } from '@/composables/useShareCard'
 import { buildShareUrl, normalizeQuery, readIntInRange } from '@/lib/shareUrl'
@@ -164,13 +164,8 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
       </div>
     </div>
 
-    <div v-if="skeleton.revealed.value" ref="resultBannerEl" class="result-banner revealed">
-      <h2 class="result-banner-title">
-        <span class="result-banner-decor">◈</span>
-        {{ t('chenggu.resultBanner.title') }}
-        <span class="result-banner-decor">◈</span>
-      </h2>
-      <div class="result-banner-subtitle">{{ t('chenggu.resultBanner.subtitle') }}</div>
+    <div v-if="skeleton.revealed.value" ref="resultBannerEl">
+      <ResultBanner title-key="chenggu.resultBanner.title" subtitle-key="chenggu.resultBanner.subtitle" />
     </div>
 
     <div v-if="skeleton.revealed.value" class="result-zone revealed">
@@ -194,7 +189,6 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
             <PoemDisplay :result="result" />
             <InterpretBlock :result="result" />
           </div>
-          <ShareQrcode :url="shareUrl" />
         </div>
 
         <div class="action-bar">
@@ -233,10 +227,8 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
       </div>
     </main>
 
-    <div v-if="skeleton.revealed.value" ref="resultBannerEl" class="result-banner revealed">
-      <h2 class="result-banner-title">{{ t('chenggu.resultBanner.title') }}</h2>
-      <div class="result-banner-sub">{{ t('chenggu.resultBanner.subtitle') }}</div>
-      <div class="result-banner-line" />
+    <div v-if="skeleton.revealed.value" ref="resultBannerEl">
+      <ResultBanner title-key="chenggu.resultBanner.title" subtitle-key="chenggu.resultBanner.subtitle" />
     </div>
 
     <div v-if="skeleton.revealed.value" class="result-zone revealed">
@@ -262,7 +254,6 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
             <PoemDisplay :result="result" />
             <InterpretBlock :result="result" />
           </main>
-          <ShareQrcode :url="shareUrl" />
         </div>
 
         <div class="actions mn-container">
@@ -288,6 +279,7 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
   <SharePreviewDialog
     v-model:open="previewOpen"
     :image="previewImage"
+    :share-url="shareUrl"
     :disabled="!previewImage"
     @save="onSave"
     @share="onShare"

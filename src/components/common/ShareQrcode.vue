@@ -23,8 +23,14 @@ interface Props {
   url: string
   /** 渲染尺寸（边长，px），默认 96 */
   size?: number
+  /**
+   * 紧凑模式：仅显示二维码图本身，不渲染说明文字、不带顶部分割线。
+   * 用于 AppFooter 等需要把二维码与外部文字共存于一行的场景；默认 false 维持原样
+   * （在 share-card 底部独立成一行 + 提示文字）。
+   */
+  compact?: boolean
 }
-const props = withDefaults(defineProps<Props>(), { size: 96 })
+const props = withDefaults(defineProps<Props>(), { size: 96, compact: false })
 
 const { t } = useI18n()
 
@@ -64,7 +70,7 @@ watch(() => props.url, () => regenerate())
 </script>
 
 <template>
-  <div class="share-qrcode" v-if="dataUrl">
+  <div :class="['share-qrcode', { 'share-qrcode--compact': compact }]" v-if="dataUrl">
     <img
       :src="dataUrl"
       :width="size"
@@ -72,7 +78,7 @@ watch(() => props.url, () => regenerate())
       class="share-qrcode-img"
       :alt="t('common.share.qrcode.alt')"
     />
-    <div class="share-qrcode-hint">{{ t('common.share.qrcode.hint') }}</div>
+    <div v-if="!compact" class="share-qrcode-hint">{{ t('common.share.qrcode.hint') }}</div>
   </div>
 </template>
 
@@ -84,6 +90,14 @@ watch(() => props.url, () => regenerate())
   padding: 14px 16px;
   margin-top: 18px;
   border-top: 1px solid var(--border-soft, rgba(0, 0, 0, 0.06));
+}
+
+.share-qrcode--compact {
+  /* AppFooter 等紧凑场景：二维码与外部文字平铺一行，去掉额外的分隔线与边距，
+   * 让父容器决定整体留白与对齐。 */
+  padding: 0;
+  margin-top: 0;
+  border-top: none;
 }
 
 .share-qrcode-img {

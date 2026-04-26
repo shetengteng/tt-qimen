@@ -1,4 +1,20 @@
 <script setup lang="ts">
+/**
+ * BirthForm — 共享生辰输入组件（八字 / 紫微 / 称骨复用）
+ *
+ * 物理位置：`@/components/common/BirthForm.vue`
+ *
+ * 已知技术债（非本次范畴）：
+ *   - 模板内的 i18n key 仍使用 `bazi.field.*` / `bazi.calendar.*` / `bazi.gender.*` /
+ *     `bazi.hours` / `bazi.btn.paipan` 等命名，与组件位置不再匹配。
+ *   - 真正干净的方案是把 birth-input 相关的 i18n key 提到 `common.birthInput.*`，
+ *     但这会触动 zh-CN / zh-TW / en 三套词表与既有 8 个模块的引用，超出"物理移动"
+ *     这一最小变更范围，故本次仅迁移文件位置，i18n 重整留作 TODO。
+ *
+ * 复用方式：
+ *   - bazi: <BirthForm @paipan="onPaipan" />（用默认 bazi.inputCardTitle / bazi.btn.paipan）
+ *   - ziwei / chenggu: <BirthForm :title="t('xx.inputCardTitle')" :primary-label="t('xx.btn.paipan')" />
+ */
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'

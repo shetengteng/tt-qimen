@@ -24,6 +24,9 @@ export const DEFAULT_BIRTH: BirthInput = {
   gender: 'male',
 }
 
+/** 姓名长度限制（命名学常识：单姓 1 字 + 名 1~2 字 / 复姓 2 字 + 名 1~2 字 → 4 字内最常见，宽松到 16 兼容外文） */
+export const NAME_MAX_LENGTH = 16
+
 /**
  * 判定 birth 是否仍处于初始默认值（用于决定首屏要不要自动排盘）。
  * 仅比对参与排盘计算的字段；longitude / birthplace 不影响。
@@ -40,10 +43,24 @@ export function isDefaultBirth(b: BirthInput): boolean {
   )
 }
 
+/**
+ * 全局用户态。
+ *
+ * 字段说明：
+ *  - `birth`：生辰输入，跨模块共享（八字 / 紫微 / 称骨 / 黄历 / 灵签 / 小六壬 / 解梦）
+ *  - `name`：姓名（可选）。为后续多个用途做"骨架"准备：
+ *      · 分享卡截图 fileName（如 `bazi-王某某-1990-05-20.png`）
+ *      · 姓名学模块的输入与全局 name 双向同步（目前 xingming 仍持有自己的 store，
+ *        待后续重构时统一到本 store）
+ *      · 命盘报告标题
+ *    本字段当前可空（""），各模块在消费侧需处理空值（不要假设非空）。
+ */
 export const useUserStore = defineStore('user', () => {
   const birth = useStorage<BirthInput>('tt-qimen:birth', { ...DEFAULT_BIRTH }, undefined, {
     mergeDefaults: true,
   })
+
+  const name = useStorage<string>('tt-qimen:name', '')
 
   function update(patch: Partial<BirthInput>) {
     birth.value = { ...birth.value, ...patch }
@@ -53,7 +70,19 @@ export const useUserStore = defineStore('user', () => {
     birth.value = { ...DEFAULT_BIRTH }
   }
 
+  /**
+   * 设置姓名。
+   * - 自动 trim：去除首尾空白（避免 localStorage 内存空白姓名）
+   * - 长度上限按 NAME_MAX_LENGTH 截断（防御过长输入污染 storage / UI）
+   * - 不做内容校验：允许中英文、连字符、空格在中间（如 "Alice Wang"）
+   */
+  function setName(next: string) {
+    const trimmed = (next ?? '').trim().slice(0, NAME_MAX_LENGTH)
+    name.value = trimmed
+  }
+
+  const hasName = computed(() => name.value.length > 0)
   const isDefault = computed(() => isDefaultBirth(birth.value))
 
-  return { birth, update, reset, isDefault }
+  return { birth, name, update, reset, setName, hasName, isDefault }
 })

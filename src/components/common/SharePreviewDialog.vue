@@ -6,13 +6,16 @@
  *   1. 收到 PNG dataURL 后展示缩略图，让用户在分享 / 保存前先看一眼成品；
  *   2. 三个操作：关闭 · 保存到本地 · 系统分享（按钮顺序与移动端原生 share sheet 习惯一致）；
  *   3. 复用 jm-dialog 骨架（base.css 中已是站点通用 dialog skeleton）；
- *   4. 不重复二维码逻辑：二维码已在卡片内，缩略图直接体现，Dialog 内不再单独渲染。
+ *   4. 二维码不进截图：share-card 截图本身不再嵌二维码（保持卡片"干净"），
+ *      而是把"含本次入参"的二维码作为弹框 UI 的一部分渲染在缩略图下方——
+ *      用户在弹框里能扫，扫后跳到 shareUrl 复现本次排盘；
+ *      但保存 / 分享出去的 PNG 不含二维码，避免二维码喧宾夺主。
  *
  * 用法：
  *   <SharePreviewDialog
  *     v-model:open="previewOpen"
  *     :image="previewImage"
- *     :share-options="shareOpts"
+ *     :share-url="shareUrl"
  *     @save="onSave"
  *     @share="onShare"
  *   />
@@ -21,6 +24,7 @@
  *   - 在打开 Dialog 之前用 useShareCard.previewCard() 生成 dataURL；
  *   - 在 @save / @share 回调里走 saveCard / shareCard 完成最终落盘 / 调起 Web Share。
  */
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   DialogRoot,
@@ -31,15 +35,23 @@ import {
   DialogClose,
 } from 'reka-ui'
 import { X } from 'lucide-vue-next'
+import { useThemeStore } from '@/stores/theme'
+import ShareQrcode from '@/components/common/ShareQrcode.vue'
 
 interface Props {
   open: boolean
   /** 缩略图 dataURL（PNG） */
   image: string
+  /**
+   * 完整可扫描的 shareUrl（含模块入参，由父组件 buildShareUrl 生成）。
+   * 用于在弹框底部渲染"复现本次排盘"二维码；
+   * 不参与 share-card 截图，保存 / 分享出去的 PNG 不含二维码。
+   */
+  shareUrl?: string
   /** 是否禁用（生成中、空 image 时） */
   disabled?: boolean
 }
-const props = withDefaults(defineProps<Props>(), { disabled: false })
+const props = withDefaults(defineProps<Props>(), { disabled: false, shareUrl: '' })
 
 const emit = defineEmits<{
   (e: 'update:open', value: boolean): void
@@ -48,6 +60,10 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const themeStore = useThemeStore()
+// 选用 .jm-dialog-content--gf / --mn 主题修饰符，让 SharePreviewDialog 拿到背景色与边框；
+// 如果只挂 .jm-dialog-content（base.css 中仅是定位骨架），整张弹框会透明，看到下面的 share-card。
+const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
 function setOpen(value: boolean) {
   emit('update:open', value)
@@ -68,6 +84,7 @@ function onShareClick() {
       <DialogOverlay class="jm-dialog-overlay" />
       <DialogContent
         class="jm-dialog-content share-preview-dialog"
+        :class="isGuofeng ? 'jm-dialog-content--gf' : 'jm-dialog-content--mn'"
         :aria-describedby="undefined"
       >
         <header class="jm-dialog-head">
@@ -92,6 +109,9 @@ function onShareClick() {
           </div>
           <div class="share-preview-placeholder" v-else>
             {{ t('common.share.preview.generating') }}
+          </div>
+          <div v-if="shareUrl" class="share-preview-qrcode-wrap">
+            <ShareQrcode :url="shareUrl" :size="64" compact />
           </div>
           <p class="share-preview-hint">
             {{ t('common.share.preview.hint') }}
@@ -167,11 +187,17 @@ function onShareClick() {
   font-size: 13px;
 }
 
+.share-preview-qrcode-wrap {
+  display: flex;
+  justify-content: center;
+}
+
 .share-preview-hint {
   margin: 0;
   font-size: 13px;
   line-height: 1.6;
   color: var(--text-muted, #6b6b6b);
+  text-align: center;
 }
 
 .share-preview-foot {

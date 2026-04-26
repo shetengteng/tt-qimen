@@ -24,17 +24,18 @@ import {
 import { X } from 'lucide-vue-next'
 import { useThemeStore } from '@/stores/theme'
 import DreamDetail from './DreamDetail.vue'
+import ShareQrcode from '@/components/common/ShareQrcode.vue'
 import type { DreamEntry } from '../types'
 
 const props = defineProps<{
   open: boolean
   entry: DreamEntry | null
+  shareUrl?: string
 }>()
 
 const emit = defineEmits<{
   (e: 'update:open', value: boolean): void
-  (e: 'share'): void
-  (e: 'save'): void
+  (e: 'preview'): void
   (e: 'another'): void
 }>()
 
@@ -76,6 +77,7 @@ function setOpen(value: boolean) {
         <div class="jm-dialog-body">
           <div ref="shareCardEl" class="jm-share-card">
             <DreamDetail :entry="entry" />
+            <ShareQrcode v-if="shareUrl" :url="shareUrl" />
           </div>
         </div>
 
@@ -84,17 +86,9 @@ function setOpen(value: boolean) {
             type="button"
             class="jm-action-btn"
             :class="isGuofeng ? 'gf-btn' : 'mn-btn'"
-            @click="emit('share')"
+            @click="emit('preview')"
           >
             <template v-if="isGuofeng">{{ t('jiemeng.btn.shareIcon') }} </template>{{ t('jiemeng.btn.share') }}
-          </button>
-          <button
-            type="button"
-            class="jm-action-btn"
-            :class="isGuofeng ? 'gf-btn gf-btn-outline' : 'mn-btn mn-btn-outline'"
-            @click="emit('save')"
-          >
-            <template v-if="isGuofeng">{{ t('jiemeng.btn.saveIcon') }} </template>{{ t('jiemeng.btn.save') }}
           </button>
           <button
             type="button"

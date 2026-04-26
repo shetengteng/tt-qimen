@@ -22,6 +22,7 @@ import type {
 } from 'iztro/lib/i18n'
 
 import type { BirthInput } from '@/stores/user'
+import { FortuneError } from '@/lib/errors'
 import {
   EARTHLY_BRANCH_TO_SLOT,
   IZTRO_PALACE_TO_KEY,
@@ -393,8 +394,30 @@ function buildMeta(astrolabe: IFunctionalAstrolabe, birth: BirthInput, hour: num
 
 /* ---------------- 主入口 ---------------- */
 
-/** 排盘并组装领域对象 ZiweiChart。失败时抛错，由调用方决定 fallback。 */
+/**
+ * 排盘并组装领域对象 ZiweiChart。
+ *
+ * 异常策略（统一为 FortuneError）：
+ *   - iztro 因非法日期 / 跨范围而抛出原生 Error → wrap 为 FortuneError
+ *     code: 'invalid-input'，并把原 err 放入 cause 保留调试上下文
+ *   - 调用方可统一用 `FortuneError.is(err)` 区分类型
+ */
 export function buildZiweiChart(birth: BirthInput): ZiweiChart {
+  try {
+    return buildZiweiChartInternal(birth)
+  } catch (err) {
+    if (FortuneError.is(err)) throw err
+    throw new FortuneError({
+      module: 'ziwei',
+      code: 'invalid-input',
+      message: `[ziwei] calculate failed: ${(err as Error)?.message ?? 'unknown'}`,
+      cause: err,
+      details: { birth: { ...birth } },
+    })
+  }
+}
+
+function buildZiweiChartInternal(birth: BirthInput): ZiweiChart {
   const dateStr = fmtDate(birth.year, birth.month, birth.day)
   const timeIndex = hourToTimeIndex(birth.hour)
   const gender = toGender(birth.gender)

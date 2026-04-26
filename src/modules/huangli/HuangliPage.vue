@@ -17,13 +17,15 @@
  *   4. 动作栏（分享/保存/回到今日）
  *   5. DayDetailDialog（点击月历某日后弹框展示，独立于分享卡）
  */
-import { computed, ref, shallowRef } from 'vue'
+import { computed, onMounted, ref, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
 import ShareToast from '@/components/common/ShareToast.vue'
+import SharePreviewDialog from '@/components/common/SharePreviewDialog.vue'
 import { useShareCard } from '@/composables/useShareCard'
 import { FortuneError, type FortuneErrorCode } from '@/lib/errors'
+import { buildShareUrl, normalizeQuery, readIntInRange } from '@/lib/shareUrl'
 
 import DateQueryCard from './components/DateQueryCard.vue'
 import TodayCard from './components/TodayCard.vue'
@@ -39,6 +41,7 @@ import { getHuangliDay } from './core/huangli'
 import type { HuangliDay, HuangliMonthDay } from './types'
 
 const { t } = useI18n()
+const route = useRoute()
 const router = useRouter()
 const themeStore = useThemeStore()
 const store = useHuangliStore()
@@ -175,7 +178,7 @@ function go(name: 'home') {
   router.push({ name })
 }
 
-const { toastState, shareCard, saveCard } = useShareCard()
+const { toastState, shareCard, saveCard, previewCard } = useShareCard()
 function buildShareOpts() {
   const iso = day.value?.dateIso ?? 'today'
   return {
@@ -186,6 +189,37 @@ function buildShareOpts() {
 }
 function onShare() { shareCard(shareCardEl.value, buildShareOpts()) }
 function onSave() { saveCard(shareCardEl.value, buildShareOpts()) }
+
+const shareUrl = computed(() => {
+  return buildShareUrl('huangli', {
+    year: store.year,
+    month: store.month,
+    day: store.day,
+  })
+})
+
+const previewOpen = ref(false)
+const previewImage = ref('')
+async function onPreview() {
+  if (!shareCardEl.value) return
+  previewImage.value = ''
+  previewOpen.value = true
+  try {
+    previewImage.value = await previewCard(shareCardEl.value, { fileName: buildShareOpts().fileName })
+  } catch (err) {
+    console.error('[huangli] preview failed:', err)
+    previewOpen.value = false
+  }
+}
+
+onMounted(() => {
+  const q = normalizeQuery(route.query)
+  if (Object.keys(q).length === 0) return
+  const y = readIntInRange(q, 'year', 1901, 2099, store.year)
+  const m = readIntInRange(q, 'month', 1, 12, store.month)
+  const d = readIntInRange(q, 'day', 1, 31, store.day)
+  store.setDate(y, m, d)
+})
 </script>
 
 <template>
@@ -219,11 +253,8 @@ function onSave() { saveCard(shareCardEl.value, buildShareOpts()) }
         </div>
 
         <div class="action-bar">
-          <button type="button" class="gf-btn" @click="onShare">
+          <button type="button" class="gf-btn" @click="onPreview">
             {{ t('huangli.btn.shareIcon') }} {{ t('huangli.btn.share') }}
-          </button>
-          <button type="button" class="gf-btn gf-btn-outline" @click="onSave">
-            {{ t('huangli.btn.saveIcon') }} {{ t('huangli.btn.save') }}
           </button>
           <button type="button" class="gf-btn gf-btn-outline" @click="onBackToToday">
             {{ t('huangli.btn.resetIcon') }} {{ t('huangli.btn.reset') }}
@@ -265,8 +296,7 @@ function onSave() { saveCard(shareCardEl.value, buildShareOpts()) }
         </div>
 
         <div class="actions mn-container">
-          <button type="button" class="mn-btn" @click="onShare">{{ t('huangli.btn.share') }}</button>
-          <button type="button" class="mn-btn mn-btn-outline" @click="onSave">{{ t('huangli.btn.save') }}</button>
+          <button type="button" class="mn-btn" @click="onPreview">{{ t('huangli.btn.share') }}</button>
           <button type="button" class="mn-btn mn-btn-ghost" @click="onBackToToday">
             {{ t('huangli.btn.reset') }}
           </button>
@@ -288,4 +318,13 @@ function onSave() { saveCard(shareCardEl.value, buildShareOpts()) }
   />
 
   <ShareToast :state="toastState" />
+
+  <SharePreviewDialog
+    v-model:open="previewOpen"
+    :image="previewImage"
+    :share-url="shareUrl"
+    :disabled="!previewImage"
+    @save="onSave"
+    @share="onShare"
+  />
 </template>
