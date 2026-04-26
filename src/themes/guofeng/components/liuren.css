@@ -108,8 +108,16 @@
   letter-spacing: 0.3em;
 }
 
+/**
+ * 六宫圆点位定位 —— 走极坐标（六边形顶点）：
+ *   半径 R = 175px（480 wheel；中心圆 140 + 圆边缘留白），保证相邻两圆心距 = R = 175 > 120 直径 + 35 间隙
+ *   --tx / --ty 由 data-pos 决定，统一通过 transform 平移
+ *   active / 缩放保持 transform 链式：translate(基准) translate(向量) scale(...)
+ */
 :root[data-theme='guofeng'] .lr-palace {
   position: absolute;
+  top: 50%;
+  left: 50%;
   width: 120px;
   height: 120px;
   border-radius: 50%;
@@ -121,12 +129,16 @@
   justify-content: center;
   text-align: center;
   box-shadow: var(--gf-shadow-sm);
-  transition: all 0.3s;
+  transition: transform 0.3s, box-shadow 0.3s, background 0.3s, border-color 0.3s;
   cursor: default;
+  --tx: 0px;
+  --ty: 0px;
+  --scale: 1;
+  transform: translate(-50%, -50%) translate(var(--tx), var(--ty)) scale(var(--scale));
 }
 
 :root[data-theme='guofeng'] .lr-palace:hover {
-  transform: scale(1.06);
+  --scale: 1.06;
   box-shadow: var(--gf-shadow-md);
 }
 
@@ -134,7 +146,7 @@
   background: linear-gradient(135deg, #f9e4d4, #f5d0ba);
   border-color: var(--gf-cinnabar);
   box-shadow: 0 8px 20px rgba(194, 58, 42, 0.35);
-  transform: scale(1.05);
+  --scale: 1.05;
 }
 
 :root[data-theme='guofeng'] .lr-palace.clickable {
@@ -168,16 +180,14 @@
   margin-top: 4px;
 }
 
-/* 六宫位置：从顶部顺时针 12 / 2 / 4 / 6 / 8 / 10 点钟 */
-:root[data-theme='guofeng'] .lr-palace[data-pos='1'] { top: 0; left: 50%; transform: translateX(-50%); }
-:root[data-theme='guofeng'] .lr-palace[data-pos='2'] { top: 25%; right: 0; }
-:root[data-theme='guofeng'] .lr-palace[data-pos='3'] { bottom: 25%; right: 0; }
-:root[data-theme='guofeng'] .lr-palace[data-pos='4'] { bottom: 0; left: 50%; transform: translateX(-50%); }
-:root[data-theme='guofeng'] .lr-palace[data-pos='5'] { bottom: 25%; left: 0; }
-:root[data-theme='guofeng'] .lr-palace[data-pos='6'] { top: 25%; left: 0; }
-
-:root[data-theme='guofeng'] .lr-palace[data-pos='1'].active { transform: translateX(-50%) scale(1.05); }
-:root[data-theme='guofeng'] .lr-palace[data-pos='4'].active { transform: translateX(-50%) scale(1.05); }
+/* 六宫极坐标顶点：12 / 2 / 4 / 6 / 8 / 10 点钟 —— R = 175px
+   sin60° ≈ 0.866，所以 (Rx, Ry) = (R*0.866, R*0.5) = (151.55, 87.5) */
+:root[data-theme='guofeng'] .lr-palace[data-pos='1'] { --tx: 0px;        --ty: -175px; }
+:root[data-theme='guofeng'] .lr-palace[data-pos='2'] { --tx: 151.55px;   --ty: -87.5px; }
+:root[data-theme='guofeng'] .lr-palace[data-pos='3'] { --tx: 151.55px;   --ty: 87.5px; }
+:root[data-theme='guofeng'] .lr-palace[data-pos='4'] { --tx: 0px;        --ty: 175px; }
+:root[data-theme='guofeng'] .lr-palace[data-pos='5'] { --tx: -151.55px;  --ty: 87.5px; }
+:root[data-theme='guofeng'] .lr-palace[data-pos='6'] { --tx: -151.55px;  --ty: -87.5px; }
 
 /* ---------- 分面 tabs ---------- */
 :root[data-theme='guofeng'] .lr-aspect-tabs {
@@ -332,4 +342,12 @@
   :root[data-theme='guofeng'] .lr-yiji { grid-template-columns: 1fr; }
   :root[data-theme='guofeng'] .lr-time-grid { grid-template-columns: repeat(2, 1fr); }
   :root[data-theme='guofeng'] .lr-reading-card { padding: var(--gf-space-lg); }
+
+  /* 移动端 R = 110px：320 wheel - 84 圆 → max R = 118，留 8px 边缘余量 */
+  :root[data-theme='guofeng'] .lr-palace[data-pos='1'] { --tx: 0px;       --ty: -110px; }
+  :root[data-theme='guofeng'] .lr-palace[data-pos='2'] { --tx: 95.26px;   --ty: -55px; }
+  :root[data-theme='guofeng'] .lr-palace[data-pos='3'] { --tx: 95.26px;   --ty: 55px; }
+  :root[data-theme='guofeng'] .lr-palace[data-pos='4'] { --tx: 0px;       --ty: 110px; }
+  :root[data-theme='guofeng'] .lr-palace[data-pos='5'] { --tx: -95.26px;  --ty: 55px; }
+  :root[data-theme='guofeng'] .lr-palace[data-pos='6'] { --tx: -95.26px;  --ty: -55px; }
 }
