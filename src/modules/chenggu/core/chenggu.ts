@@ -14,13 +14,15 @@
  *   5. 总骨重 = 四者相加；浮点取整避免 0.6 + 0.9 + 1.6 + 1.0 = 4.0999… 的抖动
  *   6. 歌诀匹配：Math.abs(a - b) < 0.01（设计文档 §8 风险已述）
  *
- * 异常：
- *   - 查表缺失 → 抛 Error（已通过 51 段 + 60 甲子覆盖所有合法取值，理论不会触发）
- *   - 骨重总和越界（<2.1 或 >7.1）→ 抛 Error 由 UI 层显示排盘失败
+ * 异常（统一 FortuneError，module: 'chenggu'）：
+ *   - 查表缺失 → code: 'invariant'（已通过 51 段 + 60 甲子覆盖所有合法取值，理论不会触发）
+ *   - 骨重总和越界（<2.1 或 >7.1）→ code: 'out-of-range'，由 UI 层显示排盘失败
+ *   - 歌诀未匹配 → code: 'invariant'（同上理论不该发生，是兜底防御）
  */
 
 import { SolarTime, LunarHour } from 'tyme4ts'
 import type { BirthInput } from '@/stores/user'
+import { FortuneError } from '@/lib/errors'
 import type { ChengguResult } from '../types'
 import {
   YEAR_WEIGHT,
@@ -110,20 +112,33 @@ export function calculateChenggu(birth: BirthInput): ChengguResult {
   const h = HOUR_WEIGHT[hourIndex]
 
   if (y === undefined || m === undefined || d === undefined || h === undefined) {
-    throw new Error(
-      `[chenggu] weight table miss: year=${yearGanzhi} month=${monthNum} day=${dayNum} hour=${hourIndex}`,
-    )
+    throw new FortuneError({
+      module: 'chenggu',
+      code: 'invariant',
+      message: `[chenggu] weight table miss: year=${yearGanzhi} month=${monthNum} day=${dayNum} hour=${hourIndex}`,
+      details: { yearGanzhi, monthNum, dayNum, hourIndex, hasY: y !== undefined, hasM: m !== undefined, hasD: d !== undefined, hasH: h !== undefined },
+    })
   }
 
   const total = round1(y + m + d + h)
 
   if (total < WEIGHT_MIN - 0.01 || total > WEIGHT_MAX + 0.01) {
-    throw new Error(`[chenggu] total weight ${total} out of range [${WEIGHT_MIN}, ${WEIGHT_MAX}]`)
+    throw new FortuneError({
+      module: 'chenggu',
+      code: 'out-of-range',
+      message: `[chenggu] total weight ${total} out of range [${WEIGHT_MIN}, ${WEIGHT_MAX}]`,
+      details: { total, min: WEIGHT_MIN, max: WEIGHT_MAX, breakdown: { y, m, d, h } },
+    })
   }
 
   const poem = findPoem(total)
   if (!poem) {
-    throw new Error(`[chenggu] no poem matched for weight ${total}`)
+    throw new FortuneError({
+      module: 'chenggu',
+      code: 'invariant',
+      message: `[chenggu] no poem matched for weight ${total}`,
+      details: { total, breakdown: { y, m, d, h } },
+    })
   }
 
   return {
