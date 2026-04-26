@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, provide, ref, shallowRef } from 'vue'
+import { computed, provide, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
+import { useLocaleStore } from '@/stores/locale'
 import { BIRTH_STORE_KEY } from '@/composables/useBirthStore'
 import BirthForm from '@/modules/bazi/components/BirthForm.vue'
 import ShareToast from '@/components/common/ShareToast.vue'
@@ -19,6 +20,7 @@ import type { ChengguResult } from './types'
 const { t } = useI18n()
 const router = useRouter()
 const themeStore = useThemeStore()
+const localeStore = useLocaleStore()
 const chengguStore = useChengguStore()
 provide(BIRTH_STORE_KEY, chengguStore)
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
@@ -37,7 +39,7 @@ const skeleton = useSkeletonReveal({
 
 function onPaipan() {
   try {
-    result.value = calculateChenggu(chengguStore.birth)
+    result.value = calculateChenggu(chengguStore.birth, localeStore.id)
   } catch (err) {
     console.error('[chenggu] calculate failed:', err)
     result.value = null
@@ -49,6 +51,18 @@ function onRepaipan() {
   result.value = null
   skeleton.reset(() => inputCardEl.value)
 }
+
+watch(
+  () => localeStore.id,
+  () => {
+    if (!result.value) return
+    try {
+      result.value = calculateChenggu(chengguStore.birth, localeStore.id)
+    } catch (err) {
+      console.error('[chenggu] re-localize failed:', err)
+    }
+  },
+)
 
 function go(name: 'home') {
   router.push({ name })

@@ -18,8 +18,10 @@ const poemLines = computed<string[]>(() => props.result.poem.poem)
 const weightTitle = computed<string>(() => props.result.poem.weight)
 
 /**
- * 歌诀文案规则：原文不做任何翻译 / 简繁转换，中英繁三语皆保留古文原貌（设计文档 §8）。
- * 仅解读部分的标题与副眉走 i18n。
+ * 歌诀文案规则：
+ *  - zh-CN / en：保留古文原貌（不译；设计文档 §8）
+ *  - zh-TW    ：通过 calculateChenggu(locale) 在 core 层用 chinese-conv.tify 转繁体
+ *  - 本组件直接消费 props.result.poem.{poem,weight}，不再感知 locale
  */
 </script>
 

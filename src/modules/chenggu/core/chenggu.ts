@@ -18,9 +18,15 @@
  *   - 查表缺失 → code: 'invariant'（已通过 51 段 + 60 甲子覆盖所有合法取值，理论不会触发）
  *   - 骨重总和越界（<2.1 或 >7.1）→ code: 'out-of-range'，由 UI 层显示排盘失败
  *   - 歌诀未匹配 → code: 'invariant'（同上理论不该发生，是兜底防御）
+ *
+ * i18n（locale 参数，默认 'zh-CN'）：
+ *   - zh-TW：歌诀 / 白话解读 / displayWeight / breakdown labels 全部走 chinese-conv.tify 转繁体（沿用 liuren palacesLocale 模式）
+ *   - en   ：古文不译，与 zh-CN 同步原中文（用户口径：歌诀文化属性强，禁止意译）
+ *   - 仅文本字段受影响；数值 / level / weightNumber 等数据本体不变
  */
 
 import { SolarTime, LunarHour } from 'tyme4ts'
+import { tify } from 'chinese-conv'
 import type { BirthInput } from '@/stores/user'
 import { FortuneError } from '@/lib/errors'
 import type { ChengguResult } from '../types'
@@ -33,7 +39,8 @@ import {
   WEIGHT_MIN,
   WEIGHT_MAX,
 } from '../data/weights'
-import { findPoem, formatWeight } from '../data/poems'
+import { formatWeight } from '../data/poems'
+import { getLocalizedPoem, type ChengguLocale } from '../data/poemsLocale'
 
 /** 把 BirthInput 统一映射到 SolarTime —— 与 bazi 模块同一思路 */
 function toSolarTime(birth: BirthInput): SolarTime {
@@ -93,8 +100,20 @@ function formatLunarDay(d: number): string {
   return `廿${['一', '二', '三', '四', '五', '六', '七', '八', '九'][d - 21]}`
 }
 
-/** 主函数：生辰 → 称骨结果 */
-export function calculateChenggu(birth: BirthInput): ChengguResult {
+/**
+ * 主函数：生辰 → 称骨结果
+ *
+ * locale 参数仅影响 result 内的文本字段：
+ *   - displayWeight / breakdown.{year,month,day,hour}.label / poem.{weight,poem,description}
+ *   - zh-TW：通过 tify 把简体转繁体（与 liuren palacesLocale 同款方案）
+ *   - zh-CN / en：保持原中文（古文不译；用户口径）
+ *
+ * 数值 / 等级 / 内部 enum 不受 locale 影响。
+ */
+export function calculateChenggu(
+  birth: BirthInput,
+  locale: ChengguLocale = 'zh-CN',
+): ChengguResult {
   const solar = toSolarTime(birth)
   const lunarHour = solar.getLunarHour()
   const eightChar = lunarHour.getEightChar()
@@ -131,7 +150,7 @@ export function calculateChenggu(birth: BirthInput): ChengguResult {
     })
   }
 
-  const poem = findPoem(total)
+  const poem = getLocalizedPoem(total, locale)
   if (!poem) {
     throw new FortuneError({
       module: 'chenggu',
@@ -141,20 +160,16 @@ export function calculateChenggu(birth: BirthInput): ChengguResult {
     })
   }
 
+  const tx = (s: string) => (locale === 'zh-TW' ? tify(s) : s)
+
   return {
     totalWeight: total,
-    displayWeight: formatWeight(total),
+    displayWeight: tx(formatWeight(total)),
     breakdown: {
-      year: { label: `${yearGanzhi}年`, weight: y },
-      month: {
-        label: `${formatLunarMonth(monthNum, lunarMonth.isLeap())}生`,
-        weight: m,
-      },
-      day: { label: `${formatLunarDay(dayNum)}日`, weight: d },
-      hour: {
-        label: `${HOUR_BRANCH_NAMES[hourIndex]}时生`,
-        weight: h,
-      },
+      year: { label: tx(`${yearGanzhi}年`), weight: y },
+      month: { label: tx(`${formatLunarMonth(monthNum, lunarMonth.isLeap())}生`), weight: m },
+      day: { label: tx(`${formatLunarDay(dayNum)}日`), weight: d },
+      hour: { label: tx(`${HOUR_BRANCH_NAMES[hourIndex]}时生`), weight: h },
     },
     poem,
   }
