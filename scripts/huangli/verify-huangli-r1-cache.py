@@ -9,7 +9,7 @@ Coverage:
   - Cache survives Vue reactivity (returns referentially equal object on hit)
 
 Run:
-  python3 scripts/verify-huangli-r1-cache.py
+  python3 scripts/huangli/verify-huangli-r1-cache.py
 """
 from __future__ import annotations
 

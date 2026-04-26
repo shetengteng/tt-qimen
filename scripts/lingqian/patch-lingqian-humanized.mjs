@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url'
 import { LINGQIAN_HUMANIZED } from './lingqian-humanized.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const ROOT = path.resolve(__dirname, '..')
+const ROOT = path.resolve(__dirname, '..', '..')
 const outPath = path.join(ROOT, 'src/modules/lingqian/data/guanyin.json')
 
 const data = JSON.parse(fs.readFileSync(outPath, 'utf8'))

@@ -16,7 +16,7 @@
  *   - 台湾词习惯以手工 overrides 补充即可
  *
  * 使用：
- *   node scripts/build-lingqian-zhtw.mjs
+ *   node scripts/lingqian/build-lingqian-zhtw.mjs
  */
 
 import { readFileSync, writeFileSync } from 'node:fs'
@@ -25,7 +25,7 @@ import { dirname, resolve } from 'node:path'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-const PROJECT_ROOT = resolve(__dirname, '..')
+const PROJECT_ROOT = resolve(__dirname, '..', '..')
 
 const SRC_PATH = resolve(PROJECT_ROOT, 'src/modules/lingqian/data/guanyin.json')
 const OUT_PATH = resolve(PROJECT_ROOT, 'src/modules/lingqian/data/guanyin.zh-TW.json')

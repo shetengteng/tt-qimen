@@ -18,7 +18,7 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 BASE = "http://localhost:5180/#/huangli"
-OUT_DIR = Path(__file__).resolve().parent.parent / "design" / "screenshots" / "2026-04-25-cal-audit"
+OUT_DIR = Path(__file__).resolve().parents[2] / "design" / "screenshots" / "2026-04-25-cal-audit"
 
 
 def shoot(theme: str) -> None:

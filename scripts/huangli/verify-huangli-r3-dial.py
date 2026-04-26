@@ -12,7 +12,7 @@ Coverage:
   - 双主题 + 移动端三组截图
 
 Run:
-  python3 scripts/verify-huangli-r3-dial.py
+  python3 scripts/huangli/verify-huangli-r3-dial.py
 """
 from __future__ import annotations
 

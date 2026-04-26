@@ -8,7 +8,7 @@
  * 注意：本数组与 guanyin.json 中的同 id 条目**完全一致**（包含 level / poem / 标题 /
  *       jieyue / xianji / topics / diangu / raw 备份），fallback 触发时与主数据无差异。
  *       这 6 签覆盖：上吉(1) / 中凶(7,100) / 中平(33,50,72)。
- *       若要修改文案，请修改 scripts/lingqian-humanized.mjs（白话版）或公版数据源（古文版），
+ *       若要修改文案，请修改 scripts/lingqian/lingqian-humanized.mjs（白话版）或公版数据源（古文版），
  *       重新跑 build-lingqian-dataset.mjs，然后**手工同步**本文件。
  */
 

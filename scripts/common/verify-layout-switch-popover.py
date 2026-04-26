@@ -8,7 +8,7 @@
   * 选 list 中另一项后：localStorage 写入正确、点击关闭面板、新 trigger 文字更新
   * 选语言后再选回原值，确保切换可逆
 
-调用：python3 scripts/verify-layout-switch-popover.py
+调用：python3 scripts/common/verify-layout-switch-popover.py
 """
 
 import sys

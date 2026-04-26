@@ -23,7 +23,7 @@ import re
 import sys
 from pathlib import Path
 
-TODO_DIR = Path(__file__).resolve().parent.parent / "design" / "todo"
+TODO_DIR = Path(__file__).resolve().parents[2] / "design" / "todo"
 
 # Task 标记出现在两种位置：
 #   1) 表格单元格：行内任意位置出现 `[x]` `[~]` `[ ]`（用反引号包围、表格内一般至少一个 | 在前）

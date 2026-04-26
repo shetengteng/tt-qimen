@@ -15,7 +15,7 @@ Coverage:
   Part 4 — A11y: SancaiCard 有 role="group" + aria-label 含等级文案
 
 Run:
-  python3 scripts/verify-xingming-sancai.py
+  python3 scripts/xingming/verify-xingming-sancai.py
 """
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ from playwright.sync_api import sync_playwright
 
 BASE = "http://localhost:5180/#/xingming"
 
-SHOTS_DIR = Path(__file__).resolve().parent.parent / "design" / "screenshots" / "2026-04-25-xingming-sancai"
+SHOTS_DIR = Path(__file__).resolve().parents[2] / "design" / "screenshots" / "2026-04-25-xingming-sancai"
 SHOTS_DIR.mkdir(parents=True, exist_ok=True)
 
 # 5 等级 × 5 个姓名样本（已经过 enumerateSancaiTable 离线验证）
@@ -280,7 +280,7 @@ def main() -> int:
         for f in failures:
             print(f"  - {f}")
         return 1
-    print(f"  ALL PASS  · screenshots saved to {SHOTS_DIR.relative_to(SHOTS_DIR.parent.parent.parent)}/")
+    print(f"  ALL PASS  · screenshots saved to {SHOTS_DIR.relative_to(Path(__file__).resolve().parents[2])}/")
     return 0
 
 

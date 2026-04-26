@@ -11,7 +11,7 @@ Coverage:
     when invalid input triggers FortuneError via the form submit path.
 
 Run:
-  python3 scripts/verify-xingming-fortune-error.py
+  python3 scripts/xingming/verify-xingming-fortune-error.py
 """
 from __future__ import annotations
 

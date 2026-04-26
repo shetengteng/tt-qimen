@@ -7,7 +7,7 @@ Coverage:
       → "view-day" button → DayDetailDialog opens
 
 Run:
-  PYTHONPATH=. python3 scripts/verify-huangli-a2-b3.py
+  PYTHONPATH=. python3 scripts/huangli/verify-huangli-a2-b3.py
 """
 from __future__ import annotations
 

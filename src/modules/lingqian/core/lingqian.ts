@@ -170,6 +170,6 @@ const LOCALE_IMPORTERS: Record<LingqianLocale, () => Promise<unknown>> = {
   'zh-CN': () => import('../data/guanyin.json'),
   'zh-TW': () => import('../data/guanyin.zh-TW.json'),
   // en: 骨架版（level + poem 已就绪，jieyue/xianji/topics/diangu 暂为中文占位带 __todo_en 标记）
-  // 正文英文翻译由后续批次逐签填入 scripts/build-lingqian-en.mjs 的翻译表，完成后重跑脚本即可
+  // 正文英文翻译由后续批次逐签填入 scripts/lingqian/build-lingqian-en.mjs 的翻译表，完成后重跑脚本即可
   en: () => import('../data/guanyin.en.json'),
 }

@@ -21,7 +21,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const ROOT = path.resolve(__dirname, '..')
+const ROOT = path.resolve(__dirname, '..', '..')
 const DATA = path.join(ROOT, 'src/modules/lingqian/data/guanyin.json')
 const FALLBACK_TS = path.join(ROOT, 'src/modules/lingqian/data/items.ts')
 

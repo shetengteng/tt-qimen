@@ -4,7 +4,7 @@
  *
  * 设计：
  *   1. EXPANSIONS 里每条 {id, field, text} 即为新文本（手工撰写 / AI 辅助）。
- *   2. 脚本把新文本写回 scripts/lingqian-humanized.mjs（替换对应字段的整行）。
+ *   2. 脚本把新文本写回 scripts/lingqian/lingqian-humanized.mjs（替换对应字段的整行）。
  *   3. 同时把新文本写到 src/modules/lingqian/data/guanyin.json（保持双源一致）。
  *   4. 不触碰其他字段，不改动 raw 子对象。
  *
@@ -25,7 +25,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const ROOT = path.resolve(__dirname, '..')
+const ROOT = path.resolve(__dirname, '..', '..')
 
 /** @type {Array<{id:number, field:'travel'|'health', text:string}>} */
 const EXPANSIONS = [
@@ -142,7 +142,7 @@ for (const field of ['travel', 'health']) {
 }
 
 // ---------- Step 1: 改写 lingqian-humanized.mjs ----------
-const humanizedPath = path.join(ROOT, 'scripts/lingqian-humanized.mjs')
+const humanizedPath = path.join(ROOT, 'scripts/lingqian/lingqian-humanized.mjs')
 let src = fs.readFileSync(humanizedPath, 'utf8')
 
 let replaced = 0
@@ -168,7 +168,7 @@ for (const exp of EXPANSIONS) {
   replaced += 1
 }
 fs.writeFileSync(humanizedPath, src, 'utf8')
-console.log(`[ok] rewrote ${replaced} entries in scripts/lingqian-humanized.mjs`)
+console.log(`[ok] rewrote ${replaced} entries in scripts/lingqian/lingqian-humanized.mjs`)
 
 // ---------- Step 2: 同步到 guanyin.json ----------
 const jsonPath = path.join(ROOT, 'src/modules/lingqian/data/guanyin.json')
