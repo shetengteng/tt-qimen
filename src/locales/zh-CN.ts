@@ -23,6 +23,22 @@ export default {
     nodata: '暂无数据',
     loading: '推算中…',
     underConstruction: '此模块正在建设中，敬请期待。',
+    share: {
+      preview: {
+        title: '分享预览',
+        closeAria: '关闭预览',
+        imageAlt: '分享卡预览图',
+        generating: '正在生成预览图…',
+        hint: '右下角二维码包含本次入参，扫描即可在他人设备上复现同一排盘。',
+        close: '关闭',
+        save: '保存到本地',
+        share: '系统分享',
+      },
+      qrcode: {
+        alt: '复现此排盘的二维码',
+        hint: '扫码可在他人设备上一键复现本次排盘',
+      },
+    },
   },
 
   nav: {

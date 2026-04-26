@@ -23,6 +23,22 @@ export default {
     nodata: 'No data',
     loading: 'Computing…',
     underConstruction: 'This module is under construction. Stay tuned.',
+    share: {
+      preview: {
+        title: 'Share Preview',
+        closeAria: 'Close preview',
+        imageAlt: 'Share card preview',
+        generating: 'Generating preview…',
+        hint: 'The QR code in the corner carries the same inputs — scan it on another device to recreate this reading.',
+        close: 'Close',
+        save: 'Save image',
+        share: 'Share',
+      },
+      qrcode: {
+        alt: 'QR code to reproduce this reading',
+        hint: 'Scan to recreate this reading on another device.',
+      },
+    },
   },
 
   nav: {

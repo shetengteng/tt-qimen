@@ -99,6 +99,41 @@ export function useShareCard() {
     })
   }
 
+  /**
+   * 预览：截图为 PNG dataURL，让上层 Dialog 直接展示成 <img>。
+   *
+   * 与 saveCard / shareCard 解耦——这里只生成图、不触发下载、不抛 toast 成功反馈，
+   * 让 Dialog 自己掌控展示节奏；任何失败都返回空字符串并触发 error toast，
+   * 上层只需判 `!image` 即可禁用 save / share 按钮。
+   */
+  async function previewCard(
+    el: HTMLElement | null | undefined,
+    opt: Pick<ShareOptions, 'scale'> = {},
+  ): Promise<string> {
+    if (!el) {
+      showToast('未找到可截图的内容', 'error')
+      return ''
+    }
+    try {
+      const blob = await snapshotToBlob(el, opt.scale)
+      return await blobToDataUrl(blob)
+    } catch (e) {
+      console.error('[useShareCard] previewCard failed:', e)
+      showToast('图片生成失败，请重试', 'error')
+      return ''
+    }
+  }
+
+  /** Blob → dataURL（FileReader），用于 Dialog 内 <img> 直接渲染 */
+  function blobToDataUrl(blob: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : '')
+      reader.onerror = () => reject(reader.error ?? new Error('FileReader 失败'))
+      reader.readAsDataURL(blob)
+    })
+  }
+
   /** 触发浏览器下载 */
   function downloadBlob(blob: Blob, fileName: string) {
     const url = URL.createObjectURL(blob)
@@ -220,6 +255,7 @@ export function useShareCard() {
     toastState,
     shareCard,
     saveCard,
+    previewCard,
     showToast,
   }
 }

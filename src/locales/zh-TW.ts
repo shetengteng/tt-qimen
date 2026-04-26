@@ -23,6 +23,22 @@ export default {
     nodata: '暫無資料',
     loading: '推算中…',
     underConstruction: '此模組建設中，敬請期待。',
+    share: {
+      preview: {
+        title: '分享預覽',
+        closeAria: '關閉預覽',
+        imageAlt: '分享卡預覽圖',
+        generating: '正在生成預覽圖…',
+        hint: '右下角二維碼包含本次入參，掃描即可在他人裝置上重現同一排盤。',
+        close: '關閉',
+        save: '儲存到本機',
+        share: '系統分享',
+      },
+      qrcode: {
+        alt: '重現此排盤的二維碼',
+        hint: '掃碼可在他人裝置上一鍵重現本次排盤',
+      },
+    },
   },
 
   nav: {

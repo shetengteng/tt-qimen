@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import { computed, provide, ref, shallowRef, watch } from 'vue'
+import { computed, onMounted, provide, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
 import { useLocaleStore } from '@/stores/locale'
 import { BIRTH_STORE_KEY } from '@/composables/useBirthStore'
 import BirthForm from '@/modules/bazi/components/BirthForm.vue'
 import ShareToast from '@/components/common/ShareToast.vue'
+import ShareQrcode from '@/components/common/ShareQrcode.vue'
+import SharePreviewDialog from '@/components/common/SharePreviewDialog.vue'
 import { useSkeletonReveal } from '@/composables/useSkeletonReveal'
 import { useShareCard } from '@/composables/useShareCard'
+import { buildShareUrl, normalizeQuery, readIntInRange } from '@/lib/shareUrl'
 import WeightBalance from './components/WeightBalance.vue'
 import WeightTable from './components/WeightTable.vue'
 import PoemDisplay from './components/PoemDisplay.vue'
@@ -18,6 +21,7 @@ import { calculateChenggu } from './core/chenggu'
 import type { ChengguResult } from './types'
 
 const { t } = useI18n()
+const route = useRoute()
 const router = useRouter()
 const themeStore = useThemeStore()
 const localeStore = useLocaleStore()
@@ -68,7 +72,7 @@ function go(name: 'home') {
   router.push({ name })
 }
 
-const { toastState, shareCard, saveCard } = useShareCard()
+const { toastState, shareCard, saveCard, previewCard } = useShareCard()
 function buildShareOpts() {
   const b = chengguStore.birth
   const mm = String(b.month).padStart(2, '0')
@@ -79,12 +83,61 @@ function buildShareOpts() {
     text: t('chenggu.share.text'),
   }
 }
+
+/**
+ * Deeplink 用 query：仅取参与称骨计算的最小必要字段（calendar/year/month/day/hour/gender）。
+ * 排除 minute / longitude / birthplace —— 称骨算法不依赖这些字段。
+ */
+const shareUrl = computed(() => {
+  const b = chengguStore.birth
+  return buildShareUrl('chenggu', {
+    calendar: b.calendar,
+    year: b.year,
+    month: b.month,
+    day: b.day,
+    hour: b.hour,
+    gender: b.gender,
+  })
+})
+
+const previewOpen = ref(false)
+const previewImage = ref('')
+
+async function onPreview() {
+  previewImage.value = ''
+  previewOpen.value = true
+  previewImage.value = await previewCard(shareCardEl.value, {})
+}
 function onShare() {
   shareCard(shareCardEl.value, buildShareOpts())
 }
 function onSave() {
   saveCard(shareCardEl.value, buildShareOpts())
 }
+
+/**
+ * 扫码进入：若 URL 带 calendar/year/.../gender 等字段，hydrate 到 store 并自动排盘一次。
+ *
+ * 仅在 onMounted 一次性消费 query；后续用户编辑表单不再受 query 影响。
+ * 不在 watch route 内重复触发，避免 push 时（含路由 query 变化）出现意外重排盘。
+ */
+onMounted(() => {
+  const q = normalizeQuery(route.query as Record<string, string | string[] | undefined>)
+  const hasInputs = ['year', 'month', 'day', 'hour'].some((k) => k in q)
+  if (!hasInputs) return
+
+  const b = chengguStore.birth
+  chengguStore.update({
+    calendar: q.calendar === 'lunar' ? 'lunar' : 'solar',
+    year: readIntInRange(q, 'year', 1900, 2100, b.year),
+    month: readIntInRange(q, 'month', 1, 12, b.month),
+    day: readIntInRange(q, 'day', 1, 31, b.day),
+    hour: readIntInRange(q, 'hour', 0, 23, b.hour),
+    gender: q.gender === 'female' ? 'female' : 'male',
+  })
+  // nextTick 等 BirthForm 同步状态再 paipan，避免输入框还停在旧值
+  void Promise.resolve().then(() => onPaipan())
+})
 
 const showComputeError = computed(() => skeleton.revealed.value && result.value === null)
 </script>
@@ -141,14 +194,12 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
             <PoemDisplay :result="result" />
             <InterpretBlock :result="result" />
           </div>
+          <ShareQrcode :url="shareUrl" />
         </div>
 
         <div class="action-bar">
-          <button type="button" class="gf-btn" @click="onShare">
+          <button type="button" class="gf-btn" @click="onPreview">
             {{ t('chenggu.btn.shareIcon') }} {{ t('chenggu.btn.share') }}
-          </button>
-          <button type="button" class="gf-btn gf-btn-outline" @click="onSave">
-            {{ t('chenggu.btn.saveIcon') }} {{ t('chenggu.btn.save') }}
           </button>
           <button type="button" class="gf-btn gf-btn-outline" @click="onRepaipan">
             {{ t('chenggu.btn.repaipanIcon') }} {{ t('chenggu.btn.repaipan') }}
@@ -211,11 +262,11 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
             <PoemDisplay :result="result" />
             <InterpretBlock :result="result" />
           </main>
+          <ShareQrcode :url="shareUrl" />
         </div>
 
         <div class="actions mn-container">
-          <button type="button" class="mn-btn" @click="onShare">{{ t('chenggu.btn.share') }}</button>
-          <button type="button" class="mn-btn mn-btn-outline" @click="onSave">{{ t('chenggu.btn.save') }}</button>
+          <button type="button" class="mn-btn" @click="onPreview">{{ t('chenggu.btn.share') }}</button>
           <button type="button" class="mn-btn mn-btn-ghost" @click="onRepaipan">{{ t('chenggu.btn.repaipan') }}</button>
         </div>
       </template>
@@ -234,5 +285,12 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
     </div>
   </div>
 
+  <SharePreviewDialog
+    v-model:open="previewOpen"
+    :image="previewImage"
+    :disabled="!previewImage"
+    @save="onSave"
+    @share="onShare"
+  />
   <ShareToast :state="toastState" />
 </template>
