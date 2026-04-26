@@ -2,17 +2,17 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
-import { PALACES_ORDER } from '../data/palaces'
+import { useLocaleStore } from '@/stores/locale'
+import { getPalaceDisplayName } from '../data/palaceLabels'
+import type { LiurenLocale } from '../data/palacesLocale'
 import type { PalaceName } from '../types'
 
 /**
  * 速览条：当前农历 + 月起/日数/时辰三步路径。
- * 路径数组若为空则显示占位"—"。
+ * 路径数组若为空则显示占位"—"；非空时按当前 locale 显示宫名。
  */
 interface Props {
-  /** 农历日期汉字，如"三月初二" */
   lunarDateLabel: string
-  /** 时辰汉字，如"午时" */
   hourBranchLabel: string
   /** 三步经过的宫位；未起卦为 [] */
   path: readonly PalaceName[]
@@ -21,7 +21,13 @@ const props = defineProps<Props>()
 
 const { t } = useI18n()
 const themeStore = useThemeStore()
+const localeStore = useLocaleStore()
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
+
+function dispName(p: PalaceName | undefined): string {
+  if (!p) return '—'
+  return getPalaceDisplayName(p, localeStore.id as LiurenLocale)
+}
 
 const items = computed(() => [
   {
@@ -31,17 +37,17 @@ const items = computed(() => [
   },
   {
     label: t('liuren.timeBar.monthStep'),
-    value: props.path[0] ?? '—',
+    value: dispName(props.path[0]),
     accent: !!props.path[0],
   },
   {
     label: t('liuren.timeBar.dayStep'),
-    value: props.path[1] ?? '—',
+    value: dispName(props.path[1]),
     accent: !!props.path[1],
   },
   {
     label: t('liuren.timeBar.hourStep'),
-    value: props.path[2] ?? '—',
+    value: dispName(props.path[2]),
     accent: !!props.path[2],
   },
 ])

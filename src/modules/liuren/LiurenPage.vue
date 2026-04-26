@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
+import { useLocaleStore } from '@/stores/locale'
 import ShareToast from '@/components/common/ShareToast.vue'
 import { useSkeletonReveal } from '@/composables/useSkeletonReveal'
 import { useShareCard } from '@/composables/useShareCard'
@@ -16,11 +17,13 @@ import { useLiurenStore } from './stores/liurenStore'
 import { calculateLiuren } from './core/liuren'
 import { seedFromDate, formatCustomLabel } from './core/immediate'
 import type { Aspect, LiurenResult } from './types'
+import { type LiurenLocale } from './data/palacesLocale'
 
 const { t } = useI18n()
 const router = useRouter()
 const themeStore = useThemeStore()
 const liurenStore = useLiurenStore()
+const localeStore = useLocaleStore()
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
 const inputCardEl = ref<HTMLElement | null>(null)
@@ -47,6 +50,13 @@ onMounted(() => {
   timer = window.setInterval(() => {
     now.value = new Date()
   }, 60_000)
+  /**
+   * 缓存恢复：仅 custom 模式 + lastComputed 与当前 store 一致时静默重算并跳过骨架。
+   * immediate 模式刷新就丢弃 result（避免显示昨日的卦）；用户需点击"起卦"获得当前时间的占卜。
+   */
+  if (liurenStore.shouldRestore) {
+    onPaipan(true)
+  }
 })
 
 onBeforeUnmount(() => {
@@ -74,29 +84,51 @@ const displaySeed = computed(() =>
   liurenStore.mode === 'immediate' ? immediateSeed.value : customSeed.value,
 )
 
-function onPaipan() {
+/**
+ * 起卦核心。silent=true 时跳过骨架动画，用于 onMounted 静默恢复 / locale 切换重算。
+ * 成功时记录 custom 模式快照（immediate 模式由 store 自动忽略），
+ * 失败时清空缓存避免下次刷新恢复一个脏值。
+ */
+function onPaipan(silent = false) {
   try {
     const seed = liurenStore.mode === 'immediate'
       ? seedFromDate(new Date())
       : customSeed.value
-    result.value = calculateLiuren({
-      month: seed.month,
-      day: seed.day,
-      hour: seed.hour,
-      lunarDateLabel: seed.lunarDateLabel,
-      hourBranchLabel: seed.hourBranchLabel,
-      aspect: liurenStore.aspect,
-      question: liurenStore.question,
-    })
+    result.value = calculateLiuren(
+      {
+        month: seed.month,
+        day: seed.day,
+        hour: seed.hour,
+        lunarDateLabel: seed.lunarDateLabel,
+        hourBranchLabel: seed.hourBranchLabel,
+        aspect: liurenStore.aspect,
+        question: liurenStore.question,
+      },
+      localeStore.id as LiurenLocale,
+    )
+    liurenStore.recordComputed()
   } catch (err) {
     console.error('[liuren] calculate failed:', err)
     result.value = null
+    liurenStore.clearComputed()
   }
-  skeleton.start(() => resultBannerEl.value)
+  if (silent) {
+    skeleton.revealImmediately()
+  } else {
+    skeleton.start(() => resultBannerEl.value)
+  }
 }
+
+watch(
+  () => localeStore.id,
+  () => {
+    if (result.value) onPaipan(true)
+  },
+)
 
 function onRepaipan() {
   result.value = null
+  liurenStore.clearComputed()
   skeleton.reset(() => inputCardEl.value)
 }
 
@@ -148,7 +180,7 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
       <div ref="inputCardEl">
         <LiurenInput
           :current-hour-label="immediateSeed.hourBranchLabel"
-          @paipan="onPaipan"
+          @paipan="onPaipan(false)"
           @reset="onRepaipan"
         />
       </div>
@@ -221,7 +253,7 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
       <div ref="inputCardEl">
         <LiurenInput
           :current-hour-label="immediateSeed.hourBranchLabel"
-          @paipan="onPaipan"
+          @paipan="onPaipan(false)"
           @reset="onRepaipan"
         />
       </div>

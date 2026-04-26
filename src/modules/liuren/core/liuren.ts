@@ -17,7 +17,9 @@
  */
 
 import type { Aspect, LiurenResult, PalaceName } from '../types'
-import { PALACES, PALACES_ORDER } from '../data/palaces'
+import { PALACES_ORDER } from '../data/palaces'
+import { getLocalizedPalace, type LiurenLocale } from '../data/palacesLocale'
+import { FortuneError } from '@/lib/errors'
 
 export interface CalculateInput {
   /** 农历月 1-12 */
@@ -38,11 +40,19 @@ export interface CalculateInput {
 
 function assertIntInRange(v: number, min: number, max: number, name: string): void {
   if (!Number.isInteger(v) || v < min || v > max) {
-    throw new Error(`[liuren] ${name} must be integer in [${min}, ${max}], got ${v}`)
+    throw new FortuneError({
+      module: 'liuren',
+      code: 'invalid-input',
+      message: `[liuren] ${name} must be integer in [${min}, ${max}], got ${v}`,
+      details: { field: name, min, max, raw: v },
+    })
   }
 }
 
-export function calculateLiuren(input: CalculateInput): LiurenResult {
+export function calculateLiuren(
+  input: CalculateInput,
+  locale: LiurenLocale = 'zh-CN',
+): LiurenResult {
   assertIntInRange(input.month, 1, 12, 'month')
   assertIntInRange(input.day, 1, 30, 'day')
   assertIntInRange(input.hour, 1, 12, 'hour')
@@ -60,7 +70,7 @@ export function calculateLiuren(input: CalculateInput): LiurenResult {
   path.push(PALACES_ORDER[pos])
 
   const finalName = PALACES_ORDER[pos]
-  const palace = PALACES[finalName]
+  const palace = getLocalizedPalace(finalName, locale)
 
   return {
     palace,
