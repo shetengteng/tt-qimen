@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, shallowRef, watch } from 'vue'
+import { computed, onMounted, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
@@ -11,6 +11,7 @@ import NameInput from './components/NameInput.vue'
 import StrokesBreakdown from './components/StrokesBreakdown.vue'
 import FiveGrids from './components/FiveGrids.vue'
 import GridDetail from './components/GridDetail.vue'
+import SancaiCard from './components/SancaiCard.vue'
 import OverallGauge from './components/OverallGauge.vue'
 import { useXingmingStore } from './stores/xingmingStore'
 import { calculateXingming } from './core/xingming'
@@ -106,6 +107,8 @@ async function runCalculate(silent = false) {
     )
     computeError.value = null
     errorMessage.value = null
+    // 成功路径才记 lastComputed —— 失败 (rareChar / FortuneError) 不应让下次刷新自动恢复错误页
+    store.recordComputed(store.input)
   } catch (err) {
     if (err instanceof StrokesNotFoundError) {
       errorMessage.value = t('xingming.computeError.rareChar', { char: err.char })
@@ -120,6 +123,8 @@ async function runCalculate(silent = false) {
       console.error('[xingming] calculate failed (non-FortuneError):', err)
     }
     result.value = null
+    // 失败路径主动清掉 lastComputed，避免后续被错误恢复
+    store.clearComputed()
   }
 }
 
@@ -136,10 +141,26 @@ watch(
   },
 )
 
+/**
+ * onMounted 缓存恢复（2026-04-26 P-A 缓存轮）：
+ *   - 若 store 中存在 lastComputed 快照、且与当前 input 一致 → silent runCalculate + revealImmediately
+ *   - 用户体验：刷新页面 / 跨 session 进入，上次结果直接出现在视野，无需再点"开始测名"
+ *   - 失败的输入不会被恢复（runCalculate 失败时主动 clearComputed，见上方）
+ */
+onMounted(async () => {
+  if (store.shouldRestore()) {
+    await runCalculate(true)
+    if (result.value) {
+      skeleton.revealImmediately()
+    }
+  }
+})
+
 function onRecalculate() {
   result.value = null
   errorMessage.value = null
   computeError.value = null
+  store.clearComputed() // 重新测算时不要保留 cached 状态
   skeleton.reset(() => inputCardEl.value)
 }
 
@@ -219,6 +240,10 @@ const showComputeError = computed(
               <GridDetail :result="result" />
             </div>
 
+            <div class="gf-divider"><span>◆ {{ t('xingming.section.sancai') }} ◆</span></div>
+
+            <SancaiCard :result="result" />
+
             <div class="gf-divider"><span>◆ {{ t('xingming.section.overall') }} ◆</span></div>
 
             <OverallGauge :result="result" />
@@ -293,6 +318,12 @@ const showComputeError = computed(
               <FiveGrids :result="result" />
               <GridDetail :result="result" />
             </div>
+          </main>
+
+          <hr class="mn-divider">
+
+          <main class="mn-container xm-container" style="padding-top: 0;">
+            <SancaiCard :result="result" />
           </main>
 
           <hr class="mn-divider">
