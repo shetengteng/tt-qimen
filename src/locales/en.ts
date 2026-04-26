@@ -731,7 +731,48 @@ export default {
 
     section: {
       fivegrids: 'Five Grids',
+      sancai: 'Three Talents',
       overall: 'Overall Score',
+    },
+
+    sancai: {
+      sectionTitle: 'Three Talents (Sancai)',
+      sectionSubtitle: 'Heaven · Man · Earth — five-element triad · 5-tier verdict',
+      slotLabel: {
+        tian: 'Heaven',
+        ren: 'Man',
+        di: 'Earth',
+      },
+      level: {
+        great: 'Auspicious',
+        good: 'Favorable',
+        mid: 'Mild',
+        bad: 'Unfavorable',
+        worst: 'Inauspicious',
+      },
+      relation: {
+        sheng: 'Generates',
+        ke: 'Conquers',
+        tongHe: 'Same',
+        xie: 'Drained',
+        hao: 'Subdued',
+      },
+      relationFull: {
+        sheng: 'Generating',
+        ke: 'Conquering',
+        tongHe: 'Harmonizing',
+        xie: 'Being Drained',
+        hao: 'Being Subdued',
+      },
+      summary: {
+        great: 'Three Talents in mutual generation — a stable foundation.',
+        good: 'Strong support and forward momentum.',
+        mid: 'Neither clashing nor opposing — steady but neutral.',
+        bad: 'One conflict point — handle with awareness.',
+        worst: 'Layered conflicts — guard against setbacks.',
+      },
+      hint: 'The Three Talents take their five-elements from the Heaven, Man, and Earth grids. The Generating (sheng), Conquering (ke), and Harmonizing (tongHe) relations decide a 5-tier verdict, independent from the overall score.',
+      diagramAria: 'Three Talents: {tian} {tianToRen} {ren} {renToDi} {di}, level {level}',
     },
 
     overall: {
@@ -749,6 +790,7 @@ export default {
         poor: 'a configuration that needs more cultivation',
       },
       summary: '"{name}" shows {badgeWord}: Man-Grid {renElement} · {renLevel}, Total-Grid {zongElement} · {zongLevel}; overall score {score} / 100.',
+      gaugeAria: 'Overall score gauge, score {score} out of 100, rating: {badge}',
     },
 
     skeleton: {

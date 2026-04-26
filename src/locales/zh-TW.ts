@@ -724,7 +724,48 @@ export default {
 
     section: {
       fivegrids: '五格推演',
+      sancai: '三才配置',
       overall: '綜合評分',
+    },
+
+    sancai: {
+      sectionTitle: '三才配置',
+      sectionSubtitle: '天 · 人 · 地 三才五行 · 五等級判定',
+      slotLabel: {
+        tian: '天才',
+        ren: '人才',
+        di: '地才',
+      },
+      level: {
+        great: '大吉',
+        good: '吉',
+        mid: '中吉',
+        bad: '凶',
+        worst: '大凶',
+      },
+      relation: {
+        sheng: '生',
+        ke: '剋',
+        tongHe: '比和',
+        xie: '洩',
+        hao: '耗',
+      },
+      relationFull: {
+        sheng: '相生',
+        ke: '相剋',
+        tongHe: '比和',
+        xie: '洩氣',
+        hao: '受剋',
+      },
+      summary: {
+        great: '三才相生 · 基業穩固',
+        good: '生扶有力 · 順勢可成',
+        mid: '不衝不悖 · 守成可安',
+        bad: '一處生剋 · 須留意應對',
+        worst: '層層相剋 · 需慎防波折',
+      },
+      hint: '三才取自天/人/地三格的姓名學五行；五行間生 (順) 剋 (逆) 比和 (同) 三種關係決定吉凶等級，獨立於綜合評分。',
+      diagramAria: '三才配置：{tian} {tianToRen} {ren} {renToDi} {di}，等級 {level}',
     },
 
     overall: {
@@ -742,6 +783,7 @@ export default {
         poor: '需多磨礪',
       },
       summary: '「{name}」整體五格{badgeWord}，人格 {renElement} · {renLevel}，總格 {zongElement} · {zongLevel}；綜合評分 {score} / 100。',
+      gaugeAria: '綜合評分儀表盤，得分 {score} 分，等級：{badge}',
     },
 
     skeleton: {

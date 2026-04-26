@@ -34,6 +34,7 @@ import {
   type NumerologyLocale,
 } from '../data/numerology'
 import { getStrokesDetailBatch } from './strokes'
+import { getSancaiVerdict } from '../data/sancai'
 import { FortuneError } from '@/lib/errors'
 
 /** 汉字范围校验（CJK 统一汉字基本区） */
@@ -239,6 +240,8 @@ export async function calculateXingming(
   ])
   const grids: Record<GridName, GridInfo> = { tian, ren, di, wai, zong }
 
+  const sancai = getSancaiVerdict(grids)
+
   const overallScore = computeOverallScore(grids)
   const overallBadge = scoreToBadge(overallScore)
   const overallBadgeKey = scoreToBadgeKey(overallScore)
@@ -249,6 +252,7 @@ export async function calculateXingming(
     givenLen,
     chars,
     grids,
+    sancai,
     overallScore,
     overallBadge,
     overallBadgeKey,

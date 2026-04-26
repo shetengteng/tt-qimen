@@ -48,8 +48,9 @@
 }
 
 /* ---- 字拆解卡 ---- */
+/* max-width 统一为 820px (与 wuge-layout / sancai / score-card 一致；name-input 例外保 640) */
 :root[data-theme='minimal'] .xm-breakdown {
-  max-width: 720px;
+  max-width: 820px;
   margin: 0 auto var(--mn-space-8);
   padding: var(--mn-space-6);
 }
@@ -120,8 +121,9 @@
 }
 
 /* ---- 五格两列布局 ---- */
+/* max-width 由 1000 收窄到 820 与其他模块统一；双栏 1fr 1fr 单栏 ≈390px 足够 */
 :root[data-theme='minimal'] .xm-wuge-layout {
-  max-width: 1000px;
+  max-width: 820px;
   margin: 0 auto var(--mn-space-8);
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -256,7 +258,7 @@
 
 /* ---- 综合评分卡 ---- */
 :root[data-theme='minimal'] .xm-score-card {
-  max-width: 720px;
+  max-width: 820px;
   margin: var(--mn-space-8) auto;
   background: linear-gradient(135deg, var(--mn-accent-soft), #f3f1fa);
   border: 1px solid var(--mn-accent);
@@ -272,49 +274,78 @@
 :root[data-theme='minimal'] .xm-gauge {
   width: 100%;
   display: block;
+  overflow: visible;
 }
 :root[data-theme='minimal'] .xm-gauge-track {
   stroke: var(--mn-border);
   stroke-width: 14;
-  stroke-linecap: round;
+  stroke-linecap: butt;
 }
-:root[data-theme='minimal'] .xm-gauge-fill {
-  stroke: var(--mn-accent);
+/* 4 段彩弧 — 简约：差(red)/中(amber)/良(emerald)/优(accent 紫) */
+:root[data-theme='minimal'] .xm-gauge-seg {
   stroke-width: 14;
-  stroke-linecap: round;
-  transition: stroke-dashoffset 0.8s ease;
+  stroke-linecap: butt;
+  fill: none;
 }
-:root[data-theme='minimal'] .xm-gauge-needle {
-  stroke: var(--mn-ink);
-  stroke-width: 2.5;
-  stroke-linecap: round;
-  transition: transform 0.8s cubic-bezier(0.4, 1.4, 0.5, 1);
+:root[data-theme='minimal'] .xm-gauge-seg.is-bad {
+  stroke: var(--mn-danger, #ef4444);
+}
+:root[data-theme='minimal'] .xm-gauge-seg.is-mid {
+  stroke: var(--mn-warning, #f59e0b);
+}
+:root[data-theme='minimal'] .xm-gauge-seg.is-good {
+  stroke: var(--mn-success, #10b981);
+}
+:root[data-theme='minimal'] .xm-gauge-seg.is-great {
+  stroke: var(--mn-accent);
+}
+:root[data-theme='minimal'] .xm-gauge-needle-group {
   transform-origin: 100px 110px;
+  transition: transform 0.18s linear;
+}
+/*
+ * 5 点锥形针：针根 1.4px 落入 hub-outer (r=9)，针腰 1.4px 流线，针尖在弧顶外 4px
+ * 不画 stroke 描边；drop-shadow 在白底上保持轻盈
+ */
+:root[data-theme='minimal'] .xm-gauge-needle {
+  fill: var(--mn-ink);
+  filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.22));
+}
+:root[data-theme='minimal'] .xm-gauge-hub-outer {
+  fill: var(--mn-bg);
+  stroke: var(--mn-border);
+  stroke-width: 1.2;
 }
 :root[data-theme='minimal'] .xm-gauge-hub {
   fill: var(--mn-accent);
-  stroke: white;
-  stroke-width: 1.5;
+  stroke: var(--mn-bg);
+  stroke-width: 1;
 }
 :root[data-theme='minimal'] .xm-score-center {
   position: absolute;
-  bottom: 12px;
+  bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
+  pointer-events: none;
 }
 :root[data-theme='minimal'] .xm-score-center .xm-score-num {
-  font-size: 34px;
+  font-size: 32px;
   font-weight: 700;
-  color: var(--mn-accent);
+  color: var(--mn-ink);
   letter-spacing: -0.02em;
   line-height: 1;
+  font-variant-numeric: tabular-nums;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
 }
 :root[data-theme='minimal'] .xm-score-center .xm-score-num small {
-  font-size: 13px;
-  font-weight: 400;
+  font-size: 11px;
+  font-weight: 500;
   color: var(--mn-ink-muted);
-  margin-left: 4px;
+  letter-spacing: 0.05em;
+  margin-left: 2px;
 }
 :root[data-theme='minimal'] .xm-score-label {
   font-size: 12px;
@@ -386,7 +417,9 @@
 :root[data-theme='minimal'] .xm-score-desc {
   color: var(--mn-ink-soft);
   line-height: 1.8;
-  max-width: 480px;
+  /* 2026-04-26: 480 → 720。同 guofeng 理由——简约 480px 综评文案常断 2 行
+     且尾部余几个字孤悬；放到 720 让默认文案单行收，长文案自然换行。 */
+  max-width: 720px;
   margin: 0 auto;
   font-size: 14px;
 }
@@ -407,6 +440,9 @@
   :root[data-theme='minimal'] .xm-wuge-layout {
     grid-template-columns: 1fr;
   }
+  :root[data-theme='minimal'] .xm-wuge-layout > * {
+    min-width: 0;
+  }
   :root[data-theme='minimal'] .xm-chars {
     gap: var(--mn-space-2);
   }
@@ -419,6 +455,16 @@
   }
   :root[data-theme='minimal'] .xm-fivegrids {
     min-height: 340px;
+    width: 100%;
+    max-width: 100%;
+    padding: var(--mn-space-5);
+  }
+  :root[data-theme='minimal'] .xm-fivegrids .xm-chart {
+    gap: 8px;
+  }
+  :root[data-theme='minimal'] .xm-ge-cell {
+    min-width: 0;
+    padding: var(--mn-space-3) var(--mn-space-2);
   }
 }
 @media (max-width: 640px) {
@@ -427,5 +473,192 @@
   }
   :root[data-theme='minimal'] .xm-container .page-hero h1 {
     font-size: 32px;
+  }
+}
+
+/* =============================================================
+ * 三才配置卡片（简约）
+ * 三列五行 slot + 中间生克关系箭头 + 下方 verdict badge
+ * ============================================================= */
+:root[data-theme='minimal'] .mn-sancai {
+  max-width: 820px;
+  margin: var(--mn-space-4) auto var(--mn-space-6);
+  padding: var(--mn-space-5) var(--mn-space-5) var(--mn-space-6);
+  background-color: var(--mn-bg-elev);
+  border: 1px solid var(--mn-border);
+  border-radius: var(--mn-radius-lg);
+}
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-head {
+  text-align: center;
+  margin-bottom: var(--mn-space-4);
+}
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--mn-ink);
+  margin-bottom: 4px;
+}
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-subtitle {
+  font-size: 12px;
+  color: var(--mn-ink-muted);
+}
+
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-diagram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--mn-space-2);
+  margin: var(--mn-space-4) auto;
+  flex-wrap: nowrap;
+}
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-slot {
+  flex: 0 0 auto;
+  width: 88px;
+  min-height: 88px;
+  padding: var(--mn-space-3) var(--mn-space-2);
+  text-align: center;
+  background-color: var(--mn-bg);
+  border: 1px solid var(--mn-border);
+  border-radius: var(--mn-radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-slot.is-ren {
+  border-color: var(--mn-accent);
+  background-color: var(--mn-accent-soft);
+}
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-slot-name {
+  font-size: 11px;
+  color: var(--mn-ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-slot-element {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--mn-ink);
+  line-height: 1;
+}
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-slot.is-ren .xm-sancai-slot-element {
+  color: var(--mn-accent);
+}
+
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-rel {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  padding: 2px 4px;
+  font-size: 11px;
+}
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-rel-arrow {
+  font-size: 18px;
+  line-height: 1;
+  color: var(--mn-ink-muted);
+}
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-rel-text {
+  margin-top: 4px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-rel.is-sheng .xm-sancai-rel-arrow,
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-rel.is-sheng .xm-sancai-rel-text {
+  color: var(--mn-success);
+}
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-rel.is-sheng .xm-sancai-rel-text {
+  background-color: rgba(22, 163, 74, 0.1);
+}
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-rel.is-tonghe .xm-sancai-rel-arrow,
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-rel.is-tonghe .xm-sancai-rel-text {
+  color: var(--mn-warning);
+}
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-rel.is-tonghe .xm-sancai-rel-text {
+  background-color: rgba(202, 138, 4, 0.12);
+}
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-rel.is-ke .xm-sancai-rel-arrow,
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-rel.is-ke .xm-sancai-rel-text {
+  color: var(--mn-danger);
+}
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-rel.is-ke .xm-sancai-rel-text {
+  background-color: rgba(220, 38, 38, 0.1);
+}
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-rel.is-soft .xm-sancai-rel-arrow,
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-rel.is-soft .xm-sancai-rel-text {
+  color: var(--mn-ink-muted);
+}
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-rel.is-soft .xm-sancai-rel-text {
+  background-color: rgba(115, 115, 115, 0.1);
+}
+
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-verdict {
+  margin: var(--mn-space-4) auto 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-verdict-label {
+  display: inline-block;
+  padding: 4px 18px;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-verdict-summary {
+  font-size: 13px;
+  color: var(--mn-ink-soft);
+}
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-verdict.level-great .xm-sancai-verdict-label,
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-verdict.level-good .xm-sancai-verdict-label {
+  background-color: rgba(22, 163, 74, 0.12);
+  color: var(--mn-success);
+}
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-verdict.level-mid .xm-sancai-verdict-label {
+  background-color: rgba(202, 138, 4, 0.14);
+  color: var(--mn-warning);
+}
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-verdict.level-bad .xm-sancai-verdict-label,
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-verdict.level-worst .xm-sancai-verdict-label {
+  background-color: rgba(220, 38, 38, 0.1);
+  color: var(--mn-danger);
+}
+
+:root[data-theme='minimal'] .mn-sancai .xm-sancai-hint {
+  margin: var(--mn-space-4) 0 0;
+  padding: var(--mn-space-3) var(--mn-space-4);
+  font-size: 11px;
+  color: var(--mn-ink-muted);
+  background-color: var(--mn-bg);
+  border-left: 3px solid var(--mn-border-strong);
+  border-radius: 0 var(--mn-radius-sm) var(--mn-radius-sm) 0;
+  line-height: 1.7;
+}
+
+@media (max-width: 640px) {
+  :root[data-theme='minimal'] .mn-sancai .xm-sancai-slot {
+    width: 64px;
+    min-height: 70px;
+  }
+  :root[data-theme='minimal'] .mn-sancai .xm-sancai-slot-element {
+    font-size: 18px;
+  }
+  :root[data-theme='minimal'] .mn-sancai .xm-sancai-rel {
+    min-width: 30px;
+    font-size: 10px;
+  }
+  :root[data-theme='minimal'] .mn-sancai .xm-sancai-rel-arrow {
+    font-size: 14px;
+  }
+  :root[data-theme='minimal'] .mn-sancai .xm-sancai-verdict-label {
+    font-size: 14px;
+    padding: 3px 14px;
   }
 }

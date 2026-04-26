@@ -17,6 +17,36 @@ export type Level = '大吉' | '吉' | '中吉' | '中平' | '凶' | '大凶'
 /** 五格名 */
 export type GridName = 'tian' | 'ren' | 'di' | 'wai' | 'zong'
 
+/** 三才槽位（取自天/人/地三格的五行） */
+export type SancaiSlot = 'tian' | 'ren' | 'di'
+
+/** 三才吉凶 5 等级（熊崎派通行版；与 81 数理 6 档刻意区分） */
+export type SancaiLevel = '大吉' | '吉' | '中吉' | '凶' | '大凶'
+
+/** 三才相邻两元素的关系（用于 UI 展示生克箭头） */
+export type SancaiRelation =
+  | 'sheng' // A 生 B
+  | 'ke'    // A 克 B
+  | 'tongHe' // 比和（同行）
+  | 'xie'   // A 被 B 生（泄气；A 是 B 的子女）
+  | 'hao'   // A 被 B 克（耗损；A 被害）
+
+/** 三才配置判定结果 */
+export interface SancaiVerdict {
+  /** 三才五行三联（天、人、地） */
+  combo: [Element, Element, Element]
+  /** 等级（5 档） */
+  level: SancaiLevel
+  /** 等级 i18n key（避免中文穿透 UI） */
+  levelKey: 'great' | 'good' | 'mid' | 'bad' | 'worst'
+  /** 一句话定性（10-15 字 zh-CN；UI 通过 i18n 取等级槽位文案） */
+  summary: string
+  /** 天→人 关系 */
+  tianToRen: SancaiRelation
+  /** 人→地 关系 */
+  renToDi: SancaiRelation
+}
+
 /** 性别（姓名学部分流派三才配置用；MVP 保留入参但不参与计算） */
 export type Gender = 'male' | 'female'
 
@@ -81,6 +111,8 @@ export interface XingmingResult {
   chars: CharStroke[]
   /** 五格 */
   grids: Record<GridName, GridInfo>
+  /** 三才配置（天/人/地五行 + 5 等级判定）—— 独立维度，不进入综合评分 */
+  sancai: SancaiVerdict
   /** 综合评分 0-100 */
   overallScore: number
   /** 综合评分档位（对应 6 档的简化 4 档显示：优/良/中/差） */
