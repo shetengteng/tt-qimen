@@ -28,9 +28,10 @@
   --gf-neutral:       #8a6b3a;
   --gf-danger:        #c23a2a;
 
-  --gf-font-serif: 'Kaiti', 'STKaiti', 'LXGW WenKai', '华文楷体', 'Noto Serif SC', serif;
-  --gf-font-kaiti: 'Kaiti', 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
-  --gf-font-sans:  'Noto Sans SC', 'PingFang SC', 'HarmonyOS Sans', sans-serif;
+  --gf-font-serif: 'Kaiti', 'STKaiti', 'LXGW WenKai', '华文楷体', 'Noto Serif SC', 'Source Han Serif SC', serif;
+  --gf-font-kaiti: 'Kaiti', 'STKaiti', 'KaiTi', 'Noto Serif SC', 'Source Han Serif SC', serif;
+  --gf-font-sans:  'Noto Sans SC', 'PingFang SC', 'HarmonyOS Sans', 'Source Han Sans SC', sans-serif;
+  --gf-font-mono:  'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
   --gf-font-en:    'Cormorant Garamond', 'EB Garamond', Georgia, serif;
 
   --gf-space-xs:  4px;
@@ -81,9 +82,9 @@
   --color-relation-xing:  #a3231b;
   --color-relation-anhe:  #4a6d5d;
 
-  --font-display: 'Kaiti SC', 'STKaiti', 'LXGW WenKai', 'KaiTi', 'Noto Serif SC', serif;
-  --font-body:    'Kaiti SC', 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
-  --font-mono:    ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-display: 'Kaiti SC', 'STKaiti', 'LXGW WenKai', 'KaiTi', 'Noto Serif SC', 'Source Han Serif SC', serif;
+  --font-body:    'Kaiti SC', 'STKaiti', 'KaiTi', 'Noto Serif SC', 'Source Han Serif SC', serif;
+  --font-mono:    'JetBrains Mono', 'SF Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-en:      'Cormorant Garamond', 'EB Garamond', Georgia, serif;
 
   --space-1: 4px;

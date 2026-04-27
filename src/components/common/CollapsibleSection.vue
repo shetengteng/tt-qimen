@@ -7,6 +7,10 @@
  *     <FourPillarsTable ... />
  *   </CollapsibleSection>
  *
+ * i18n 注意：标题（label）由父组件传入（走各模块自己的命名空间）；
+ * 按钮文案"收起 / 展开"统一走 `common.collapse.{collapseLabel,expandLabel}`，
+ * 以避免通用组件反向依赖业务模块 i18n。
+ *
  * 与原型对齐：
  * - 头部为「标题 + 收起/展开 按钮」一行
  * - 主体通过 max-height 过渡实现平滑收起/展开
@@ -142,7 +146,7 @@ onBeforeUnmount(() => {
         :data-state="open ? 'open' : 'closed'"
         @click="toggle"
       >
-        {{ open ? t('bazi.collapse.collapseLabel') + ' ▲' : t('bazi.collapse.expandLabel') + ' ▼' }}
+        {{ open ? t('common.collapse.collapseLabel') + ' ▲' : t('common.collapse.expandLabel') + ' ▼' }}
       </button>
     </div>
   </div>

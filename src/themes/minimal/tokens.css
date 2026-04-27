@@ -25,8 +25,8 @@
   --mn-danger:        #dc2626;
   --mn-info:          #0284c7;
 
-  --mn-font-sans: 'Inter', 'PingFang SC', 'HarmonyOS Sans', 'Noto Sans SC', system-ui, sans-serif;
-  --mn-font-mono: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
+  --mn-font-sans: 'Inter', 'PingFang SC', 'HarmonyOS Sans', 'Noto Sans SC', 'Source Han Sans SC', system-ui, sans-serif;
+  --mn-font-mono: 'JetBrains Mono', 'SF Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --mn-space-1:  4px;
   --mn-space-2:  8px;
@@ -82,9 +82,9 @@
   --color-relation-xing:  #b91c1c;
   --color-relation-anhe:  #16a34a;
 
-  --font-display: 'Inter', 'PingFang SC', 'Noto Sans SC', -apple-system, sans-serif;
-  --font-body:    'Inter', 'PingFang SC', 'Noto Sans SC', -apple-system, sans-serif;
-  --font-mono:    ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-display: 'Inter', 'PingFang SC', 'Noto Sans SC', 'Source Han Sans SC', -apple-system, sans-serif;
+  --font-body:    'Inter', 'PingFang SC', 'Noto Sans SC', 'Source Han Sans SC', -apple-system, sans-serif;
+  --font-mono:    'JetBrains Mono', 'SF Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-en:      'Inter', sans-serif;
 
   --space-1: 4px;

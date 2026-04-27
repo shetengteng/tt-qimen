@@ -157,6 +157,7 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
           <BirthForm
             :title="t('chenggu.inputCardTitle')"
             :primary-label="t('chenggu.btn.paipan')"
+            :show-advanced="false"
             @paipan="onPaipan"
           />
         </div>
@@ -220,6 +221,7 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
           <BirthForm
             :title="t('chenggu.inputCardTitle')"
             :primary-label="t('chenggu.btn.paipan')"
+            :show-advanced="false"
             @paipan="onPaipan"
           />
         </div>

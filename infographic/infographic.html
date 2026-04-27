@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI周报 · 视频翻页</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #fafafa;
+    --border: #e4e4e7;
+    --text: #18181b;
+    --text-secondary: #3f3f46;
+    --text-tertiary: #71717a;
+    --text-muted: #a1a1aa;
+    --accent: #8b5cf6;
+    --orange: #f97316;
+    --cyan: #06b6d4;
+    --emerald: #10b981;
+    --amber: #d97706;
+    --radius: 12px;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', monospace;
+  }
+
+  body {
+    background: #e4e4e7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: var(--font);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .canvas {
+    width: 420px;
+    height: 748px;
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  }
+
+  .slider {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+
+  .slide {
+    min-width: 100%;
+    height: 100%;
+    padding: 28px 28px 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .slide-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .slide-inner.visible { opacity: 1; transform: translateY(0); }
+
+  /* ===== COVER ===== */
+  .slide-cover { justify-content: center; align-items: center; text-align: center; gap: 6px; }
+  .cover-icon {
+    width: 56px; height: 56px;
+    border-radius: 16px;
+    background: #f5f3ff;
+    border: 1px solid rgba(139,92,246,0.12);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    margin-bottom: 16px;
+  }
+  .cover-title {
+    font-size: 40px; font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text); line-height: 1;
+  }
+  .cover-title span { color: var(--accent); }
+  .cover-sub {
+    font-size: 13px; color: var(--text-muted);
+    font-family: var(--font-mono);
+    letter-spacing: 0.12em; font-weight: 500;
+  }
+  .cover-stats { display: flex; gap: 36px; margin: 20px 0; }
+  .cover-stat-num {
+    font-size: 28px; font-weight: 700;
+    color: var(--text); font-family: var(--font-mono);
+  }
+  .cover-stat-label { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+  .cover-hint {
+    font-size: 11px; color: var(--text-muted);
+    font-family: var(--font-mono); letter-spacing: 0.15em;
+  }
+
+  /* ===== FIXED LAYOUT: flex-grow ratios ===== */
+  .top-row {
+    flex: 0 0 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .brand {
+    font-size: 12px; font-weight: 600; color: var(--text-muted);
+  }
+  .brand span { color: var(--accent); }
+  .page-num {
+    font-size: 11px; color: var(--text-muted);
+    font-family: var(--font-mono); font-weight: 500;
+  }
+
+  /* Ratios: hero(2.5) : content(1.8) : bot(1.2) = 5.5 total
+     hero    = 2.5/5.5 ≈ 45%  of remaining space
+     content = 1.8/5.5 ≈ 33%  ← sits in mid-screen
+     bot     = 1.2/5.5 ≈ 22% */
+  .hero-wrap {
+    flex: 2.5;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    min-height: 0;
+  }
+  .hero-blob {
+    position: absolute;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    opacity: 0.07;
+    pointer-events: none;
+  }
+  .hero-blob.violet { background: var(--accent); }
+  .hero-blob.orange { background: var(--orange); }
+  .hero-blob.emerald { background: var(--emerald); }
+  .hero-blob.cyan { background: var(--cyan); }
+  .hero-blob.amber { background: var(--amber); }
+
+  .hero-number {
+    font-family: var(--font-mono);
+    font-size: 76px; font-weight: 700;
+    line-height: 1; letter-spacing: -0.05em;
+    position: relative; z-index: 1;
+  }
+  .hero-number-sub {
+    font-family: var(--font-mono);
+    font-size: 26px; font-weight: 600;
+    line-height: 1.1;
+    position: relative; z-index: 1;
+  }
+  .hero-icon {
+    font-size: 50px; margin-bottom: 4px;
+    position: relative; z-index: 1;
+  }
+  .hero-label {
+    font-size: 11px; color: var(--text-muted);
+    font-family: var(--font-mono); font-weight: 500;
+    margin-top: 8px; position: relative; z-index: 1;
+  }
+
+  /* Content: centered in ~33% middle zone */
+  .content-block {
+    flex: 1.8;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 0;
+    min-height: 0;
+  }
+  .news-title {
+    font-size: 28px; font-weight: 700;
+    color: var(--text); letter-spacing: -0.02em;
+    margin-bottom: 6px; line-height: 1.2;
+  }
+  .news-title .hl { color: var(--accent); }
+  .news-quote {
+    font-size: 14px; color: var(--text-secondary);
+    line-height: 1.5; font-weight: 400;
+    max-width: 280px;
+  }
+
+  /* Bot: small footer zone */
+  .bot-row {
+    flex: 1.2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    min-height: 0;
+  }
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 9px; color: var(--text-muted);
+    font-weight: 500; text-transform: uppercase;
+  }
+  .tag-dot {
+    width: 2px; height: 2px;
+    border-radius: 50%; background: #d4d4d8;
+  }
+  .nav-arrow {
+    font-size: 12px; color: var(--text-muted);
+  }
+  .nav-arrow.end { color: var(--accent); }
+
+  /* ===== DOTS ===== */
+  .dots {
+    position: absolute;
+    bottom: 5px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; gap: 6px;
+    z-index: 10;
+  }
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 3px;
+    background: #d4d4d8;
+    cursor: pointer; border: none; padding: 0;
+    transition: all 0.35s ease;
+  }
+  .dot.active {
+    width: 24px; background: var(--accent);
+  }
+
+  .arrow {
+    position: absolute; top: 50%;
+    transform: translateY(-50%);
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.85);
+    border: 1px solid var(--border);
+    color: var(--text-tertiary);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; z-index: 10;
+    font-size: 14px;
+    transition: all 0.15s ease;
+    user-select: none;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .arrow:hover { border-color: #d4d4d8; color: var(--text); }
+  .arrow-left { left: 10px; }
+  .arrow-right { right: 10px; }
+  .arrow.hidden { opacity: 0; pointer-events: none; }
+
+  .swipe-zone {
+    position: absolute; top: 0; bottom: 0;
+    width: 35%; z-index: 5; cursor: pointer;
+  }
+  .swipe-zone.left { left: 0; }
+  .swipe-zone.right { right: 0; }
+
+  .c-violet { color: var(--accent) !important; }
+  .c-orange { color: var(--orange) !important; }
+  .c-emerald { color: var(--emerald) !important; }
+  .c-cyan { color: var(--cyan) !important; }
+  .c-amber { color: var(--amber) !important; }
+
+</style>
+</head>
+<body>
+
+<div class="canvas" id="canvas">
+  <div class="arrow arrow-left hidden" id="arrowLeft">&#8592;</div>
+  <div class="arrow arrow-right" id="arrowRight">&#8594;</div>
+  <div class="swipe-zone left" id="zoneLeft"></div>
+  <div class="swipe-zone right" id="zoneRight"></div>
+
+  <div class="slider" id="slider">
+
+    <!-- ===== COVER ===== -->
+    <div class="slide slide-cover">
+      <div class="cover-icon">⚡</div>
+      <div class="cover-title"><span>AI</span> 周报</div>
+      <div class="cover-sub">ISSUE #04 · APR 2026</div>
+      <div class="cover-stats">
+        <div><div class="cover-stat-num">10</div><div class="cover-stat-label">本周事件</div></div>
+        <div><div class="cover-stat-num">5</div><div class="cover-stat-label">精选</div></div>
+        <div><div class="cover-stat-num">1</div><div class="cover-stat-label">分钟读完</div></div>
+      </div>
+      <div class="cover-hint">← 滑动阅读 →</div>
+    </div>
+
+    <!-- ===== 1: SWE-bench ===== -->
+    <div class="slide" data-slide="1">
+      <div class="slide-inner">
+        <div class="top-row">
+          <div class="brand"><span>AI</span> 周报</div>
+          <div class="page-num">01 / 05</div>
+        </div>
+        <div class="hero-wrap">
+          <div class="hero-blob violet"></div>
+          <div class="hero-number c-violet">95%<span style="font-size:36px;vertical-align:super;">↑</span></div>
+          <div class="hero-label">满分率 · SWE-bench Verified</div>
+        </div>
+        <div class="content-block">
+          <div class="news-title"><span class="hl">SWE-bench</span> 退役</div>
+          <div class="news-quote">考场全是满分学生，考试已无法区分差距</div>
+        </div>
+        <div class="bot-row">
+          <span class="tag">OpenAI</span>
+          <span class="tag-dot"></span>
+          <span class="tag">Benchmark</span>
+          <span class="tag-dot"></span>
+          <span class="nav-arrow">→</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 2: OpenAI ===== -->
+    <div class="slide" data-slide="2">
+      <div class="slide-inner">
+        <div class="top-row">
+          <div class="brand"><span>AI</span> 周报</div>
+          <div class="page-num">02 / 05</div>
+        </div>
+        <div class="hero-wrap">
+          <div class="hero-blob orange"></div>
+          <div class="hero-icon" style="font-size:52px;margin-bottom:2px;">⚠️</div>
+          <div class="hero-number-sub c-orange">隐私 vs 安全</div>
+        </div>
+        <div class="content-block">
+          <div class="news-title"><span class="hl">OpenAI</span> 道歉</div>
+          <div class="news-quote">AI 承诺隐私，但面对威胁该不该打小报告</div>
+        </div>
+        <div class="bot-row">
+          <span class="tag">安全</span>
+          <span class="tag-dot"></span>
+          <span class="tag">立法</span>
+          <span class="tag-dot"></span>
+          <span class="tag">伦理</span>
+          <span class="tag-dot"></span>
+          <span class="nav-arrow">→</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 3: 人机对战 ===== -->
+    <div class="slide" data-slide="3">
+      <div class="slide-inner">
+        <div class="top-row">
+          <div class="brand"><span>AI</span> 周报</div>
+          <div class="page-num">03 / 05</div>
+        </div>
+        <div class="hero-wrap">
+          <div class="hero-blob emerald"></div>
+          <div class="hero-number-sub c-emerald" style="font-size:28px;">¥ 十几万</div>
+          <div class="hero-label">1.7m 人形机器人 · 北京半马</div>
+        </div>
+        <div class="content-block">
+          <div class="news-title"><span class="hl">人机</span> 对战</div>
+          <div class="news-quote">AI 从屏幕走进真实世界，跑跳对抗</div>
+        </div>
+        <div class="bot-row">
+          <span class="tag">物理AI</span>
+          <span class="tag-dot"></span>
+          <span class="tag">机器人</span>
+          <span class="tag-dot"></span>
+          <span class="tag">Sony</span>
+          <span class="tag-dot"></span>
+          <span class="nav-arrow">→</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 4: 推理成本 ===== -->
+    <div class="slide" data-slide="4">
+      <div class="slide-inner">
+        <div class="top-row">
+          <div class="brand"><span>AI</span> 周报</div>
+          <div class="page-num">04 / 05</div>
+        </div>
+        <div class="hero-wrap">
+          <div class="hero-blob cyan"></div>
+          <div class="hero-number c-cyan">↓ 60%</div>
+          <div class="hero-label">推理成本 · Blackwell + TPU v6</div>
+        </div>
+        <div class="content-block">
+          <div class="news-title">推理成本 <span class="hl">砍半</span></div>
+          <div class="news-quote">原来 1 毛，现在 4 分，部署比训练更关键</div>
+        </div>
+        <div class="bot-row">
+          <span class="tag">NVIDIA</span>
+          <span class="tag-dot"></span>
+          <span class="tag">Google</span>
+          <span class="tag-dot"></span>
+          <span class="tag">成本</span>
+          <span class="tag-dot"></span>
+          <span class="nav-arrow">→</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 5: AI管人管钱 ===== -->
+    <div class="slide" data-slide="5">
+      <div class="slide-inner">
+        <div class="top-row">
+          <div class="brand"><span>AI</span> 周报</div>
+          <div class="page-num">05 / 05</div>
+        </div>
+        <div class="hero-wrap">
+          <div class="hero-blob amber"></div>
+          <div class="hero-number c-amber">$240亿</div>
+          <div class="hero-label">IRS 拟追回税款</div>
+        </div>
+        <div class="content-block">
+          <div class="news-title">AI <span class="hl">管人管钱</span></div>
+          <div class="news-quote">下一个面试官没有体温，AI 决定你的税单</div>
+        </div>
+        <div class="bot-row">
+          <span class="tag">SAP</span>
+          <span class="tag-dot"></span>
+          <span class="tag">IRS</span>
+          <span class="tag-dot"></span>
+          <span class="tag">治理</span>
+          <span class="tag-dot"></span>
+          <span class="nav-arrow end">完</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="dots" id="dots">
+    <div class="dot active" data-index="0"></div>
+    <div class="dot" data-index="1"></div>
+    <div class="dot" data-index="2"></div>
+    <div class="dot" data-index="3"></div>
+    <div class="dot" data-index="4"></div>
+    <div class="dot" data-index="5"></div>
+  </div>
+</div>
+
+<script>
+  const slider = document.getElementById('slider');
+  const dots = document.querySelectorAll('.dot');
+  const arrowLeft = document.getElementById('arrowLeft');
+  const arrowRight = document.getElementById('arrowRight');
+  const zoneLeft = document.getElementById('zoneLeft');
+  const zoneRight = document.getElementById('zoneRight');
+  const total = 6;
+  let current = 0;
+  let isTransitioning = false;
+
+  function goTo(index) {
+    if (isTransitioning) return;
+    if (index < 0 || index >= total) return;
+    isTransitioning = true;
+    current = index;
+    slider.style.transform = `translateX(-${current * 100}%)`;
+
+    const all = document.querySelectorAll('.slide-inner');
+    all.forEach(el => el.classList.remove('visible'));
+    if (current > 0) {
+      const t = document.querySelector(`.slide[data-slide="${current}"] .slide-inner`);
+      if (t) setTimeout(() => t.classList.add('visible'), 80);
+    }
+
+    dots.forEach((d, i) => d.classList.toggle('active', i === current));
+    arrowLeft.classList.toggle('hidden', current === 0);
+    arrowRight.classList.toggle('hidden', current === total - 1);
+    setTimeout(() => { isTransitioning = false; }, 500);
+  }
+
+  document.querySelector('.slide[data-slide="1"] .slide-inner')?.classList.add('visible');
+
+  function next() { if (current < total - 1) goTo(current + 1); }
+  function prev() { if (current > 0) goTo(current - 1); }
+
+  arrowLeft.addEventListener('click', prev);
+  arrowRight.addEventListener('click', next);
+  zoneLeft.addEventListener('click', prev);
+  zoneRight.addEventListener('click', next);
+  dots.forEach(d => d.addEventListener('click', () => goTo(parseInt(d.dataset.index))));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+  });
+
+  let tx = 0, ty = 0;
+  const c = document.getElementById('canvas');
+  c.addEventListener('touchstart', e => { tx = e.changedTouches[0].screenX; ty = e.changedTouches[0].screenY; }, { passive: true });
+  c.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].screenX - tx;
+    const dy = e.changedTouches[0].screenY - ty;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) { dx < 0 ? next() : prev(); }
+  }, { passive: true });
+</script>
+
+</body>
+</html>

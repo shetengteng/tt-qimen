@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
 import { useUserStore } from '@/stores/user'
+import { useBaziStore } from './stores/baziStore'
 import BirthForm from '@/components/common/BirthForm.vue'
 import FourPillarsTable from './components/FourPillarsTable.vue'
 import ShishenStructure from './components/ShishenStructure.vue'
@@ -31,6 +32,7 @@ const route = useRoute()
 const router = useRouter()
 const themeStore = useThemeStore()
 const userStore = useUserStore()
+const baziStore = useBaziStore()
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
 const inputCardEl = ref<HTMLElement | null>(null)
@@ -137,7 +139,7 @@ const headerSubs = computed(() => {
 })
 
 function hourLabelOf(hour: number): string {
-  const labels = (tm('bazi.hours') as string[]) ?? []
+  const labels = (tm('common.birthInput.hours') as string[]) ?? []
   let idx = Math.floor((hour + 1) / 2) % 12
   if (hour === 23) idx = 12
   if (hour === 0) idx = 0
@@ -283,6 +285,7 @@ const annotCollapse = computed(() => t('bazi.collapse.annotCollapse'))
 function onPaipan() {
   try {
     chart.value = calculateBazi(userStore.birth)
+    if (chart.value) baziStore.recordComputed()
   } catch (err) {
     console.error('[bazi] calculate failed:', err)
     chart.value = null
@@ -291,13 +294,46 @@ function onPaipan() {
 }
 
 /**
+ * 刷新 / 切窗回来后，若 baziStore 里有 lastComputed 且与当前 birth 指纹一致，
+ * 直接重算并跳过骨架屏（P4 · 输入指纹模式，对齐 liuren）。
+ *
+ * 关键点：
+ *   - 不触发 skeleton 动画：直接 revealImmediately，避免每次刷新都看 1.5s 动画
+ *   - 计算失败（FortuneError 等）则清空快照，回到默认起始态
+ *   - URL deeplink 命中时**优先走 deeplink hydrate** 路径，本函数会被跳过
+ */
+function tryRestoreLastResult(): boolean {
+  if (!baziStore.shouldRestore) return false
+  try {
+    const fresh = calculateBazi(userStore.birth)
+    if (!fresh) {
+      baziStore.clearComputed()
+      return false
+    }
+    chart.value = fresh
+    skeleton.revealImmediately()
+    return true
+  } catch (err) {
+    console.error('[bazi] restore failed:', err)
+    baziStore.clearComputed()
+    chart.value = null
+    return false
+  }
+}
+
+/**
  * 扫码进入：若 URL 带 calendar/year/.../minute/gender 等字段，hydrate 到 userStore 并自动排盘一次。
  * 与 chenggu 一致的策略：仅在 onMounted 一次性消费 query；后续编辑表单不再受 query 影响。
+ *
+ * 无 query 时尝试从 lastComputed 静默恢复上次排盘（刷新页面不丢盘）。
  */
 onMounted(() => {
   const q = normalizeQuery(route.query as Record<string, string | string[] | undefined>)
   const hasInputs = ['year', 'month', 'day', 'hour'].some((k) => k in q)
-  if (!hasInputs) return
+  if (!hasInputs) {
+    tryRestoreLastResult()
+    return
+  }
 
   const b = userStore.birth
   userStore.update({
@@ -314,6 +350,7 @@ onMounted(() => {
 
 function onRepaipan() {
   chart.value = null
+  baziStore.clearComputed()
   nayinAnnotBar.closeAll()
   interpretBlockEl.value?.closeAllAnnot()
   shenshaBlockEl.value?.closeAllAnnot()

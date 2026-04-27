@@ -39,6 +39,16 @@
   /* --font-body     正文 */
   /* --font-mono     数字/代码 */
   /* --font-en       英文专用 */
+  /*
+   * 字体决策（与设计文档 §5.2 的偏离记录）：
+   * - 国风主题：原意 Source Han Serif SC（思源宋体），实际选用 Kaiti SC + STKaiti + LXGW WenKai
+   *   楷体栈，因楷体比宋体更具"古风手书感"，更契合占卜场景的视觉调性。
+   *   思源宋体作为 fallback 保留。
+   * - 简约主题：原意 Source Han Sans SC（思源黑体），实际选用 Inter + PingFang SC，
+   *   Inter 比思源黑体在 Web 端有更好的渲染清晰度和字重粒度。思源黑体作为 fallback 保留。
+   * - 数字 mono：JetBrains Mono + SF Mono + ui-monospace 完整 fallback 链（与设计文档原意一致）。
+   * 见 design/todo/01-通用层 [86%].todo.md §171 "字体栈核对" 决策记录。
+   */
 
   /* ============ 间距（统一 8pt 网格） ============ */
   /* --space-1..16 */

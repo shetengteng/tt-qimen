@@ -25,3 +25,7 @@ design/snapshots/
 
 # 用户交互轮询脚本（本地工具）
 userinput.py
+
+# Python 字节码缓存（infographic 等 Python 工具产物）
+__pycache__/
+*.pyc

@@ -588,6 +588,11 @@
 }
 
 /* ---------- 签诗 ---------- */
+/*
+ * 签诗使用古典竖排（writing-mode: vertical-rl）以贴近原版"右起向左、上向下读"
+ * 的阅读流。各 locale（zh-CN / zh-TW / en）的 poem 字段都是 4 行 × 7 字的中文古诗，
+ * 故无需按语言降级到横排。
+ */
 :root[data-theme='guofeng'] .lq-poem {
   text-align: center;
   padding: var(--gf-space-lg) 0;
@@ -606,10 +611,33 @@
   color: var(--gf-ink);
   letter-spacing: 0.2em;
   font-family: var(--gf-font-serif);
+  /* 古典竖排：右起列、上下读；mixed 让中文 upright、阿拉伯数字仍可旋转（数字未在 poem 中出现，纯防御） */
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  /* 以 inline-flex 让 4 列（line）水平铺开并居中（margin auto 在父容器横向居中），
+     纵向高度由行高 × 字数 撑开；卡片自身有 padding，无需额外 max-block-size。 */
+  display: inline-flex;
+  flex-direction: row;
+  gap: var(--gf-space-md);
+  /* 列内不允许折断；古文换行就不是诗了 */
+  white-space: nowrap;
 }
 
 :root[data-theme='guofeng'] .lq-poem-line {
-  display: block;
+  /* 在竖排上下文中 inline-block 即可让每个 <span> 形成一列；display: block 会被 vertical-rl 解释成"占满纵向"导致挤压 */
+  display: inline-block;
+}
+
+/* 横屏窄高场景（< 480px 高的手机横屏）：竖排 4 列 ≈ 380px 高，会撑满视口导致需要纵向滚动；降级回横排。 */
+@media (orientation: landscape) and (max-height: 480px) {
+  :root[data-theme='guofeng'] .lq-poem-body {
+    writing-mode: horizontal-tb;
+    display: block;
+    white-space: normal;
+  }
+  :root[data-theme='guofeng'] .lq-poem-line {
+    display: block;
+  }
 }
 
 /* ---------- 典故段 ---------- */

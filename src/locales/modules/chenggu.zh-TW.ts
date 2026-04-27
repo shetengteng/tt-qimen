@@ -1,0 +1,71 @@
+export default {
+  title: '秤骨論命',
+  subtitle: '袁天罡之訣 · 一斤一兩',
+  pageTitle: '秤骨算命',
+  pageSubtitle: '袁天罡古法 · 年月日時骨重 · 五十一段歌訣',
+  breadcrumbHome: '首頁',
+  breadcrumbCurrent: '秤骨算命',
+  inputCardTitle: '錄入生辰',
+  btn: {
+    paipan: '開始秤骨',
+    paipanIcon: '◈',
+    repaipan: '重新秤骨',
+    repaipanIcon: '◑',
+    share: '生成分享卡片',
+    shareIcon: '◈',
+    save: '儲存到本地',
+    saveIcon: '◐',
+  },
+  resultBanner: {
+    title: '四骨秤重',
+    subtitle: '年月日時 · 骨重相加 · 歌訣以推終身',
+  },
+  skeleton: {
+    title: '秤骨中',
+    subtitle: '查年柱、取月日、定時辰、加骨重',
+  },
+  section: {
+    breakdown: '四骨分解',
+    poem: '歌訣',
+  },
+  computeError: {
+    title: '秤骨未成',
+    hint: '生辰資料有誤或超出 1900-2100 年支援範圍，請檢查後重試。',
+    retry: '重新錄入',
+  },
+  balance: {
+    label: '骨 · 重',
+    labelMn: '骨 · 重',
+    unit: '兩',
+    breakdown: { year: '年', month: '月', day: '日', hour: '時' },
+  },
+  placeholder: { displayWeight: '五兩一錢' },
+  table: {
+    year: '年 骨',
+    month: '月 骨',
+    day: '日 骨',
+    hour: '時 骨',
+    totalLabel: '四 骨 相 加',
+  },
+  level: {
+    top: '極 · 貴極',
+    high: '上 · 貴顯',
+    middle: '中 · 平順',
+    low: '下 · 辛勞',
+    bottom: '貧 · 清苦',
+  },
+  poem: {
+    seal: '啟門',
+    eyebrow: '袁 天 罡 歌 訣',
+    meta: '古法歌訣 · 公版整理',
+  },
+  interpret: {
+    title: '◉ 歌訣釋義',
+    titleMn: '◆ 歌訣釋義',
+    note: '註：白話解讀由編輯團隊在公版古籍基礎上整理，僅供文化參考。',
+  },
+  share: {
+    title: '我的秤骨算命 · TT 占卜',
+    text: '年月日時 · 骨重相加 · 袁天罡古法。來自 TT 占卜的秤骨結果。',
+  },
+}

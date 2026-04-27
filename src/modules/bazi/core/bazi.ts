@@ -56,6 +56,7 @@ import { detectShensha } from './shensha'
 import { getDecadeHint } from '../data/fortuneHints'
 import { getFlowYearHint } from '../data/flowYearHints'
 import { FortuneError } from '@/lib/errors'
+import { useTrueSolarTime } from '@/composables/useTrueSolarTime'
 import {
   PARAGRAPH_1_TEMPLATE,
   PARAGRAPH_2_TEMPLATE,
@@ -107,7 +108,13 @@ const SEASON_WEIGHT = 1.5
  */
 export function calculateBazi(birth: BirthInput): BaziChart {
   try {
-    return calculateBaziInternal(birth)
+    /**
+     * 真太阳时修正：若 birth.longitude 有效（用户在 BirthForm 启用了高级选项），
+     * 把 hour/minute（必要时连同 day）按经度 + 均时差修正。
+     * - longitude 缺省 → useTrueSolarTime 返回原 birth（noop，向后兼容）
+     * - 修正在最外层做一次，下游所有计算（四柱 / 大运 / 神煞）自动获益
+     */
+    return calculateBaziInternal(useTrueSolarTime(birth))
   } catch (err) {
     if (FortuneError.is(err)) throw err
     throw new FortuneError({

@@ -210,6 +210,34 @@ body {
   }
 }
 
+/**
+ * 移动端导航的"抽屉滑入"语感（设计文档 §5.4 第 5 行）
+ *
+ * 决策：保留架构选用的 Popover（不替换为 Drawer），但在窄屏让导航 Popover
+ *      呈现"从上方滑入"的抽屉动效（200ms ease-out + translateY(-12px → 0)），
+ *      呼应原意"transform: translateX(-100% → 0) 200ms ease-out"。
+ *      Popover 在 Web 端的 anchor 是 trigger 按钮，垂直滑入比横向更符合
+ *      用户预期（从导航条按钮"长出来"，而不是从屏幕边缘划入）。
+ *
+ * 仅作用于窄屏（max-width: 768px）的 nav 类型 popover-content。
+ */
+@media (max-width: 768px) {
+  .layout-popover-content--nav {
+    animation: layout-drawer-slide-in 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+@keyframes layout-drawer-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 .layout-popover-list {
   list-style: none;
   margin: 0;
