@@ -16,7 +16,6 @@ import ZiweiMeta from './components/ZiweiMeta.vue'
 import SihuaLegend from './components/SihuaLegend.vue'
 import SanfangToggle from './components/SanfangToggle.vue'
 import ZiweiPalaceChart from './components/ZiweiPalaceChart.vue'
-import ZiweiMobile from './components/ZiweiMobile.vue'
 import InterpretCards from './components/InterpretCards.vue'
 import SoulPalaceView from './components/SoulPalaceView.vue'
 import PalaceMajorView from './components/PalaceMajorView.vue'
@@ -229,7 +228,6 @@ onMounted(() => {
           <SihuaLegend />
           <SanfangToggle v-model="showSanfang" />
           <ZiweiPalaceChart ref="chartRef" :chart="chart" :show-sanfang="showSanfang" />
-          <ZiweiMobile :chart="chart" />
         </CollapsibleSection>
 
         <CollapsibleSection
@@ -341,7 +339,6 @@ onMounted(() => {
           <SihuaLegend />
           <SanfangToggle v-model="showSanfang" />
           <ZiweiPalaceChart ref="chartRef" :chart="chart" :show-sanfang="showSanfang" />
-          <ZiweiMobile :chart="chart" />
         </CollapsibleSection>
 
         <CollapsibleSection

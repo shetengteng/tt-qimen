@@ -347,125 +347,98 @@
   box-shadow: inset 0 0 0 1px var(--gf-gold);
 }
 
-/* ============ 移动端 ============ */
-:root[data-theme='guofeng'] .ziwei-mobile {
-  display: none;
-}
-
+/* ============ 移动端：保持 4×4 紫微盘结构，仅压缩字号/间距 ============ */
 @media (max-width: 768px) {
   :root[data-theme='guofeng'] .ziwei-chart {
-    display: none;
-  }
-
-  :root[data-theme='guofeng'] .ziwei-mobile {
-    display: block;
     max-width: 100%;
-    margin: 0 auto var(--gf-space-lg);
-  }
-
-  /* 12 宫双列网格（按 slot 顺序，6 行 × 2 列） */
-  :root[data-theme='guofeng'] .mobile-palaces-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-  }
-
-  :root[data-theme='guofeng'] .mobile-palaces-grid .palace {
-    background: rgba(255, 251, 240, 0.92);
-    padding: 8px 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    min-height: 132px;
-    border: 1px solid rgba(176, 141, 59, 0.3);
-    border-radius: var(--gf-radius-md);
-    position: relative;
-    overflow: hidden;
-  }
-
-  :root[data-theme='guofeng'] .mobile-palaces-grid .palace.ming-gong {
-    background: linear-gradient(180deg, rgba(254, 247, 224, 0.96), rgba(245, 226, 178, 0.88));
-    box-shadow: inset 0 0 0 1px var(--gf-gold);
-  }
-
-  :root[data-theme='guofeng'] .mobile-palaces-grid .palace.shen-gong {
-    box-shadow: inset 0 0 0 1px var(--gf-cinnabar);
-  }
-
-  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .palace-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    border-bottom: 1px dashed rgba(176, 141, 59, 0.45);
-    padding-bottom: 3px;
-    gap: 4px;
-  }
-
-  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .palace-name {
-    font-family: var(--gf-font-kaiti);
-    font-size: 13px;
-    color: var(--gf-cinnabar);
-    letter-spacing: 0.06em;
-    flex-shrink: 0;
-  }
-
-  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .palace-gz {
-    font-size: 11px;
-    color: var(--gf-gold);
-    font-family: var(--gf-font-en);
-  }
-
-  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .palace-stars {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+    margin: 0 auto var(--gf-space-md);
+    grid-template-rows: repeat(4, minmax(110px, auto));
     gap: 1px;
-    min-height: 0;
+    border-width: 1.5px;
   }
 
-  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .star {
-    font-size: 12px;
-    line-height: 1.5;
-    font-family: var(--gf-font-serif);
-    display: flex;
-    align-items: baseline;
+  :root[data-theme='guofeng'] .ziwei-chart .palace {
+    padding: 5px 6px;
     gap: 3px;
+    min-height: 110px;
+  }
+
+  :root[data-theme='guofeng'] .ziwei-chart .palace-head {
+    padding-bottom: 2px;
+    gap: 3px;
+  }
+
+  :root[data-theme='guofeng'] .ziwei-chart .palace-name {
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+
+  :root[data-theme='guofeng'] .ziwei-chart .palace-gz {
+    font-size: 9px;
+  }
+
+  :root[data-theme='guofeng'] .ziwei-chart .palace-stars {
+    gap: 0;
+  }
+
+  :root[data-theme='guofeng'] .ziwei-chart .star {
+    font-size: 10px;
+    line-height: 1.35;
+    gap: 2px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 100%;
   }
 
-  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .star-main { color: var(--gf-ink); font-weight: 500; }
-  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .star-aux { color: var(--gf-ink-soft); }
-  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .star-malefic { color: var(--gf-cinnabar); }
-  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .star-bright { font-size: 10px; color: var(--gf-gold); }
-  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .star-sihua { font-size: 10px; }
+  :root[data-theme='guofeng'] .ziwei-chart .star-bright { font-size: 8px; }
+  :root[data-theme='guofeng'] .ziwei-chart .star-sihua { font-size: 8px; }
 
-  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .palace-foot {
-    font-size: 10px;
-    color: var(--gf-ink-soft);
-    border-top: 1px dashed rgba(176, 141, 59, 0.3);
-    padding-top: 3px;
-    display: flex;
-    justify-content: space-between;
-    gap: 4px;
+  :root[data-theme='guofeng'] .ziwei-chart .palace-foot {
+    font-size: 8px;
+    padding-top: 2px;
+    gap: 2px;
   }
 
-  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .palace-foot .liu {
-    color: var(--gf-gold);
+  :root[data-theme='guofeng'] .ziwei-chart .palace-foot .liu {
+    font-size: 8px;
+  }
+
+  /* 中宫：移动端字号 / 间距收缩，但保留 2×2 占位 */
+  :root[data-theme='guofeng'] .ziwei-chart .center-palace {
+    padding: var(--gf-space-sm);
+  }
+
+  :root[data-theme='guofeng'] .ziwei-chart .center-title {
+    font-size: 16px;
+    letter-spacing: 0.18em;
+    margin-bottom: var(--gf-space-xs);
+  }
+
+  :root[data-theme='guofeng'] .ziwei-chart .center-item {
     font-size: 10px;
+    margin: 2px 0;
+    line-height: 1.4;
+  }
+
+  :root[data-theme='guofeng'] .ziwei-chart .center-hint {
+    margin-top: var(--gf-space-xs);
+    font-size: 9px;
   }
 }
 
-/* 极窄屏（≤360px）字号再压一档，避免长星耀名溢出 */
+/* 极窄屏（≤360px）：再压一档字号 */
 @media (max-width: 360px) {
-  :root[data-theme='guofeng'] .mobile-palaces-grid .palace {
-    padding: 6px 8px;
-    min-height: 124px;
+  :root[data-theme='guofeng'] .ziwei-chart .palace {
+    padding: 4px 5px;
+    min-height: 100px;
   }
-  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .palace-name { font-size: 12px; }
-  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .palace-gz { font-size: 10px; }
-  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .star { font-size: 11px; }
+  :root[data-theme='guofeng'] .ziwei-chart .palace-name { font-size: 10px; }
+  :root[data-theme='guofeng'] .ziwei-chart .palace-gz { font-size: 8px; }
+  :root[data-theme='guofeng'] .ziwei-chart .star { font-size: 9px; }
+  :root[data-theme='guofeng'] .ziwei-chart .palace-foot { font-size: 7px; }
+  :root[data-theme='guofeng'] .ziwei-chart .center-title { font-size: 14px; }
+  :root[data-theme='guofeng'] .ziwei-chart .center-item { font-size: 9px; }
 }
 
 /* ============ 命宫主星论命 ============ */

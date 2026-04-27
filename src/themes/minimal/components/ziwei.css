@@ -373,122 +373,99 @@
   box-shadow: inset 0 0 0 1px var(--mn-info);
 }
 
-/* ============ 移动端 ============ */
-:root[data-theme='minimal'] .ziwei-mobile {
-  display: none;
-}
-
+/* ============ 移动端：保持 4×4 紫微盘结构，仅压缩字号/间距 ============ */
 @media (max-width: 768px) {
   :root[data-theme='minimal'] .ziwei-chart {
-    display: none;
-  }
-
-  :root[data-theme='minimal'] .ziwei-mobile {
-    display: block;
     max-width: 100%;
-    margin: 0 auto var(--mn-space-6);
-  }
-
-  /* 12 宫双列网格（按 slot 顺序，6 行 × 2 列） */
-  :root[data-theme='minimal'] .mobile-palaces-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-  }
-
-  :root[data-theme='minimal'] .mobile-palaces-grid .palace {
-    background: var(--mn-bg-elev);
-    padding: 8px 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    min-height: 132px;
-    border: 1px solid var(--mn-border);
-    border-radius: var(--mn-radius-md);
-    overflow: hidden;
-  }
-
-  :root[data-theme='minimal'] .mobile-palaces-grid .palace.ming-gong {
-    background: rgba(2, 132, 199, 0.04);
-    box-shadow: inset 0 0 0 1px var(--mn-info);
-  }
-
-  :root[data-theme='minimal'] .mobile-palaces-grid .palace.shen-gong {
-    box-shadow: inset 0 0 0 1px var(--mn-accent);
-  }
-
-  :root[data-theme='minimal'] .mobile-palaces-grid .palace .palace-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    border-bottom: 1px dashed var(--mn-border);
-    padding-bottom: 3px;
-    gap: 4px;
-  }
-
-  :root[data-theme='minimal'] .mobile-palaces-grid .palace .palace-name {
-    font-size: 13px;
-    color: var(--mn-accent);
-    font-weight: 600;
-    flex-shrink: 0;
-  }
-
-  :root[data-theme='minimal'] .mobile-palaces-grid .palace .palace-gz {
-    font-size: 11px;
-    color: var(--mn-ink-muted);
-    font-family: var(--mn-font-mono);
-  }
-
-  :root[data-theme='minimal'] .mobile-palaces-grid .palace .palace-stars {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+    margin: 0 auto var(--mn-space-4);
+    grid-template-rows: repeat(4, minmax(110px, auto));
     gap: 1px;
-    min-height: 0;
   }
 
-  :root[data-theme='minimal'] .mobile-palaces-grid .palace .star {
-    font-size: 12px;
-    line-height: 1.5;
-    display: flex;
-    align-items: baseline;
+  :root[data-theme='minimal'] .ziwei-chart .palace {
+    padding: 5px 6px;
     gap: 3px;
+    min-height: 110px;
+  }
+
+  :root[data-theme='minimal'] .ziwei-chart .palace-head {
+    padding-bottom: 2px;
+    gap: 3px;
+  }
+
+  :root[data-theme='minimal'] .ziwei-chart .palace-name {
+    font-size: 11px;
+    letter-spacing: 0;
+  }
+
+  :root[data-theme='minimal'] .ziwei-chart .palace-gz {
+    font-size: 9px;
+  }
+
+  :root[data-theme='minimal'] .ziwei-chart .palace-stars {
+    gap: 0;
+  }
+
+  :root[data-theme='minimal'] .ziwei-chart .star {
+    font-size: 10px;
+    line-height: 1.35;
+    gap: 2px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 100%;
   }
 
-  :root[data-theme='minimal'] .mobile-palaces-grid .palace .star-main { color: var(--mn-ink); font-weight: 500; }
-  :root[data-theme='minimal'] .mobile-palaces-grid .palace .star-aux { color: var(--mn-ink-soft); }
-  :root[data-theme='minimal'] .mobile-palaces-grid .palace .star-malefic { color: var(--mn-danger); }
-  :root[data-theme='minimal'] .mobile-palaces-grid .palace .star-bright { font-size: 10px; color: var(--mn-ink-muted); }
-  :root[data-theme='minimal'] .mobile-palaces-grid .palace .star-sihua { font-size: 10px; }
+  :root[data-theme='minimal'] .ziwei-chart .star-bright { font-size: 8px; }
+  :root[data-theme='minimal'] .ziwei-chart .star-sihua { font-size: 8px; }
 
-  :root[data-theme='minimal'] .mobile-palaces-grid .palace .palace-foot {
-    font-size: 10px;
-    color: var(--mn-ink-soft);
-    border-top: 1px dashed var(--mn-border);
-    padding-top: 3px;
-    display: flex;
-    justify-content: space-between;
-    gap: 4px;
+  :root[data-theme='minimal'] .ziwei-chart .palace-foot {
+    font-size: 8px;
+    padding-top: 2px;
+    gap: 2px;
   }
 
-  :root[data-theme='minimal'] .mobile-palaces-grid .palace .palace-foot .liu {
-    color: var(--mn-ink-muted);
+  :root[data-theme='minimal'] .ziwei-chart .palace-foot .liu {
+    font-size: 8px;
+  }
+
+  /* 中宫：移动端字号 / 间距收缩，但保留 2×2 占位 */
+  :root[data-theme='minimal'] .ziwei-chart .center-palace {
+    padding: var(--mn-space-2);
+  }
+
+  :root[data-theme='minimal'] .ziwei-chart .center-title {
+    font-size: 14px;
+    letter-spacing: 0.1em;
+    margin-bottom: var(--mn-space-1);
+  }
+
+  :root[data-theme='minimal'] .ziwei-chart .center-item,
+  :root[data-theme='minimal'] .ziwei-chart .center-row {
     font-size: 10px;
+    margin: 2px 0;
+    line-height: 1.4;
+  }
+
+  :root[data-theme='minimal'] .ziwei-chart .center-hint {
+    margin-top: var(--mn-space-1);
+    font-size: 9px;
   }
 }
 
-/* 极窄屏（≤360px）压缩字号 */
+/* 极窄屏（≤360px）：再压一档字号 */
 @media (max-width: 360px) {
-  :root[data-theme='minimal'] .mobile-palaces-grid .palace {
-    padding: 6px 8px;
-    min-height: 124px;
+  :root[data-theme='minimal'] .ziwei-chart .palace {
+    padding: 4px 5px;
+    min-height: 100px;
   }
-  :root[data-theme='minimal'] .mobile-palaces-grid .palace .palace-name { font-size: 12px; }
-  :root[data-theme='minimal'] .mobile-palaces-grid .palace .palace-gz { font-size: 10px; }
-  :root[data-theme='minimal'] .mobile-palaces-grid .palace .star { font-size: 11px; }
+  :root[data-theme='minimal'] .ziwei-chart .palace-name { font-size: 10px; }
+  :root[data-theme='minimal'] .ziwei-chart .palace-gz { font-size: 8px; }
+  :root[data-theme='minimal'] .ziwei-chart .star { font-size: 9px; }
+  :root[data-theme='minimal'] .ziwei-chart .palace-foot { font-size: 7px; }
+  :root[data-theme='minimal'] .ziwei-chart .center-title { font-size: 12px; }
+  :root[data-theme='minimal'] .ziwei-chart .center-item,
+  :root[data-theme='minimal'] .ziwei-chart .center-row { font-size: 9px; }
 }
 
 /* ============ 命宫主星论命 ============ */
