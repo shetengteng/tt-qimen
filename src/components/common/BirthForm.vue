@@ -13,10 +13,10 @@
  * 真太阳时简化交互（2026-04-27）：
  *   - 出生城市选择直接放在性别后面同一行，"选了城市 = 开启真太阳时"，"清空 = 关闭"。
  *   - 砍掉「高级选项」折叠块、useTrueSolar 开关、自定义经度输入：
- *     · 35 个常用城市已覆盖 95%+ 用户场景
+ *     · 34 个常用城市已覆盖 95%+ 用户场景
  *     · 用户不再需要面对"经度°E"等专业概念
  *   - 城市搜索通过 CityCombobox 实现，支持中/英/拼音 key 模糊匹配。
- *   - 偏移分钟数预览（offsetPreview）从折叠块移到城市下方，作为选择反馈。
+ *   - 不再展示偏移分钟数预览（保持表单视觉简洁，结果在排盘后体现）。
  *
  * 复用方式：
  *   - bazi: <BirthForm @paipan="onPaipan" />（默认按钮文案使用 common.birthInput.btn.paipan）
@@ -37,7 +37,7 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import CityCombobox from '@/components/common/CityCombobox.vue'
-import { CITY_LONGITUDE, trueSolarTimeOffset, computeDayOfYear } from '@/lib/trueSolarTime'
+import { CITY_LONGITUDE } from '@/lib/trueSolarTime'
 
 interface Props {
   /** 标题文案覆盖；为空时回退到 common.birthInput.inputCardTitle */
@@ -135,28 +135,6 @@ const birthplaceKey = ref<string>(detectCityKey(userStore.birth.longitude))
 const selectedLongitude = computed<number | undefined>(() => {
   if (!birthplaceKey.value) return undefined
   return CITY_LONGITUDE[birthplaceKey.value as keyof typeof CITY_LONGITUDE]
-})
-
-/** 实时计算偏移分钟用于选中后的反馈预览 */
-const offsetMinutes = computed<number | null>(() => {
-  const lng = selectedLongitude.value
-  if (typeof lng !== 'number') return null
-  const yNum = Number(year.value)
-  const mNum = Number(month.value)
-  const dNum = Number(day.value)
-  if (!Number.isFinite(yNum) || !Number.isFinite(mNum) || !Number.isFinite(dNum)) return null
-  const dayOfYear = computeDayOfYear(yNum, mNum, dNum)
-  return Math.round(trueSolarTimeOffset(lng, dayOfYear))
-})
-
-const offsetPreviewText = computed(() => {
-  const m = offsetMinutes.value
-  if (m === null) return ''
-  if (m === 0) return t('common.birthInput.offsetPreviewNoChange')
-  return t('common.birthInput.offsetPreview', {
-    sign: m > 0 ? '+' : '-',
-    minutes: Math.abs(m),
-  })
 })
 
 function cityLabel(key: string): string {
@@ -332,9 +310,6 @@ function genderLabel(v: 'male' | 'female') {
         />
       </div>
     </div>
-    <p v-if="shouldShowBirthplace && offsetPreviewText" class="ds-offset-preview">
-      {{ offsetPreviewText }}
-    </p>
     <div class="ds-input-actions">
       <button class="gf-btn" type="button" @click="onPaipan">
         <span>{{ t('common.birthInput.btn.paipanIcon') }}</span> {{ primaryLabel || t('common.birthInput.btn.paipan') }}
@@ -435,9 +410,6 @@ function genderLabel(v: 'male' | 'female') {
         />
       </div>
     </div>
-    <p v-if="shouldShowBirthplace && offsetPreviewText" class="ds-offset-preview">
-      {{ offsetPreviewText }}
-    </p>
     <div class="ds-input-actions">
       <button class="mn-btn mn-btn-lg" type="button" @click="onPaipan">
         {{ primaryLabel || t('common.birthInput.btn.paipan') }}
@@ -477,12 +449,5 @@ function genderLabel(v: 'male' | 'female') {
  */
 .ds-birthplace-group {
   /* CityCombobox 自身 100% 宽度，无需额外约束；保留 hook 类便于消费方覆盖 */
-}
-
-.ds-offset-preview {
-  margin: 8px 0 0;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--color-accent, #8c5a3a);
 }
 </style>

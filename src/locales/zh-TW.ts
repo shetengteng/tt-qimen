@@ -59,12 +59,10 @@ export default {
         paipan: '開始排盤',
         paipanIcon: '◉',
       },
-      birthplaceLabel: '出生城市',
+      birthplaceLabel: '城市（選填）',
       birthplaceSearchPlaceholder: '搜尋城市（可選 · 選了即開真太陽時）',
       birthplaceNoResult: '暫無匹配城市',
       birthplaceClear: '清除',
-      offsetPreview: '真太陽時修正：{sign}{minutes} 分鐘',
-      offsetPreviewNoChange: '真太陽時修正：±0 分鐘（與時鐘時間一致）',
       cities: {
         beijing: '北京', shanghai: '上海', tianjin: '天津', chongqing: '重慶',
         shijiazhuang: '石家莊', taiyuan: '太原', hohhot: '呼和浩特', shenyang: '瀋陽',

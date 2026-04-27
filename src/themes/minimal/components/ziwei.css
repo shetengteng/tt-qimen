@@ -134,7 +134,7 @@
   margin: 0 auto var(--mn-space-10);
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(4, minmax(140px, auto));
+  grid-template-rows: repeat(4, minmax(150px, auto));
   gap: 1px;
   background: var(--mn-border);
   border: 1px solid var(--mn-border);
@@ -152,7 +152,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  min-height: 140px;
+  min-height: 150px;
 }
 
 :root[data-theme='minimal'] .ziwei-chart .palace-head {
@@ -164,7 +164,7 @@
 }
 
 :root[data-theme='minimal'] .ziwei-chart .palace-name {
-  font-size: 13px;
+  font-size: 14.5px;
   color: var(--mn-accent);
   font-weight: 600;
 }
@@ -174,7 +174,7 @@
   background: var(--mn-accent-soft);
   padding: 1px 6px;
   border-radius: var(--mn-radius-sm);
-  font-size: 13px;
+  font-size: 15px;
 }
 
 :root[data-theme='minimal'] .ziwei-chart .palace-name.shen {
@@ -182,11 +182,11 @@
   background: rgba(2, 132, 199, 0.08);
   padding: 1px 6px;
   border-radius: var(--mn-radius-sm);
-  font-size: 13px;
+  font-size: 14.5px;
 }
 
 :root[data-theme='minimal'] .ziwei-chart .palace-gz {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--mn-ink-muted);
   font-family: var(--mn-font-mono);
 }
@@ -199,7 +199,7 @@
 }
 
 :root[data-theme='minimal'] .ziwei-chart .star {
-  font-size: 12.5px;
+  font-size: 13.5px;
   line-height: 1.55;
   display: flex;
   align-items: baseline;
@@ -221,12 +221,12 @@
 }
 
 :root[data-theme='minimal'] .ziwei-chart .star-bright {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--mn-ink-muted);
 }
 
 :root[data-theme='minimal'] .ziwei-chart .palace-foot {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--mn-ink-soft);
   border-top: 1px dashed var(--mn-border);
   padding-top: 4px;
@@ -236,7 +236,7 @@
 
 :root[data-theme='minimal'] .ziwei-chart .palace-foot .liu {
   color: var(--mn-ink-muted);
-  font-size: 10px;
+  font-size: 11px;
 }
 
 /* 四化标记 */

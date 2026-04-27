@@ -59,12 +59,10 @@ export default {
         paipan: 'Compute chart',
         paipanIcon: '◉',
       },
-      birthplaceLabel: 'Birthplace',
+      birthplaceLabel: 'City (optional)',
       birthplaceSearchPlaceholder: 'Search city (optional · enables true solar time)',
       birthplaceNoResult: 'No matching city',
       birthplaceClear: 'Clear',
-      offsetPreview: 'True solar offset: {sign}{minutes} min',
-      offsetPreviewNoChange: 'True solar offset: ±0 min (same as clock time)',
       cities: {
         beijing: 'Beijing', shanghai: 'Shanghai', tianjin: 'Tianjin', chongqing: 'Chongqing',
         shijiazhuang: 'Shijiazhuang', taiyuan: 'Taiyuan', hohhot: 'Hohhot', shenyang: 'Shenyang',
