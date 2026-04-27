@@ -120,6 +120,15 @@ export default {
     empty: 'No Major Star is present across the twelve palaces; rely on minor stars and four transformations together.',
   },
 
+  minorStars: {
+    title: 'Six Lucky & Six Malefic · Palace Readings',
+    summaryFmt: 'This chart: {lucky} lucky stars · {malefic} malefic stars',
+    luckyGroup: 'Six Lucky Stars · Noble Support',
+    maleficGroup: 'Six Malefic Stars · Sharp Edges',
+    entryMissing: 'No copy for this minor-star × palace combination yet — read alongside the Major Stars and the Three-Square-Four-Correct.',
+    empty: 'No Six Lucky / Six Malefic stars fall into the twelve palaces; lean on Major Stars and the four transformations.',
+  },
+
   interpret: {
     cards: {
       mingPalace: {
@@ -171,18 +180,12 @@ export default {
     collapse: 'Collapse ▲',
   },
 
-  mobile: {
-    keyPalacesTitle: 'Key 4 palaces',
-    moreTitle: 'Other 8 palaces',
-    expand: 'Expand ▼',
-    collapse: 'Collapse ▲',
-  },
-
   collapse: {
     sectionMeta: '◎ Metadata',
     sectionChart: '◎ Twelve Palaces',
     sectionSoulPalace: '◎ Life Palace Major Star',
     sectionPalaceMajor: '◎ Twelve Palaces · Major Star Briefs',
+    sectionMinorStars: '◎ Six Lucky & Six Malefic',
     sectionInterpret: '◎ Chart Reading',
     sectionDaxian: '◎ Major / Minor Limits',
     sectionDecadalDetail: '◎ Current Major-Limit',
@@ -191,6 +194,7 @@ export default {
     sectionChartMn: 'Twelve Palaces',
     sectionSoulPalaceMn: 'Life Palace Major Star',
     sectionPalaceMajorMn: 'Major Star Briefs',
+    sectionMinorStarsMn: 'Six Lucky & Six Malefic',
     sectionInterpretMn: 'Chart Reading',
     sectionDaxianMn: 'Major / Minor Limits',
     sectionDecadalDetailMn: 'Current Major-Limit',

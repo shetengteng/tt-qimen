@@ -120,6 +120,15 @@ export default {
     empty: '本盤 12 宮主星均缺，建議結合副星與四化綜合判斷。',
   },
 
+  minorStars: {
+    title: '六吉六煞·入宮論斷',
+    summaryFmt: '本盤吉星 {lucky} 顆 · 煞星 {malefic} 顆',
+    luckyGroup: '六吉星·輔佐貴氣',
+    maleficGroup: '六煞星·形衝煞剋',
+    entryMissing: '該副星 × 宮位組合暫無文案，可結合主星與三方四正綜合判斷。',
+    empty: '本盤暫無六吉六煞落入十二宮，建議以主星與四化為主軸。',
+  },
+
   interpret: {
     cards: {
       mingPalace: {
@@ -171,18 +180,12 @@ export default {
     collapse: '收起 ▲',
   },
 
-  mobile: {
-    keyPalacesTitle: '主要 4 宮',
-    moreTitle: '其餘 8 宮',
-    expand: '展開 ▼',
-    collapse: '收起 ▲',
-  },
-
   collapse: {
     sectionMeta: '◎ 元資訊',
     sectionChart: '◎ 十二宮',
     sectionSoulPalace: '◎ 命宮主星論命',
     sectionPalaceMajor: '◎ 十二宮·主星簡析',
+    sectionMinorStars: '◎ 六吉六煞·入宮論斷',
     sectionInterpret: '◎ 命盤解讀',
     sectionDaxian: '◎ 大限 · 小限',
     sectionDecadalDetail: '◎ 當前大限',
@@ -191,6 +194,7 @@ export default {
     sectionChartMn: '十二宮',
     sectionSoulPalaceMn: '命宮主星論命',
     sectionPalaceMajorMn: '十二宮主星簡析',
+    sectionMinorStarsMn: '六吉六煞入宮',
     sectionInterpretMn: '命盤解讀',
     sectionDaxianMn: '大限 · 小限',
     sectionDecadalDetailMn: '當前大限',

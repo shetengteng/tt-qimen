@@ -363,125 +363,109 @@
     margin: 0 auto var(--gf-space-lg);
   }
 
-  :root[data-theme='guofeng'] .mobile-key-palaces {
+  /* 12 宫双列网格（按 slot 顺序，6 行 × 2 列） */
+  :root[data-theme='guofeng'] .mobile-palaces-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--gf-space-sm);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
   }
 
-  :root[data-theme='guofeng'] .mobile-key-palaces .palace {
+  :root[data-theme='guofeng'] .mobile-palaces-grid .palace {
     background: rgba(255, 251, 240, 0.92);
-    padding: 10px 12px;
+    padding: 8px 10px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    min-height: 120px;
+    gap: 4px;
+    min-height: 132px;
     border: 1px solid rgba(176, 141, 59, 0.3);
     border-radius: var(--gf-radius-md);
+    position: relative;
+    overflow: hidden;
   }
 
-  :root[data-theme='guofeng'] .mobile-key-palaces .palace .palace-head {
+  :root[data-theme='guofeng'] .mobile-palaces-grid .palace.ming-gong {
+    background: linear-gradient(180deg, rgba(254, 247, 224, 0.96), rgba(245, 226, 178, 0.88));
+    box-shadow: inset 0 0 0 1px var(--gf-gold);
+  }
+
+  :root[data-theme='guofeng'] .mobile-palaces-grid .palace.shen-gong {
+    box-shadow: inset 0 0 0 1px var(--gf-cinnabar);
+  }
+
+  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .palace-head {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     border-bottom: 1px dashed rgba(176, 141, 59, 0.45);
-    padding-bottom: 4px;
+    padding-bottom: 3px;
+    gap: 4px;
   }
 
-  :root[data-theme='guofeng'] .mobile-key-palaces .palace .palace-name {
+  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .palace-name {
     font-family: var(--gf-font-kaiti);
-    font-size: 14px;
+    font-size: 13px;
     color: var(--gf-cinnabar);
-    letter-spacing: 0.1em;
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
   }
 
-  :root[data-theme='guofeng'] .mobile-key-palaces .palace .palace-gz {
-    font-size: 12px;
+  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .palace-gz {
+    font-size: 11px;
     color: var(--gf-gold);
     font-family: var(--gf-font-en);
   }
 
-  :root[data-theme='guofeng'] .mobile-key-palaces .palace .star {
-    font-size: 13px;
-    line-height: 1.55;
+  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .palace-stars {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-height: 0;
+  }
+
+  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .star {
+    font-size: 12px;
+    line-height: 1.5;
     font-family: var(--gf-font-serif);
     display: flex;
     align-items: baseline;
+    gap: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .star-main { color: var(--gf-ink); font-weight: 500; }
+  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .star-aux { color: var(--gf-ink-soft); }
+  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .star-malefic { color: var(--gf-cinnabar); }
+  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .star-bright { font-size: 10px; color: var(--gf-gold); }
+  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .star-sihua { font-size: 10px; }
+
+  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .palace-foot {
+    font-size: 10px;
+    color: var(--gf-ink-soft);
+    border-top: 1px dashed rgba(176, 141, 59, 0.3);
+    padding-top: 3px;
+    display: flex;
+    justify-content: space-between;
     gap: 4px;
   }
 
-  :root[data-theme='guofeng'] .mobile-key-palaces .palace .star-main { color: var(--gf-ink); font-weight: 500; }
-  :root[data-theme='guofeng'] .mobile-key-palaces .palace .star-aux { color: var(--gf-ink-soft); }
-  :root[data-theme='guofeng'] .mobile-key-palaces .palace .star-malefic { color: var(--gf-cinnabar); }
-  :root[data-theme='guofeng'] .mobile-key-palaces .palace .star-bright { font-size: 10px; color: var(--gf-gold); }
-
-  :root[data-theme='guofeng'] .mobile-key-palaces .palace .palace-foot {
-    font-size: 11px;
-    color: var(--gf-ink-soft);
-    border-top: 1px dashed rgba(176, 141, 59, 0.3);
-    padding-top: 4px;
-    display: flex;
-    justify-content: space-between;
-  }
-
-  :root[data-theme='guofeng'] .mobile-key-palaces .palace .palace-foot .liu {
+  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .palace-foot .liu {
     color: var(--gf-gold);
     font-size: 10px;
   }
+}
 
-  :root[data-theme='guofeng'] .mobile-more-list {
-    margin-top: var(--gf-space-md);
-    border: 1px solid rgba(176, 141, 59, 0.3);
-    border-radius: var(--gf-radius-md);
-    overflow: hidden;
+/* 极窄屏（≤360px）字号再压一档，避免长星耀名溢出 */
+@media (max-width: 360px) {
+  :root[data-theme='guofeng'] .mobile-palaces-grid .palace {
+    padding: 6px 8px;
+    min-height: 124px;
   }
-
-  :root[data-theme='guofeng'] .mobile-more-head {
-    width: 100%;
-    padding: 12px 14px;
-    background: rgba(176, 141, 59, 0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    border: none;
-    font-family: inherit;
-  }
-
-  :root[data-theme='guofeng'] .mobile-more-head h4 {
-    margin: 0;
-    font-family: var(--gf-font-kaiti);
-    font-size: 15px;
-    color: var(--gf-ink);
-    letter-spacing: 0.1em;
-  }
-
-  :root[data-theme='guofeng'] .mobile-more-toggle {
-    color: var(--gf-gold);
-    font-size: 13px;
-  }
-
-  :root[data-theme='guofeng'] .mobile-more-body {
-    background: rgba(255, 251, 240, 0.9);
-  }
-
-  :root[data-theme='guofeng'] .mobile-more-item {
-    padding: 10px 14px;
-    border-top: 1px dashed rgba(176, 141, 59, 0.3);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 13px;
-  }
-
-  :root[data-theme='guofeng'] .mobile-more-item .p-name {
-    color: var(--gf-cinnabar);
-    font-family: var(--gf-font-kaiti);
-  }
-
-  :root[data-theme='guofeng'] .mobile-more-item .p-star {
-    color: var(--gf-ink-soft);
-  }
+  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .palace-name { font-size: 12px; }
+  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .palace-gz { font-size: 10px; }
+  :root[data-theme='guofeng'] .mobile-palaces-grid .palace .star { font-size: 11px; }
 }
 
 /* ============ 命宫主星论命 ============ */
@@ -768,6 +752,212 @@
     font-size: 20px;
   }
   :root[data-theme='guofeng'] .ziwei-palace-major__text {
+    font-size: 13px;
+  }
+}
+
+/* ============ 六吉六煞·入宫论断（MinorStars） ============ */
+:root[data-theme='guofeng'] .ziwei-minor-stars {
+  max-width: 1200px;
+  margin: 0 auto var(--gf-space-lg);
+  padding: var(--gf-space-lg) var(--gf-space-xl);
+  background: linear-gradient(135deg, rgba(252, 248, 235, 0.96), rgba(248, 240, 222, 0.92));
+  border: 1px solid rgba(176, 141, 59, 0.4);
+  border-radius: var(--gf-radius-lg);
+  box-shadow: var(--gf-shadow-sm);
+}
+
+:root[data-theme='guofeng'] .ziwei-minor-stars__head {
+  margin-bottom: var(--gf-space-md);
+  padding-bottom: var(--gf-space-sm);
+  border-bottom: 1px solid rgba(176, 141, 59, 0.3);
+}
+
+:root[data-theme='guofeng'] .ziwei-minor-stars__title {
+  font-family: var(--gf-font-kaiti);
+  font-size: 22px;
+  color: var(--gf-cinnabar);
+  letter-spacing: 0.18em;
+  margin: 0 0 4px;
+}
+
+:root[data-theme='guofeng'] .ziwei-minor-stars__summary {
+  font-family: var(--gf-font-serif);
+  font-size: 13px;
+  color: var(--gf-ink-soft);
+  letter-spacing: 0.06em;
+  margin: 0;
+}
+
+:root[data-theme='guofeng'] .ziwei-minor-stars__group {
+  margin-top: var(--gf-space-md);
+}
+
+:root[data-theme='guofeng'] .ziwei-minor-stars__group-title {
+  font-family: var(--gf-font-kaiti);
+  font-size: 16px;
+  letter-spacing: 0.16em;
+  margin: 0 0 var(--gf-space-sm);
+  padding-left: 12px;
+  position: relative;
+}
+
+:root[data-theme='guofeng'] .ziwei-minor-stars__group-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 70%;
+  border-radius: 2px;
+}
+
+:root[data-theme='guofeng'] .ziwei-minor-stars__group--lucky .ziwei-minor-stars__group-title {
+  color: var(--gf-jade);
+}
+
+:root[data-theme='guofeng'] .ziwei-minor-stars__group--lucky .ziwei-minor-stars__group-title::before {
+  background: rgba(74, 109, 93, 0.7);
+}
+
+:root[data-theme='guofeng'] .ziwei-minor-stars__group--malefic .ziwei-minor-stars__group-title {
+  color: var(--gf-cinnabar);
+}
+
+:root[data-theme='guofeng'] .ziwei-minor-stars__group--malefic .ziwei-minor-stars__group-title::before {
+  background: rgba(194, 58, 42, 0.7);
+}
+
+:root[data-theme='guofeng'] .ziwei-minor-stars__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gf-space-md);
+}
+
+:root[data-theme='guofeng'] .ziwei-minor-stars__row {
+  padding: var(--gf-space-md);
+  background: rgba(255, 253, 246, 0.7);
+  border: 1px solid rgba(176, 141, 59, 0.22);
+  border-radius: var(--gf-radius-md);
+  transition: border-color 0.18s ease;
+}
+
+:root[data-theme='guofeng'] .ziwei-minor-stars__row.is-lucky {
+  border-left: 3px solid rgba(74, 109, 93, 0.55);
+}
+
+:root[data-theme='guofeng'] .ziwei-minor-stars__row.is-malefic {
+  border-left: 3px solid rgba(194, 58, 42, 0.55);
+}
+
+:root[data-theme='guofeng'] .ziwei-minor-stars__row:hover {
+  border-color: rgba(194, 58, 42, 0.45);
+}
+
+:root[data-theme='guofeng'] .ziwei-minor-stars__row-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+:root[data-theme='guofeng'] .ziwei-minor-stars__chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  font-family: var(--gf-font-kaiti);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+:root[data-theme='guofeng'] .ziwei-minor-stars__chip--palace {
+  color: var(--gf-ink);
+  background: rgba(176, 141, 59, 0.12);
+  border-color: rgba(176, 141, 59, 0.4);
+}
+
+:root[data-theme='guofeng'] .ziwei-minor-stars__chip--lucky {
+  color: var(--gf-jade);
+  background: rgba(74, 109, 93, 0.12);
+  border-color: rgba(74, 109, 93, 0.4);
+}
+
+:root[data-theme='guofeng'] .ziwei-minor-stars__chip--malefic {
+  color: var(--gf-cinnabar);
+  background: rgba(194, 58, 42, 0.1);
+  border-color: rgba(194, 58, 42, 0.4);
+}
+
+:root[data-theme='guofeng'] .ziwei-minor-stars__verdict {
+  margin-left: auto;
+  padding: 2px 10px;
+  font-family: var(--gf-font-kaiti);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  border-radius: 999px;
+  border: 1px solid;
+}
+
+:root[data-theme='guofeng'] .ziwei-minor-stars__verdict[data-tone='jade'] {
+  color: var(--gf-jade);
+  background: rgba(74, 109, 93, 0.12);
+  border-color: rgba(74, 109, 93, 0.4);
+}
+
+:root[data-theme='guofeng'] .ziwei-minor-stars__verdict[data-tone='plain'] {
+  color: var(--gf-ink-soft);
+  background: rgba(58, 47, 38, 0.06);
+  border-color: rgba(58, 47, 38, 0.22);
+}
+
+:root[data-theme='guofeng'] .ziwei-minor-stars__verdict[data-tone='danger'] {
+  color: var(--gf-cinnabar);
+  background: rgba(194, 58, 42, 0.1);
+  border-color: rgba(194, 58, 42, 0.4);
+}
+
+:root[data-theme='guofeng'] .ziwei-minor-stars__text {
+  font-family: var(--gf-font-serif);
+  font-size: 13.5px;
+  line-height: 1.8;
+  color: var(--gf-ink);
+  margin: 0;
+  text-align: justify;
+}
+
+:root[data-theme='guofeng'] .ziwei-minor-stars__text--empty {
+  color: var(--gf-ink-soft);
+  font-style: italic;
+}
+
+:root[data-theme='guofeng'] .ziwei-minor-stars__empty {
+  font-family: var(--gf-font-serif);
+  font-size: 14px;
+  color: var(--gf-ink-soft);
+  text-align: center;
+  padding: var(--gf-space-md) 0;
+  margin: 0;
+}
+
+@media (max-width: 720px) {
+  :root[data-theme='guofeng'] .ziwei-minor-stars {
+    padding: var(--gf-space-md);
+  }
+  :root[data-theme='guofeng'] .ziwei-minor-stars__list {
+    grid-template-columns: 1fr;
+    gap: var(--gf-space-sm);
+  }
+  :root[data-theme='guofeng'] .ziwei-minor-stars__title {
+    font-size: 20px;
+  }
+  :root[data-theme='guofeng'] .ziwei-minor-stars__text {
     font-size: 13px;
   }
 }

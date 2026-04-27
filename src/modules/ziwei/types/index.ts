@@ -251,6 +251,40 @@ export interface PalaceMajorReading {
   sihua?: SihuaKey
 }
 
+/**
+ * 单副星 × 宫位入宫论断（设计文档 §3.3 第三行 / §5 步骤 4）
+ *
+ * 派生策略（buildMinorStarsReadings）：
+ *   1. 遍历 12 宫，对每个宫扫 stars[]
+ *   2. 命中 12 副星映射（ZH_MINOR_STAR_TO_KEY）→ 取 MinorStars × 该宫位的文案
+ *   3. 不命中 → 不进入数组（不读取四主辅）
+ *
+ * 注意：副星本就在固定宫位，无"借宫"概念；同宫多颗副星 → 数组中产生多条 reading。
+ * UI 渲染顺序遵循 palace.slot 升序，宫内副星顺序保持 iztro 原序。
+ */
+export interface MinorStarReading {
+  /** 12 宫稳定 key */
+  palaceKey: PalaceKey
+  /** 副星稳定 key（与 data/minorStars.ts 对齐） */
+  starKey:
+    | 'zuofu'
+    | 'youbi'
+    | 'wenchang'
+    | 'wenqu'
+    | 'tiankui'
+    | 'tianyue'
+    | 'qingyang'
+    | 'tuoluo'
+    | 'huoxing'
+    | 'lingxing'
+    | 'dikong'
+    | 'dijie'
+  /** 副星中文名（iztro 输出，UI 副标题） */
+  starName: string
+  /** 是否吉星（true=六吉，false=六煞）—— UI 配色判定 */
+  isLucky: boolean
+}
+
 /** 完整紫微命盘（领域对象，UI 直接消费） */
 export interface ZiweiChart {
   meta: ZiweiMetaInfo
@@ -276,6 +310,13 @@ export interface ZiweiChart {
    * - 顺序：按 palace.slot 升序，每宫内主星顺序保持 iztro 原序
    */
   palaceMajorReadings: PalaceMajorReading[]
+  /**
+   * 六吉六煞入宫数组（M3 数据工程·144 段）
+   * - 来源：`buildMinorStarsReadings` + i18n 文本（runtime 取）
+   * - 顺序：按 palace.slot 升序，宫内副星顺序保持 iztro 原序
+   * - 仅当该宫该副星实际存在时才产出条目（无借宫）
+   */
+  minorStarReadings: MinorStarReading[]
   /** 三方四正（命宫驱动） */
   sanfangSiZheng: SanfangSiZheng
   /** 当前大限详情（无当前大限时为 null） */

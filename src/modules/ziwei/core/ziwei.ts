@@ -67,6 +67,7 @@ import {
   type DaxianMutagenStar,
   type DecadalDetail,
   type FlowYearCell,
+  type MinorStarReading,
   type PalaceKey,
   type PalaceMajorReading,
   type SihuaKey,
@@ -79,7 +80,11 @@ import {
   type ZiweiChart,
   type ZiweiMetaInfo,
 } from '../types'
-import { ZH_STAR_TO_KEY } from '../data'
+import {
+  LUCKY_MINOR_STARS,
+  ZH_MINOR_STAR_TO_KEY,
+  ZH_STAR_TO_KEY,
+} from '../data'
 
 /**
  * 12 宫六冲对宫表（与 PalaceKey 对齐，用于借宫）
@@ -483,6 +488,42 @@ function buildPalaceMajorReadings(palaces: Palace[]): PalaceMajorReading[] {
         borrowed: true,
         brightness: star.brightness,
         sihua: star.sihua,
+      })
+    }
+  }
+
+  return out
+}
+
+/**
+ * 六吉六煞入宫数组派生（设计文档 §3.3 第三行 / §5 步骤 4）
+ *
+ * 派生策略：
+ *   1. 遍历 12 宫，按 slot 升序
+ *   2. 每宫内扫 stars[]，命中 ZH_MINOR_STAR_TO_KEY 的副星生成一段 reading
+ *   3. 副星不存在借宫概念（其落宫在排盘时已确定）→ 不命中即跳过
+ *   4. 同一宫多颗副星 → 按 iztro 原序产生多段 reading
+ *
+ * 注：UI 文本来自 i18n + data/minorStars.{lang}.ts；本函数只产出
+ * starKey/palaceKey/isLucky 等数据维度，UI 层运行时拼接文案与配色。
+ *
+ * @param palaces 完整 12 宫位
+ * @returns MinorStarReading[]（按 slot 升序）
+ */
+function buildMinorStarsReadings(palaces: Palace[]): MinorStarReading[] {
+  const out: MinorStarReading[] = []
+  const luckySet = new Set<string>(LUCKY_MINOR_STARS)
+  const sorted = [...palaces].sort((a, b) => a.slot - b.slot)
+
+  for (const palace of sorted) {
+    for (const star of palace.stars) {
+      const starKey = ZH_MINOR_STAR_TO_KEY[star.name]
+      if (!starKey) continue
+      out.push({
+        palaceKey: palace.key,
+        starKey,
+        starName: star.name,
+        isLucky: luckySet.has(starKey),
       })
     }
   }
@@ -896,6 +937,7 @@ async function buildZiweiChartInternal(birth: BirthInput): Promise<ZiweiChart> {
   const interpretCards = buildInterpretCards(palaces, sihuaMap)
   const soulPalaceCard = buildSoulPalaceCard(palaces)
   const palaceMajorReadings = buildPalaceMajorReadings(palaces)
+  const minorStarReadings = buildMinorStarsReadings(palaces)
   const currentDecadal = buildCurrentDecadal(astrolabe, palaces, meta.currentYear)
   const flowYears = buildFlowYears(astrolabe, palaces, meta.currentYear)
 
@@ -908,6 +950,7 @@ async function buildZiweiChartInternal(birth: BirthInput): Promise<ZiweiChart> {
     interpretCards,
     soulPalaceCard,
     palaceMajorReadings,
+    minorStarReadings,
     sanfangSiZheng: sanfang,
     currentDecadal,
     flowYears,

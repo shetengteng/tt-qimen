@@ -20,6 +20,7 @@ import ZiweiMobile from './components/ZiweiMobile.vue'
 import InterpretCards from './components/InterpretCards.vue'
 import SoulPalaceView from './components/SoulPalaceView.vue'
 import PalaceMajorView from './components/PalaceMajorView.vue'
+import MinorStarsView from './components/MinorStarsView.vue'
 import DaxianGrid from './components/DaxianGrid.vue'
 import DecadalDetail from './components/DecadalDetail.vue'
 import ZiweiYear from './components/ZiweiYear.vue'
@@ -245,6 +246,13 @@ onMounted(() => {
           <PalaceMajorView :chart="chart" />
         </CollapsibleSection>
 
+        <CollapsibleSection
+          v-if="chart?.minorStarReadings?.length"
+          :label="t('ziwei.collapse.sectionMinorStars')"
+        >
+          <MinorStarsView :chart="chart" />
+        </CollapsibleSection>
+
         <CollapsibleSection :label="t('ziwei.collapse.sectionInterpret')">
           <InterpretCards :chart="chart" />
         </CollapsibleSection>
@@ -348,6 +356,13 @@ onMounted(() => {
           :label="t('ziwei.collapse.sectionPalaceMajorMn')"
         >
           <PalaceMajorView :chart="chart" />
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          v-if="chart?.minorStarReadings?.length"
+          :label="t('ziwei.collapse.sectionMinorStarsMn')"
+        >
+          <MinorStarsView :chart="chart" />
         </CollapsibleSection>
 
         <CollapsibleSection :label="t('ziwei.collapse.sectionInterpretMn')">
