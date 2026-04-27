@@ -53,7 +53,7 @@ import type { BirthInput } from '@/stores/user'
 
 import { detectPattern } from './pattern'
 import { detectShensha } from './shensha'
-import { getDecadeHint } from '../data/fortuneHints'
+import { getDecadeHint, getDecadeHintV2, judgeDecadeStance } from '../data/fortuneHints'
 import { getFlowYearHint, getFlowYearHintV2 } from '../data/flowYearHints'
 import { FortuneError } from '@/lib/errors'
 import { useTrueSolarTime } from '@/composables/useTrueSolarTime'
@@ -172,7 +172,7 @@ function calculateBaziInternal(birth: BirthInput): BaziChart {
     months: childLimit.getMonthCount(),
   }
 
-  const decades = buildDecades(childLimit, dayMasterStem, favorable, unfavorable)
+  const decades = buildDecades(childLimit, dayMasterStem, favorable, unfavorable, strength)
   const currentSolarYear = new Date().getFullYear()
   const currentDecadeIdx = decades.findIndex(d => currentSolarYear >= d.startYear && currentSolarYear <= d.endYear)
   if (currentDecadeIdx >= 0) decades[currentDecadeIdx].current = true
@@ -439,6 +439,7 @@ function buildDecades(
   dayMaster: HeavenStem,
   favorable: ElementName[],
   unfavorable: ElementName[],
+  strength: StrengthLevel,
 ): DecadeFortuneItem[] {
   const list: DecadeFortuneItem[] = []
   let cur = childLimit.getStartDecadeFortune()
@@ -455,6 +456,11 @@ function buildDecades(
     const startYear = cur.getStartSixtyCycleYear().getYear()
     const endYear = cur.getEndSixtyCycleYear().getYear()
 
+    // v2 主路：10 十神 × 5 旺衰 × 2 取向，3 变体按 i 抽取（保证不同段不同句）
+    const stance = judgeDecadeStance(tenGodGan, strength)
+    const v2 = getDecadeHintV2(tenGodGan, strength, stance, i)
+    const hint = v2 ? v2.hint : getDecadeHint(tenGodGan, tendency)
+
     list.push({
       gan: stem.getName(),
       zhi: branch.getName(),
@@ -467,7 +473,7 @@ function buildDecades(
       tenGod: `${tenGodGan} · ${tenGodZhi}`,
       tenGodGan,
       tendency,
-      hint: getDecadeHint(tenGodGan, tendency),
+      hint,
       current: false,
     })
     cur = cur.next(1)
