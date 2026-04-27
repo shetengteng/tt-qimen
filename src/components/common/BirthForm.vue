@@ -10,9 +10,18 @@
  *   - `bazi.*` 下原同名 key 仍保留作为兼容别名，供 BaziPage / FourPillarsTable 等
  *     八字独有的消费方使用（如 `bazi.gender.maleTitle/femaleTitle` 仍在 bazi 命名空间）。
  *
+ * 真太阳时简化交互（2026-04-27）：
+ *   - 出生城市选择直接放在性别后面同一行，"选了城市 = 开启真太阳时"，"清空 = 关闭"。
+ *   - 砍掉「高级选项」折叠块、useTrueSolar 开关、自定义经度输入：
+ *     · 35 个常用城市已覆盖 95%+ 用户场景
+ *     · 用户不再需要面对"经度°E"等专业概念
+ *   - 城市搜索通过 CityCombobox 实现，支持中/英/拼音 key 模糊匹配。
+ *   - 偏移分钟数预览（offsetPreview）从折叠块移到城市下方，作为选择反馈。
+ *
  * 复用方式：
  *   - bazi: <BirthForm @paipan="onPaipan" />（默认按钮文案使用 common.birthInput.btn.paipan）
  *   - ziwei / chenggu: <BirthForm :title="t('xx.inputCardTitle')" :primary-label="t('xx.btn.paipan')" />
+ *   - 不需要真太阳时的页面（如 chenggu）传 :show-birthplace="false" 隐藏城市字段
  */
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -27,6 +36,7 @@ import {
 } from '@/components/ui/select'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
+import CityCombobox from '@/components/common/CityCombobox.vue'
 import { CITY_LONGITUDE, trueSolarTimeOffset, computeDayOfYear } from '@/lib/trueSolarTime'
 
 interface Props {
@@ -35,17 +45,22 @@ interface Props {
   /** 主按钮文案覆盖（已经过 i18n 处理） */
   primaryLabel?: string
   /**
-   * 是否展示真太阳时高级选项。
+   * 是否展示出生城市字段（=真太阳时开关）。
    * - bazi / ziwei → true（默认）：core 会消费 longitude
    * - chenggu / 其他不消费 longitude 的页面 → 调用方传 false 隐藏，避免误导
+   *
+   * 兼容别名：`showAdvanced` 已弃用，遗留调用站若仍传 :show-advanced="false" 也按隐藏处理。
    */
+  showBirthplace?: boolean
+  /** @deprecated 用 showBirthplace 替代；本字段仅作向后兼容 */
   showAdvanced?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   title: '',
   primaryLabel: '',
-  showAdvanced: true,
+  showBirthplace: undefined,
+  showAdvanced: undefined,
 })
 
 const emit = defineEmits<{
@@ -57,6 +72,13 @@ const themeStore = useThemeStore()
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
 const userStore = useBirthStore()
+
+/** 实际是否展示出生城市字段：showBirthplace 优先，未传时回退到 showAdvanced；都未传时默认 true */
+const shouldShowBirthplace = computed<boolean>(() => {
+  if (typeof props.showBirthplace === 'boolean') return props.showBirthplace
+  if (typeof props.showAdvanced === 'boolean') return props.showAdvanced
+  return true
+})
 
 /**
  * 时辰索引（0..12）↔ 小时（0..23）映射
@@ -84,57 +106,40 @@ const gender = ref<'male' | 'female'>(userStore.birth.gender)
 const hours = computed(() => (tm('common.birthInput.hours') as string[]) ?? [])
 
 // ---------------------------------------------------------------------------
-// 真太阳时高级选项
+// 真太阳时（出生城市）
 // ---------------------------------------------------------------------------
 //
 // 数据流：
-//   - 用户切开关 / 选城市 → 立即写回 store（longitude / birthplace）
-//   - 关闭开关 → 把 longitude 设为 undefined，store 行为退回纯时钟时间
-//   - 城市选 'custom' → 暴露 longitude 输入框，由用户手填
+//   - 用户在城市搜索框选城市 → birthplaceKey 改变 → 写回 store.longitude / birthplace
+//   - 清空 → birthplaceKey = ''，longitude = undefined，core 自动回退到时钟时间
 //
-// CITY_LONGITUDE 当前 35 个常用城市经度查表（华人圈优先），未来可扩展。
+// 不再支持「自定义经度」入口；35 个常用城市已覆盖 95% 用户场景，进一步降低交互复杂度。
 
-const CITY_KEYS = Object.keys(CITY_LONGITUDE) as Array<keyof typeof CITY_LONGITUDE>
-
-const advancedOpen = ref<boolean>(typeof userStore.birth.longitude === 'number')
-const useTrueSolar = ref<boolean>(typeof userStore.birth.longitude === 'number')
+const CITY_KEYS = Object.freeze(Object.keys(CITY_LONGITUDE)) as readonly string[]
 
 /**
- * 反推初始 birthplaceKey：若 store 中 longitude 命中某城市经度（误差 <0.05°），
- * 选中该城市；否则视为 'custom'（手动输入经度）。
+ * 反推初始 birthplaceKey：若 store 中 longitude 命中某城市经度（误差 <0.05°）
+ * 选中该城市；否则视为未选（自定义经度的旧数据被透明丢弃）。
  */
 function detectCityKey(longitude: number | undefined): string {
   if (typeof longitude !== 'number') return ''
   for (const key of CITY_KEYS) {
     if (Math.abs(CITY_LONGITUDE[key] - longitude) < 0.05) return key
   }
-  return 'custom'
+  return ''
 }
 
 const birthplaceKey = ref<string>(detectCityKey(userStore.birth.longitude))
-const longitudeInput = ref<string>(
-  typeof userStore.birth.longitude === 'number' ? String(userStore.birth.longitude) : '',
-)
 
-/** 当选中具体城市时，把对应经度写到 longitudeInput；选 custom 时清空让用户填 */
-watch(birthplaceKey, (key) => {
-  if (!key || key === 'custom') return
-  const lng = CITY_LONGITUDE[key as keyof typeof CITY_LONGITUDE]
-  if (typeof lng === 'number') longitudeInput.value = lng.toFixed(2)
+/** city key → 经度数值，未选返回 undefined */
+const selectedLongitude = computed<number | undefined>(() => {
+  if (!birthplaceKey.value) return undefined
+  return CITY_LONGITUDE[birthplaceKey.value as keyof typeof CITY_LONGITUDE]
 })
 
-/** 解析后的经度数值；非法输入或越界返回 undefined */
-const parsedLongitude = computed<number | undefined>(() => {
-  const raw = Number(longitudeInput.value)
-  if (!Number.isFinite(raw)) return undefined
-  if (raw < -180 || raw > 180) return undefined
-  return raw
-})
-
-/** 实时计算偏移分钟用于 UI 预览 */
+/** 实时计算偏移分钟用于选中后的反馈预览 */
 const offsetMinutes = computed<number | null>(() => {
-  if (!useTrueSolar.value) return null
-  const lng = parsedLongitude.value
+  const lng = selectedLongitude.value
   if (typeof lng !== 'number') return null
   const yNum = Number(year.value)
   const mNum = Number(month.value)
@@ -202,21 +207,16 @@ function setCalendar(v: 'solar' | 'lunar') {
 
 function onPaipan() {
   /**
-   * longitude 计算逻辑：
-   *   - 关闭真太阳时 → longitude = undefined（core 退回时钟时间）
-   *   - 开启 + 选具体城市 → 取城市经度
-   *   - 开启 + custom → 取手动输入的 parsedLongitude
-   *   - 开启但 longitudeInput 非法（NaN / 越界） → undefined（fail-safe）
-   *
-   * birthplace 仅作展示与回显，不参与计算。'custom' 不写回（避免污染 i18n key）。
+   * longitude 计算逻辑（简化版）：
+   *   - 选了城市 → longitude = CITY_LONGITUDE[key]，birthplace = key
+   *   - 没选城市 / 城市字段隐藏 → longitude = undefined，birthplace = undefined
+   * core 看到 longitude === undefined 自动回退到时钟时间。
    */
   let longitude: number | undefined
   let birthplace: string | undefined
-  if (props.showAdvanced && useTrueSolar.value) {
-    longitude = parsedLongitude.value
-    if (birthplaceKey.value && birthplaceKey.value !== 'custom') {
-      birthplace = birthplaceKey.value
-    }
+  if (shouldShowBirthplace.value && birthplaceKey.value) {
+    longitude = selectedLongitude.value
+    birthplace = birthplaceKey.value
   }
 
   userStore.update({
@@ -320,48 +320,21 @@ function genderLabel(v: 'male' | 'female') {
           </label>
         </RadioGroup>
       </div>
-    </div>
-    <details v-if="props.showAdvanced" class="ds-advanced" :open="advancedOpen" @toggle="advancedOpen = ($event.target as HTMLDetailsElement).open">
-      <summary class="ds-advanced-summary">
-        {{ advancedOpen ? t('common.birthInput.advancedToggleClose') : t('common.birthInput.advancedToggle') }}
-      </summary>
-      <div class="ds-advanced-body">
-        <label class="ds-advanced-toggle">
-          <input v-model="useTrueSolar" type="checkbox" />
-          <span>{{ t('common.birthInput.trueSolarLabel') }}</span>
-        </label>
-        <p class="ds-advanced-hint">{{ t('common.birthInput.trueSolarHint') }}</p>
-        <div v-if="useTrueSolar" class="ds-advanced-fields">
-          <div class="ds-input-group">
-            <Label>{{ t('common.birthInput.birthplaceLabel') }}</Label>
-            <Select v-model="birthplaceKey">
-              <SelectTrigger>
-                <SelectValue :placeholder="t('common.birthInput.birthplacePlaceholder')" />
-              </SelectTrigger>
-              <SelectContent class="max-h-72">
-                <SelectItem v-for="key in CITY_KEYS" :key="key" :value="key">{{ cityLabel(key) }}</SelectItem>
-                <SelectItem value="custom">{{ t('common.birthInput.birthplaceCustom') }}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div v-if="birthplaceKey === 'custom'" class="ds-input-group">
-            <Label>{{ t('common.birthInput.longitudeLabel') }}</Label>
-            <input
-              v-model="longitudeInput"
-              class="ds-longitude-input"
-              type="number"
-              inputmode="decimal"
-              step="0.01"
-              min="-180"
-              max="180"
-              :placeholder="t('common.birthInput.longitudePlaceholder')"
-            />
-            <p class="ds-advanced-hint">{{ t('common.birthInput.longitudeHint') }}</p>
-          </div>
-          <p v-if="offsetPreviewText" class="ds-advanced-preview">{{ offsetPreviewText }}</p>
-        </div>
+      <div v-if="shouldShowBirthplace" class="ds-input-group ds-birthplace-group">
+        <Label>{{ t('common.birthInput.birthplaceLabel') }}</Label>
+        <CityCombobox
+          v-model="birthplaceKey"
+          :options="CITY_KEYS"
+          :label-of="cityLabel"
+          :placeholder="t('common.birthInput.birthplaceSearchPlaceholder')"
+          :no-result-text="t('common.birthInput.birthplaceNoResult')"
+          :clear-title="t('common.birthInput.birthplaceClear')"
+        />
       </div>
-    </details>
+    </div>
+    <p v-if="shouldShowBirthplace && offsetPreviewText" class="ds-offset-preview">
+      {{ offsetPreviewText }}
+    </p>
     <div class="ds-input-actions">
       <button class="gf-btn" type="button" @click="onPaipan">
         <span>{{ t('common.birthInput.btn.paipanIcon') }}</span> {{ primaryLabel || t('common.birthInput.btn.paipan') }}
@@ -450,48 +423,21 @@ function genderLabel(v: 'male' | 'female') {
           </label>
         </RadioGroup>
       </div>
-    </div>
-    <details v-if="props.showAdvanced" class="ds-advanced" :open="advancedOpen" @toggle="advancedOpen = ($event.target as HTMLDetailsElement).open">
-      <summary class="ds-advanced-summary">
-        {{ advancedOpen ? t('common.birthInput.advancedToggleClose') : t('common.birthInput.advancedToggle') }}
-      </summary>
-      <div class="ds-advanced-body">
-        <label class="ds-advanced-toggle">
-          <input v-model="useTrueSolar" type="checkbox" />
-          <span>{{ t('common.birthInput.trueSolarLabel') }}</span>
-        </label>
-        <p class="ds-advanced-hint">{{ t('common.birthInput.trueSolarHint') }}</p>
-        <div v-if="useTrueSolar" class="ds-advanced-fields">
-          <div class="ds-input-group">
-            <Label>{{ t('common.birthInput.birthplaceLabel') }}</Label>
-            <Select v-model="birthplaceKey">
-              <SelectTrigger>
-                <SelectValue :placeholder="t('common.birthInput.birthplacePlaceholder')" />
-              </SelectTrigger>
-              <SelectContent class="max-h-72">
-                <SelectItem v-for="key in CITY_KEYS" :key="key" :value="key">{{ cityLabel(key) }}</SelectItem>
-                <SelectItem value="custom">{{ t('common.birthInput.birthplaceCustom') }}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div v-if="birthplaceKey === 'custom'" class="ds-input-group">
-            <Label>{{ t('common.birthInput.longitudeLabel') }}</Label>
-            <input
-              v-model="longitudeInput"
-              class="ds-longitude-input"
-              type="number"
-              inputmode="decimal"
-              step="0.01"
-              min="-180"
-              max="180"
-              :placeholder="t('common.birthInput.longitudePlaceholder')"
-            />
-            <p class="ds-advanced-hint">{{ t('common.birthInput.longitudeHint') }}</p>
-          </div>
-          <p v-if="offsetPreviewText" class="ds-advanced-preview">{{ offsetPreviewText }}</p>
-        </div>
+      <div v-if="shouldShowBirthplace" class="ds-input-group ds-birthplace-group">
+        <Label>{{ t('common.birthInput.birthplaceLabel') }}</Label>
+        <CityCombobox
+          v-model="birthplaceKey"
+          :options="CITY_KEYS"
+          :label-of="cityLabel"
+          :placeholder="t('common.birthInput.birthplaceSearchPlaceholder')"
+          :no-result-text="t('common.birthInput.birthplaceNoResult')"
+          :clear-title="t('common.birthInput.birthplaceClear')"
+        />
       </div>
-    </details>
+    </div>
+    <p v-if="shouldShowBirthplace && offsetPreviewText" class="ds-offset-preview">
+      {{ offsetPreviewText }}
+    </p>
     <div class="ds-input-actions">
       <button class="mn-btn mn-btn-lg" type="button" @click="onPaipan">
         {{ primaryLabel || t('common.birthInput.btn.paipan') }}
@@ -524,93 +470,17 @@ function genderLabel(v: 'male' | 'female') {
   user-select: none;
 }
 
-/* ---------- 真太阳时高级选项（共享于国风 / 简约） ---------- */
-.ds-advanced {
-  margin-top: 12px;
-  border: 1px solid var(--color-border, rgba(127, 127, 127, 0.18));
-  border-radius: 8px;
-  padding: 8px 14px;
-  background: var(--color-bg-elevated, rgba(127, 127, 127, 0.04));
+/* ---------- 出生城市（inline 真太阳时入口） ---------- */
+/*
+ * 在 ds-input-row（grid）内新增的 input-group。
+ * 紧跟在性别字段之后，作为同一行的最后一个单元，避免破坏年/月/日/时/性别的等宽布局。
+ */
+.ds-birthplace-group {
+  /* CityCombobox 自身 100% 宽度，无需额外约束；保留 hook 类便于消费方覆盖 */
 }
 
-.ds-advanced-summary {
-  cursor: pointer;
-  font-size: 13px;
-  color: var(--color-ink-soft, rgba(0, 0, 0, 0.6));
-  list-style: none;
-  user-select: none;
-  padding: 4px 0;
-}
-
-.ds-advanced-summary::-webkit-details-marker {
-  display: none;
-}
-
-.ds-advanced-summary::before {
-  content: '▸ ';
-  display: inline-block;
-  transition: transform 0.15s ease;
-}
-
-.ds-advanced[open] .ds-advanced-summary::before {
-  transform: rotate(90deg);
-}
-
-.ds-advanced-body {
-  padding: 8px 0 4px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.ds-advanced-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  color: var(--color-ink);
-}
-
-.ds-advanced-toggle input[type='checkbox'] {
-  width: 14px;
-  height: 14px;
-  accent-color: var(--color-accent, #8c5a3a);
-}
-
-.ds-advanced-hint {
-  margin: 0;
-  font-size: 12px;
-  color: var(--color-ink-muted, rgba(0, 0, 0, 0.45));
-  line-height: 1.5;
-}
-
-.ds-advanced-fields {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding-top: 4px;
-}
-
-.ds-longitude-input {
-  width: 100%;
-  height: 38px;
-  padding: 0 12px;
-  border: 1px solid var(--color-border, rgba(127, 127, 127, 0.25));
-  border-radius: 6px;
-  background: var(--color-bg, transparent);
-  color: var(--color-ink);
-  font-size: 14px;
-  outline: none;
-  transition: border-color 0.15s ease;
-}
-
-.ds-longitude-input:focus {
-  border-color: var(--color-accent, #8c5a3a);
-}
-
-.ds-advanced-preview {
-  margin: 4px 0 0;
+.ds-offset-preview {
+  margin: 8px 0 0;
   font-size: 13px;
   font-weight: 500;
   color: var(--color-accent, #8c5a3a);
