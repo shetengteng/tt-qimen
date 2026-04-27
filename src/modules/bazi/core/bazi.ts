@@ -54,7 +54,7 @@ import type { BirthInput } from '@/stores/user'
 import { detectPattern } from './pattern'
 import { detectShensha } from './shensha'
 import { getDecadeHint } from '../data/fortuneHints'
-import { getFlowYearHint } from '../data/flowYearHints'
+import { getFlowYearHint, getFlowYearHintV2 } from '../data/flowYearHints'
 import { FortuneError } from '@/lib/errors'
 import { useTrueSolarTime } from '@/composables/useTrueSolarTime'
 import {
@@ -178,7 +178,7 @@ function calculateBaziInternal(birth: BirthInput): BaziChart {
   if (currentDecadeIdx >= 0) decades[currentDecadeIdx].current = true
 
   // 流年：当年 + 后 9 年
-  const flowYears = buildFlowYears(currentSolarYear, dayMasterStem, favorable, unfavorable)
+  const flowYears = buildFlowYears(currentSolarYear, dayMasterStem, favorable, unfavorable, strength)
   const currentFlowYearIdx = 0
 
   const pillarsObj = {
@@ -490,6 +490,7 @@ function buildFlowYears(
   dayMaster: HeavenStem,
   favorable: ElementName[],
   unfavorable: ElementName[],
+  dayMasterStrength: StrengthLevel,
 ): FlowYear[] {
   const list: FlowYear[] = []
   for (let i = 0; i < 10; i++) {
@@ -501,10 +502,12 @@ function buildFlowYears(
     const element = stem.getElement().getName() as ElementName
     const tenGod = tenStarFromStem(stem, dayMaster)
     const tendency = judgeTendency(element, favorable, unfavorable)
-    const hint = getFlowYearHint(tenGod, tendency)
+    const ganzhi = cycle.getName()
+    const v2 = getFlowYearHintV2(ganzhi, dayMasterStrength)
+    const hint = v2 ?? getFlowYearHint(tenGod, tendency)
     list.push({
       year,
-      ganzhi: cycle.getName(),
+      ganzhi,
       gan: stem.getName(),
       zhi: branch.getName(),
       element,
