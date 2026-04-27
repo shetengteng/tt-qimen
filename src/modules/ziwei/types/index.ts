@@ -94,6 +94,48 @@ export interface XiaoxianCell {
   current?: boolean
 }
 
+/** 大限四化飞星：基于大限天干起 */
+export interface DaxianMutagenStar {
+  /** 中文星名 */
+  name: string
+  /** 化哪一种 */
+  sihua: SihuaKey
+  /** 落入哪个宫（按本命宫位） */
+  palaceKey?: PalaceKey
+}
+
+/**
+ * 当前大限详情（M2 第一发布 §10）
+ *
+ * 描述：当前大限段的主星配合 + 大限四化共振
+ */
+export interface DecadalDetail {
+  /** "36-45" 形态 */
+  age: string
+  /** 干支（如「庚辰」） */
+  ganzhi: string
+  /** 落入哪个宫（本命宫位 key） */
+  palaceKey: PalaceKey
+  /** 该宫主星 */
+  mainStars: { name: string; brightness?: Brightness }[]
+  /** 大限四化（按大限天干起） */
+  mutagens: DaxianMutagenStar[]
+}
+
+/** 流年卡单元（M2 第一发布 §11） */
+export interface FlowYearCell {
+  /** 公历年 */
+  year: number
+  /** 干支（如「甲辰」） */
+  ganzhi: string
+  /** 流年命宫（落本命哪个宫） */
+  palaceKey: PalaceKey
+  /** 流年四化（按流年天干起） */
+  mutagens: DaxianMutagenStar[]
+  /** 是否当年 */
+  current?: boolean
+}
+
 /** 四化落宫表（本命四化） */
 export type SihuaPalaceMap = Record<SihuaKey, { star: string; palaceKey: PalaceKey }>
 
@@ -143,6 +185,72 @@ export interface ZiweiMetaInfo {
   currentYearGz: string
 }
 
+/**
+ * 命宫主星论命卡片（设计文档 §3.3 第一行 / §5 步骤 4）
+ *
+ * 数据来源：`src/modules/ziwei/data/soulPalace.ts` × 三语
+ * 派生策略（buildSoulPalaceCard）：
+ *   1. 命宫主星 → 直接命中 14 主星论命
+ *   2. 命宫无主星 → 借迁移宫主星，UI 标记"借宫"
+ *   3. 借宫亦无主星 → 返回 null（极小概率，UI 隐藏整段）
+ *
+ * 注意：本卡片是文本资产+keywords 集合，并非 InterpretCard（后者为通用 tag 卡）。
+ * 之所以独立成型，是因 SoulPalace 是紫微"命理引擎首屏"的语义中心，
+ * 后续会引入"性别 / 大限主星 / 流年主星"等多维派生，与 InterpretCard 的轻量 tag 模型不同。
+ */
+export interface SoulPalaceCard {
+  /** 主星稳定 key（与 data/soulPalace.ts 对齐） */
+  starKey:
+    | 'ziwei'
+    | 'tianji'
+    | 'taiyang'
+    | 'wuqu'
+    | 'tiantong'
+    | 'lianzhen'
+    | 'tianfu'
+    | 'taiyin'
+    | 'tanlang'
+    | 'jumen'
+    | 'tianxiang'
+    | 'tianliang'
+    | 'qisha'
+    | 'pojun'
+  /** 主星中文名（iztro 输出，UI 副标题用） */
+  starName: string
+  /** 是否借宫（命宫无主星，从迁移宫借用） */
+  borrowed: boolean
+  /** 主星亮度（庙旺利平閒陷不得地） */
+  brightness?: string
+  /** 主星本命四化（如果有） */
+  sihua?: 'lu' | 'quan' | 'ke' | 'ji'
+}
+
+/**
+ * 单宫主星简析项（设计文档 §3.3 第二行 / §5 步骤 4）
+ *
+ * 派生策略（buildPalaceMajorReadings）：
+ *   1. 该宫主星 → 取该主星 × 该宫位的 PalaceMajor 文案
+ *   2. 该宫无主星 → borrowed=true，借对宫主星
+ *   3. 借宫亦无主星 → 不进入数组（UI 不渲染）
+ *
+ * 注意：每段是「单一主星 × 宫位」组合；如果该宫有 2 颗主星（如紫微+破军），
+ * 则会在数组中产生 2 个 reading（同 palaceKey、不同 starKey）。
+ */
+export interface PalaceMajorReading {
+  /** 12 宫稳定 key */
+  palaceKey: PalaceKey
+  /** 主星稳定 key（与 SoulPalaceCard.starKey 同集合） */
+  starKey: SoulPalaceCard['starKey']
+  /** 主星中文名（iztro 输出） */
+  starName: string
+  /** 是否借宫（该宫无主星，从对宫借用） */
+  borrowed: boolean
+  /** 主星亮度（来自 Star.brightness） */
+  brightness?: Brightness
+  /** 主星本命四化（来自 Star.sihua） */
+  sihua?: SihuaKey
+}
+
 /** 完整紫微命盘（领域对象，UI 直接消费） */
 export interface ZiweiChart {
   meta: ZiweiMetaInfo
@@ -152,12 +260,28 @@ export interface ZiweiChart {
   sihuaMap: SihuaPalaceMap
   /** 大限 12 段 */
   daxianCells: DaxianCell[]
-  /** 小限 6 段（当前 ±2，含当前年） */
+  /** 小限 6 段（当前年向前 2 年、向后 3 年，含当前年） */
   xiaoxianCells: XiaoxianCell[]
   /** 解读卡（本轮为启发式派生，后续替换为模板 JSON） */
   interpretCards: InterpretCard[]
+  /**
+   * 命宫主星论命（M3 数据工程·首中能量）
+   * - 来源：`buildSoulPalaceCard` + i18n 文本（runtime 取）
+   * - 命宫与迁移宫均无主星 → null（UI 隐藏）
+   */
+  soulPalaceCard: SoulPalaceCard | null
+  /**
+   * 各宫主星简析数组（M3 数据工程·168 段）
+   * - 来源：`buildPalaceMajorReadings` + i18n 文本（runtime 取）
+   * - 顺序：按 palace.slot 升序，每宫内主星顺序保持 iztro 原序
+   */
+  palaceMajorReadings: PalaceMajorReading[]
   /** 三方四正（命宫驱动） */
   sanfangSiZheng: SanfangSiZheng
+  /** 当前大限详情（无当前大限时为 null） */
+  currentDecadal: DecadalDetail | null
+  /** 流年卡：当前年 + 后续 9 年（共 10 段） */
+  flowYears: FlowYearCell[]
 }
 
 /** ---------- 内部映射常量（被 core 与 UI 共享） ---------- */

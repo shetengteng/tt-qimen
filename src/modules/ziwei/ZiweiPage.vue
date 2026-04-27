@@ -18,8 +18,12 @@ import SanfangToggle from './components/SanfangToggle.vue'
 import ZiweiPalaceChart from './components/ZiweiPalaceChart.vue'
 import ZiweiMobile from './components/ZiweiMobile.vue'
 import InterpretCards from './components/InterpretCards.vue'
+import SoulPalaceView from './components/SoulPalaceView.vue'
+import PalaceMajorView from './components/PalaceMajorView.vue'
 import DaxianGrid from './components/DaxianGrid.vue'
-import { buildZiweiChart } from './core/ziwei'
+import DecadalDetail from './components/DecadalDetail.vue'
+import ZiweiYear from './components/ZiweiYear.vue'
+import { buildZiweiChart, prefetchZiweiEngine } from './core/ziwei'
 import { useZiweiStore } from './stores/ziweiStore'
 import type { ZiweiChart } from './types'
 
@@ -48,20 +52,57 @@ const skeleton = useSkeletonReveal({
   },
 })
 
-function onPaipan() {
+async function onPaipan() {
+  skeleton.start(() => resultBannerEl.value)
   try {
-    chart.value = buildZiweiChart(ziweiStore.birth)
+    chart.value = await buildZiweiChart(ziweiStore.birth)
+    if (chart.value) ziweiStore.recordComputed()
   } catch (err) {
     console.error('[ziwei] calculate failed:', err)
     chart.value = null
   }
-  skeleton.start(() => resultBannerEl.value)
 }
 
 function onRepaipan() {
   chart.value = null
+  ziweiStore.clearComputed()
   skeleton.reset(() => inputCardEl.value)
 }
+
+/**
+ * 刷新 / 切窗回来后，若 ziweiStore 里有 lastComputed 且与当前 birth 指纹一致，
+ * 直接重算并跳过骨架屏（P4 · 输入指纹模式，对齐 bazi / liuren）。
+ *
+ * 关键点：
+ *   - 不触发 skeleton 动画：用 revealImmediately 立即露出结果区
+ *   - iztro 异步：失败（如版本变更 / 数据脏）则清空快照，回到默认起始态
+ *   - URL deeplink 命中时**优先走 deeplink hydrate** 路径，本函数会被跳过
+ */
+async function tryRestoreLastResult(): Promise<boolean> {
+  if (!ziweiStore.shouldRestore) return false
+  try {
+    const fresh = await buildZiweiChart(ziweiStore.birth)
+    if (!fresh) {
+      ziweiStore.clearComputed()
+      return false
+    }
+    chart.value = fresh
+    skeleton.revealImmediately()
+    return true
+  } catch (err) {
+    console.error('[ziwei] restore failed:', err)
+    ziweiStore.clearComputed()
+    chart.value = null
+    return false
+  }
+}
+
+/**
+ * 排盘失败友好态：与 bazi/chenggu/xingming/lingqian/liuren/huangli 6 模块一致。
+ * 触发条件：骨架屏已揭示但 chart 仍为 null（例：FortuneError(invalid-input)、iztro 内部异常）。
+ * 渲染：替换整个 result-zone 为单一 compute-error-card，避免空盘 + 一堆空盒子的劣质 UX。
+ */
+const showComputeError = computed(() => skeleton.revealed.value && chart.value === null)
 
 function go(name: 'home') {
   router.push({ name })
@@ -116,9 +157,19 @@ function onSave() {
 }
 
 onMounted(() => {
+  // 进入页面后，闲时预热 iztro chunk —— 让点击"排盘"几乎无网络等待
+  if (typeof requestIdleCallback === 'function') {
+    requestIdleCallback(() => prefetchZiweiEngine(), { timeout: 1500 })
+  } else {
+    setTimeout(() => prefetchZiweiEngine(), 800)
+  }
+
   const q = normalizeQuery(route.query as Record<string, string | string[] | undefined>)
   const hasInputs = ['year', 'month', 'day', 'hour'].some((k) => k in q)
-  if (!hasInputs) return
+  if (!hasInputs) {
+    void tryRestoreLastResult()
+    return
+  }
 
   const b = ziweiStore.birth
   ziweiStore.update({
@@ -157,6 +208,16 @@ onMounted(() => {
     </div>
 
     <div v-if="skeleton.revealed.value" class="result-zone revealed">
+      <div v-if="showComputeError" class="gf-container">
+        <div class="compute-error-card">
+          <h3>◈ {{ t('ziwei.computeError.title') }}</h3>
+          <p>{{ t('ziwei.computeError.hint') }}</p>
+          <button class="gf-btn gf-btn-outline" @click="onRepaipan">
+            {{ t('ziwei.btn.repaipanIcon') }} {{ t('ziwei.computeError.retry') }}
+          </button>
+        </div>
+      </div>
+      <template v-else>
       <div ref="shareCardEl" class="ziwei-share-card">
       <div class="gf-container" style="padding-top: 0;">
         <CollapsibleSection :label="t('ziwei.collapse.sectionMeta')">
@@ -168,6 +229,20 @@ onMounted(() => {
           <SanfangToggle v-model="showSanfang" />
           <ZiweiPalaceChart ref="chartRef" :chart="chart" :show-sanfang="showSanfang" />
           <ZiweiMobile :chart="chart" />
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          v-if="chart?.soulPalaceCard"
+          :label="t('ziwei.collapse.sectionSoulPalace')"
+        >
+          <SoulPalaceView :chart="chart" />
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          v-if="chart?.palaceMajorReadings?.length"
+          :label="t('ziwei.collapse.sectionPalaceMajor')"
+        >
+          <PalaceMajorView :chart="chart" />
         </CollapsibleSection>
 
         <CollapsibleSection :label="t('ziwei.collapse.sectionInterpret')">
@@ -183,6 +258,20 @@ onMounted(() => {
         <CollapsibleSection :label="t('ziwei.collapse.sectionDaxian')">
           <DaxianGrid :chart="chart" />
         </CollapsibleSection>
+
+        <CollapsibleSection
+          v-if="chart?.currentDecadal"
+          :label="t('ziwei.collapse.sectionDecadalDetail')"
+        >
+          <DecadalDetail :chart="chart" />
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          v-if="chart?.flowYears?.length"
+          :label="t('ziwei.collapse.sectionFlowYear')"
+        >
+          <ZiweiYear :chart="chart" />
+        </CollapsibleSection>
       </div>
       </div><!-- /ziwei-share-card -->
 
@@ -194,6 +283,7 @@ onMounted(() => {
           {{ t('ziwei.btn.repaipanIcon') }} {{ t('ziwei.btn.repaipan') }}
         </button>
       </div>
+      </template>
     </div>
   </main>
 
@@ -223,6 +313,16 @@ onMounted(() => {
     </div>
 
     <div v-if="skeleton.revealed.value" class="result-zone revealed">
+      <main v-if="showComputeError" class="mn-container">
+        <div class="compute-error-card mn">
+          <h3>{{ t('ziwei.computeError.title') }}</h3>
+          <p>{{ t('ziwei.computeError.hint') }}</p>
+          <button class="mn-btn mn-btn-outline" @click="onRepaipan">
+            {{ t('ziwei.computeError.retry') }}
+          </button>
+        </div>
+      </main>
+      <template v-else>
       <div ref="shareCardEl" class="ziwei-share-card">
       <main class="mn-container" style="padding-top: 0;">
         <CollapsibleSection :label="t('ziwei.collapse.sectionMetaMn')">
@@ -236,6 +336,20 @@ onMounted(() => {
           <ZiweiMobile :chart="chart" />
         </CollapsibleSection>
 
+        <CollapsibleSection
+          v-if="chart?.soulPalaceCard"
+          :label="t('ziwei.collapse.sectionSoulPalaceMn')"
+        >
+          <SoulPalaceView :chart="chart" />
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          v-if="chart?.palaceMajorReadings?.length"
+          :label="t('ziwei.collapse.sectionPalaceMajorMn')"
+        >
+          <PalaceMajorView :chart="chart" />
+        </CollapsibleSection>
+
         <CollapsibleSection :label="t('ziwei.collapse.sectionInterpretMn')">
           <InterpretCards :chart="chart" />
         </CollapsibleSection>
@@ -247,6 +361,20 @@ onMounted(() => {
         <CollapsibleSection :label="t('ziwei.collapse.sectionDaxianMn')">
           <DaxianGrid :chart="chart" />
         </CollapsibleSection>
+
+        <CollapsibleSection
+          v-if="chart?.currentDecadal"
+          :label="t('ziwei.collapse.sectionDecadalDetailMn')"
+        >
+          <DecadalDetail :chart="chart" />
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          v-if="chart?.flowYears?.length"
+          :label="t('ziwei.collapse.sectionFlowYearMn')"
+        >
+          <ZiweiYear :chart="chart" />
+        </CollapsibleSection>
       </main>
       </div><!-- /ziwei-share-card -->
 
@@ -254,6 +382,7 @@ onMounted(() => {
         <button type="button" class="mn-btn" @click="onPreview">{{ t('ziwei.btn.share') }}</button>
         <button type="button" class="mn-btn mn-btn-ghost" @click="onRepaipan">{{ t('ziwei.btn.repaipan') }}</button>
       </div>
+      </template>
     </div>
   </template>
 

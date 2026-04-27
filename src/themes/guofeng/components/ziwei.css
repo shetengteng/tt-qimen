@@ -484,6 +484,294 @@
   }
 }
 
+/* ============ 命宫主星论命 ============ */
+:root[data-theme='guofeng'] .ziwei-soul-palace {
+  max-width: 1200px;
+  margin: 0 auto var(--gf-space-lg);
+  padding: var(--gf-space-lg) var(--gf-space-xl);
+  background:
+    linear-gradient(135deg, rgba(255, 251, 240, 0.95), rgba(248, 240, 222, 0.92));
+  border: 1px solid rgba(176, 141, 59, 0.4);
+  border-radius: var(--gf-radius-lg);
+  box-shadow: var(--gf-shadow-sm);
+  position: relative;
+}
+
+:root[data-theme='guofeng'] .ziwei-soul-palace::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(176, 141, 59, 0.18);
+  border-radius: calc(var(--gf-radius-lg) - 4px);
+  pointer-events: none;
+}
+
+:root[data-theme='guofeng'] .ziwei-soul-palace__head {
+  position: relative;
+  z-index: 1;
+  margin-bottom: var(--gf-space-md);
+  padding-bottom: var(--gf-space-sm);
+  border-bottom: 1px solid rgba(176, 141, 59, 0.35);
+}
+
+:root[data-theme='guofeng'] .ziwei-soul-palace__title {
+  font-family: var(--gf-font-kaiti);
+  font-size: 22px;
+  color: var(--gf-cinnabar);
+  letter-spacing: 0.18em;
+  margin: 0 0 4px;
+}
+
+:root[data-theme='guofeng'] .ziwei-soul-palace__subtitle {
+  font-family: var(--gf-font-serif);
+  font-size: 14px;
+  color: var(--gf-gold);
+  letter-spacing: 0.08em;
+  margin: 0;
+}
+
+:root[data-theme='guofeng'] .ziwei-soul-palace__body {
+  position: relative;
+  z-index: 1;
+}
+
+:root[data-theme='guofeng'] .ziwei-soul-palace__text {
+  font-family: var(--gf-font-serif);
+  font-size: 15px;
+  line-height: 2;
+  color: var(--gf-ink);
+  margin: 0 0 var(--gf-space-md);
+  text-align: justify;
+  text-indent: 2em;
+}
+
+:root[data-theme='guofeng'] .ziwei-soul-palace__borrowed {
+  margin-bottom: var(--gf-space-md);
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--gf-jade);
+  background: rgba(74, 109, 93, 0.08);
+  border-left: 3px solid var(--gf-jade);
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+}
+
+:root[data-theme='guofeng'] .ziwei-soul-palace__keywords {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding-top: var(--gf-space-sm);
+  border-top: 1px dashed rgba(176, 141, 59, 0.25);
+}
+
+:root[data-theme='guofeng'] .ziwei-soul-palace__keywords-label {
+  font-family: var(--gf-font-kaiti);
+  font-size: 13px;
+  color: var(--gf-ink-soft);
+  letter-spacing: 0.1em;
+  margin-right: 4px;
+}
+
+:root[data-theme='guofeng'] .ziwei-soul-palace__chip {
+  padding: 4px 12px;
+  font-size: 13px;
+  color: var(--gf-cinnabar);
+  background: rgba(194, 58, 42, 0.08);
+  border: 1px solid rgba(194, 58, 42, 0.25);
+  border-radius: 999px;
+  letter-spacing: 0.05em;
+}
+
+:root[data-theme='guofeng'] .ziwei-soul-palace__empty {
+  position: relative;
+  z-index: 1;
+  font-family: var(--gf-font-serif);
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--gf-ink-soft);
+  text-align: center;
+  padding: var(--gf-space-md) 0;
+  margin: 0;
+}
+
+@media (max-width: 720px) {
+  :root[data-theme='guofeng'] .ziwei-soul-palace {
+    padding: var(--gf-space-md);
+  }
+  :root[data-theme='guofeng'] .ziwei-soul-palace__title {
+    font-size: 20px;
+  }
+  :root[data-theme='guofeng'] .ziwei-soul-palace__text {
+    font-size: 14px;
+    line-height: 1.9;
+  }
+}
+
+/* ============ 十二宫·主星简析（PalaceMajor） ============ */
+:root[data-theme='guofeng'] .ziwei-palace-major {
+  max-width: 1200px;
+  margin: 0 auto var(--gf-space-lg);
+  padding: var(--gf-space-lg) var(--gf-space-xl);
+  background: linear-gradient(135deg, rgba(252, 248, 235, 0.96), rgba(248, 240, 222, 0.92));
+  border: 1px solid rgba(176, 141, 59, 0.4);
+  border-radius: var(--gf-radius-lg);
+  box-shadow: var(--gf-shadow-sm);
+}
+
+:root[data-theme='guofeng'] .ziwei-palace-major__head {
+  margin-bottom: var(--gf-space-md);
+  padding-bottom: var(--gf-space-sm);
+  border-bottom: 1px solid rgba(176, 141, 59, 0.3);
+}
+
+:root[data-theme='guofeng'] .ziwei-palace-major__title {
+  font-family: var(--gf-font-kaiti);
+  font-size: 22px;
+  color: var(--gf-cinnabar);
+  letter-spacing: 0.18em;
+  margin: 0 0 4px;
+}
+
+:root[data-theme='guofeng'] .ziwei-palace-major__summary {
+  font-family: var(--gf-font-serif);
+  font-size: 13px;
+  color: var(--gf-ink-soft);
+  letter-spacing: 0.06em;
+  margin: 0;
+}
+
+:root[data-theme='guofeng'] .ziwei-palace-major__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gf-space-md);
+}
+
+:root[data-theme='guofeng'] .ziwei-palace-major__row {
+  padding: var(--gf-space-md);
+  background: rgba(255, 253, 246, 0.7);
+  border: 1px solid rgba(176, 141, 59, 0.22);
+  border-radius: var(--gf-radius-md);
+  transition: border-color 0.18s ease;
+}
+
+:root[data-theme='guofeng'] .ziwei-palace-major__row:hover {
+  border-color: rgba(194, 58, 42, 0.45);
+}
+
+:root[data-theme='guofeng'] .ziwei-palace-major__row.is-borrowed {
+  background:
+    linear-gradient(180deg, rgba(255, 251, 230, 0.8), rgba(252, 244, 218, 0.6));
+  border-left: 3px solid rgba(176, 141, 59, 0.55);
+}
+
+:root[data-theme='guofeng'] .ziwei-palace-major__row-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+:root[data-theme='guofeng'] .ziwei-palace-major__chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  font-family: var(--gf-font-kaiti);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+:root[data-theme='guofeng'] .ziwei-palace-major__chip--palace {
+  color: var(--gf-ink);
+  background: rgba(176, 141, 59, 0.12);
+  border-color: rgba(176, 141, 59, 0.4);
+}
+
+:root[data-theme='guofeng'] .ziwei-palace-major__chip--star {
+  color: var(--gf-cinnabar);
+  background: rgba(194, 58, 42, 0.08);
+  border-color: rgba(194, 58, 42, 0.3);
+}
+
+:root[data-theme='guofeng'] .ziwei-palace-major__chip--sihua {
+  color: var(--gf-jade);
+  background: rgba(74, 109, 93, 0.1);
+  border-color: rgba(74, 109, 93, 0.35);
+}
+
+:root[data-theme='guofeng'] .ziwei-palace-major__verdict {
+  margin-left: auto;
+  padding: 2px 10px;
+  font-family: var(--gf-font-kaiti);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  border-radius: 999px;
+  border: 1px solid;
+}
+
+:root[data-theme='guofeng'] .ziwei-palace-major__verdict[data-tone='jade'] {
+  color: var(--gf-jade);
+  background: rgba(74, 109, 93, 0.12);
+  border-color: rgba(74, 109, 93, 0.4);
+}
+
+:root[data-theme='guofeng'] .ziwei-palace-major__verdict[data-tone='plain'] {
+  color: var(--gf-ink-soft);
+  background: rgba(58, 47, 38, 0.06);
+  border-color: rgba(58, 47, 38, 0.22);
+}
+
+:root[data-theme='guofeng'] .ziwei-palace-major__verdict[data-tone='danger'] {
+  color: var(--gf-cinnabar);
+  background: rgba(194, 58, 42, 0.1);
+  border-color: rgba(194, 58, 42, 0.4);
+}
+
+:root[data-theme='guofeng'] .ziwei-palace-major__text {
+  font-family: var(--gf-font-serif);
+  font-size: 13.5px;
+  line-height: 1.8;
+  color: var(--gf-ink);
+  margin: 0;
+  text-align: justify;
+}
+
+:root[data-theme='guofeng'] .ziwei-palace-major__text--empty {
+  color: var(--gf-ink-soft);
+  font-style: italic;
+}
+
+:root[data-theme='guofeng'] .ziwei-palace-major__empty {
+  font-family: var(--gf-font-serif);
+  font-size: 14px;
+  color: var(--gf-ink-soft);
+  text-align: center;
+  padding: var(--gf-space-md) 0;
+  margin: 0;
+}
+
+@media (max-width: 720px) {
+  :root[data-theme='guofeng'] .ziwei-palace-major {
+    padding: var(--gf-space-md);
+  }
+  :root[data-theme='guofeng'] .ziwei-palace-major__list {
+    grid-template-columns: 1fr;
+    gap: var(--gf-space-sm);
+  }
+  :root[data-theme='guofeng'] .ziwei-palace-major__title {
+    font-size: 20px;
+  }
+  :root[data-theme='guofeng'] .ziwei-palace-major__text {
+    font-size: 13px;
+  }
+}
+
 /* ============ 解读区 ============ */
 :root[data-theme='guofeng'] .ziwei-interpret-section {
   max-width: 1200px;
@@ -658,5 +946,231 @@
   }
   :root[data-theme='guofeng'] .ziwei-meta-bar {
     padding: var(--gf-space-sm) var(--gf-space-md);
+  }
+}
+
+/* ============ 当前大限详情卡 ============ */
+:root[data-theme='guofeng'] .ziwei-decadal-section {
+  margin: var(--gf-space-lg) 0;
+}
+
+:root[data-theme='guofeng'] .ziwei-decadal-header {
+  margin-bottom: var(--gf-space-sm);
+}
+
+:root[data-theme='guofeng'] .ziwei-decadal-header h2 {
+  font-family: var(--gf-font-kaiti);
+  font-size: 22px;
+  color: var(--gf-ink);
+  margin: 0 0 4px;
+  letter-spacing: 0.15em;
+}
+
+:root[data-theme='guofeng'] .ziwei-decadal-meta {
+  font-size: 13px;
+  color: var(--gf-ink-soft);
+  letter-spacing: 0.08em;
+}
+
+:root[data-theme='guofeng'] .ziwei-decadal-content {
+  background: rgba(255, 251, 240, 0.9);
+  border: 1px solid rgba(176, 141, 59, 0.3);
+  border-radius: var(--gf-radius-md);
+  padding: var(--gf-space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gf-space-sm);
+}
+
+:root[data-theme='guofeng'] .ziwei-decadal-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--gf-space-sm);
+}
+
+:root[data-theme='guofeng'] .ziwei-decadal-label {
+  flex: 0 0 90px;
+  font-family: var(--gf-font-kaiti);
+  font-size: 14px;
+  color: var(--gf-ink-soft);
+  padding-top: 4px;
+  letter-spacing: 0.1em;
+}
+
+:root[data-theme='guofeng'] .ziwei-decadal-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+:root[data-theme='guofeng'] .ziwei-decadal-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  font-size: 13px;
+  border-radius: 999px;
+  background: rgba(255, 251, 240, 0.85);
+  border: 1px solid rgba(176, 141, 59, 0.4);
+  color: var(--gf-ink);
+}
+
+:root[data-theme='guofeng'] .ziwei-decadal-tag.tag-main {
+  border-color: var(--gf-cinnabar);
+  color: var(--gf-cinnabar);
+  font-family: var(--gf-font-kaiti);
+}
+
+:root[data-theme='guofeng'] .ziwei-decadal-tag.tag-empty {
+  color: var(--gf-ink-soft);
+  font-style: italic;
+}
+
+:root[data-theme='guofeng'] .ziwei-decadal-tag .sihua-mark {
+  margin-left: 2px;
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+:root[data-theme='guofeng'] .ziwei-decadal-tag .palace-mark {
+  margin-left: 4px;
+  font-size: 11px;
+  color: var(--gf-ink-soft);
+}
+
+:root[data-theme='guofeng'] .ziwei-decadal-tag.tag-sihua-lu { border-color: #2e8b57; color: #2e8b57; }
+:root[data-theme='guofeng'] .ziwei-decadal-tag.tag-sihua-quan { border-color: #1f6feb; color: #1f6feb; }
+:root[data-theme='guofeng'] .ziwei-decadal-tag.tag-sihua-ke { border-color: #8e44ad; color: #8e44ad; }
+:root[data-theme='guofeng'] .ziwei-decadal-tag.tag-sihua-ji { border-color: var(--gf-cinnabar); color: var(--gf-cinnabar); }
+
+/* ============ 流年卡 ============ */
+:root[data-theme='guofeng'] .ziwei-flowyear-section {
+  margin: var(--gf-space-lg) 0;
+}
+
+:root[data-theme='guofeng'] .ziwei-flowyear-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--gf-space-sm);
+}
+
+:root[data-theme='guofeng'] .ziwei-flowyear-header h2 {
+  font-family: var(--gf-font-kaiti);
+  font-size: 22px;
+  color: var(--gf-ink);
+  margin: 0;
+  letter-spacing: 0.15em;
+}
+
+:root[data-theme='guofeng'] .ziwei-flowyear-toggle {
+  background: transparent;
+  border: 1px solid var(--gf-gold);
+  padding: 4px 12px;
+  font-size: 12px;
+  color: var(--gf-gold);
+  border-radius: 999px;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+  font-family: inherit;
+  transition: all 0.3s ease;
+}
+
+:root[data-theme='guofeng'] .ziwei-flowyear-toggle:hover {
+  background: var(--gf-gold);
+  color: #fff;
+}
+
+:root[data-theme='guofeng'] .ziwei-flowyear-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gf-space-sm);
+}
+
+:root[data-theme='guofeng'] .ziwei-flowyear-cell {
+  background: rgba(255, 251, 240, 0.9);
+  border: 1px solid rgba(176, 141, 59, 0.3);
+  border-radius: var(--gf-radius-md);
+  padding: var(--gf-space-sm) var(--gf-space-md);
+}
+
+:root[data-theme='guofeng'] .ziwei-flowyear-cell.current {
+  background: linear-gradient(180deg, rgba(194, 58, 42, 0.1), rgba(255, 251, 240, 0.95));
+  border: 2px solid var(--gf-cinnabar);
+}
+
+:root[data-theme='guofeng'] .ziwei-flowyear-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--gf-space-sm);
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+:root[data-theme='guofeng'] .ziwei-flowyear-year {
+  font-family: var(--gf-font-en);
+  font-size: 18px;
+  color: var(--gf-ink);
+  letter-spacing: 0.05em;
+}
+
+:root[data-theme='guofeng'] .ziwei-flowyear-gz {
+  font-size: 12px;
+  color: var(--gf-gold);
+  font-family: var(--gf-font-en);
+}
+
+:root[data-theme='guofeng'] .ziwei-flowyear-palace {
+  font-family: var(--gf-font-kaiti);
+  font-size: 14px;
+  color: var(--gf-cinnabar);
+  letter-spacing: 0.1em;
+}
+
+:root[data-theme='guofeng'] .ziwei-flowyear-mutagens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+:root[data-theme='guofeng'] .ziwei-flowyear-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  font-size: 12px;
+  border-radius: 999px;
+  background: rgba(255, 251, 240, 0.85);
+  border: 1px solid rgba(176, 141, 59, 0.4);
+  color: var(--gf-ink);
+}
+
+:root[data-theme='guofeng'] .ziwei-flowyear-tag .sihua-mark {
+  margin-left: 2px;
+  font-size: 10px;
+  opacity: 0.85;
+}
+
+:root[data-theme='guofeng'] .ziwei-flowyear-tag .palace-mark {
+  margin-left: 3px;
+  font-size: 10px;
+  color: var(--gf-ink-soft);
+}
+
+:root[data-theme='guofeng'] .ziwei-flowyear-tag.tag-sihua-lu { border-color: #2e8b57; color: #2e8b57; }
+:root[data-theme='guofeng'] .ziwei-flowyear-tag.tag-sihua-quan { border-color: #1f6feb; color: #1f6feb; }
+:root[data-theme='guofeng'] .ziwei-flowyear-tag.tag-sihua-ke { border-color: #8e44ad; color: #8e44ad; }
+:root[data-theme='guofeng'] .ziwei-flowyear-tag.tag-sihua-ji { border-color: var(--gf-cinnabar); color: var(--gf-cinnabar); }
+
+@media (max-width: 768px) {
+  :root[data-theme='guofeng'] .ziwei-decadal-row {
+    flex-direction: column;
+  }
+  :root[data-theme='guofeng'] .ziwei-decadal-label {
+    flex: none;
   }
 }
