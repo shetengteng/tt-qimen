@@ -351,7 +351,7 @@
     font-family: inherit;
   }
   .hl-cal-title-btn:hover {
-    background-color: var(--mn-bg-soft, var(--mn-accent-soft));
+    background-color: var(--mn-accent-soft);
   }
   .hl-cal-title-btn:focus-visible {
     outline: 2px solid var(--mn-accent);
@@ -946,7 +946,7 @@
   font-weight: 600;
 }
 :root[data-theme='minimal'] .hl-mp-action--primary:hover {
-  background: var(--mn-accent-strong, var(--mn-accent));
+  background: var(--mn-accent-hover, var(--mn-accent));
 }
 :root[data-theme='minimal'] .hl-mp-action:focus-visible {
   outline: 2px solid var(--mn-accent);
@@ -978,7 +978,7 @@
   font-size: 13px;
   font-weight: 700;
   color: var(--mn-ink);
-  border-bottom: 1px solid var(--mn-line);
+  border-bottom: 1px solid var(--mn-border);
   padding-bottom: 4px;
   letter-spacing: 0.05em;
 }
@@ -1057,7 +1057,7 @@
   border-radius: 50%;
   background:
     radial-gradient(circle at center, color-mix(in srgb, var(--mn-accent) 6%, transparent), transparent 70%);
-  border: 1px dashed var(--mn-line);
+  border: 1px dashed var(--mn-border);
   margin: 0 auto;
 }
 :root[data-theme='minimal'] .hl-dial-cell {
@@ -1071,7 +1071,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  border: 1px solid var(--mn-line);
+  border: 1px solid var(--mn-border);
   font-size: 15px;
   font-weight: 600;
   color: var(--mn-ink);
@@ -1175,7 +1175,7 @@
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  border: 1px solid var(--mn-line);
+  border: 1px solid var(--mn-border);
   background: var(--mn-bg);
   border-radius: 8px;
   font-size: 13px;

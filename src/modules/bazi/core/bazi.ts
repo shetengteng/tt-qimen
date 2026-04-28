@@ -67,6 +67,8 @@ import {
   getPatternHint,
 } from '../data/interpretTemplate'
 
+import { ELEMENT_NAMES, ELEMENT_SCORE_KEY } from '@/lib/element'
+
 // ---------------------------------------------------------------------------
 // 常量与映射
 // ---------------------------------------------------------------------------
@@ -79,17 +81,6 @@ const TEN_STAR_INDEX_TO_TYPE: TenGodType[] = [
   '七杀', '正官',
   '偏印', '正印',
 ]
-
-const ELEMENT_NAMES: ElementName[] = ['木', '火', '土', '金', '水']
-
-/** 五行 ElementName -> ElementsScore 的 key */
-const ELEMENT_SCORE_KEY: Record<ElementName, keyof ElementsScore> = {
-  木: 'wood',
-  火: 'fire',
-  土: 'earth',
-  金: 'metal',
-  水: 'water',
-}
 
 /** 月令权重（节气定的本气月） */
 const SEASON_WEIGHT = 1.5

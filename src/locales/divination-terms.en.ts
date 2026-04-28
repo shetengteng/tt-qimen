@@ -1,9 +1,12 @@
+/**
+ * Divination terminology dictionary · English. See divination-terms.zh-CN.ts for spec.
+ */
 export default {
   shishen: {
     zhengcai: 'Direct Wealth (Zheng Cai)',
     piancai: 'Indirect Wealth (Pian Cai)',
     zhengguan: 'Direct Officer (Zheng Guan)',
-    pianguan: 'Seven Killings (Qi Sha)',
+    qisha: 'Seven Killings (Qi Sha)',
     zhengyin: 'Direct Resource (Zheng Yin)',
     pianyin: 'Indirect Resource (Pian Yin)',
     shishen: 'Eating God (Shi Shen)',
@@ -33,5 +36,8 @@ export default {
     dizhi: 'Earthly Branch',
     canggan: 'Hidden Stems',
     nayin: 'Nayin Element',
+  },
+  alias: {
+    pianguan: 'Indirect Officer (alias of Seven Killings)',
   },
 }

@@ -150,6 +150,10 @@ export default {
         long: 'The chart is already Fire/Earth heavy. More Bing/Ding or Si/Wu (Fire), or Wu/Ji or Chen/Xu/Chou/Wei (Earth) cycles can make energy spike — visible as quick temper, aggressive judgment, and interpersonal friction. During those years, lean toward Water/Wood themed work, environments, and people.',
       },
     ],
+    patternExpand: {
+      open: 'Show full {name} interpretation',
+      close: 'Hide full {name} interpretation',
+    },
   },
 
   shensha: {

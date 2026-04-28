@@ -141,9 +141,9 @@ function goHome() {
   max-width: 560px;
   width: 100%;
   text-align: center;
-  background: var(--gf-color-paper-soft, rgba(255, 255, 255, 0.6));
-  border: 1px solid var(--gf-color-border, rgba(0, 0, 0, 0.08));
-  border-radius: 8px;
+  background: var(--color-bg-elev, rgba(255, 255, 255, 0.6));
+  border: 1px solid var(--color-border, rgba(0, 0, 0, 0.08));
+  border-radius: var(--radius-lg, 8px);
   padding: 36px 28px;
 }
 
@@ -151,7 +151,7 @@ function goHome() {
   font-family: var(--gf-font-kaiti, var(--font-display));
   font-size: clamp(1.5rem, 4vw, 1.9rem);
   margin: 0 0 16px;
-  color: var(--gf-color-accent, var(--color-accent));
+  color: var(--color-accent);
   letter-spacing: 0.06em;
 }
 
@@ -159,13 +159,13 @@ function goHome() {
   margin: 0 0 14px;
   font-size: 1rem;
   line-height: 1.7;
-  color: var(--gf-color-ink, var(--color-ink));
+  color: var(--color-ink);
 }
 
 .error-meta {
   margin: 0 0 20px;
   font-size: 0.85rem;
-  color: var(--gf-color-ink-muted, var(--color-ink-soft));
+  color: var(--color-ink-muted, var(--color-ink-soft));
   letter-spacing: 0.03em;
 }
 
@@ -183,14 +183,14 @@ function goHome() {
 }
 
 .error-card--mn {
-  background: var(--mn-color-paper, transparent);
-  border: 1px solid var(--mn-color-border, rgba(0, 0, 0, 0.08));
+  background: var(--color-bg-elev, transparent);
+  border: 1px solid var(--color-border, rgba(0, 0, 0, 0.08));
 }
 
 .error-title--mn {
   font-family: var(--mn-font-sans, var(--font-display));
   font-weight: 600;
   letter-spacing: -0.01em;
-  color: var(--mn-color-ink, var(--color-ink));
+  color: var(--color-ink);
 }
 </style>

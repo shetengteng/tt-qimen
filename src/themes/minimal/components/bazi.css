@@ -1257,8 +1257,8 @@
 :root[data-theme='minimal'] .inline-annot-item {
   padding: 10px 12px 10px 14px;
   border-left: 2px solid var(--mn-accent);
-  background: var(--mn-surface-soft, rgba(244, 244, 245, 0.6));
-  border-radius: 0 var(--mn-radius, 6px) var(--mn-radius, 6px) 0;
+  background: var(--color-surface, rgba(244, 244, 245, 0.6));
+  border-radius: 0 var(--mn-radius-sm, 6px) var(--mn-radius-sm, 6px) 0;
 }
 :root[data-theme='minimal'] .inline-annots-bar.is-tag .inline-annot-item {
   flex: 1 1 calc(50% - 10px);

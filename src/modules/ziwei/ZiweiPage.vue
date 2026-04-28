@@ -20,14 +20,18 @@ import InterpretCards from './components/InterpretCards.vue'
 import SoulPalaceView from './components/SoulPalaceView.vue'
 import PalaceMajorView from './components/PalaceMajorView.vue'
 import MinorStarsView from './components/MinorStarsView.vue'
+import SihuaReadingView from './components/SihuaReadingView.vue'
+import SoulMasterView from './components/SoulMasterView.vue'
 import DaxianGrid from './components/DaxianGrid.vue'
 import DecadalDetail from './components/DecadalDetail.vue'
 import ZiweiYear from './components/ZiweiYear.vue'
 import { buildZiweiChart, prefetchZiweiEngine } from './core/ziwei'
+import { prefetchZiweiData } from './data/lazy'
+import type { Locale } from '@/locales'
 import { useZiweiStore } from './stores/ziweiStore'
 import type { ZiweiChart } from './types'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const themeStore = useThemeStore()
@@ -157,11 +161,15 @@ function onSave() {
 }
 
 onMounted(() => {
-  // 进入页面后，闲时预热 iztro chunk —— 让点击"排盘"几乎无网络等待
+  // 进入页面后，闲时预热 iztro chunk + 当前 locale 的 4 类 B/C 资产 —— 让点击"排盘"几乎无网络等待
+  const prefetch = () => {
+    prefetchZiweiEngine()
+    prefetchZiweiData(locale.value as Locale)
+  }
   if (typeof requestIdleCallback === 'function') {
-    requestIdleCallback(() => prefetchZiweiEngine(), { timeout: 1500 })
+    requestIdleCallback(prefetch, { timeout: 1500 })
   } else {
-    setTimeout(() => prefetchZiweiEngine(), 800)
+    setTimeout(prefetch, 800)
   }
 
   const q = normalizeQuery(route.query as Record<string, string | string[] | undefined>)
@@ -249,6 +257,20 @@ onMounted(() => {
           :label="t('ziwei.collapse.sectionMinorStars')"
         >
           <MinorStarsView :chart="chart" />
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          v-if="chart"
+          :label="t('ziwei.collapse.sectionSihuaReading')"
+        >
+          <SihuaReadingView :chart="chart" />
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          v-if="chart"
+          :label="t('ziwei.collapse.sectionSoulMaster')"
+        >
+          <SoulMasterView :chart="chart" />
         </CollapsibleSection>
 
         <CollapsibleSection :label="t('ziwei.collapse.sectionInterpret')">
@@ -360,6 +382,20 @@ onMounted(() => {
           :label="t('ziwei.collapse.sectionMinorStarsMn')"
         >
           <MinorStarsView :chart="chart" />
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          v-if="chart"
+          :label="t('ziwei.collapse.sectionSihuaReadingMn')"
+        >
+          <SihuaReadingView :chart="chart" />
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          v-if="chart"
+          :label="t('ziwei.collapse.sectionSoulMasterMn')"
+        >
+          <SoulMasterView :chart="chart" />
         </CollapsibleSection>
 
         <CollapsibleSection :label="t('ziwei.collapse.sectionInterpretMn')">

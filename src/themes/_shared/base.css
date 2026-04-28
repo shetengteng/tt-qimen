@@ -297,7 +297,7 @@ body {
   border: 1px solid rgba(176, 141, 59, 0.55);
   background: rgba(255, 251, 240, 0.55);
   color: #6c2719;
-  font-family: var(--gf-serif, 'Noto Serif SC', serif);
+  font-family: var(--gf-font-serif, 'Noto Serif SC', serif);
 }
 :root[data-theme='guofeng'] .layout-popover-trigger:hover,
 :root[data-theme='guofeng'] .layout-popover-trigger[data-state='open'] {
@@ -316,7 +316,7 @@ body {
     0 12px 32px rgba(46, 30, 13, 0.22),
     0 0 0 1px rgba(176, 141, 59, 0.32) inset;
   color: #2e1e0d;
-  font-family: var(--gf-serif, 'Noto Serif SC', serif);
+  font-family: var(--gf-font-serif, 'Noto Serif SC', serif);
 }
 :root[data-theme='guofeng'] .layout-popover-option:hover {
   background: rgba(176, 141, 59, 0.16);

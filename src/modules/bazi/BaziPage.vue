@@ -216,13 +216,31 @@ function onFlowYearsExpand(_visibleCount: number) {
  */
 const shareCardEl = ref<HTMLElement | null>(null)
 const { toastState, shareCard, saveCard, previewCard } = useShareCard()
+
+/**
+ * 把全局 user.name 转成文件名安全 slug：
+ *   - 只保留 中文 / 英文字母 / 数字，其它（空格 / 中划线 / 标点）一律剔除
+ *   - 上限 12 字（防御过长姓名污染文件名）
+ *   - 空 → 返回 null（让调用方走 birth-only 分支）
+ */
+function nameToSlug(name: string): string | null {
+  const cleaned = name
+    .replace(/[^\u4e00-\u9fa5A-Za-z0-9]/g, '')
+    .slice(0, 12)
+  return cleaned ? cleaned : null
+}
+
 function buildShareOpts() {
   const b = userStore.birth
-  // 文件名：bazi-1990-05-20-male-guofeng.png；用 birth 字段而非 user.name（store 暂无 name）
   const mm = String(b.month).padStart(2, '0')
   const dd = String(b.day).padStart(2, '0')
+  const slug = nameToSlug(userStore.name ?? '')
+  // 优先用全局 user.name（由 xingming 派生同步而来）；为空时降级回 birth-only 文件名
+  const fileName = slug
+    ? `bazi-${slug}-${b.year}-${mm}-${dd}-${themeStore.id}`
+    : `bazi-${b.year}-${mm}-${dd}-${b.gender}-${themeStore.id}`
   return {
-    fileName: `bazi-${b.year}-${mm}-${dd}-${b.gender}-${themeStore.id}`,
+    fileName,
     title: t('bazi.share.title'),
     text: t('bazi.share.text'),
   }

@@ -1,16 +1,31 @@
 /**
  * 紫微斗数 · 资产库统一出口
  *
- * 当前包含：
+ * 同步包含（首屏强需，单 locale 字节数较小）：
  *  - SoulPalace（命宫主星论命 14 段 × 三语）
  *  - PalaceMajor（各宫主星简析 168 段 × 三语）
  *  - MinorStars（六吉六煞入宫 144 段 × 三语）
  *
- * 后续将按设计文档 §3.3 顺序补齐：
- *  - SihuaReading（四化论命 40 段）
- *  - DaxianReview（大限总评 60 段）
- *  - LiunianReview（流年总评 60 段）
- *  - SoulMaster（命主/身主 14 段）
+ * 异步包含（B/C 类大资产，通过 `data/lazy.ts` 按需 dynamic import）：
+ *  - SihuaReading（四化论命 40 段 × 三语）—— B 类
+ *  - SoulMaster（命主/身主 13 段 × 三语）—— B 类
+ *  - DecadalReview（大限总评 60 段 × 三语）—— C 类
+ *  - YearlyReview（流年总评 60 段 × 三语）—— C 类
+ *
+ * Lazy 设计动机（详见 lazy.ts header）：
+ *  - 三语 × 4 类合计约 145KB 原始字节，沿 sync import 会显著拉大主 bundle
+ *  - lazy.ts 按 locale 独立 chunk，首次加载只取当前 locale 一份，切语言时按需加载
+ *
+ * 本文件仅出口：
+ *  1. 全部 7 类的 type（用于 lazy.ts 与 UI 的类型契约）
+ *  2. 3 类同步资产的 sync 数据 + getter（保持原 UI 调用兼容）
+ *  3. 4 类异步资产对应的 stable key 常量与 mapping（如 ZH_STEM_TO_KEY），
+ *     这些是几十字节的纯静态常量，无需 lazy
+ *
+ * 三语策略：
+ *  - zh-CN：主资产，由 lib/古籍 整理
+ *  - zh-TW：基于 zh-CN 的简繁转换骨架（需专业校对）
+ *  - en：placeholder 翻译骨架（需专业 Ziwei 译者审稿）
  */
 
 import type { Locale } from '@/locales'
@@ -40,15 +55,55 @@ import {
 } from './minorStars'
 import { MINOR_STARS_ZH_TW } from './minorStars.zh-TW'
 import { MINOR_STARS_EN } from './minorStars.en'
+// B/C 类资产仅 import type + 静态常量；矩阵数据走 lazy.ts dynamic import
+//
+// 关键：常量从 sihuaConstants / soulMasterConstants 导入，而非从大数据文件，
+// 这样 vite build 时 sihuaReading.ts / soulMaster.ts 整个大矩阵不会被牵连进主 bundle
+import type {
+  SihuaReadingEntry,
+  SihuaReadingMatrix,
+} from './sihuaReading'
+import type { HeavenlyStemKey } from './sihuaConstants'
+import { ZH_STEM_TO_KEY, STEM_SIHUA_TABLE } from './sihuaConstants'
+import type {
+  MingShenStarKey,
+  MingShenRole,
+  SoulMasterEntry,
+  SoulMasterMatrix,
+} from './soulMaster'
+import { ZH_MING_SHEN_TO_KEY } from './soulMasterConstants'
+import type {
+  GanZhiKey,
+  DecadalReviewEntry,
+  DecadalReviewMatrix,
+} from './decadalReview'
+import type { YearlyReviewEntry, YearlyReviewMatrix } from './yearlyReview'
 
 export type { MajorStarKey, SoulPalaceEntry }
 export type { PalaceKey12, PalaceMajorEntry, PalaceMajorMatrix, Verdict }
 export type { MinorStarKey, MinorStarEntry, MinorStarMatrix }
+export type { HeavenlyStemKey, SihuaReadingEntry, SihuaReadingMatrix }
+export type {
+  MingShenStarKey,
+  MingShenRole,
+  SoulMasterEntry,
+  SoulMasterMatrix,
+}
+export type {
+  GanZhiKey,
+  DecadalReviewEntry,
+  DecadalReviewMatrix,
+  YearlyReviewEntry,
+  YearlyReviewMatrix,
+}
 export {
   ZH_STAR_TO_KEY,
   ZH_MINOR_STAR_TO_KEY,
   LUCKY_MINOR_STARS,
   MALEFIC_MINOR_STARS,
+  ZH_STEM_TO_KEY,
+  STEM_SIHUA_TABLE,
+  ZH_MING_SHEN_TO_KEY,
 }
 
 /* ----------------------------- SoulPalace ----------------------------- */
@@ -156,3 +211,21 @@ export function getMinorStarByZhName(
   if (!key) return null
   return getMinorStarEntry(key, palaceKey, lang)
 }
+
+/**
+ * B/C 类大资产（SihuaReading / SoulMaster / DecadalReview / YearlyReview）的
+ * 数据访问已迁移到 `data/lazy.ts`：
+ *
+ * ```ts
+ * import {
+ *   loadSihuaReadingForStem,
+ *   loadSoulMasterEntry,
+ *   loadDecadalReviewEntry,
+ *   loadYearlyReviewEntry,
+ *   prefetchZiweiData,
+ * } from '../data/lazy'
+ * ```
+ *
+ * 这样 vite build 会按 locale 切分出独立 chunk，首屏 ZiweiPage bundle 不再被
+ * 这 12 份大数据（4 类 × 3 语 ≈ 145KB 原始字节）拖大。
+ */

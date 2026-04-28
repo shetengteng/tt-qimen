@@ -1,9 +1,12 @@
+/**
+ * 占卜術語詞典 · 繁體中文。三語對照規約見 divination-terms.zh-CN.ts。
+ */
 export default {
   shishen: {
     zhengcai: '正財',
     piancai: '偏財',
     zhengguan: '正官',
-    pianguan: '偏官',
+    qisha: '七殺',
     zhengyin: '正印',
     pianyin: '偏印',
     shishen: '食神',
@@ -31,7 +34,10 @@ export default {
   layer: {
     tiangan: '天干',
     dizhi: '地支',
-    canggan: '藏幹',
+    canggan: '藏干',
     nayin: '納音',
+  },
+  alias: {
+    pianguan: '偏官（七殺）',
   },
 }

@@ -221,7 +221,7 @@
 }
 
 :root[data-theme='minimal'] .ziwei-chart .star-bright {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--mn-ink-muted);
 }
 
@@ -472,7 +472,7 @@
 :root[data-theme='minimal'] .ziwei-soul-palace {
   max-width: 1200px;
   margin: 0 auto var(--mn-space-6);
-  padding: var(--mn-space-6) var(--mn-space-7);
+  padding: var(--mn-space-6) var(--mn-space-8);
   background: var(--mn-bg-elev);
   border: 1px solid var(--mn-border);
   border-radius: var(--mn-radius-md);
@@ -568,7 +568,7 @@
 :root[data-theme='minimal'] .ziwei-palace-major {
   max-width: 1200px;
   margin: 0 auto var(--mn-space-6);
-  padding: var(--mn-space-6) var(--mn-space-7);
+  padding: var(--mn-space-6) var(--mn-space-8);
   background: var(--mn-bg-elev);
   border: 1px solid var(--mn-border);
   border-radius: var(--mn-radius-md);
@@ -594,6 +594,18 @@
   font-size: 12px;
   color: var(--mn-ink-soft);
   margin: 0;
+}
+
+:root[data-theme='minimal'] .ziwei-palace-major__en-banner,
+:root[data-theme='minimal'] .ziwei-minor-stars__en-banner {
+  font-family: var(--mn-font-sans);
+  font-size: 12px;
+  color: var(--mn-danger, #c44848);
+  background: rgba(196, 72, 72, 0.06);
+  border-left: 3px solid var(--mn-danger, #c44848);
+  padding: 6px 10px;
+  margin: 6px 0 0;
+  border-radius: 0 4px 4px 0;
 }
 
 :root[data-theme='minimal'] .ziwei-palace-major__list {
@@ -718,7 +730,7 @@
 :root[data-theme='minimal'] .ziwei-minor-stars {
   max-width: 1200px;
   margin: 0 auto var(--mn-space-6);
-  padding: var(--mn-space-6) var(--mn-space-7);
+  padding: var(--mn-space-6) var(--mn-space-8);
   background: var(--mn-bg-elev);
   border: 1px solid var(--mn-border);
   border-radius: var(--mn-radius-md);
@@ -997,8 +1009,8 @@
   padding: 2px 8px;
   font-size: 11px;
   vertical-align: middle;
-  color: var(--mn-ink-light, #555);
-  background: var(--mn-bg-soft, #f4f4f4);
+  color: var(--mn-ink-muted, #555);
+  background: var(--color-surface, #f4f4f4);
   border-radius: 4px;
   letter-spacing: 0.5px;
   font-weight: 400;
@@ -1092,7 +1104,7 @@
 :root[data-theme='minimal'] .ziwei-decadal-content {
   background: var(--mn-bg-elev);
   border: 1px solid var(--mn-border);
-  border-radius: var(--mn-radius);
+  border-radius: var(--mn-radius-md);
   padding: var(--mn-space-4);
   display: flex;
   flex-direction: column;
@@ -1284,5 +1296,383 @@
   }
   :root[data-theme='minimal'] .ziwei-decadal-label {
     flex: none;
+  }
+}
+
+/* ============ 大限总评（接在 DecadalDetail 之后） ============ */
+:root[data-theme='minimal'] .ziwei-decadal-review {
+  margin-top: var(--mn-space-4);
+  padding-top: var(--mn-space-4);
+  border-top: 1px solid var(--mn-border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+:root[data-theme='minimal'] .ziwei-decadal-review__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--mn-space-3);
+  flex-wrap: wrap;
+}
+
+:root[data-theme='minimal'] .ziwei-decadal-review__title {
+  font-family: var(--mn-font-sans);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--mn-ink);
+  margin: 0;
+}
+
+:root[data-theme='minimal'] .ziwei-decadal-review__subtitle {
+  font-size: 12px;
+  color: var(--mn-ink-soft);
+}
+
+:root[data-theme='minimal'] .ziwei-decadal-review__verdict {
+  margin-left: auto;
+  padding: 2px 10px;
+  font-size: 11px;
+  border-radius: 4px;
+}
+
+:root[data-theme='minimal'] .ziwei-decadal-review__verdict[data-tone='jade'] {
+  color: #16a085;
+  background: rgba(22, 160, 133, 0.08);
+  border: 1px solid #16a085;
+}
+
+:root[data-theme='minimal'] .ziwei-decadal-review__verdict[data-tone='danger'] {
+  color: #c0392b;
+  background: rgba(192, 57, 43, 0.08);
+  border: 1px solid #c0392b;
+}
+
+:root[data-theme='minimal'] .ziwei-decadal-review__verdict[data-tone='plain'] {
+  color: var(--mn-ink-soft);
+  background: var(--mn-bg);
+  border: 1px solid var(--mn-border);
+}
+
+:root[data-theme='minimal'] .ziwei-decadal-review__text {
+  font-family: var(--mn-font-sans);
+  font-size: 13px;
+  line-height: 1.85;
+  color: var(--mn-ink);
+  margin: 0;
+  text-align: justify;
+}
+
+:root[data-theme='minimal'] .ziwei-decadal-review__text--empty {
+  color: var(--mn-ink-soft);
+  font-style: italic;
+  text-align: center;
+}
+
+/* ============ 流年总评（接在每个流年单元 cell 内） ============ */
+:root[data-theme='minimal'] .ziwei-flowyear-verdict {
+  margin-left: auto;
+  padding: 2px 8px;
+  font-size: 11px;
+  border-radius: 4px;
+}
+
+:root[data-theme='minimal'] .ziwei-flowyear-verdict[data-tone='jade'] {
+  color: #16a085;
+  background: rgba(22, 160, 133, 0.08);
+  border: 1px solid #16a085;
+}
+
+:root[data-theme='minimal'] .ziwei-flowyear-verdict[data-tone='danger'] {
+  color: #c0392b;
+  background: rgba(192, 57, 43, 0.08);
+  border: 1px solid #c0392b;
+}
+
+:root[data-theme='minimal'] .ziwei-flowyear-verdict[data-tone='plain'] {
+  color: var(--mn-ink-soft);
+  background: var(--mn-bg);
+  border: 1px solid var(--mn-border);
+}
+
+:root[data-theme='minimal'] .ziwei-flowyear-review {
+  margin: 8px 0 0;
+  font-family: var(--mn-font-sans);
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--mn-ink);
+  text-align: justify;
+  padding-top: 8px;
+  border-top: 1px solid var(--mn-border);
+}
+
+/* ============ 四化论命卡 ============ */
+:root[data-theme='minimal'] .ziwei-sihua-reading {
+  max-width: 1200px;
+  margin: 0 auto var(--mn-space-6);
+  padding: var(--mn-space-6) var(--mn-space-8);
+  background: var(--mn-bg-elev);
+  border: 1px solid var(--mn-border);
+  border-radius: var(--mn-radius-md);
+  box-shadow: var(--mn-shadow-xs);
+}
+
+:root[data-theme='minimal'] .ziwei-sihua-reading__head {
+  margin-bottom: var(--mn-space-4);
+  padding-bottom: var(--mn-space-3);
+  border-bottom: 1px solid var(--mn-border);
+}
+
+:root[data-theme='minimal'] .ziwei-sihua-reading__title {
+  font-family: var(--mn-font-sans);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--mn-ink);
+  margin: 0 0 4px;
+}
+
+:root[data-theme='minimal'] .ziwei-sihua-reading__subtitle {
+  font-family: var(--mn-font-sans);
+  font-size: 13px;
+  color: var(--mn-ink-soft);
+  margin: 0;
+}
+
+:root[data-theme='minimal'] .ziwei-sihua-reading__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--mn-space-4);
+}
+
+:root[data-theme='minimal'] .ziwei-sihua-reading__row {
+  padding: var(--mn-space-3) var(--mn-space-4);
+  background: var(--mn-bg);
+  border-left: 3px solid var(--mn-border);
+  border-radius: 4px;
+}
+
+:root[data-theme='minimal'] .ziwei-sihua-reading__row.tag-sihua-lu { border-left-color: #16a085; }
+:root[data-theme='minimal'] .ziwei-sihua-reading__row.tag-sihua-quan { border-left-color: #2980b9; }
+:root[data-theme='minimal'] .ziwei-sihua-reading__row.tag-sihua-ke { border-left-color: #8e44ad; }
+:root[data-theme='minimal'] .ziwei-sihua-reading__row.tag-sihua-ji { border-left-color: #c0392b; }
+
+:root[data-theme='minimal'] .ziwei-sihua-reading__row-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--mn-space-3);
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+:root[data-theme='minimal'] .ziwei-sihua-reading__chip {
+  padding: 2px 10px;
+  font-size: 12px;
+  border-radius: 4px;
+  border: 1px solid currentColor;
+}
+
+:root[data-theme='minimal'] .ziwei-sihua-reading__chip.chip-lu { color: #16a085; }
+:root[data-theme='minimal'] .ziwei-sihua-reading__chip.chip-quan { color: #2980b9; }
+:root[data-theme='minimal'] .ziwei-sihua-reading__chip.chip-ke { color: #8e44ad; }
+:root[data-theme='minimal'] .ziwei-sihua-reading__chip.chip-ji { color: #c0392b; }
+
+:root[data-theme='minimal'] .ziwei-sihua-reading__star {
+  font-family: var(--mn-font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--mn-ink);
+}
+
+:root[data-theme='minimal'] .ziwei-sihua-reading__verdict {
+  margin-left: auto;
+  padding: 2px 10px;
+  font-size: 11px;
+  border-radius: 4px;
+}
+
+:root[data-theme='minimal'] .ziwei-sihua-reading__verdict[data-tone='jade'] {
+  color: #16a085;
+  background: rgba(22, 160, 133, 0.08);
+  border: 1px solid #16a085;
+}
+
+:root[data-theme='minimal'] .ziwei-sihua-reading__verdict[data-tone='danger'] {
+  color: #c0392b;
+  background: rgba(192, 57, 43, 0.08);
+  border: 1px solid #c0392b;
+}
+
+:root[data-theme='minimal'] .ziwei-sihua-reading__verdict[data-tone='plain'] {
+  color: var(--mn-ink-soft);
+  background: var(--mn-bg);
+  border: 1px solid var(--mn-border);
+}
+
+:root[data-theme='minimal'] .ziwei-sihua-reading__text {
+  font-family: var(--mn-font-sans);
+  font-size: 13px;
+  line-height: 1.85;
+  color: var(--mn-ink);
+  margin: 0;
+  text-align: justify;
+}
+
+:root[data-theme='minimal'] .ziwei-sihua-reading__text--empty {
+  color: var(--mn-ink-soft);
+  font-style: italic;
+  text-align: center;
+}
+
+:root[data-theme='minimal'] .ziwei-sihua-reading__empty {
+  font-family: var(--mn-font-sans);
+  font-size: 13px;
+  color: var(--mn-ink-soft);
+  text-align: center;
+  padding: var(--mn-space-4) 0;
+  margin: 0;
+}
+
+@media (max-width: 720px) {
+  :root[data-theme='minimal'] .ziwei-sihua-reading {
+    padding: var(--mn-space-4);
+  }
+  :root[data-theme='minimal'] .ziwei-sihua-reading__title {
+    font-size: 16px;
+  }
+}
+
+/* ============ 命主/身主卡 ============ */
+:root[data-theme='minimal'] .ziwei-soul-master {
+  max-width: 1200px;
+  margin: 0 auto var(--mn-space-6);
+  padding: var(--mn-space-6) var(--mn-space-8);
+  background: var(--mn-bg-elev);
+  border: 1px solid var(--mn-border);
+  border-radius: var(--mn-radius-md);
+  box-shadow: var(--mn-shadow-xs);
+}
+
+:root[data-theme='minimal'] .ziwei-soul-master__head {
+  margin-bottom: var(--mn-space-4);
+  padding-bottom: var(--mn-space-3);
+  border-bottom: 1px solid var(--mn-border);
+}
+
+:root[data-theme='minimal'] .ziwei-soul-master__title {
+  font-family: var(--mn-font-sans);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--mn-ink);
+  margin: 0;
+}
+
+:root[data-theme='minimal'] .ziwei-soul-master__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--mn-space-4);
+}
+
+:root[data-theme='minimal'] .ziwei-soul-master__card {
+  padding: var(--mn-space-4);
+  background: var(--mn-bg);
+  border: 1px solid var(--mn-border);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+:root[data-theme='minimal'] .ziwei-soul-master__card--ming {
+  border-left: 3px solid #c0392b;
+}
+
+:root[data-theme='minimal'] .ziwei-soul-master__card--shen {
+  border-left: 3px solid #16a085;
+}
+
+:root[data-theme='minimal'] .ziwei-soul-master__card-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--mn-space-3);
+  flex-wrap: wrap;
+}
+
+:root[data-theme='minimal'] .ziwei-soul-master__role {
+  font-family: var(--mn-font-sans);
+  font-size: 12px;
+  color: var(--mn-ink-soft);
+  letter-spacing: 0.1em;
+}
+
+:root[data-theme='minimal'] .ziwei-soul-master__name {
+  font-family: var(--mn-font-sans);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--mn-ink);
+}
+
+:root[data-theme='minimal'] .ziwei-soul-master__text {
+  font-family: var(--mn-font-sans);
+  font-size: 13px;
+  line-height: 1.85;
+  color: var(--mn-ink);
+  margin: 0;
+  text-align: justify;
+}
+
+:root[data-theme='minimal'] .ziwei-soul-master__text--empty {
+  color: var(--mn-ink-soft);
+  font-style: italic;
+  text-align: center;
+}
+
+:root[data-theme='minimal'] .ziwei-soul-master__keywords {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--mn-border);
+}
+
+:root[data-theme='minimal'] .ziwei-soul-master__keywords-label {
+  font-size: 11px;
+  color: var(--mn-ink-soft);
+  margin-right: 4px;
+}
+
+:root[data-theme='minimal'] .ziwei-soul-master__chip {
+  padding: 2px 8px;
+  font-size: 11px;
+  color: var(--mn-ink);
+  background: var(--mn-bg-elev);
+  border: 1px solid var(--mn-border);
+  border-radius: 4px;
+}
+
+:root[data-theme='minimal'] .ziwei-soul-master__empty {
+  font-family: var(--mn-font-sans);
+  font-size: 13px;
+  color: var(--mn-ink-soft);
+  text-align: center;
+  padding: var(--mn-space-4) 0;
+  margin: 0;
+}
+
+@media (max-width: 720px) {
+  :root[data-theme='minimal'] .ziwei-soul-master {
+    padding: var(--mn-space-4);
+  }
+  :root[data-theme='minimal'] .ziwei-soul-master__grid {
+    grid-template-columns: 1fr;
+  }
+  :root[data-theme='minimal'] .ziwei-soul-master__title {
+    font-size: 16px;
+  }
+  :root[data-theme='minimal'] .ziwei-soul-master__name {
+    font-size: 16px;
   }
 }

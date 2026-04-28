@@ -142,7 +142,7 @@
   border: 1px dashed rgba(192, 136, 56, 0.5);
   border-radius: var(--mn-radius-sm);
   font-size: 14px;
-  color: var(--mn-text);
+  color: var(--mn-ink);
 }
 
 /* ---------- 分面 tabs ---------- */

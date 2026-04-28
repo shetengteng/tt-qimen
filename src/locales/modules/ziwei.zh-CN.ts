@@ -75,6 +75,7 @@ export default {
     brightness: '庙/旺/得/平/陷 = 星曜亮度',
   },
   sihuaShort: { lu: '禄', quan: '权', ke: '科', ji: '忌' },
+  sihuaMarkFmt: '化{label}',
 
   sanfang: {
     hint: '命盘已显示「命宫 三方四正」 ——',
@@ -118,6 +119,8 @@ export default {
     verdict: { ji: '吉', zhong: '中', xiong: '凶' },
     entryMissing: '该宫位主星组合暂无简析，可结合三方四正综合判断。',
     empty: '本盘 12 宫主星均缺，建议结合副星与四化综合判断。',
+    enPendingBanner: '英文长篇正文尚在专业审译，本类先仅显示 chip 摘要层。',
+    placeholderLineEn: '长篇翻译尚在审译 —— 请参考上方 chip 摘要（宫位 · 主星 · 亮度 · 化禄/权/科/忌 · 吉中凶）。',
   },
 
   minorStars: {
@@ -127,26 +130,46 @@ export default {
     maleficGroup: '六煞星·形冲煞克',
     entryMissing: '该副星 × 宫位组合暂无文案，可结合主星与三方四正综合判断。',
     empty: '本盘暂无六吉六煞落入十二宫，建议以主星与四化为主轴。',
+    enPendingBanner: '英文长篇正文尚在专业审译，本类先仅显示 chip 摘要层。',
+    placeholderLineEn: '长篇翻译尚在审译 —— 请参考上方 chip 摘要（宫位 · 副星 · 吉/煞分组）。',
+  },
+
+  sihuaReading: {
+    title: '四化论命·命宫天干飞化',
+    subtitleFmt: '{stem}干四化 · 飞禄/权/科/忌 各一星',
+    stemMissing: '未能从命宫干支识别天干，本段暂不展示。',
+    sihuaLabel: { lu: '化禄', quan: '化权', ke: '化科', ji: '化忌' },
+    entryMissing: '该天干 × 四化组合暂无论断，可结合三方四正综合判断。',
+  },
+
+  soulMaster: {
+    title: '命主 / 身主',
+    mingLabel: '命 主',
+    shenLabel: '身 主',
+    keywordsLabel: '关键意象',
+    entryMissing: '该星暂无主辅论断（可能为另说之星）。',
+    bothMissing: '本盘命主、身主均缺数据，请检查排盘输入。',
+  },
+
+  decadalReview: {
+    title: '◆ 大限总评',
+    titleMn: '大限总评',
+    subtitleFmt: '{ganzhi}大限 · 十年总轴',
+    entryMissing: '该 60 甲子组合暂无大限总评，可结合大限四化与本命三方综合判断。',
+  },
+
+  yearlyReview: {
+    title: '流年总评',
+    titleMn: '流年总评',
+    entryMissing: '该 60 甲子组合暂无流年总评，可结合流年四化与本命三方综合判断。',
   },
 
   interpret: {
     cards: {
-      mingPalace: {
-        title: '命宫解读',
-        text: '紫微贪狼同坐于辰宫庙地，贪狼化禄加持，兼具贵气与灵气。此格局利于文艺创作、社交公关与经营决策，一生多贵人提携；但需节制桃花与应酬，避免浮华分散心力。',
-      },
-      sihua: {
-        title: '四化飞星',
-        text: '贪狼化禄坐命宫 · 才气与机遇并显；武曲化权落福德宫 · 理财有主见；太阴化科入父母宫 · 利文名声誉；天梁化忌入子女宫 · 子女缘较弱，需加倍经营代际关系。',
-      },
-      minorStars: {
-        title: '六吉六煞',
-        text: '左辅右弼分坐父母、田宅，贵人扶持绵长；文昌文曲交会于命财，利考学与文字事业。擎羊落田宅、陀罗居迁移、火铃分于子财，皆为行运注意点，动中易生波折，宜「大事静守、小事灵动」。',
-      },
-      shenZhu: {
-        title: '身主 · 事业取向',
-        text: '身在疾厄，巨门守身，利口舌为业 —— 讲师、媒体、律师、咨询皆宜。事业宫破军坐申，主变革与开创，宜于成熟行业中另辟新局，避免盲目换行。',
-      },
+      mingPalace: { title: '命宫解读' },
+      sihua: { title: '四化飞星' },
+      minorStars: { title: '六吉六煞' },
+      shenZhu: { title: '身主 · 事业取向' },
     },
   },
 
@@ -186,6 +209,8 @@ export default {
     sectionSoulPalace: '◎ 命宫主星论命',
     sectionPalaceMajor: '◎ 十二宫·主星简析',
     sectionMinorStars: '◎ 六吉六煞·入宫论断',
+    sectionSihuaReading: '◎ 四化论命·命宫天干飞化',
+    sectionSoulMaster: '◎ 命主 · 身主',
     sectionInterpret: '◎ 命盘解读',
     sectionDaxian: '◎ 大限 · 小限',
     sectionDecadalDetail: '◎ 当前大限',
@@ -195,6 +220,8 @@ export default {
     sectionSoulPalaceMn: '命宫主星论命',
     sectionPalaceMajorMn: '十二宫主星简析',
     sectionMinorStarsMn: '六吉六煞入宫',
+    sectionSihuaReadingMn: '四化论命·命宫天干',
+    sectionSoulMasterMn: '命主 · 身主',
     sectionInterpretMn: '命盘解读',
     sectionDaxianMn: '大限 · 小限',
     sectionDecadalDetailMn: '当前大限',

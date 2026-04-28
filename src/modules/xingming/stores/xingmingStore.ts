@@ -12,6 +12,13 @@
  * 本模块不复用 UserState.birth —— 姓名学只需姓名字段，与生辰无关。
  * 性别、出生年 MVP 保留字段但不入算法（原型图保留 UI，后续三才配置扩展使用）。
  *
+ * G-3（2026-04-28）全局 name 派生同步：
+ *   xingming 拥有结构化输入 `{ surname, givenName, gender, birthYear }` —— 这是它的
+ *   领域模型，不能塌缩到全局 `useUserStore.name`（单 string 字段）。但全局 name 是
+ *   分享卡 fileName / 命盘标题等跨模块场景的权威来源，因此走"单向派生同步"模式：
+ *   每次 xingming 的 surname / givenName 更新时，向 useUserStore 派生 `surname +
+ *   givenName` 写入；不反向监听（xingming 仍是 surname/givenName 字段的权威源）。
+ *
  * lastComputed 设计动机（2026-04-26 追加）：
  *   姓名计算是 input → result 的纯函数（同输入 = 同输出），但 result 主体内含
  *   i18n 解读文本（locale 切换会重译），故 **不缓存 result 本体**，只缓存
@@ -23,7 +30,8 @@
 
 import { defineStore } from 'pinia'
 import { StorageSerializers, useStorage } from '@vueuse/core'
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
+import { useUserStore } from '@/stores/user'
 import type { Gender, XingmingInput } from '../types'
 
 const STORAGE_KEY = 'tt-qimen:xingming:input'
@@ -130,6 +138,31 @@ export const useXingmingStore = defineStore('xingming', () => {
   }
 
   const isDefault = computed(() => isDefaultXingmingInput(input.value))
+
+  /**
+   * G-3（2026-04-28）：派生姓名同步到全局 useUserStore.name。
+   *
+   * 触发时机：surname / givenName 任意一个变化时（含 update / reset）。
+   * 同步策略：
+   *   - 当用户填了非默认姓名 → 写入 `surname + givenName` 到全局
+   *   - 当 reset 回默认 / 任意一项为空 → 不清空全局（避免"用户在 xingming 改回默认"
+   *     连带把 bazi 分享卡的 fileName 也清掉）
+   *
+   * 非反向：不监听 useUserStore.name → xingming.input；
+   * xingming 是结构化输入（含 gender/birthYear），全局 name 是单 string，
+   * 反向同步会丢失结构信息。
+   */
+  const userStore = useUserStore()
+  watch(
+    () => `${input.value.surname}|${input.value.givenName}`,
+    () => {
+      const fullName = `${input.value.surname ?? ''}${input.value.givenName ?? ''}`.trim()
+      if (fullName && !isDefaultXingmingInput(input.value)) {
+        userStore.setName(fullName)
+      }
+    },
+    { immediate: true },
+  )
 
   return {
     input,

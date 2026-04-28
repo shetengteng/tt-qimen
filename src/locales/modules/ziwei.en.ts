@@ -75,6 +75,7 @@ export default {
     brightness: 'Temple / Vigorous / Established / Flat / Trapped = star brightness tier',
   },
   sihuaShort: { lu: 'Lu', quan: 'Quan', ke: 'Ke', ji: 'Ji' },
+  sihuaMarkFmt: 'Hua-{label}',
 
   sanfang: {
     hint: 'The chart is showing «Life Palace · Triple harmony & opposition» ——',
@@ -118,6 +119,8 @@ export default {
     verdict: { ji: 'Auspicious', zhong: 'Mixed', xiong: 'Inauspicious' },
     entryMissing: 'No brief for this combination yet — read alongside the Three-Square-Four-Correct.',
     empty: 'No Major Star is present across the twelve palaces; rely on minor stars and four transformations together.',
+    enPendingBanner: 'English long-form readings are still under professional translation; only chip-level summaries are shown for now.',
+    placeholderLineEn: 'Long-form translation pending — please refer to the chip summary above (palace · star · brightness · transformation · verdict).',
   },
 
   minorStars: {
@@ -127,26 +130,46 @@ export default {
     maleficGroup: 'Six Malefic Stars · Sharp Edges',
     entryMissing: 'No copy for this minor-star × palace combination yet — read alongside the Major Stars and the Three-Square-Four-Correct.',
     empty: 'No Six Lucky / Six Malefic stars fall into the twelve palaces; lean on Major Stars and the four transformations.',
+    enPendingBanner: 'English long-form readings are still under professional translation; only chip-level summaries are shown for now.',
+    placeholderLineEn: 'Long-form translation pending — please refer to the chip summary above (palace · star · group).',
+  },
+
+  sihuaReading: {
+    title: 'Four Transformations · Life Palace Stem',
+    subtitleFmt: '{stem}-Stem Four Transformations · one star each for Lu / Quan / Ke / Ji',
+    stemMissing: 'Cannot identify the heavenly stem from the Life Palace ganzhi; this section is hidden.',
+    sihuaLabel: { lu: 'Hua-Lu', quan: 'Hua-Quan', ke: 'Hua-Ke', ji: 'Hua-Ji' },
+    entryMissing: 'No reading for this Stem × Transformation yet — read alongside the Three-Square-Four-Correct.',
+  },
+
+  soulMaster: {
+    title: 'Life-Master / Body-Master',
+    mingLabel: 'Life-Master',
+    shenLabel: 'Body-Master',
+    keywordsLabel: 'Key Imagery',
+    entryMissing: 'No primary reading available (this star may belong to an alternate tradition).',
+    bothMissing: 'This chart lacks data for both Life-Master and Body-Master; please verify your inputs.',
+  },
+
+  decadalReview: {
+    title: '◆ Decade Review',
+    titleMn: 'Decade Review',
+    subtitleFmt: '{ganzhi} Decade · ten-year arc',
+    entryMissing: 'No decade review available for this 60-Jiazi cycle yet — read alongside the decade four transformations and the natal triad.',
+  },
+
+  yearlyReview: {
+    title: 'Year Review',
+    titleMn: 'Year Review',
+    entryMissing: 'No year review available for this 60-Jiazi cycle yet — read alongside the year four transformations and the natal triad.',
   },
 
   interpret: {
     cards: {
-      mingPalace: {
-        title: 'Life Palace Reading',
-        text: 'Zi-Wei and Tan-Lang share the Life Palace at Chen, in the Temple-Brilliant tier; with Tan-Lang carrying Hua-Lu, the chart blends nobility and charisma. The configuration favours arts, public-relations and decision-making roles, with steady support from benefactors throughout life — but romance and socialising must be moderated lest glamour scatter the focus.',
-      },
-      sihua: {
-        title: 'Four Transformations',
-        text: 'Tan-Lang Hua-Lu sits in the Life Palace · talent and opportunity rise together; Wu-Qu Hua-Quan falls into the Spiritual Palace · clear judgement in money matters; Tai-Yin Hua-Ke enters the Parents Palace · favourable for reputation and recognition; Tian-Liang Hua-Ji enters the Children Palace · the bond with children is thinner and warrants extra investment in inter-generational care.',
-      },
-      minorStars: {
-        title: 'Six Auspicious & Six Inauspicious',
-        text: 'Zuo-Fu and You-Bi sit in Parents and Property — long-running benefactor support; Wen-Chang and Wen-Qu meet across Life and Wealth — favourable for academia and writing-based careers. Qing-Yang in Property, Tuo-Luo in Travel, Huo-Xing and Ling-Xing across Children and Wealth all flag turbulence in motion: the rule of thumb is "stay still on big matters, stay agile on small ones."',
-      },
-      shenZhu: {
-        title: 'Body Palace · Career Inclination',
-        text: 'The Body sits in the Health Palace with Ju-Men guarding it — work that depends on the spoken or written word fits well: lecturing, media, law, consulting. The Career Palace holds Po-Jun at Shen, signalling reform and pioneering — open new ground inside an established industry rather than chasing unrelated pivots.',
-      },
+      mingPalace: { title: 'Life Palace Reading' },
+      sihua: { title: 'Four Transformations' },
+      minorStars: { title: 'Six Auspicious & Six Inauspicious' },
+      shenZhu: { title: 'Body Palace · Career Inclination' },
     },
   },
 
@@ -186,6 +209,8 @@ export default {
     sectionSoulPalace: '◎ Life Palace Major Star',
     sectionPalaceMajor: '◎ Twelve Palaces · Major Star Briefs',
     sectionMinorStars: '◎ Six Lucky & Six Malefic',
+    sectionSihuaReading: '◎ Four Transformations · Life Palace Stem',
+    sectionSoulMaster: '◎ Life-Master / Body-Master',
     sectionInterpret: '◎ Chart Reading',
     sectionDaxian: '◎ Major / Minor Limits',
     sectionDecadalDetail: '◎ Current Major-Limit',
@@ -195,6 +220,8 @@ export default {
     sectionSoulPalaceMn: 'Life Palace Major Star',
     sectionPalaceMajorMn: 'Major Star Briefs',
     sectionMinorStarsMn: 'Six Lucky & Six Malefic',
+    sectionSihuaReadingMn: 'Sihua · Life Palace Stem',
+    sectionSoulMasterMn: 'Life-Master / Body-Master',
     sectionInterpretMn: 'Chart Reading',
     sectionDaxianMn: 'Major / Minor Limits',
     sectionDecadalDetailMn: 'Current Major-Limit',

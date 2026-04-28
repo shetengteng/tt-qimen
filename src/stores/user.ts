@@ -48,12 +48,13 @@ export function isDefaultBirth(b: BirthInput): boolean {
  *
  * 字段说明：
  *  - `birth`：生辰输入，跨模块共享（八字 / 紫微 / 称骨 / 黄历 / 灵签 / 小六壬 / 解梦）
- *  - `name`：姓名（可选）。为后续多个用途做"骨架"准备：
+ *  - `name`：姓名（单 string）。统一作为跨模块"权威 display name"使用：
  *      · 分享卡截图 fileName（如 `bazi-王某某-1990-05-20.png`）
- *      · 姓名学模块的输入与全局 name 双向同步（目前 xingming 仍持有自己的 store，
- *        待后续重构时统一到本 store）
  *      · 命盘报告标题
- *    本字段当前可空（""），各模块在消费侧需处理空值（不要假设非空）。
+ *    数据流：xingming 模块拥有结构化输入 `{ surname, givenName, ... }`，每次 surname /
+ *    givenName 变化时**单向派生写入** `surname + givenName` 到本字段（见
+ *    `src/modules/xingming/stores/xingmingStore.ts` 的 watch 逻辑）。
+ *    其他模块只读消费本字段；为空时各模块 fallback 到 birth-only 命名方案。
  */
 export const useUserStore = defineStore('user', () => {
   const birth = useStorage<BirthInput>('tt-qimen:birth', { ...DEFAULT_BIRTH }, undefined, {

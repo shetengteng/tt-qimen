@@ -1,25 +1,29 @@
 /**
  * 神煞简短释义表（古法术语版）
  *
- * 核数状态（2026-04-22 T-2.4-A 精确 grep 统计）：
- *   - `auditStatus: 'verified'` · 共 **43** key（原 35 + T-2.4-A 新增 8）
- *   - `auditStatus: 'pending'`  · 共 **29** key
+ * 核数状态（2026-04-28 T-2.4-B P2 推进后精确 grep 统计）：
+ *   - `auditStatus: 'verified'` · 共 **60** key（T-2.4-A 后 43 + T-2.4-B 新增 17）
+ *   - `auditStatus: 'pending'`  · 共 **12** key
  *   - 合计 72 key
  *
  * 校对说明：
  *   - P0（2026-04-22）：先前注释声明"38 verified / 40 pending / 76 total"均为早期设计目标数或粗估；
  *     按代码实体 key 精确数，当时实际为 35 verified / 37 pending（含 8 待补的 verified 候选）/ 72 total。
- *     P1 阶段再次核对时发现 P0 核数常量（36 / 40 / 76）仍有 ±1~4 的偏差，属于人工手数误差。
  *   - P1 · T-2.4-A（2026-04-22）：补齐高频 pending 8 项 → verified，实际补 8 个 key：
  *       天赦 / 天喜 / 魁罡貴人 / 三奇 / 陰陽差錯 / 陰差陽錯 / 金神 / 截路空亡
- *     （其中 `陰陽差錯` + `陰差陽錯` 为异体 key，共享同一 raw 出处；`紅鸾` 因八字古籍无独立节，延至 P2）
- *   - SHENSHA_MEANING_COUNT 常量已按精确值更新为 43 / 29 / 72（P0 旧值 36/40/76 同步修正）
- *   - 剩余 29 个 pending 按 `2026-04-22-03-八字文案溯源改造方案TODO.md` § 2.4 P2 阶段分批补全
+ *   - **P2 · T-2.4-B（2026-04-28）**：补齐第二批 pending → verified 17 项（短句 + 长句 + ST3 原文锚点）：
+ *       天印貴人 / 天德合 / 月德合 / 文星貴人 / 帝座 / 九醜 / 八專 / 六厄 / 十惡大敗 /
+ *       地網 / 天羅 / 孤鸞 / 紅艷 / 隔角 / 陰陽煞 / 月煞 / 絞煞
+ *     全部从 `design/bazi/raw/sanming-tonghui/volume-03.md` 行号 L171 / L177 / L195-199 / L215 /
+ *     L295-297 / L299-301 / L305 / L307-309 / L311-315 / L357 / L359 / L361 / L369 取原文锚点。
+ *   - **保留 12 项 pending**（明确判定为"无单立专章 / 散见无独立条"，按古法标准不做编造）：
+ *       天廚貴人 / 天厨貴人 / 垣城 / 日德 / 日貴 / 德 / 秀 / 紅鸞 / 墓煞 / 太白星 / 時墓 / 血刃
+ *     这些项 short 维持中性占位、long 缺省，符合 SHENSHA_MEANING.md 文档中"未独立专章"判定。
  *
  * 本表口径：
- *   - verified 36 项：short / long 严格对照《三命通会》《五行精纪》原文，
+ *   - verified 60 项：short / long 严格对照《三命通会》《五行精纪》《渊海子平》原文，
  *     附 `source` 字段记录行号锚点（见 `extracted/05-shensha.md`）
- *   - pending 40 项：short 为简短中性占位，long 缺省，UI 可选渲染"待审"角标
+ *   - pending 12 项：short 为简短中性占位，long 缺省，UI 可选渲染"待审"角标
  *   - 已全部删除"公职 / 审批 / 心理咨询 / 律政 / 谈判 / 传媒 / 体制内 / 公关 /
  *     餐饮食品 / 法律审批 / 健康食品行业"等无原文出处的现代化扩写
  *
@@ -59,7 +63,7 @@
  * - 'verified': verified 项已逐条对照原文锚点；非 verified 项显式标 'pending'
  * - 'pending':  整表尚未完成考据
  *
- * 当前整表处于"分批完成中"状态：36 已 verified / 40 待审；取其严格定义仍标 'verified'
+ * 当前整表处于"分批完成中"状态：60 已 verified / 12 待审；取其严格定义仍标 'verified'
  * 以兼容下游 UI 判断（verified 项可直接展示出处）。
  */
 export const SHENSHA_MEANING_STATUS: 'pending' | 'verified' = 'verified'
@@ -69,8 +73,8 @@ export const SHENSHA_MEANING_STATUS: 'pending' | 'verified' = 'verified'
  * 调整 SHENSHA_MEANING 条目时需同步更新此常量，便于 CI 做一致性校验（P2 项）。
  */
 export const SHENSHA_MEANING_COUNT = {
-  verified: 43,
-  pending: 29,
+  verified: 60,
+  pending: 12,
   total: 72,
 } as const
 
@@ -356,9 +360,11 @@ export const SHENSHA_MEANING: Record<string, ShenshaMeaning> = {
   // 补全进度见 design/bazi/2026-04-22-03-八字文案溯源改造方案TODO.md § 2.4
   // ============================================================
   天印貴人: {
-    short: '印信文书之神',
+    short: '荣达受皇封 · 印信文书之神',
+    long: '《三命通会·卷三·论太极贵》载："有天印贵，甲子在寅中，乙逢亥亦同；丁酉戊申位，丙戌己羊宫；庚辛马蛇足，癸卯与壬龙；此号天印贵，荣达受皇封。"主印信文书相辅、官位易达。',
     defaultCategory: 'auspicious',
-    auditStatus: 'pending',
+    auditStatus: 'verified',
+    source: 'ST3 · L199',
   },
   天廚貴人: {
     short: '食禄丰盈',
@@ -371,9 +377,11 @@ export const SHENSHA_MEANING: Record<string, ShenshaMeaning> = {
     auditStatus: 'pending',
   },
   天德合: {
-    short: '天德之配神',
+    short: '天月德合 · 五行相契之辰',
+    long: '《三命通会·卷三》载："考大统历，有天月德合，乃五行相契之辰。月德合，如正月丙与辛合；天德合，如正月丁与壬合。"凡命遇之与天德同力，主回凶作善、贵神在位、众煞伏藏。',
     defaultCategory: 'auspicious',
-    auditStatus: 'pending',
+    auditStatus: 'verified',
+    source: 'ST3 · L171',
   },
   天赦: {
     short: '宥罪赦过 · 专气生育',
@@ -395,9 +403,11 @@ export const SHENSHA_MEANING: Record<string, ShenshaMeaning> = {
     source: 'ST3 · L181',
   },
   文星貴人: {
-    short: '文星之神 · 与文昌相配',
+    short: '文星贵神 · 与文昌相配',
+    long: '《三命通会·卷三·论太极贵》载："有文星贵，甲马乙蛇丙戊猴，酉台丁己亥辛求；庚逢戌狗逢虎，十位文星癸兔游。"与文昌、文誉、词馆并列文翰诸贵，主擅长文章、易得名声。',
     defaultCategory: 'auspicious',
-    auditStatus: 'pending',
+    auditStatus: 'verified',
+    source: 'ST3 · L197',
   },
   日德: {
     short: '日主有德之象',
@@ -410,14 +420,18 @@ export const SHENSHA_MEANING: Record<string, ShenshaMeaning> = {
     auditStatus: 'pending',
   },
   月德合: {
-    short: '月德之配神',
+    short: '天月德合 · 五行相契之辰',
+    long: '《三命通会·卷三》论"大统历有天月德合,乃五行相契之辰"，月德合如正月丙与辛合、二月甲与己合。命中遇月德合，主三合所照之方贵神并临，众煞伏藏。',
     defaultCategory: 'auspicious',
-    auditStatus: 'pending',
+    auditStatus: 'verified',
+    source: 'ST3 · L171',
   },
   帝座: {
-    short: '尊位之象',
+    short: '本主同德 · 帝座为中',
+    long: '《三命通会·卷三·论印绶》载："本主同德为上,帝座为中,胎月为下。主人重厚魁梧,功名昭著。"帝座位为印绶贵神之中位，主威重、行事端肃，得贵格扶之更妙。',
     defaultCategory: 'auspicious',
-    auditStatus: 'pending',
+    auditStatus: 'verified',
+    source: 'ST3 · L215',
   },
   德: {
     short: '德神 · 积善之星',
@@ -449,29 +463,39 @@ export const SHENSHA_MEANING: Record<string, ShenshaMeaning> = {
     auditStatus: 'pending',
   },
   九醜: {
-    short: '九丑之煞',
+    short: '妨害之辰 · 妇人产厄',
+    long: '《三命通会·卷三·淫欲妨害煞》载："九丑乃壬子、壬午、戊子、戊午、己酉、己卯、乙卯、辛酉、辛卯是也。妇人犯者,主产厄;男犯,多丑不令终。"《壶中子》云"少亡楚甸八千,应是叠逢九丑"。',
     defaultCategory: 'inauspicious',
-    auditStatus: 'pending',
+    auditStatus: 'verified',
+    source: 'ST3 · L359',
   },
   八專: {
-    short: '干支同类 · 偏专之象',
+    short: '淫欲之煞 · 不正之妻子',
+    long: '《三命通会·卷三·淫欲妨害煞》载："八专乃甲寅、乙卯、己未、丁未、庚申、辛酉、戊戌、癸丑是也。日上有不正之妻,时上有不正之子。女人犯者,不择亲疏;犯多者尤紧。"《壶中子》云"老醉秦楼十二,直缘重犯八专"。',
     defaultCategory: 'inauspicious',
-    auditStatus: 'pending',
+    auditStatus: 'verified',
+    source: 'ST3 · L359',
   },
   六厄: {
-    short: '阻滞之煞',
+    short: '剥官之煞 · 一生蹇滞',
+    long: '《三命通会·卷三·论六厄》载："厄者,遭乎难者也,常居马前一辰,劫后二辰,死而不生谓之厄。"申子辰水死在卯、寅午戌火死在酉、亥卯未木死在午、巳酉丑金死在子。《壶中子》云"六厄为剥官之煞,李广不封侯是也"。',
     defaultCategory: 'inauspicious',
-    auditStatus: 'pending',
+    auditStatus: 'verified',
+    source: 'ST3 · L295-297',
   },
   十惡大敗: {
-    short: '禄入空亡之日',
+    short: '禄入空亡 · 大败无生还',
+    long: '《三命通会·卷三·论十恶大败》载："十恶者,譬律法中人,犯十恶重罪,在所不赦;大败者,譬兵法中与敌交战,大败无一生还,喻极凶也。"如甲辰、乙巳、丙申、丁亥、庚辰、戊戌、癸亥、辛巳、乙丑等十日,皆禄入空亡之日。若内有吉神相扶、贵气相辅,亦可作吉论。',
     defaultCategory: 'inauspicious',
-    auditStatus: 'pending',
+    auditStatus: 'verified',
+    source: 'ST3 · L311-315',
   },
   地網: {
-    short: '与天罗相配 · 拘束之象',
+    short: '辰巳为地网 · 阴阳暗昧',
+    long: '《三命通会·卷三·论天罗地网》载："何以辰巳为地网,盖地陷东南,辰巳者,六阳之终也。阴阳终极,则暗昧不明,如人之在罗网。"水土命人有地网,主蹇滞;女怕地网,猪犬侵凌每虑丈夫厄难。',
     defaultCategory: 'inauspicious',
-    auditStatus: 'pending',
+    auditStatus: 'verified',
+    source: 'ST3 · L307-309',
   },
   墓煞: {
     short: '七杀入墓之象',
@@ -479,9 +503,11 @@ export const SHENSHA_MEANING: Record<string, ShenshaMeaning> = {
     auditStatus: 'pending',
   },
   天羅: {
-    short: '与地网相配 · 纠缠之象',
+    short: '戌亥为天罗 · 阴阳终极',
+    long: '《三命通会·卷三·论天罗地网》载："何以戌亥为天罗,盖天倾西北,戌亥者,六阴之终也。阴阳终极,则暗昧不明,如人之在罗网。"火命人有天罗,主蹇滞;男怕天罗,龙蛇混杂常防妇女忧危。天罗地网重并,为害尤重。',
     defaultCategory: 'inauspicious',
-    auditStatus: 'pending',
+    auditStatus: 'verified',
+    source: 'ST3 · L307-309',
   },
   太白星: {
     short: '金气肃杀之煞',
@@ -489,9 +515,11 @@ export const SHENSHA_MEANING: Record<string, ShenshaMeaning> = {
     auditStatus: 'pending',
   },
   孤鸞: {
-    short: '孤鸾日 · 感情多波',
+    short: '孤鸾舞 · 男克妻女克夫',
+    long: '《三命通会·卷三·孤鸾寡鹊煞》载古歌："木火逢蛇大不祥,金猪何必强猖狂;土猴木虎夫何在,时对孤鸾舞一场。"乃乙巳、丁巳、辛亥、戊申、甲寅、丙午、戊午、壬子等日。男克妻,女克夫;主感情多波、婚配不偕老。',
     defaultCategory: 'inauspicious',
-    auditStatus: 'pending',
+    auditStatus: 'verified',
+    source: 'ST3 · L361',
   },
   截路空亡: {
     short: '途中遇水 · 百事皆忌',
@@ -506,14 +534,18 @@ export const SHENSHA_MEANING: Record<string, ShenshaMeaning> = {
     auditStatus: 'pending',
   },
   月煞: {
-    short: '月支内暗耗之事',
+    short: '三合外位 · 内暗耗之神',
+    long: '《三命通会·卷三》论月煞起例："寅午戌月丑,亥卯未月戌,申子辰月未,巳酉丑月辰。"取三合外一辰为月煞，主月支内暗耗、家事不宁；与劫煞、亡神同源，宜防小人侵扰。',
     defaultCategory: 'inauspicious',
-    auditStatus: 'pending',
+    auditStatus: 'verified',
+    source: 'ST3 · L177',
   },
   絞煞: {
-    short: '与勾煞同义 · 缠绕之象',
+    short: '与勾煞对冲 · 羁绊缠绕',
+    long: '《三命通会·卷三·论勾绞》载："勾者,牵连之义;绞者,羁绊之名,二煞尝相对冲,亦犹亡劫。"绞煞与勾煞为一体两面（勾后即绞），主非命而终；小人逢之非横灾祸，行年至此亦主口舌刑狱之事。',
     defaultCategory: 'inauspicious',
-    auditStatus: 'pending',
+    auditStatus: 'verified',
+    source: 'ST3 · L299-301',
   },
   金神: {
     short: '破败之神 · 制伏方贵',
@@ -537,19 +569,25 @@ export const SHENSHA_MEANING: Record<string, ShenshaMeaning> = {
     source: 'ST3 · L363-365',
   },
   陰陽煞: {
-    short: '阴阳煞',
-    defaultCategory: 'inauspicious',
-    auditStatus: 'pending',
+    short: '阴阳和畅 · 多得佳偶',
+    long: '《三命通会·卷三·阴阳煞》载："女属阴而喜阳,命得戊午旺火为正阳;男属阳而喜阴,命得丙子旺水为正阴。是阴阳和畅,故男得丙子,平生多得美妇人;女得戊午,平生多逢美男子。"日上遇之,男得美妻,女得美夫；大忌元辰、咸池同宫,皆淫。',
+    defaultCategory: 'neutral',
+    auditStatus: 'verified',
+    source: 'ST3 · L357',
   },
   隔角: {
-    short: '兄弟疏离之象',
+    short: '寅丑互角 · 骨肉中道分离',
+    long: '《三命通会·卷三·论孤辰寡宿》载《珞??录子》云："骨肉中道分离,孤寡犹嫌于隔角。"《玉门集》云"寅申巳亥为角,辰戌丑未为隔",男女命见之多不和顺，主兄弟疏离、亲恩浅薄。',
     defaultCategory: 'inauspicious',
-    auditStatus: 'pending',
+    auditStatus: 'verified',
+    source: 'ST3 · L305',
   },
   紅艷: {
-    short: '红艳之煞 · 感情缘浓',
+    short: '红艳之煞 · 女命最忌',
+    long: '《三命通会·卷三·桃花红艳煞》载："甲乙逢午、丙寅、丁未、戊子、己辰、庚戌、辛酉、壬巳、癸申,为红艳煞,女命最忌之。"主感情缘浓、容貌秀丽、易招异性追逐；与桃花煞合参易陷入是非。',
     defaultCategory: 'neutral',
-    auditStatus: 'pending',
+    auditStatus: 'verified',
+    source: 'ST3 · L369',
   },
   血刃: {
     short: '血光意外之煞',

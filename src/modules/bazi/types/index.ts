@@ -5,19 +5,23 @@
  * 字段命名做了两处微调以贴合实现：
  *  - decades / flowYears 列表元素都明确包含 ganzhi 字符串，方便 UI 直接绑定
  *  - currentFlowYear 不复制对象，使用索引 idx 引用 flowYears 中的当前一年
+ *
+ * G-5 收敛点（2026-04-28）：ElementName 与 TenGodType 已**单一来源化**：
+ *   - ElementName re-export 自 src/lib/element.ts
+ *   - TenGodType  re-export 自 src/lib/tenGod.ts
+ *   旧的内联 `'木' | '火' | ...` literal 定义全部被消灭，避免双源 drift；
+ *   外部模块继续 `import type { ElementName, TenGodType } from '../types'`
+ *   即可，不感知重构。
  */
 
+import type { ElementName as LibElementName } from '@/lib/element'
+import type { TenGodType as LibTenGodType } from '@/lib/tenGod'
+
 /** 五行（中文名，与 tyme4ts Element.getName() 直接对齐） */
-export type ElementName = '木' | '火' | '土' | '金' | '水'
+export type ElementName = LibElementName
 
 /** 十神种类（10 + 日主自身） */
-export type TenGodType =
-  | '比肩' | '劫财'
-  | '食神' | '伤官'
-  | '正财' | '偏财'
-  | '正官' | '七杀'
-  | '正印' | '偏印'
-  | '日主'
+export type TenGodType = LibTenGodType
 
 /** 旺衰 5 档 */
 export type StrengthLevel = '极旺' | '偏旺' | '中和' | '偏弱' | '极弱'

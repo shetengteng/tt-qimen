@@ -14,6 +14,8 @@
  */
 
 import type { PillarInfo, PatternInfo, PatternName, TenGodType } from '../types'
+import { isYangStem } from '@/lib/element'
+import { calcTenGod } from '@/lib/tenGod'
 
 /** 月支本气十神 → 候选格局名映射 */
 const TENGOD_TO_PATTERN: Record<TenGodType, PatternName | null> = {
@@ -32,9 +34,6 @@ const TENGOD_TO_PATTERN: Record<TenGodType, PatternName | null> = {
 
 /** 杂气库：辰戌丑未 */
 const ZAQI_BRANCHES = new Set(['辰', '戌', '丑', '未'])
-
-/** 阳干集合（用于建禄/月刃判别） */
-const YANG_STEMS = new Set(['甲', '丙', '戊', '庚', '壬'])
 
 /** 格局点评（一句话简评模板） */
 const PATTERN_COMMENT: Record<PatternName, string> = {
@@ -81,7 +80,7 @@ export function detectPattern(
 
   // 2. 比肩 / 劫财 → 建禄 / 月刃
   if (monthMainTenGod === '比肩' || monthMainTenGod === '劫财') {
-    const isYangDay = YANG_STEMS.has(dayMaster)
+    const isYangDay = isYangStem(dayMaster)
     // 阳日干 + 月支同性（如 甲日见寅）→ 建禄；
     // 阳日干 + 月支异性（如 甲日见卯）→ 月刃；
     // 阴日干同样规则（仅极少数命局会出现"阴干月刃"，简化按阴阳判断）
@@ -136,61 +135,17 @@ export function detectPattern(
 }
 
 // ---------------------------------------------------------------------------
-// 工具：天干 vs 日主 → 十神（独立实现，避免循环依赖 core/bazi.ts）
+// 工具：天干 vs 日主 → 十神
+//
+// G-5（2026-04-28）收敛：原本的 `isYang / STEM_ELEMENT / relation / stemTenGod`
+// 私有副本已下线，改为消费 `lib/tenGod.ts` 中的 `calcTenGod()`。
+// 保留同名 `stemTenGod()` 仅作 module-local 适配层（含 `null` 兜底降级），
+// 上游的 detectPattern 调用语义保持不变。
 // ---------------------------------------------------------------------------
 
-/** 天干阴阳 */
-function isYang(stem: string): boolean {
-  return YANG_STEMS.has(stem)
-}
-
-/** 天干五行 */
-const STEM_ELEMENT: Record<string, string> = {
-  甲: '木', 乙: '木',
-  丙: '火', 丁: '火',
-  戊: '土', 己: '土',
-  庚: '金', 辛: '金',
-  壬: '水', 癸: '水',
-}
-
-/** 五行生克：源 → 目标 的关系 */
-function relation(src: string, dst: string): 'same' | 'src_gen_dst' | 'dst_gen_src' | 'src_ke_dst' | 'dst_ke_src' {
-  if (src === dst) return 'same'
-  // 木→火→土→金→水→木
-  const order = ['木', '火', '土', '金', '水']
-  const i = order.indexOf(src)
-  const j = order.indexOf(dst)
-  const next = (i + 1) % 5
-  const prev = (i + 4) % 5
-  if (j === next) return 'src_gen_dst'
-  if (j === prev) return 'dst_gen_src'
-  // 木克土 (i+2)、土克水 (i+2)...
-  const ke = (i + 2) % 5
-  if (j === ke) return 'src_ke_dst'
-  return 'dst_ke_src'
-}
-
-/** stem vs dayMaster → 十神 */
+/** stem vs dayMaster → 十神（lib/tenGod.calcTenGod 的 module-local 适配层） */
 function stemTenGod(stem: string, dayMaster: string): TenGodType {
-  if (stem === dayMaster) return '比肩'
-  const sameYY = isYang(stem) === isYang(dayMaster)
-  const sEle = STEM_ELEMENT[stem]
-  const dEle = STEM_ELEMENT[dayMaster]
-  const r = relation(dEle, sEle) // 站在日主立场看 stem
-  switch (r) {
-    case 'same':
-      return sameYY ? '比肩' : '劫财'
-    case 'src_gen_dst':
-      // 日主生 stem → 食神 / 伤官
-      return sameYY ? '食神' : '伤官'
-    case 'src_ke_dst':
-      // 日主克 stem → 正财 / 偏财
-      return sameYY ? '偏财' : '正财'
-    case 'dst_ke_src':
-      // stem 克日主 → 七杀 / 正官
-      return sameYY ? '七杀' : '正官'
-    case 'dst_gen_src':
-      // stem 生日主 → 偏印 / 正印
-      return sameYY ? '偏印' : '正印'
-  }
+  // 上游（detectPattern）始终用 EightChar 解析的合法天干，不会触发 null 分支；
+  // 但保留兜底以满足类型契约 —— 命理语境下 fallback 「比肩」是最不破坏后续判断的中立值。
+  return calcTenGod(stem, dayMaster) ?? '比肩'
 }

@@ -95,6 +95,13 @@ function onTagClick(focus: string) {
 }
 
 const annotLabel = computed(() => t('bazi.collapse.annotLabel.pattern'))
+
+const patternExpandLabel = computed(() => {
+  const key = expanded.value
+    ? 'bazi.interpret.patternExpand.close'
+    : 'bazi.interpret.patternExpand.open'
+  return t(key, { name: patternName.value })
+})
 </script>
 
 <template>
@@ -112,7 +119,7 @@ const annotLabel = computed(() => t('bazi.collapse.annotLabel.pattern'))
         @click="toggleExpand"
       >
         <span class="pattern-expand-caret" :class="{ open: expanded }">▸</span>
-        <span>{{ expanded ? '收起' : '查看' }}{{ patternName }}完整解读</span>
+        <span>{{ patternExpandLabel }}</span>
       </button>
       <div v-if="expanded" class="pattern-expand-content">
         <p>{{ patternLong }}</p>
@@ -156,7 +163,7 @@ const annotLabel = computed(() => t('bazi.collapse.annotLabel.pattern'))
         @click="toggleExpand"
       >
         <span class="pattern-expand-caret" :class="{ open: expanded }">▸</span>
-        <span>{{ expanded ? '收起' : '查看' }}{{ patternName }}完整解读</span>
+        <span>{{ patternExpandLabel }}</span>
       </button>
       <div v-if="expanded" class="pattern-expand-content">
         <p>{{ patternLong }}</p>

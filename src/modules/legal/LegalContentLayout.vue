@@ -116,21 +116,21 @@ function goHome() {
   font-family: var(--gf-font-kaiti, var(--font-display));
   font-size: clamp(1.75rem, 4vw, 2.2rem);
   margin: 0 0 12px;
-  color: var(--gf-color-ink, var(--color-accent));
+  color: var(--color-ink, var(--color-accent));
   letter-spacing: 0.08em;
 }
 
 .legal-meta {
   margin: 0;
   font-size: 0.85rem;
-  color: var(--gf-color-ink-muted, var(--color-ink-soft));
+  color: var(--color-ink-muted, var(--color-ink-soft));
   letter-spacing: 0.05em;
 }
 
 .legal-article {
-  background: var(--gf-color-paper-soft, rgba(255, 255, 255, 0.6));
-  border: 1px solid var(--gf-color-border, rgba(0, 0, 0, 0.08));
-  border-radius: 8px;
+  background: var(--color-bg-elev, rgba(255, 255, 255, 0.6));
+  border: 1px solid var(--color-border, rgba(0, 0, 0, 0.08));
+  border-radius: var(--radius-lg, 8px);
   padding: 32px 24px;
 }
 
@@ -142,8 +142,8 @@ function goHome() {
   font-family: var(--gf-font-kaiti, var(--font-display));
   font-size: 1.2rem;
   margin: 0 0 12px;
-  color: var(--gf-color-accent, var(--color-accent));
-  border-left: 3px solid var(--gf-color-accent, var(--color-accent));
+  color: var(--color-accent);
+  border-left: 3px solid var(--color-accent);
   padding-left: 12px;
   letter-spacing: 0.06em;
 }
@@ -151,7 +151,7 @@ function goHome() {
 .legal-paragraph {
   margin: 0 0 12px;
   line-height: 1.85;
-  color: var(--gf-color-ink, var(--color-ink));
+  color: var(--color-ink);
   font-size: 0.95rem;
   letter-spacing: 0.02em;
 }
@@ -163,7 +163,7 @@ function goHome() {
 
 .legal-list li {
   line-height: 1.85;
-  color: var(--gf-color-ink, var(--color-ink));
+  color: var(--color-ink);
   font-size: 0.95rem;
   margin-bottom: 6px;
 }
@@ -181,14 +181,14 @@ function goHome() {
   font-family: var(--mn-font-sans, var(--font-display));
   font-size: clamp(1.6rem, 3.5vw, 2rem);
   font-weight: 600;
-  color: var(--mn-color-ink, var(--color-ink));
+  color: var(--color-ink);
   letter-spacing: -0.01em;
   border: none;
   margin: 0 0 8px;
 }
 
 .legal-meta--mn {
-  color: var(--mn-color-ink-muted, var(--color-ink-soft));
+  color: var(--color-ink-muted, var(--color-ink-soft));
   font-size: 0.8rem;
 }
 
@@ -201,14 +201,14 @@ function goHome() {
 .legal-heading--mn {
   font-family: var(--mn-font-sans, var(--font-display));
   font-weight: 600;
-  border-left: 2px solid var(--mn-color-accent, var(--color-accent));
+  border-left: 2px solid var(--color-accent);
   padding-left: 10px;
   letter-spacing: -0.01em;
 }
 
 .legal-paragraph--mn,
 .legal-list--mn li {
-  color: var(--mn-color-ink, var(--color-ink));
+  color: var(--color-ink);
   font-size: 0.95rem;
   line-height: 1.75;
 }

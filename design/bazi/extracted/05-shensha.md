@@ -1,14 +1,15 @@
 ---
-title: 神煞文案 · 摘录（30 个概念项 / 38 个 verified key）
+title: 神煞文案 · 摘录（47 个概念项 / 60 个 verified key）
 fetched_at: 2026-04-20
-last_audit: 2026-04-22
-status: verified · 30 个高频概念项已逐条落原文锚点；按 key 计共 38 个 verified 项，其余 plugin 神煞维持 pending
+last_audit: 2026-04-28 · T-2.4-B 推进
+status: verified · 47 个高频概念项已逐条落原文锚点；按 key 计共 60 个 verified 项，剩余 12 个 plugin 神煞维持 pending（确认无单立专章）
 target_field: src/modules/bazi/data/shenshaMeaning.ts
 source_primary: 《三命通会·卷二、卷三》（design/bazi/raw/sanming-tonghui/volume-02.md / volume-03.md）
 source_backup: 《五行精纪·卷十四~廿七》（design/bazi/raw/wuxing-jingji/full.md）
+last_extension: 2026-04-28 · T-2.4-B 新增 17 项考据（天印贵人 / 天德合 / 月德合 / 文星贵人 / 帝座 / 九醜 / 八專 / 六厄 / 十惡大敗 / 地網 / 天羅 / 孤鸞 / 紅艷 / 隔角 / 陰陽煞 / 月煞 / 絞煞）
 ---
 
-# 神煞文案 · 摘录（30 个概念项 / 38 个 verified key）
+# 神煞文案 · 摘录（47 个概念项 / 60 个 verified key）
 
 ## 用途
 
@@ -325,13 +326,20 @@ ts 文件中以下 key 在 plugin-char8ex 中存在但**未在本档案中获得
 
 ## 后续轮次可补足的考据清单
 
-下一轮可优先补：六厄、十恶大败、天罗地网、阴阳差错、阴阳煞、孤鸾、桃花红艳、三奇、金神。
-这些在《三命通会》卷三末段都有专章或衍论，原文锚点已知，只是本轮 30 项之外。
+> **2026-04-28 · T-2.4-B 已推进**：六厄、十恶大败、天罗地网、阴阳煞、孤鸾、桃花红艳、三奇、金神已在 T-2.4-A/B 全部完成；
+>   - T-2.4-A（2026-04-22）：天赦 / 天喜 / 魁罡贵人 / 三奇 / 阴阳差错 / 阴差阳错 / 金神 / 截路空亡（共 8 项）
+>   - **T-2.4-B（2026-04-28）：天印贵人 / 天德合 / 月德合 / 文星贵人 / 帝座 / 九醜 / 八專 / 六厄 / 十惡大敗 / 地網 / 天羅 / 孤鸞 / 紅艷 / 隔角 / 陰陽煞 / 月煞 / 絞煞（共 17 项）**
+>     全部从 `design/bazi/raw/sanming-tonghui/volume-03.md` 行号 L171/L177/L195-199/L215/L295-297/L299-301/L305/L307-309/L311-315/L357/L359/L361/L369 取原文锚点。
+
+剩余 12 项 pending（明确判定为"无单立专章 / 散见无独立条"）：天廚貴人 / 天厨貴人 / 垣城 / 日德 / 日貴 / 德 / 秀 / 紅鸞 / 墓煞 / 太白星 / 時墓 / 血刃。
+这些项主要是天乙系散见配神（天印 / 天厨 / 文星 / 红鸾 / 帝座 / 日德 / 日贵 / 垣城）+ 古籍未独立列出的衍生煞（墓煞 / 太白星 / 时墓 / 血刃 / 德 / 秀），凡 ST3 / WJ / YZ 三本主要古籍中无可信引文的，统一保持 pending 不做编造，避免污染数据集"古籍可溯源"的核心定位。
 
 ## 校验完成确认
 
-- 30 个高频神煞均已有原文锚点（行号在《三命通会》/ 《五行精纪》raw 文件中）
-- 现代化扩写黑名单已列出
-- 下游 `src/modules/bazi/data/shenshaMeaning.ts` 可据此重写：
-  - 30 项 → `auditStatus: 'verified'` + 古法术语
-  - 其余 plugin 输出 key → `auditStatus: 'pending'` + short 中性 + long 缺省
+- 47 个高频神煞均已有原文锚点（行号在《三命通会》/ 《五行精纪》/《渊海子平》raw 文件中）
+- 60 个 verified key（含异体字展开）= 30 项原始 + 8 项 T-2.4-A + 17 项 T-2.4-B + 5 项异体字（勾煞/勾绞 / 词馆/辞馆 / 阳刃/羊刃 / 咸池/桃花 / 阴差阳错/阴阳差错）
+- 12 项 pending key 维持 short 中性占位 + long 缺省，UI 可加"待审校"角标
+- 现代化扩写黑名单已列出（第 271-285 行）
+- 下游 `src/modules/bazi/data/shenshaMeaning.ts`：
+  - 60 项 → `auditStatus: 'verified'` + 古法术语 + ST3/WJ/YZ source 行号
+  - 12 项 → `auditStatus: 'pending'` + short 中性 + long 缺省

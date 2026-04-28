@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
 import type { BaziChart, ElementCell, ElementName } from '../types'
+import { ELEMENT_NAMES, ELEMENT_PINYIN, type ElementPinyinKey } from '@/lib/element'
 
 interface Props {
   /** 真实命盘；由外层 result-zone v-if 保证非空 */
@@ -17,13 +18,11 @@ const isGuofeng = computed(() => themeStore.id === 'guofeng')
 const labels = computed(() => tm('bazi.radar.labels') as Record<string, string>)
 const fiveElementLabel = computed(() => tm('bazi.fiveElementsLabel') as Record<string, string>)
 
-/** 视觉顺序（与 SVG 五角对齐）：上=木，右上=火，右下=土，左下=金，左上=水 */
-const RADAR_ORDER: ElementName[] = ['木', '火', '土', '金', '水']
-
-/** 五行 ↔ pinyin key（旧 i18n 表用 pinyin） */
-const ELEMENT_KEY: Record<ElementName, 'mu' | 'huo' | 'tu' | 'jin' | 'shui'> = {
-  木: 'mu', 火: 'huo', 土: 'tu', 金: 'jin', 水: 'shui',
-}
+/**
+ * 视觉顺序（与 SVG 五角对齐）：上=木，右上=火，右下=土，左下=金，左上=水。
+ * 直接消费 lib/element 的标准顺序。
+ */
+const RADAR_ORDER: readonly ElementName[] = ELEMENT_NAMES
 
 /**
  * 五个角的「外端坐标」（半径 120 = SVG 中外环）。
@@ -38,7 +37,7 @@ const RADAR_AXES: Array<readonly [number, number]> = [
 ]
 
 interface RadarItem {
-  key: 'mu' | 'huo' | 'tu' | 'jin' | 'shui'
+  key: ElementPinyinKey
   name: string
   /** 雷达点的归一化半径 0..1（用于绘制） */
   ratio: number
@@ -58,7 +57,7 @@ const radarItems = computed<RadarItem[]>(() => {
   const maxScore = Math.max(...props.chart.elementCells.map(c => c.score), 0.01)
 
   return RADAR_ORDER.map((el) => {
-    const key = ELEMENT_KEY[el]
+    const key = ELEMENT_PINYIN[el]
     const cell = cellMap[el]
     return {
       key,

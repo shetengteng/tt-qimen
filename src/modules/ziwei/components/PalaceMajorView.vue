@@ -70,6 +70,27 @@ function verdictTone(v: Verdict): 'jade' | 'plain' | 'danger' {
 function verdictLabel(v: Verdict): string {
   return t(`ziwei.palaceMajor.verdict.${v}`)
 }
+
+/**
+ * 占位检测：英文 168 段 palaceMajor 当前为 `[EN draft] ... pending professional translation.`
+ * 这是给翻译人员看的内部标记、不应直接展示给用户。检测命中后用 i18n 短提示替换正文，
+ * 同时顶部 banner 一次性告知用户"英文长篇尚在审译"，避免每段重复噪音。
+ */
+function isEnPlaceholder(text: string): boolean {
+  return text.startsWith('[EN draft]')
+}
+
+const showEnPendingBanner = computed(() => {
+  if (locale.value !== 'en') return false
+  return rows.value.some((row) => row.entry && isEnPlaceholder(row.entry.text))
+})
+
+function displayText(text: string): string {
+  if (isEnPlaceholder(text)) {
+    return t('ziwei.palaceMajor.placeholderLineEn')
+  }
+  return text
+}
 </script>
 
 <template>
@@ -79,6 +100,9 @@ function verdictLabel(v: Verdict): string {
         {{ t('ziwei.palaceMajor.title') }}
       </h3>
       <p v-if="summary" class="ziwei-palace-major__summary">{{ summary }}</p>
+      <p v-if="showEnPendingBanner" class="ziwei-palace-major__en-banner">
+        {{ t('ziwei.palaceMajor.enPendingBanner') }}
+      </p>
     </header>
 
     <ol v-if="rows.length" class="ziwei-palace-major__list">
@@ -118,7 +142,7 @@ function verdictLabel(v: Verdict): string {
           </span>
         </div>
         <p v-if="row.entry" class="ziwei-palace-major__text">
-          {{ row.entry.text }}
+          {{ displayText(row.entry.text) }}
         </p>
         <p v-else class="ziwei-palace-major__text ziwei-palace-major__text--empty">
           {{ t('ziwei.palaceMajor.entryMissing') }}

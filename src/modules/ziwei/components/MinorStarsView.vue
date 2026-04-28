@@ -85,6 +85,27 @@ function verdictTone(v: Verdict): 'jade' | 'plain' | 'danger' {
 function verdictLabel(v: Verdict): string {
   return t(`ziwei.palaceMajor.verdict.${v}`)
 }
+
+/**
+ * 占位检测：英文 144 段 minorStars 当前仍是 `[EN draft] ... pending professional translation.`
+ * 命中后用 i18n 短提示替换正文 + 顶部 banner 一次性告知用户。
+ */
+function isEnPlaceholder(text: string): boolean {
+  return text.startsWith('[EN draft]')
+}
+
+const showEnPendingBanner = computed(() => {
+  if (locale.value !== 'en') return false
+  const allRows = [...luckyRows.value, ...maleficRows.value]
+  return allRows.some((row) => row.entry && isEnPlaceholder(row.entry.text))
+})
+
+function displayText(text: string): string {
+  if (isEnPlaceholder(text)) {
+    return t('ziwei.minorStars.placeholderLineEn')
+  }
+  return text
+}
 </script>
 
 <template>
@@ -94,6 +115,9 @@ function verdictLabel(v: Verdict): string {
         {{ t('ziwei.minorStars.title') }}
       </h3>
       <p v-if="summary" class="ziwei-minor-stars__summary">{{ summary }}</p>
+      <p v-if="showEnPendingBanner" class="ziwei-minor-stars__en-banner">
+        {{ t('ziwei.minorStars.enPendingBanner') }}
+      </p>
     </header>
 
     <template v-if="luckyRows.length || maleficRows.length">
@@ -123,7 +147,7 @@ function verdictLabel(v: Verdict): string {
               </span>
             </div>
             <p v-if="row.entry" class="ziwei-minor-stars__text">
-              {{ row.entry.text }}
+              {{ displayText(row.entry.text) }}
             </p>
             <p v-else class="ziwei-minor-stars__text ziwei-minor-stars__text--empty">
               {{ t('ziwei.minorStars.entryMissing') }}
@@ -158,7 +182,7 @@ function verdictLabel(v: Verdict): string {
               </span>
             </div>
             <p v-if="row.entry" class="ziwei-minor-stars__text">
-              {{ row.entry.text }}
+              {{ displayText(row.entry.text) }}
             </p>
             <p v-else class="ziwei-minor-stars__text ziwei-minor-stars__text--empty">
               {{ t('ziwei.minorStars.entryMissing') }}
