@@ -18,6 +18,8 @@ import InlineAnnotsBar from '@/components/common/InlineAnnotsBar.vue'
 import ShareToast from '@/components/common/ShareToast.vue'
 import SharePreviewDialog from '@/components/common/SharePreviewDialog.vue'
 import ResultBanner from '@/components/common/ResultBanner.vue'
+import AskAiButton from '@/components/ai/AskAiButton.vue'
+import AiDrawer from '@/components/ai/AiDrawer.vue'
 import { useAnnotBar } from '@/composables/useAnnotBar'
 import { useShareCard } from '@/composables/useShareCard'
 import { buildShareUrl, normalizeQuery, readIntInRange } from '@/lib/shareUrl'
@@ -266,6 +268,12 @@ const shareUrl = computed(() => {
 const previewOpen = ref(false)
 const previewImage = ref('')
 
+const aiOpen = ref(false)
+const aiUserContext = computed(() => ({
+  name: userStore.name || undefined,
+  gender: userStore.birth.gender,
+}))
+
 async function onPreview() {
   previewImage.value = ''
   previewOpen.value = true
@@ -510,6 +518,7 @@ function go(name: 'home') {
           <button type="button" class="gf-btn" @click="onPreview">
             {{ t('bazi.btn.shareIcon') }} {{ t('bazi.btn.share') }}
           </button>
+          <AskAiButton :disabled="!chart" @click="aiOpen = true" />
           <button type="button" class="gf-btn gf-btn-outline" @click="onRepaipan">
             {{ t('bazi.btn.repaipanIcon') }} {{ t('bazi.btn.repaipan') }}
           </button>
@@ -644,6 +653,7 @@ function go(name: 'home') {
 
         <div class="actions mn-container">
           <button type="button" class="mn-btn" @click="onPreview">{{ t('bazi.btn.share') }}</button>
+          <AskAiButton :disabled="!chart" @click="aiOpen = true" />
           <button type="button" class="mn-btn mn-btn-ghost" @click="onRepaipan">{{ t('bazi.btn.repaipan') }}</button>
         </div>
       </template>
@@ -673,5 +683,13 @@ function go(name: 'home') {
     :disabled="!previewImage"
     @save="onSave"
     @share="onShare"
+  />
+
+  <!-- AI 解读 Drawer -->
+  <AiDrawer
+    v-model:open="aiOpen"
+    module-id="bazi"
+    :chart="chart"
+    :user-context="aiUserContext"
   />
 </template>
