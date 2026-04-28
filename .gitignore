@@ -30,3 +30,6 @@ userinput.py
 # Python 字节码缓存（infographic 等 Python 工具产物）
 __pycache__/
 *.pyc
+
+# infographic 视频/分镜生成工具（个人本地工具，不入库；2026-04-28 从历史中剔除）
+infographic/
