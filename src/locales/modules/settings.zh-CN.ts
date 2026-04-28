@@ -1,0 +1,72 @@
+export default {
+  title: '设置',
+  subtitle: '主题、语言与 AI 解读配置',
+  lastUpdated: '更新于 2026 年 4 月',
+
+  section: {
+    theme: {
+      title: '主题',
+      hint: '切换站点视觉风格；切换不会清除生辰输入或 AI 会话。',
+    },
+    language: {
+      title: '语言',
+      hint: '影响导航、术语库与 AI 输出语种。',
+    },
+    ai: {
+      title: 'AI 解读',
+      lead: '配置自带 API Key 后，即可在每个排盘页用 AI 做自然语言解读与多轮问答。本站不收集你的 Key，也不代理任何 LLM 请求。',
+      providerLabel: '服务方',
+      providerOption: {
+        deepseek: 'DeepSeek（OpenAI 兼容协议）',
+      },
+      apiKey: {
+        label: 'API Key',
+        placeholder: '粘贴你的 DeepSeek API Key（以 sk- 开头）',
+        show: '显示',
+        hide: '隐藏',
+        hint: 'Key 仅存于本机浏览器 localStorage，不上传、不同步。',
+        clear: '清空 Key',
+      },
+      model: {
+        label: '模型',
+        hint: '日常推荐 V4 Flash；需要严密推演选 V4 Pro。',
+      },
+      temperature: {
+        label: '温度（创造性）',
+        hint: '范围 0.0 – 2.0；越低越保守，越高越发散。',
+        min: '0.0 · 保守',
+        max: '2.0 · 发散',
+      },
+      baseUrl: {
+        label: 'Base URL',
+        placeholder: 'https://api.deepseek.com',
+        hint: '一般无需修改；自建反代或区域镜像时填入。',
+        useDefault: '恢复默认',
+      },
+      test: {
+        button: '测试连接',
+        running: '正在测试…',
+        ok: '✓ 连接正常',
+        fail: '✗ 连接失败：',
+        missingKey: '请先填入 API Key',
+      },
+      sessions: {
+        title: '对话历史',
+        countLabel: '当前会话数',
+        messagesLabel: '总消息数',
+        clearButton: '清空所有 AI 会话',
+        clearConfirm: '将删除全部 {count} 条本地保存的 AI 对话历史。此操作不可恢复，确定吗？',
+        cleared: '已清空全部对话',
+      },
+      privacy: {
+        title: '隐私与安全',
+        items: [
+          'API Key 仅存于本机浏览器 localStorage；清缓存或换设备后需要重新填入。',
+          '所有对话由你的浏览器直接发送给 DeepSeek，不经过本站任何后端中转。',
+          '本站不收集、不存储、不分析任何对话内容；如担心 Key 泄漏，请定期到 DeepSeek 控制台轮换。',
+        ],
+        privacyLink: '查看完整隐私政策 →',
+      },
+    },
+  },
+}

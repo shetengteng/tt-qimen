@@ -431,6 +431,44 @@ export default {
     ],
   },
 
+  ai: {
+    askButton: 'Ask AI',
+    askButtonAria: 'Use AI to interpret the current chart',
+    drawer: {
+      title: 'AI Interpretation',
+      closeAria: 'Close AI panel',
+      stop: 'Stop',
+      retry: 'Retry',
+      send: 'Send',
+      sendAria: 'Send (⌘ + ↵)',
+      placeholder: 'Ask about the current chart; ⌘ + ↵ to send',
+      generating: 'Generating…',
+      scrollToBottom: 'Scroll to bottom',
+      emptyKey: {
+        title: 'API key not configured',
+        body: 'This module needs your DeepSeek API key to make requests.',
+        cta: 'Open Settings',
+        privacyNote: 'The key is stored only in this browser and never uploaded to our backend.',
+      },
+      firstResponse: 'Based on the chart above, please give me a concise overall interpretation.',
+    },
+    model: {
+      v4Flash: 'DeepSeek V4 Flash · fast / cheap',
+      v4Pro: 'DeepSeek V4 Pro · deep reasoning',
+      chatLegacy: 'deepseek-chat (legacy, sunsetting)',
+      reasonerLegacy: 'deepseek-reasoner (legacy, sunsetting)',
+      deprecatedTip: 'Sunsetting after 2026-07-24. Switch to the V4 series.',
+    },
+    error: {
+      aborted: 'Generation cancelled',
+      unauthorized: 'Invalid or expired API key — check Settings',
+      'rate-limited': 'Rate limited; please try again in a moment',
+      'server-error': 'AI service is temporarily unavailable',
+      network: 'Network error; check your connection and retry',
+      unknown: 'AI request failed; please retry later',
+    },
+  },
+
   errorBoundary: {
     title: 'Something went wrong',
     unknown: 'The page hit an unexpected issue while rendering. Your input is preserved — you can retry or go back to the home page.',

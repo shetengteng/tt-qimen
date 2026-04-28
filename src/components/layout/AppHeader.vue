@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter, type RouteLocationRaw } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
 import { PopoverRoot, PopoverTrigger, PopoverPortal, PopoverContent } from 'reka-ui'
-import { ChevronDown } from 'lucide-vue-next'
+import { ChevronDown, Settings } from 'lucide-vue-next'
 import ThemeSwitch from './ThemeSwitch.vue'
 import LangSwitch from './LangSwitch.vue'
 import DisclaimerBanner from '@/components/common/DisclaimerBanner.vue'
@@ -53,6 +53,14 @@ const mobileNavAriaLabel = computed(() => t('nav.menu'))
 
 function pickRoute(item: NavItem) {
   router.push(item.to)
+  mobileNavOpen.value = false
+}
+
+const settingsAria = computed(() => t('settings.title'))
+const isSettingsActive = computed(() => currentName.value === 'settings')
+
+function goSettings() {
+  router.push({ name: 'settings' })
   mobileNavOpen.value = false
 }
 </script>
@@ -121,6 +129,15 @@ function pickRoute(item: NavItem) {
             </PopoverRoot>
           </div>
           <div class="gf-toolbar">
+            <button
+              type="button"
+              class="layout-popover-trigger layout-popover-trigger--settings"
+              :aria-label="settingsAria"
+              :class="{ 'is-active': isSettingsActive }"
+              @click="goSettings"
+            >
+              <Settings class="layout-popover-trigger-icon" :size="16" aria-hidden="true" />
+            </button>
             <LangSwitch />
             <ThemeSwitch />
           </div>
@@ -192,6 +209,15 @@ function pickRoute(item: NavItem) {
             </PopoverRoot>
           </div>
           <div class="mn-toolbar">
+            <button
+              type="button"
+              class="layout-popover-trigger layout-popover-trigger--settings"
+              :aria-label="settingsAria"
+              :class="{ 'is-active': isSettingsActive }"
+              @click="goSettings"
+            >
+              <Settings class="layout-popover-trigger-icon" :size="16" aria-hidden="true" />
+            </button>
             <LangSwitch />
             <ThemeSwitch />
           </div>

@@ -448,4 +448,42 @@ export default {
     },
   },
 
+  ai: {
+    askButton: '询问 AI',
+    askButtonAria: '使用 AI 解读当前命盘',
+    drawer: {
+      title: 'AI 解读',
+      closeAria: '关闭 AI 解读面板',
+      stop: '停止生成',
+      retry: '重试',
+      send: '发送',
+      sendAria: '发送（⌘ + ↵）',
+      placeholder: '基于当前命盘提问；按 ⌘ + ↵ 发送',
+      generating: '正在生成…',
+      scrollToBottom: '回到底部',
+      emptyKey: {
+        title: '尚未配置 API Key',
+        body: '本模块需要你提供 DeepSeek API Key 才能调用。',
+        cta: '前往设置',
+        privacyNote: 'Key 只存于本机浏览器，不会上传至本站任何后端。',
+      },
+      firstResponse: '请基于上述命盘信息，给我一份简明的整体解读。',
+    },
+    model: {
+      v4Flash: 'DeepSeek V4 Flash · 快速 / 便宜',
+      v4Pro: 'DeepSeek V4 Pro · 深度推理',
+      chatLegacy: 'deepseek-chat（旧版 · 即将弃用）',
+      reasonerLegacy: 'deepseek-reasoner（旧版 · 即将弃用）',
+      deprecatedTip: '该模型 2026/07/24 起将弃用，建议切换到 V4 系列',
+    },
+    error: {
+      aborted: '已中止生成',
+      unauthorized: 'API Key 无效或已失效，请到设置页检查',
+      'rate-limited': '请求过于频繁，请稍后再试',
+      'server-error': 'AI 服务暂时不可用，请稍后再试',
+      network: '网络连接失败，请检查网络后重试',
+      unknown: 'AI 调用失败，请稍后再试',
+    },
+  },
+
 }

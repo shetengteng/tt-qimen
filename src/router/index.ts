@@ -52,6 +52,12 @@ const routes: RouteRecordRaw[] = [
     meta: { titleKey: 'privacyPage.title' },
   },
   {
+    path: '/settings',
+    name: 'settings',
+    component: () => import('@/modules/settings/SettingsPage.vue'),
+    meta: { titleKey: 'settings.title', moduleId: 'settings' },
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'not-found',
     component: () => import('@/modules/_404.vue'),

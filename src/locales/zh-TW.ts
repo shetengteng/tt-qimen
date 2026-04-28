@@ -431,6 +431,44 @@ export default {
     ],
   },
 
+  ai: {
+    askButton: '詢問 AI',
+    askButtonAria: '使用 AI 解讀當前命盤',
+    drawer: {
+      title: 'AI 解讀',
+      closeAria: '關閉 AI 解讀面板',
+      stop: '停止生成',
+      retry: '重試',
+      send: '發送',
+      sendAria: '發送（⌘ + ↵）',
+      placeholder: '基於當前命盤提問；按 ⌘ + ↵ 發送',
+      generating: '正在生成…',
+      scrollToBottom: '回到底部',
+      emptyKey: {
+        title: '尚未配置 API Key',
+        body: '本模組需要你提供 DeepSeek API Key 才能呼叫。',
+        cta: '前往設定',
+        privacyNote: 'Key 僅儲存於本機瀏覽器，不會上傳至本站任何後端。',
+      },
+      firstResponse: '請基於上述命盤資訊，為我做一份簡明的整體解讀。',
+    },
+    model: {
+      v4Flash: 'DeepSeek V4 Flash · 快速 / 便宜',
+      v4Pro: 'DeepSeek V4 Pro · 深度推理',
+      chatLegacy: 'deepseek-chat（舊版 · 即將棄用）',
+      reasonerLegacy: 'deepseek-reasoner（舊版 · 即將棄用）',
+      deprecatedTip: '該模型 2026/07/24 起將棄用，建議切換到 V4 系列',
+    },
+    error: {
+      aborted: '已中止生成',
+      unauthorized: 'API Key 無效或已失效，請至設定頁檢查',
+      'rate-limited': '請求過於頻繁，請稍後再試',
+      'server-error': 'AI 服務暫時不可用，請稍後再試',
+      network: '網路連線失敗，請檢查網路後重試',
+      unknown: 'AI 呼叫失敗，請稍後再試',
+    },
+  },
+
   errorBoundary: {
     title: '推演中斷',
     unknown: '頁面在渲染過程中遇到未預期的問題，已為你保留輸入資料，可重試或返回首頁。',

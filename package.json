@@ -26,6 +26,7 @@
     "iztro": "^2.5.8",
     "lucide-vue-next": "^1.0.0",
     "lunisolar": "^2.6.0",
+    "openai": "^6.34.0",
     "pinia": "^2.2.2",
     "qrcode": "^1.5.4",
     "reka-ui": "^2.9.6",
