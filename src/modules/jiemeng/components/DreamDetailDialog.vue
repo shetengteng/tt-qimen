@@ -11,7 +11,7 @@
  *     html 元素 ref 透出给父组件，让 useShareCard.shareCard / saveCard 直接抓取
  *   - 主题样式由 _shared/base.css 与两个 jiemeng.css 共同提供（.jm-dialog-* 命名空间）
  */
-import { computed, ref, useTemplateRef } from 'vue'
+import { computed, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   DialogRoot,
@@ -21,8 +21,9 @@ import {
   DialogTitle,
   DialogClose,
 } from 'reka-ui'
-import { X } from 'lucide-vue-next'
+import { Sparkles, X } from 'lucide-vue-next'
 import { useThemeStore } from '@/stores/theme'
+import { useAiSidebarStore } from '@/stores/aiSidebar'
 import DreamDetail from './DreamDetail.vue'
 import ShareQrcode from '@/components/common/ShareQrcode.vue'
 import { Button } from '@/components/ui/button'
@@ -42,6 +43,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const themeStore = useThemeStore()
+const aiSidebar = useAiSidebarStore()
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
 
 const shareCardRef = useTemplateRef<HTMLElement>('shareCardEl')
@@ -53,6 +55,24 @@ const titleText = computed(() =>
 
 function setOpen(value: boolean) {
   emit('update:open', value)
+}
+
+/**
+ * 把当前 dream entry 推到 AI 侧栏作为 chart 上下文，并关闭弹框
+ * （让 AI 侧栏完整展开，避免和模态框争夺焦点 + Esc 行为）。
+ *
+ * 决策（M-jiemeng-01/02）：
+ *   - chart payload = 单条 DreamEntry（不是整个搜索结果），fingerprint 锚定 dream.id
+ *   - 关闭 Dialog → 让 AppHeader 的 AI 按钮 / aiSidebar.open 接管 UI
+ *   - userContext 留空：解梦不依赖性别/姓名
+ */
+function onAskAi() {
+  if (!props.entry) return
+  aiSidebar.show({
+    moduleId: 'jiemeng',
+    chart: props.entry,
+  })
+  setOpen(false)
 }
 </script>
 
@@ -85,6 +105,16 @@ function setOpen(value: boolean) {
         <footer class="jm-dialog-foot">
           <Button type="button" variant="default" class="jm-action-btn" @click="emit('preview')">
             <template v-if="isGuofeng">{{ t('jiemeng.btn.shareIcon') }} </template>{{ t('jiemeng.btn.share') }}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            class="jm-action-btn"
+            :aria-label="t('ai.askButtonAria')"
+            @click="onAskAi"
+          >
+            <Sparkles class="size-4" aria-hidden="true" />
+            {{ t('ai.askButton') }}
           </Button>
           <Button
             type="button"

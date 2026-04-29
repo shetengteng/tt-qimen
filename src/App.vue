@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { ConfigProvider } from 'reka-ui'
+import { useEventListener } from '@vueuse/core'
 import { useUrlSync } from '@/composables/useUrlSync'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
@@ -18,6 +19,23 @@ useUrlSync()
 const aiSidebar = useAiSidebarStore()
 
 const aiOpen = computed(() => aiSidebar.open)
+
+/**
+ * Esc 关闭 AI 侧栏（P6-11）。
+ *
+ * - 仅在 AI 侧栏 open 状态下响应，避免吞掉其他可能的 Esc 用户（弹窗/dropdown 等）；
+ *   注意 reka-ui 的 Sheet/Dialog 自带 Esc 拦截并 stopPropagation，所以即使 AI 处于打开
+ *   状态，被 modal 截获的 Esc 也不会冒泡到这里 —— 不会误关。
+ * - 若 chat 在流式中，先调 chat.stop() 再 hide()？
+ *   决策：直接 hide，让侧栏被销毁时由 useAiChat 的 onScopeDispose 自动 abort
+ *   （和 P6-12 路由切换 abort 逻辑保持一致），不在 App 层重复关心 chat 状态。
+ */
+useEventListener('keydown', (e: KeyboardEvent) => {
+  if (e.key !== 'Escape') return
+  if (!aiSidebar.open) return
+  e.preventDefault()
+  aiSidebar.hide()
+})
 
 /**
  * 用户拖拽 handle 时 ResizablePanel 会触发 @resize；我们把比例写回 store。

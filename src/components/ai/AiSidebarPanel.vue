@@ -188,6 +188,24 @@ watch(
   },
 )
 
+/**
+ * P6-12：路由切换时如果有正在流式的请求，立刻 abort。
+ *
+ * 决策：只 abort 当前 chat.stop()，不主动 hide 侧栏 —— 用户可能希望
+ * 边切换页面边看 AI 历史。让用户自己决定是否关闭。
+ *
+ * 注意：fingerprint 一般不变（chart 没变），所以路由切回原模块时上下文还在；
+ * 切到其他模块时由 watch([moduleId, chart, freeChat]) 重新触发拉新会话。
+ */
+watch(
+  () => router.currentRoute.value.fullPath,
+  (next, prev) => {
+    if (prev && next !== prev && chat.streaming.value) {
+      chat.stop()
+    }
+  },
+)
+
 onBeforeUnmount(() => {
   chat.stop()
 })

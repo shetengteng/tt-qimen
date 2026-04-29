@@ -423,7 +423,21 @@ export default {
         ],
       },
       {
-        heading: '8. Updates to this policy',
+        heading: '8. AI interpretation (DeepSeek API)',
+        paragraphs: [
+          'tt-qimen offers an optional AI chart interpretation feature powered by the DeepSeek LLM API, in a strict bring-your-own-key (BYOK) model:',
+        ],
+        list: [
+          'Your API key is stored only in your local browser\'s localStorage. We never collect, upload, or proxy your key.',
+          'Every AI request is sent **directly from your browser to DeepSeek\'s servers**. There is no intermediate proxy or logging server.',
+          'The payload sent to DeepSeek contains: the structured fields of the current chart (year/month/day/hour, Five Elements, Ten Gods, hexagram, etc.) plus your prompt. It does **not** include your real name, IP address, email, or any personally identifiable information.',
+          'DeepSeek operates under its own privacy policy (retention periods, training usage, etc.). Please consult the official policy at https://www.deepseek.com.',
+          'Conversation history is kept locally in your browser\'s localStorage (grouped by chart fingerprint). You can wipe everything via Settings → Chat history → Clear all AI sessions.',
+          'When you open the AI panel directly from the header into "Free chat" mode, the conversation is ephemeral and is cleared on close.',
+        ],
+      },
+      {
+        heading: '9. Updates to this policy',
         paragraphs: [
           'For material changes, we will refresh the "Last updated" date at the top of this page and note the change in the GitHub repository\'s release notes. Continued use of the site implies acceptance of the latest version of this policy.',
         ],

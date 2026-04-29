@@ -14,7 +14,7 @@
  *   - send 接受额外的 contextMessages（首条 system + narrative）便于上下文注入
  */
 
-import { ref, type Ref } from 'vue'
+import { onScopeDispose, ref, type Ref } from 'vue'
 import type { ChatMessage, AiConfig } from './types'
 import type { LlmProvider } from './providers/types'
 import { LlmError, toLlmError } from './errors'
@@ -110,6 +110,15 @@ export function useAiChat(opts: UseAiChatOptions) {
     messages.value = [...next]
     error.value = null
   }
+
+  /**
+   * P6-12：组件销毁（如关闭 AI 侧栏 / 路由切换 / Esc 关闭）时
+   * 自动 abort 进行中的流式请求，避免残留 fetch 流量。
+   */
+  onScopeDispose(() => {
+    abortController?.abort()
+    abortController = null
+  })
 
   return {
     messages,
