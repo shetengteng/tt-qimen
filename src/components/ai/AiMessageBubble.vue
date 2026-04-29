@@ -39,6 +39,11 @@ const showPlaceholder = computed(
   () => !isUser.value && props.streaming && !props.message.content,
 )
 
+/** 末条 assistant 流式失败/abort 后留下空 content；UI 不渲染空气泡 */
+const isEmptyAssistant = computed(
+  () => !isUser.value && !props.streaming && !props.message.content,
+)
+
 const markdownFinal = computed(() => !props.streaming)
 </script>
 
@@ -46,17 +51,24 @@ const markdownFinal = computed(() => !props.streaming)
   <!-- 用户气泡 -->
   <div v-if="isUser" class="flex w-full justify-end">
     <div
-      class="ai-bubble-user inline-block max-w-[85%] whitespace-pre-wrap break-words rounded-2xl rounded-tr-sm bg-primary px-4 py-2.5 text-sm leading-relaxed text-primary-foreground"
+      class="ai-bubble-user inline-block max-w-[80%] whitespace-pre-wrap break-words rounded-2xl rounded-tr-sm bg-primary px-4 py-2.5 text-sm leading-relaxed text-primary-foreground"
     >{{ message.content }}</div>
   </div>
 
-  <!-- 助手气泡 -->
-  <div v-else class="flex w-full justify-start">
+  <!-- 助手气泡（空 content 失败态不渲染） -->
+  <div v-else-if="!isEmptyAssistant" class="flex w-full justify-start">
     <div
-      class="ai-bubble-assistant inline-block max-w-[92%] rounded-2xl rounded-tl-sm border border-border bg-card px-4 py-3 text-sm leading-relaxed text-foreground"
+      class="ai-bubble-assistant inline-block max-w-[95%] rounded-2xl rounded-tl-sm border border-border bg-card px-4 py-3 text-sm leading-relaxed text-foreground"
     >
-      <span v-if="showPlaceholder" class="ai-placeholder text-muted-foreground">
-        {{ t('ai.drawer.generating') }}<span class="ai-dots">···</span>
+      <span
+        v-if="showPlaceholder"
+        class="ai-typing"
+        :aria-label="t('ai.drawer.generating')"
+        role="status"
+      >
+        <span class="ai-typing-dot" />
+        <span class="ai-typing-dot" />
+        <span class="ai-typing-dot" />
       </span>
       <!--
         P7-04：显式锁死 markstream 虚拟窗口上限。
@@ -136,16 +148,36 @@ const markdownFinal = computed(() => !props.streaming)
 .ai-bubble-assistant :deep(th) { background: hsl(var(--muted)); font-weight: 600; }
 .ai-bubble-assistant :deep(hr) { margin: 0.75rem 0; border: 0; border-top: 1px solid hsl(var(--border)); }
 
-.ai-placeholder { display: inline-flex; align-items: center; gap: 0.25rem; }
-.ai-dots {
-  display: inline-block;
-  margin-left: 0.25rem;
-  animation: ai-blink 1.2s steps(3) infinite;
-  letter-spacing: 0.1em;
+.ai-typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  height: 1.25rem;
 }
-@keyframes ai-blink {
-  0%   { opacity: 0.3; }
-  50%  { opacity: 0.9; }
-  100% { opacity: 0.3; }
+.ai-typing-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: hsl(var(--muted-foreground));
+  opacity: 0.4;
+  animation: ai-typing-bounce 1.2s ease-in-out infinite;
+}
+.ai-typing-dot:nth-child(2) { animation-delay: 0.15s; }
+.ai-typing-dot:nth-child(3) { animation-delay: 0.3s; }
+@keyframes ai-typing-bounce {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.35;
+  }
+  30% {
+    transform: translateY(-3px);
+    opacity: 0.9;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ai-typing-dot {
+    animation: none;
+    opacity: 0.7;
+  }
 }
 </style>

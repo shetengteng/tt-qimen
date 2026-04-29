@@ -184,13 +184,31 @@ watch(
       initialMessages: [],
     })
 
-    chat.setMessages(session.messages)
+    /**
+     * P0-B 副作用修复：
+     * 上次首次解读因网络/Key 失败时，storage 留下了
+     *   [user(hidden=true), assistant(content='')]
+     * 这两条无效消息。本次进入要把它们剥离，让 send 流程从头来一遍。
+     * 判定条件：恰好两条 + 首条 hidden=true user + 末条空 assistant content。
+     */
+    let restoredMessages = session.messages
+    const looksLikeFailedFirstAuto =
+      restoredMessages.length === 2 &&
+      restoredMessages[0]?.role === 'user' &&
+      restoredMessages[0]?.hidden === true &&
+      restoredMessages[1]?.role === 'assistant' &&
+      !restoredMessages[1]?.content?.trim()
+    if (looksLikeFailedFirstAuto) {
+      restoredMessages = []
+    }
+
+    chat.setMessages(restoredMessages)
     await nextTick()
     scrollToBottom(true)
 
-    if (session.messages.length === 0 && !chat.streaming.value) {
+    if (restoredMessages.length === 0 && !chat.streaming.value) {
       const firstPrompt = t('ai.drawer.firstResponse')
-      void chat.send(firstPrompt)
+      void chat.send(firstPrompt, { silent: true })
     }
   },
   { immediate: true },
@@ -295,6 +313,23 @@ const inputPlaceholder = computed(() => {
 })
 
 const showScrollToBottom = computed(() => !atBottom.value && chat.messages.value.length > 0)
+
+/**
+ * P0-A：chips 显示规则 —— 跟随末条 assistant 消息出现。
+ * - 自由对话不显示模块 preset
+ * - 流式中隐藏（避免干扰阅读流）
+ * - 错误态隐藏（让用户先重试 / 处理错误）
+ * - 必须有 presetKeys（防止自由对话误触发）
+ * - 末条必须是 assistant 且已有内容（避免在占位空气泡后显示）
+ */
+const shouldShowChips = computed(() => {
+  if (aiSidebar.freeChat) return false
+  if (chat.streaming.value) return false
+  if (chat.error.value) return false
+  if (presetKeys.value.length === 0) return false
+  const last = chat.messages.value[chat.messages.value.length - 1]
+  return !!last && last.role === 'assistant' && last.content.trim().length > 0
+})
 </script>
 
 <template>
@@ -309,7 +344,7 @@ const showScrollToBottom = computed(() => !atBottom.value && chat.messages.value
         <span>{{ t('ai.drawer.title') }}</span>
         <span
           v-if="headerLabel"
-          class="rounded-md border border-border bg-muted px-2 py-0.5 text-xs font-normal text-muted-foreground"
+          class="rounded-md border border-border bg-muted px-2 py-0.5 text-xs md:text-[13px] font-normal text-muted-foreground"
         >{{ headerLabel }}</span>
       </div>
       <Button
@@ -368,18 +403,25 @@ const showScrollToBottom = computed(() => !atBottom.value && chat.messages.value
         class="ai-scroll relative flex-1 overflow-y-auto"
         @scroll="checkAtBottom"
       >
-        <div class="flex flex-col gap-3 px-4 py-4">
+        <div class="flex flex-col gap-4 px-4 py-4 md:gap-3">
           <!-- 自由对话首次进入：仅展示 body 提示 + 引导排盘（welcomeTitle 已弃用） -->
           <div
             v-if="aiSidebar.freeChat && chat.messages.value.length === 0"
-            class="rounded-lg border border-border bg-muted/40 px-4 py-3 text-sm leading-relaxed text-foreground"
+            class="rounded-xl border border-border bg-gradient-to-br from-primary/5 via-muted/30 to-transparent px-4 py-4 text-sm leading-relaxed text-foreground"
           >
-            <p class="text-sm text-muted-foreground">
-              {{ t('ai.freeChat.welcomeBody') }}
-            </p>
-            <p class="mt-2 text-xs text-muted-foreground">
-              {{ t('ai.freeChat.hintGoModule') }}
-            </p>
+            <div class="flex items-start gap-3">
+              <div class="mt-0.5 shrink-0 rounded-full bg-primary/10 p-1.5">
+                <Sparkles class="size-4 text-primary" aria-hidden="true" />
+              </div>
+              <div class="flex-1 space-y-2">
+                <p class="text-sm text-foreground">
+                  {{ t('ai.freeChat.welcomeBody') }}
+                </p>
+                <p class="text-xs text-muted-foreground">
+                  {{ t('ai.freeChat.hintGoModule') }}
+                </p>
+              </div>
+            </div>
           </div>
 
           <!-- P6-09: 折叠提示 — 仅在历史超出 UI 上限时展示 -->
@@ -390,21 +432,37 @@ const showScrollToBottom = computed(() => !atBottom.value && chat.messages.value
             {{ t('ai.history.collapsed', { count: hiddenCount }) }}
           </p>
 
-          <AiMessageBubble
+          <template
             v-for="(msg, idx) in visibleMessages"
             :key="visibleStartIdx + idx"
-            :message="msg"
-            :message-index="visibleStartIdx + idx"
-            :streaming="
-              chat.streaming.value
-                && (visibleStartIdx + idx) === chat.messages.value.length - 1
-            "
-          />
+          >
+            <AiMessageBubble
+              v-if="!msg.hidden"
+              :message="msg"
+              :message-index="visibleStartIdx + idx"
+              :streaming="
+                chat.streaming.value
+                  && (visibleStartIdx + idx) === chat.messages.value.length - 1
+              "
+            />
+          </template>
 
           <AiErrorState
             v-if="chat.error.value"
             :error="chat.error.value"
             @retry="onRetry"
+          />
+
+          <!--
+            P0-A 重构：PresetChips 跟随对话流，附在末尾。
+            条件：非自由对话 / 非流式中 / 无错误态 / 末条是 assistant（已回复完毕）
+            用户行为：滚到底部才看见 chips；继续提问后 chips 自然被推走
+          -->
+          <AiPresetChips
+            v-if="shouldShowChips"
+            :keys="presetKeys"
+            :disabled="chat.streaming.value"
+            @select="onPresetSelect"
           />
         </div>
       </div>
@@ -416,16 +474,8 @@ const showScrollToBottom = computed(() => !atBottom.value && chat.messages.value
         :aria-label="t('ai.drawer.scrollToBottom')"
         @click="scrollToBottom(true)"
       >
-        <ArrowDown class="size-4" aria-hidden="true" />
+        <ArrowDown class="size-5" aria-hidden="true" />
       </button>
-
-      <!-- 自由对话不显示模块预设 chip -->
-      <AiPresetChips
-        v-if="!aiSidebar.freeChat"
-        :keys="presetKeys"
-        :disabled="chat.streaming.value"
-        @select="onPresetSelect"
-      />
 
       <AiInputBox
         :streaming="chat.streaming.value"
@@ -452,23 +502,49 @@ const showScrollToBottom = computed(() => !atBottom.value && chat.messages.value
 .ai-scroll-bottom {
   position: absolute;
   right: 1rem;
-  bottom: 8rem;
+  bottom: 6.5rem;
   z-index: 5;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 9999px;
   background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
   color: hsl(var(--foreground));
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: transform 0.15s ease, background 0.15s ease;
+  box-shadow:
+    0 4px 12px -2px rgb(0 0 0 / 0.12),
+    0 2px 6px -1px rgb(0 0 0 / 0.08);
+  cursor: pointer;
+  animation: ai-scroll-slide-up 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
 }
 
 .ai-scroll-bottom:hover {
   background: hsl(var(--accent));
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 16px -2px rgb(0 0 0 / 0.16),
+    0 3px 8px -1px rgb(0 0 0 / 0.10);
+}
+
+.ai-scroll-bottom:active {
+  transform: translateY(0);
+}
+
+@keyframes ai-scroll-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-scroll-bottom { animation: none; transition: none; }
 }
 </style>

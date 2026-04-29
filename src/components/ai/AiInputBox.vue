@@ -83,7 +83,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="ai-input flex items-end gap-2 border-t border-border bg-card px-3 py-3">
+  <div class="ai-input flex items-end gap-2 border-t border-border bg-card px-3 py-3 md:py-3">
     <textarea
       ref="taRef"
       v-model="text"
@@ -104,7 +104,7 @@ defineExpose({
       size="icon"
       :aria-label="t('ai.drawer.stop')"
       :title="t('ai.drawer.stop')"
-      class="shrink-0"
+      class="shrink-0 size-10 md:size-9"
       @click="onStop"
     >
       <Square class="size-4" aria-hidden="true" />
@@ -118,7 +118,7 @@ defineExpose({
       :aria-label="t('ai.drawer.sendAria')"
       :title="t('ai.drawer.sendAria')"
       :disabled="sendDisabled"
-      class="shrink-0"
+      class="shrink-0 size-10 md:size-9 transition-opacity disabled:opacity-40"
       @click="onSend"
     >
       <Send class="size-4" aria-hidden="true" />
@@ -132,5 +132,14 @@ defineExpose({
   max-height: 144px;
   line-height: 1.5;
   font-family: inherit;
+}
+.ai-input {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+@media (max-width: 767.98px) {
+  .ai-input {
+    padding-top: 0.875rem;
+    padding-bottom: max(0.875rem, env(safe-area-inset-bottom));
+  }
 }
 </style>

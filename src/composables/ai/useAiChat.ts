@@ -74,13 +74,14 @@ export function useAiChat(opts: UseAiChatOptions) {
    *   - 先 push user 消息 + 占位 assistant 消息（content 为空）
    *   - 流式 chunk 累加到占位 assistant 上
    *   - 任何错误 / abort 都保留已生成内容，让用户看到"中断点"
+   *   - silent=true：将本次 user 消息标记为 hidden（UI 不渲染气泡，仍喂给 LLM）
    */
-  async function send(input: string) {
+  async function send(input: string, options: { silent?: boolean } = {}) {
     if (streaming.value) return  // 防并发
     if (!input.trim()) return
 
     error.value = null
-    const userMsg: ChatMessage = { role: 'user', content: input }
+    const userMsg: ChatMessage = { role: 'user', content: input, hidden: !!options.silent }
     const assistantMsg: ChatMessage = { role: 'assistant', content: '' }
     messages.value.push(userMsg, assistantMsg)
 

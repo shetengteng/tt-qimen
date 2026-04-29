@@ -35,12 +35,12 @@ function onClick(key: string) {
 </script>
 
 <template>
-  <div v-if="props.keys.length" class="ai-preset-chips flex flex-wrap gap-2 px-4 py-2">
+  <div v-if="props.keys.length" class="ai-preset-chips flex flex-wrap gap-2 pt-1">
     <button
       v-for="key in props.keys"
       :key="key"
       type="button"
-      class="ai-chip inline-flex items-center rounded-full border border-border bg-card px-3 py-1.5 text-xs leading-tight text-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-50"
+      class="ai-chip group inline-flex min-h-9 items-center rounded-full border border-border/80 bg-card px-3.5 py-1.5 text-xs leading-tight text-foreground transition-all hover:border-primary/40 hover:bg-accent hover:text-accent-foreground hover:shadow-sm active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 md:min-h-8 md:py-1 md:text-[13px]"
       :disabled="props.disabled"
       @click="onClick(key)"
     >

@@ -13,6 +13,12 @@
 export interface ChatMessage {
   role: 'system' | 'user' | 'assistant'
   content: string
+  /**
+   * 是否在 UI 中隐藏渲染（仍参与 LLM 上下文）。
+   * 用途：首次自动发送的 firstResponse 系统-style user 提示不展示气泡，
+   * 但仍要把它喂给 LLM 让其作出响应。向前兼容：旧数据无此字段 = false。
+   */
+  hidden?: boolean
 }
 
 /** 用户保存的 AI 配置（全部字段都能 JSON 序列化存 localStorage） */
