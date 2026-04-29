@@ -60,7 +60,7 @@ export default {
         paipanIcon: '◉',
       },
       birthplaceLabel: '城市（選填）',
-      birthplaceSearchPlaceholder: '搜尋城市（可選 · 選了即開真太陽時）',
+      birthplaceSearchPlaceholder: '搜尋城市（可選）',
       birthplaceNoResult: '暫無匹配城市',
       birthplaceClear: '清除',
       cities: {
@@ -154,7 +154,7 @@ export default {
     sectionTitleMn: '七大模組',
     sectionSubMn: '點擊任一卡片，開始你的占卜之旅',
     featuresDivider: '◆ 啟門之道 ◆',
-    featuresTitleMn: '為什麼選擇 tt-qimen',
+    featuresTitleMn: '為什麼選擇啟門問卜',
     featuresSubMn: '專注可靠、尊重隱私、尊重文化',
   },
 

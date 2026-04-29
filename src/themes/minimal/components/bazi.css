@@ -1104,6 +1104,9 @@
 
 /* 响应式 */
 @media (max-width: 768px) {
+  :root[data-theme='minimal'] .page-hero { padding: var(--mn-space-6) 0 var(--mn-space-5); }
+  :root[data-theme='minimal'] .page-hero h1 { font-size: 28px; letter-spacing: -0.02em; }
+  :root[data-theme='minimal'] .page-hero p { font-size: 14px; margin-top: var(--mn-space-2); }
   :root[data-theme='minimal'] .five-elements { grid-template-columns: repeat(5, 1fr); gap: var(--mn-space-2); padding: var(--mn-space-4); }
   :root[data-theme='minimal'] .elem-dot { width: 32px; height: 32px; font-size: 13px; }
   :root[data-theme='minimal'] .current-detail { grid-template-columns: 1fr; }

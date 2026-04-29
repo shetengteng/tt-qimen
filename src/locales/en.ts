@@ -60,7 +60,7 @@ export default {
         paipanIcon: '◉',
       },
       birthplaceLabel: 'City (optional)',
-      birthplaceSearchPlaceholder: 'Search city (optional · enables true solar time)',
+      birthplaceSearchPlaceholder: 'Search city (optional)',
       birthplaceNoResult: 'No matching city',
       birthplaceClear: 'Clear',
       cities: {
@@ -154,7 +154,7 @@ export default {
     sectionTitleMn: 'Seven Modules',
     sectionSubMn: 'Click any card to begin your divination journey',
     featuresDivider: '◆ The Way of Qimen ◆',
-    featuresTitleMn: 'Why tt-qimen',
+    featuresTitleMn: 'Why choose Open the Gate?',
     featuresSubMn: 'Reliable · Private · Respectful of culture',
   },
 
