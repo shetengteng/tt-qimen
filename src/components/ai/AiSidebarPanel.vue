@@ -74,6 +74,24 @@ const chat = useAiChat({
   },
 })
 
+/**
+ * P6-09：UI 层渲染上限。
+ * 完整持久化（store 200 条上限）继续保留；UI 渲染只展示最近 MAX_UI 条，
+ * 上方一行 muted 提示告知用户"已隐藏 N 条历史消息"。
+ */
+const MAX_UI_MESSAGES = 50
+const hiddenCount = computed(() =>
+  Math.max(0, chat.messages.value.length - MAX_UI_MESSAGES),
+)
+const visibleMessages = computed(() => {
+  const all = chat.messages.value
+  return all.length <= MAX_UI_MESSAGES ? all : all.slice(all.length - MAX_UI_MESSAGES)
+})
+/** 计算每条 visible message 在原数组中的真实索引，让 streaming 判断仍能命中末条 */
+const visibleStartIdx = computed(() =>
+  Math.max(0, chat.messages.value.length - MAX_UI_MESSAGES),
+)
+
 watch(
   () => chat.messages.value.slice(),
   (next) => {
@@ -364,12 +382,23 @@ const showScrollToBottom = computed(() => !atBottom.value && chat.messages.value
             </p>
           </div>
 
+          <!-- P6-09: 折叠提示 — 仅在历史超出 UI 上限时展示 -->
+          <p
+            v-if="hiddenCount > 0"
+            class="rounded-md border border-dashed border-border bg-muted/30 px-3 py-2 text-center text-xs text-muted-foreground"
+          >
+            {{ t('ai.history.collapsed', { count: hiddenCount }) }}
+          </p>
+
           <AiMessageBubble
-            v-for="(msg, idx) in chat.messages.value"
-            :key="idx"
+            v-for="(msg, idx) in visibleMessages"
+            :key="visibleStartIdx + idx"
             :message="msg"
-            :message-index="idx"
-            :streaming="chat.streaming.value && idx === chat.messages.value.length - 1"
+            :message-index="visibleStartIdx + idx"
+            :streaming="
+              chat.streaming.value
+                && (visibleStartIdx + idx) === chat.messages.value.length - 1
+            "
           />
 
           <AiErrorState

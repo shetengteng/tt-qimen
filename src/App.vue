@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, defineAsyncComponent } from 'vue'
 import { ConfigProvider } from 'reka-ui'
-import { useEventListener } from '@vueuse/core'
+import { useEventListener, useMediaQuery } from '@vueuse/core'
 import { useUrlSync } from '@/composables/useUrlSync'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
@@ -11,14 +11,40 @@ import {
   ResizablePanel,
   ResizableHandle,
 } from '@/components/ui/resizable'
-import AiSidebarPanel from '@/components/ai/AiSidebarPanel.vue'
+import { Sheet, SheetContent } from '@/components/ui/sheet'
 import { useAiSidebarStore } from '@/stores/aiSidebar'
+
+/**
+ * P6-10：AI 侧栏链路（含 openai SDK ~340KB）懒加载，避免首屏 chunk 拖大。
+ * 用户首次点 header AI 按钮时才下载 feat-ai + vendor-openai + vendor-markstream。
+ */
+const AiSidebarPanel = defineAsyncComponent(() =>
+  import('@/components/ai/AiSidebarPanel.vue'),
+)
 
 useUrlSync()
 
 const aiSidebar = useAiSidebarStore()
 
 const aiOpen = computed(() => aiSidebar.open)
+
+/**
+ * P6-01：移动端断点 (Tailwind 默认 md = 768px)。
+ *
+ * - 桌面 (≥ md)：双栏可拖拽 ResizablePanelGroup（现有行为）
+ * - 移动 (< md)：AI 侧栏切换为右滑全屏 Sheet（reka-ui Dialog primitive，自带焦点陷阱 + Esc + 背景点击关闭）
+ *   主区不再被压缩；Sheet 与主区 z-index 隔离，避免双栏挤崩。
+ */
+const isMobile = useMediaQuery('(max-width: 767.98px)')
+
+/** Sheet 的 v-model:open —— 双向同步到 store */
+const aiSheetOpen = computed({
+  get: () => aiSidebar.open,
+  set: (v: boolean) => {
+    if (v) aiSidebar.show()
+    else aiSidebar.hide()
+  },
+})
 
 /**
  * Esc 关闭 AI 侧栏（P6-11）。
@@ -67,7 +93,25 @@ function onAiPanelResize(size: number) {
         AppHeader / AppFooter 都属于主区，AI 侧栏独立从屏幕顶部到底部。
         v-if/v-else 完整切换，避免 SplitterGroup 在子节点缺失时触发 reka-ui invariant。
       -->
-      <template v-if="!aiOpen">
+      <!--
+        移动端：主区始终垂直布局，AI 走 Sheet 全屏覆盖（不挤压主区）。
+        桌面端：保持原 ResizablePanelGroup 双栏 + 拖拽手柄。
+      -->
+      <template v-if="isMobile">
+        <AppHeader />
+        <RouterView />
+        <AppFooter />
+        <Sheet v-model:open="aiSheetOpen">
+          <SheetContent
+            side="right"
+            :show-close-button="false"
+            class="app-ai-sheet data-[side=right]:!w-screen data-[side=right]:!max-w-none !z-[200] p-0"
+          >
+            <AiSidebarPanel v-if="aiOpen" />
+          </SheetContent>
+        </Sheet>
+      </template>
+      <template v-else-if="!aiOpen">
         <AppHeader />
         <RouterView />
         <AppFooter />
@@ -140,5 +184,27 @@ function onAiPanelResize(size: number) {
   width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+/*
+  P6-01：移动端 AI Sheet 适配。
+  - max-width: none 覆盖 reka-ui Sheet 默认 sm:max-w-sm 限制
+  - 高度直接 100dvh，避免 iOS Safari 的 100vh 偏差（含浏览器工具栏）
+  - safe-area-inset 兼容刘海屏 / 底部 home indicator
+  - 键盘弹起时 100dvh 自动缩短，AI 输入区始终可见（dvh 替代 vh 解决 P6-01 键盘问题）
+  - 主区 sticky header 是 z:100，所以 Sheet overlay 也要 z:200 以上才能盖住
+*/
+</style>
+
+<style>
+:where([data-slot='sheet-overlay']) {
+  z-index: 199;
+}
+.app-ai-sheet {
+  inset: 0;
+  height: 100dvh;
+  border-left: 0;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 </style>

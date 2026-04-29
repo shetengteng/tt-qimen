@@ -39,8 +39,8 @@
   font-family: var(--font-body);
   background-color: var(--color-bg);
   color: var(--color-ink);
-  height: 32px;
-  padding-inline: 10px;
+  height: 36px;
+  padding-inline: 12px;
   font-size: 14px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -281,8 +281,8 @@
   font-family: var(--font-body);
   background-color: var(--color-bg);
   color: var(--color-ink);
-  height: 32px;
-  padding-inline: 10px;
+  height: 36px;
+  padding-inline: 12px;
   font-size: 14px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -299,7 +299,7 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   font-size: 14px;
-  padding: 8px 10px;
+  padding: 9px 12px;
 }
 :root[data-theme='minimal'] [data-slot='textarea']:focus-visible {
   border-color: var(--color-accent);

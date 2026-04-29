@@ -369,32 +369,22 @@
   font-family: var(--gf-font-kaiti);
 }
 
-/* 「查看详细十神解读」按钮（国风） */
+/* 「查看详细十神解读」按钮（国风）—— 在 Shadcn outline Button 基础上叠主题色 */
 :root[data-theme='guofeng'] .shishen-detail-toggle-wrap {
   margin-top: var(--gf-space-md, 12px);
   display: flex;
   justify-content: center;
 }
-:root[data-theme='guofeng'] .shishen-detail-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 16px;
-  background: transparent;
-  border: 1px dashed var(--gf-cinnabar);
-  border-radius: 4px;
-  font-family: var(--gf-font-kaiti);
-  font-size: 14px;
+:root[data-theme='guofeng'] [data-slot='button'].shishen-detail-toggle {
+  border-style: dashed;
+  border-color: var(--gf-cinnabar);
   color: var(--gf-cinnabar);
-  cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  font-family: var(--gf-font-kaiti);
+  background: transparent;
 }
-:root[data-theme='guofeng'] .shishen-detail-toggle:hover {
-  background-color: rgba(159, 47, 47, 0.06);
-}
-:root[data-theme='guofeng'] .shishen-detail-toggle:focus-visible {
-  outline: 2px solid var(--gf-cinnabar);
-  outline-offset: 2px;
+:root[data-theme='guofeng'] [data-slot='button'].shishen-detail-toggle:hover:not(:disabled) {
+  background-color: rgba(159, 47, 47, 0.08);
+  color: var(--gf-cinnabar);
 }
 
 /* 详细解读全局一栏（国风主题色覆盖；基础结构见 ShishenStructure.vue scoped style） */

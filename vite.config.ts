@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
@@ -55,9 +56,37 @@ export default defineConfig({
     port: 5180,
     strictPort: true,
   },
+  test: {
+    environment: 'node',
+    environmentMatchGlobs: [
+      ['src/stores/**/*.spec.ts', 'happy-dom'],
+    ],
+    globals: false,
+    include: ['src/**/*.{test,spec}.ts'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html'],
+      include: ['src/composables/ai/**/*.ts', 'src/stores/aiHistory.ts'],
+    },
+  },
   build: {
     target: 'es2020',
     cssCodeSplit: true,
+    /**
+     * P6-10：把 AI 相关 chunks 排除出 modulepreload，保证首屏不下载 openai SDK
+     * 与 markstream-vue。用户实际点开 AI 侧栏时再 dynamic import。
+     */
+    modulePreload: {
+      polyfill: true,
+      resolveDependencies(_filename, deps) {
+        return deps.filter(
+          (d) =>
+            !d.includes('vendor-openai')
+            && !d.includes('vendor-markstream')
+            && !d.includes('feat-ai'),
+        )
+      },
+    },
     rollupOptions: {
       output: {
         manualChunks(id) {
@@ -79,10 +108,19 @@ export default defineConfig({
             ) {
               return 'engine-bazi'
             }
+            if (id.includes('/openai/')) {
+              return 'vendor-openai'
+            }
+            if (id.includes('/markstream-vue/')) {
+              return 'vendor-markstream'
+            }
             return undefined
           }
           if (id.includes('/src/modules/bazi/data/')) {
             return 'data-bazi'
+          }
+          if (id.includes('/src/composables/ai/') || id.includes('/src/components/ai/')) {
+            return 'feat-ai'
           }
           return undefined
         },

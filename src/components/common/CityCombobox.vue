@@ -213,8 +213,8 @@ watch(
 
 .cc-input {
   width: 100%;
-  height: 32px;
-  padding: 0 30px 0 10px;
+  height: 36px;
+  padding: 0 32px 0 12px;
   border: 1px solid var(--color-border, rgba(127, 127, 127, 0.25));
   border-radius: 8px;
   background: var(--color-bg, transparent);

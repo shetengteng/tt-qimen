@@ -16,7 +16,7 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { ArrowLeft, Eye, EyeOff, Palette, Languages, Sparkles } from 'lucide-vue-next'
+import { ArrowLeft, Eye, EyeOff, Palette, Languages, Sparkles, History, ShieldCheck } from 'lucide-vue-next'
 import { useThemeStore } from '@/stores/theme'
 import { useLocaleStore } from '@/stores/locale'
 import { useAiConfigStore } from '@/stores/aiConfig'
@@ -107,6 +107,11 @@ function clearKey() {
   testState.value = { kind: 'idle' }
 }
 
+function getModelDescKey(modelId: string): string {
+  if (modelId === 'deepseek-v4-pro') return 'settings.section.ai.model.proDesc'
+  return 'settings.section.ai.model.flashDesc'
+}
+
 function resetBaseUrl() {
   aiConfig.setBaseUrl('')
 }
@@ -155,11 +160,11 @@ function goHome() {
       {{ t('common.button.back') }}
     </Button>
 
-    <header class="mb-8">
+    <header class="mb-10">
       <h1 class="text-3xl font-semibold tracking-tight text-foreground">
         {{ t('settings.title') }}
       </h1>
-      <p class="mt-2 text-sm text-muted-foreground">
+      <p class="mt-3 text-base text-muted-foreground">
         {{ t('settings.subtitle') }}
       </p>
     </header>
@@ -255,7 +260,8 @@ function goHome() {
           <!-- Provider -->
           <div class="space-y-2">
             <Label>{{ t('settings.section.ai.providerLabel') }}</Label>
-            <div class="rounded-lg border border-primary/40 bg-accent/40 px-4 py-3 text-sm font-medium text-foreground">
+            <div class="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-3 py-1.5 text-xs font-medium text-primary">
+              <span class="size-1.5 rounded-full bg-primary" aria-hidden="true"></span>
               {{ t('settings.section.ai.providerOption.deepseek') }}
             </div>
           </div>
@@ -306,18 +312,21 @@ function goHome() {
           <!-- Model -->
           <div class="space-y-2">
             <Label>{{ t('settings.section.ai.model.label') }}</Label>
-            <div class="space-y-2">
+            <div class="grid gap-2 sm:grid-cols-2">
               <Button
                 v-for="m in DEEPSEEK_MODELS"
                 :key="m.id"
                 type="button"
                 variant="outline"
-                class="h-auto w-full justify-start px-4 py-3 text-left aria-pressed:border-primary aria-pressed:bg-accent"
+                class="h-auto flex-col items-start gap-1 px-4 py-3 text-left whitespace-normal aria-pressed:border-primary aria-pressed:bg-accent"
                 :aria-pressed="m.id === aiConfig.config.model"
                 @click="aiConfig.setModel(m.id)"
               >
                 <span class="text-sm font-medium text-foreground">
                   {{ t(m.labelKey) }}
+                </span>
+                <span class="text-xs font-normal text-muted-foreground">
+                  {{ t(getModelDescKey(m.id)) }}
                 </span>
               </Button>
             </div>
@@ -410,10 +419,20 @@ function goHome() {
 
       <!-- ============== 对话历史 ============== -->
       <section class="rounded-xl border border-border bg-card p-5 md:p-6">
-        <h3 class="text-sm font-semibold text-foreground">
-          {{ t('settings.section.ai.sessions.title') }}
-        </h3>
-        <div class="mt-3 flex flex-wrap gap-6">
+        <div class="flex items-start gap-3">
+          <div class="rounded-lg bg-muted p-2 text-muted-foreground">
+            <History class="size-4" aria-hidden="true" />
+          </div>
+          <div class="flex-1">
+            <h2 class="text-base font-semibold text-foreground">
+              {{ t('settings.section.ai.sessions.title') }}
+            </h2>
+            <p class="mt-1 text-xs text-muted-foreground">
+              {{ t('settings.section.ai.sessions.hint') }}
+            </p>
+          </div>
+        </div>
+        <div class="mt-4 flex flex-wrap gap-6">
           <div class="space-y-1">
             <div class="text-xs text-muted-foreground">
               {{ t('settings.section.ai.sessions.countLabel') }}
@@ -443,10 +462,20 @@ function goHome() {
 
       <!-- ============== 隐私 ============== -->
       <section class="rounded-xl border border-border bg-card p-5 md:p-6">
-        <h3 class="text-sm font-semibold text-foreground">
-          {{ t('settings.section.ai.privacy.title') }}
-        </h3>
-        <ul class="mt-3 space-y-2 pl-5 text-sm text-muted-foreground">
+        <div class="flex items-start gap-3">
+          <div class="rounded-lg bg-muted p-2 text-muted-foreground">
+            <ShieldCheck class="size-4" aria-hidden="true" />
+          </div>
+          <div class="flex-1">
+            <h2 class="text-base font-semibold text-foreground">
+              {{ t('settings.section.ai.privacy.title') }}
+            </h2>
+            <p class="mt-1 text-xs text-muted-foreground">
+              {{ t('settings.section.ai.privacy.hint') }}
+            </p>
+          </div>
+        </div>
+        <ul class="mt-4 space-y-2 pl-5 text-sm text-muted-foreground">
           <li
             v-for="(item, i) in privacyItems"
             :key="i"

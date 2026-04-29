@@ -476,6 +476,9 @@ export default {
       },
       firstResponse: 'Based on the chart above, please give me a concise overall interpretation.',
     },
+    history: {
+      collapsed: '{count} earlier messages hidden (kept locally; the latest 50 are sent to the AI).',
+    },
     model: {
       v4Flash: 'DeepSeek V4 Flash · fast / cheap',
       v4Pro: 'DeepSeek V4 Pro · deep reasoning',

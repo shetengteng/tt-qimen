@@ -30,6 +30,8 @@ export default {
       model: {
         label: 'Model',
         hint: 'V4 Flash for everyday use; V4 Pro for deeper, slower reasoning.',
+        flashDesc: 'Fast and cheap — great for everyday Q&A and quick clarifications.',
+        proDesc: 'Chain-of-thought deep reasoning — best for full chart interpretation and probing follow-ups.',
       },
       temperature: {
         label: 'Temperature (creativity)',
@@ -52,6 +54,7 @@ export default {
       },
       sessions: {
         title: 'Chat history',
+        hint: 'All chats live only on this device. Clear them before switching browsers.',
         countLabel: 'Current sessions',
         messagesLabel: 'Total messages',
         clearButton: 'Clear all AI chat history',
@@ -60,6 +63,7 @@ export default {
       },
       privacy: {
         title: 'Privacy & safety',
+        hint: 'We never collect your key or proxy LLM traffic. Key facts below.',
         items: [
           'Your API key is stored only in this browser\'s localStorage. Clearing site data or switching devices means re-entering it.',
           'Every request is sent directly from your browser to DeepSeek. We do not proxy or relay any traffic.',

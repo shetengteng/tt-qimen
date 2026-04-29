@@ -51,8 +51,8 @@
   font-family: var(--font-display);
   background-color: rgba(255, 251, 240, 0.8);
   color: var(--color-ink);
-  height: 32px;
-  padding-inline: 12px;
+  height: 36px;
+  padding-inline: 14px;
   font-size: 14px;
   border-radius: var(--radius-sm);
   border: 1px solid rgba(176, 141, 59, 0.4);
@@ -299,8 +299,8 @@
   font-family: var(--font-display);
   background-color: rgba(255, 251, 240, 0.8);
   color: var(--color-ink);
-  height: 32px;
-  padding-inline: 12px;
+  height: 36px;
+  padding-inline: 14px;
   font-size: 14px;
   border-radius: var(--radius-sm);
   border: 1px solid rgba(176, 141, 59, 0.4);
@@ -317,7 +317,7 @@
   border: 1px solid rgba(176, 141, 59, 0.4);
   border-radius: var(--radius-sm);
   font-size: 14px;
-  padding: 8px 12px;
+  padding: 9px 14px;
 }
 :root[data-theme='guofeng'] [data-slot='textarea']:focus-visible {
   border-color: var(--color-accent);

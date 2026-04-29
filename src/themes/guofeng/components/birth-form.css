@@ -61,8 +61,8 @@
 
 :root[data-theme='guofeng'] .ds-input-group input,
 :root[data-theme='guofeng'] .ds-input-group select {
-  height: 32px;
-  padding: 0 12px;
+  height: 36px;
+  padding: 0 14px;
   border: 1px solid rgba(176, 141, 59, 0.4);
   border-radius: 6px;
   background-color: rgba(255, 251, 240, 0.8);
@@ -71,7 +71,7 @@
   color: var(--color-ink);
 }
 :root[data-theme='guofeng'] .ds-input-group textarea {
-  padding: 8px 12px;
+  padding: 9px 14px;
   border: 1px solid rgba(176, 141, 59, 0.4);
   border-radius: 6px;
   background-color: rgba(255, 251, 240, 0.8);

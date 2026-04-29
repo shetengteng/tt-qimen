@@ -19,6 +19,16 @@ import type { ChatMessage, AiConfig } from './types'
 import type { LlmProvider } from './providers/types'
 import { LlmError, toLlmError } from './errors'
 
+/**
+ * P6-09：发送给 LLM 的"近 N 条历史消息"上限。
+ *
+ * 设计文档 §6.2：UI 50 条 + 网络层 20 条窗口；
+ * 实现上 18 = 9 轮（user/assistant 配对），留 2 条 buffer 给当次 user + 占位 assistant。
+ *
+ * 不影响 messages.value（持久化全量），只影响 sendable 切片。
+ */
+export const SEND_RECENT_TURNS = 18
+
 export interface UseAiChatOptions {
   provider: Ref<LlmProvider>
   config: Ref<AiConfig>
@@ -28,6 +38,25 @@ export interface UseAiChatOptions {
    * 已发送过的消息（messages.value）会**追加在 contextMessages 之后**送给 LLM。
    */
   buildContextMessages: () => ChatMessage[]
+}
+
+/**
+ * P6-09：从历史消息里截取送 LLM 的"近 N 条"窗口。
+ *
+ * 输入 `historical` 是 `messages.value.slice(0, -1)` —— 不含最末占位 assistant，
+ * 包含所有历次 user / assistant 配对。返回最末 N 条（不破坏顺序，仍然 user / assistant 间隔）。
+ *
+ * 没必要在窗口边缘智能"补对"：
+ *   - 如果窗口起点恰好是一条 assistant，前面缺 user 也无伤大雅，LLM 会把它视作 prior context
+ *   - 反之亦然
+ * 真正的 system / 首次解读 narrative 由 `contextMessages` 始终前置，不在裁剪范围。
+ */
+export function takeRecentMessages(
+  historical: ChatMessage[],
+  windowSize: number = SEND_RECENT_TURNS,
+): ChatMessage[] {
+  if (historical.length <= windowSize) return historical
+  return historical.slice(historical.length - windowSize)
 }
 
 export function useAiChat(opts: UseAiChatOptions) {
@@ -60,8 +89,15 @@ export function useAiChat(opts: UseAiChatOptions) {
 
     try {
       const ctxMessages = opts.buildContextMessages()
-      /** 不带占位 assistant 消息，所以 slice(0, -1) */
-      const sendable = [...ctxMessages, ...messages.value.slice(0, -1)]
+      /**
+       * P6-09 网络层裁剪：
+       *   - ctxMessages 始终全量前置（含 system + 首次解读 narrative）
+       *   - 历史 messages 取最近 SEND_RECENT_TURNS 条（剔除占位 assistant）
+       * 结果 = [system, narrative?, ...recentN, currentUserMsg]
+       */
+      const historical = messages.value.slice(0, -1)
+      const recent = takeRecentMessages(historical)
+      const sendable = [...ctxMessages, ...recent]
       const stream = opts.provider.value.streamChat(
         sendable,
         opts.config.value,

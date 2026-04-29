@@ -493,6 +493,9 @@ export default {
       },
       firstResponse: '请基于上述命盘信息，给我一份简明的整体解读。',
     },
+    history: {
+      collapsed: '已隐藏 {count} 条早期消息（仍保留在本机；最近 50 条参与对话）',
+    },
     model: {
       v4Flash: 'DeepSeek V4 Flash · 快速 / 便宜',
       v4Pro: 'DeepSeek V4 Pro · 深度推理',

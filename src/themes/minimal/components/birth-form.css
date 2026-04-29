@@ -58,27 +58,27 @@
   letter-spacing: 0.02em;
 }
 
-:root[data-theme='minimal'] .ds-input-group input,
-:root[data-theme='minimal'] .ds-input-group select {
-  height: 32px;
-  padding: 0 10px;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  background-color: var(--color-bg);
-  font-family: inherit;
-  font-size: 14px;
-  color: var(--color-ink);
-}
-:root[data-theme='minimal'] .ds-input-group textarea {
-  padding: 8px 10px;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  background-color: var(--color-bg);
-  font-family: inherit;
-  font-size: 14px;
-  color: var(--color-ink);
-  transition: border-color 0.18s, box-shadow 0.18s;
-}
+    :root[data-theme='minimal'] .ds-input-group input,
+    :root[data-theme='minimal'] .ds-input-group select {
+      height: 36px;
+      padding: 0 12px;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      background-color: var(--color-bg);
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--color-ink);
+    }
+    :root[data-theme='minimal'] .ds-input-group textarea {
+      padding: 9px 12px;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      background-color: var(--color-bg);
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--color-ink);
+      transition: border-color 0.18s, box-shadow 0.18s;
+    }
 
 :root[data-theme='minimal'] .ds-input-group input:focus,
 :root[data-theme='minimal'] .ds-input-group select:focus,

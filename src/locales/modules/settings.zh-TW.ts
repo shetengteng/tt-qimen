@@ -30,6 +30,8 @@ export default {
       model: {
         label: '模型',
         hint: '日常建議用 V4 Flash；需要嚴密推演選 V4 Pro。',
+        flashDesc: '高速、低成本，適合日常對話與快速釐清。',
+        proDesc: '思維鏈深度推理，適合命盤整體解讀與多輪追問。',
       },
       temperature: {
         label: '溫度（創造性）',
@@ -52,6 +54,7 @@ export default {
       },
       sessions: {
         title: '對話歷史',
+        hint: '所有對話僅儲存於本機；切換設備前請先清空。',
         countLabel: '目前會話數',
         messagesLabel: '總訊息數',
         clearButton: '清空所有 AI 對話',
@@ -60,6 +63,7 @@ export default {
       },
       privacy: {
         title: '隱私與安全',
+        hint: '本站不收集 Key、不中轉 LLM 請求；以下為關鍵事實。',
         items: [
           'API Key 僅儲存於本機瀏覽器 localStorage；清快取或換設備後需要重新填入。',
           '所有對話由你的瀏覽器直接傳送給 DeepSeek，不經過本站任何後端中轉。',

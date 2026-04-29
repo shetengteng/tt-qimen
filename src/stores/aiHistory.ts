@@ -165,3 +165,9 @@ export const useAiHistoryStore = defineStore('aiHistory', () => {
     listAll,
   }
 })
+
+/** P6-02: 暴露给测试用，避免 spec 里再 hard-code 这两个常量 */
+export const __TEST_CONSTANTS__ = {
+  MAX_SESSIONS,
+  MAX_MESSAGES_PER_SESSION,
+}

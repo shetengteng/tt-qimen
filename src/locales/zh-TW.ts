@@ -476,6 +476,9 @@ export default {
       },
       firstResponse: '請基於上述命盤資訊，為我做一份簡明的整體解讀。',
     },
+    history: {
+      collapsed: '已隱藏 {count} 條早期訊息（仍保留於本機；最近 50 條參與對話）',
+    },
     model: {
       v4Flash: 'DeepSeek V4 Flash · 快速 / 便宜',
       v4Pro: 'DeepSeek V4 Pro · 深度推理',

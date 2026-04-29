@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
+import { Button } from '@/components/ui/button'
 import type { BaziChart } from '../types'
 import { TEN_GOD_INFO, type TenGodLongDetail } from '../data/tenGods'
 
@@ -101,15 +102,17 @@ const longFieldLabel = computed(() => ({
     </div>
 
     <div class="shishen-detail-toggle-wrap">
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="sm"
         class="shishen-detail-toggle"
         :aria-expanded="detailOpen"
         aria-controls="shishen-detail-panel-gf"
         @click="toggleDetail"
       >
         {{ detailOpen ? t('bazi.btn.shishenDetailCollapse') : t('bazi.btn.shishenDetail') }}
-      </button>
+      </Button>
     </div>
 
     <div
@@ -163,15 +166,17 @@ const longFieldLabel = computed(() => ({
     </div>
 
     <div class="shishen-detail-toggle-wrap">
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="sm"
         class="shishen-detail-toggle"
         :aria-expanded="detailOpen"
         aria-controls="shishen-detail-panel-mn"
         @click="toggleDetail"
       >
         {{ detailOpen ? t('bazi.btn.shishenDetailCollapse') : t('bazi.btn.shishenDetail') }}
-      </button>
+      </Button>
     </div>
 
     <div
@@ -216,6 +221,12 @@ const longFieldLabel = computed(() => ({
  * 交给 src/themes/{guofeng,minimal}/components/bazi.css 里的
  * :root[data-theme='...'] .ss-long-* 覆盖，避免 shorthand 覆盖主题色。
  */
+.shishen-detail-toggle-wrap {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+}
+
 .shishen-detail-panel {
   margin-top: 16px;
   display: flex;

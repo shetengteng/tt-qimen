@@ -58,6 +58,13 @@ const markdownFinal = computed(() => !props.streaming)
       <span v-if="showPlaceholder" class="ai-placeholder text-muted-foreground">
         {{ t('ai.drawer.generating') }}<span class="ai-dots">···</span>
       </span>
+      <!--
+        P7-04：显式锁死 markstream 虚拟窗口上限。
+        - max-live-nodes：DOM 中常驻的最大 node 数（block-level），超出后旧节点会被回收
+        - live-node-buffer：回收时围绕焦点保留的前后节点数
+        默认是 320 / 60；AC19 要求 5000 字单条消息 DOM 节点 < 200。
+        这里设为 160 / 40 给单条 5000 字消息留 ~25% 缓冲。
+      -->
       <MarkdownRender
         v-else
         :content="message.content"
@@ -65,6 +72,8 @@ const markdownFinal = computed(() => !props.streaming)
         :index-key="messageIndex"
         :show-tooltips="false"
         :typewriter="false"
+        :max-live-nodes="160"
+        :live-node-buffer="40"
         class="ai-markdown"
       />
     </div>
