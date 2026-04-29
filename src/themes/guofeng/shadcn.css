@@ -51,9 +51,9 @@
   font-family: var(--font-display);
   background-color: rgba(255, 251, 240, 0.8);
   color: var(--color-ink);
-  height: 42px;
-  padding-inline: 14px;
-  font-size: 15px;
+  height: 32px;
+  padding-inline: 12px;
+  font-size: 14px;
   border-radius: var(--radius-sm);
   border: 1px solid rgba(176, 141, 59, 0.4);
   width: 100%;
@@ -288,4 +288,38 @@
   font-size: 13px;
   color: var(--color-ink-soft);
   letter-spacing: 0.05em;
+}
+
+/* ----------------------------------------------------------------------------
+ * Input / Textarea：与 Select / 原生 input 视觉对齐
+ *
+ * Input 默认高度 h-8 / 32px，国风风格圆角 + 米黄底。
+ * -------------------------------------------------------------------------- */
+:root[data-theme='guofeng'] [data-slot='input'] {
+  font-family: var(--font-display);
+  background-color: rgba(255, 251, 240, 0.8);
+  color: var(--color-ink);
+  height: 32px;
+  padding-inline: 12px;
+  font-size: 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(176, 141, 59, 0.4);
+}
+:root[data-theme='guofeng'] [data-slot='input']:focus-visible {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(194, 58, 42, 0.1);
+}
+
+:root[data-theme='guofeng'] [data-slot='textarea'] {
+  font-family: var(--font-display);
+  background-color: rgba(255, 251, 240, 0.8);
+  color: var(--color-ink);
+  border: 1px solid rgba(176, 141, 59, 0.4);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  padding: 8px 12px;
+}
+:root[data-theme='guofeng'] [data-slot='textarea']:focus-visible {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(194, 58, 42, 0.1);
 }

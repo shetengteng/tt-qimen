@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 /**
  * 解梦 · 搜索输入卡：复用 ds-input-card 公共规范。
@@ -56,13 +57,13 @@ function onReset() {
     <div class="ds-input-row jm-input-row">
       <div class="ds-input-group">
         <Label>{{ t('jiemeng.input.keywordLabel') }}</Label>
-        <input
-          :value="store.query"
+        <Input
+          :model-value="store.query"
           type="text"
           :placeholder="t('jiemeng.input.keywordPlaceholder')"
-          @input="store.setQuery(($event.target as HTMLInputElement).value)"
+          @update:model-value="(v) => store.setQuery(String(v))"
           @keydown.enter="onSubmit"
-        >
+        />
       </div>
       <div class="ds-input-group">
         <Label>{{ t('jiemeng.input.categoryLabel') }}</Label>
@@ -102,13 +103,13 @@ function onReset() {
     <div class="ds-input-row jm-input-row">
       <div class="ds-input-group">
         <Label>{{ t('jiemeng.input.keywordLabel') }}</Label>
-        <input
-          :value="store.query"
+        <Input
+          :model-value="store.query"
           type="text"
           :placeholder="t('jiemeng.input.keywordPlaceholder')"
-          @input="store.setQuery(($event.target as HTMLInputElement).value)"
+          @update:model-value="(v) => store.setQuery(String(v))"
           @keydown.enter="onSubmit"
-        >
+        />
       </div>
       <div class="ds-input-group">
         <Label>{{ t('jiemeng.input.categoryLabel') }}</Label>

@@ -39,8 +39,8 @@
   font-family: var(--font-body);
   background-color: var(--color-bg);
   color: var(--color-ink);
-  height: 42px;
-  padding-inline: 14px;
+  height: 32px;
+  padding-inline: 10px;
   font-size: 14px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -270,4 +270,38 @@
   font-size: 12px;
   color: var(--color-ink-muted);
   letter-spacing: 0.02em;
+}
+
+/* ----------------------------------------------------------------------------
+ * Input / Textarea：与 Select / 原生 input 视觉对齐
+ *
+ * Input 默认高度 h-8 / 32px。Textarea 由内容高度自适应。
+ * -------------------------------------------------------------------------- */
+:root[data-theme='minimal'] [data-slot='input'] {
+  font-family: var(--font-body);
+  background-color: var(--color-bg);
+  color: var(--color-ink);
+  height: 32px;
+  padding-inline: 10px;
+  font-size: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+:root[data-theme='minimal'] [data-slot='input']:focus-visible {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(59, 47, 99, 0.1);
+}
+
+:root[data-theme='minimal'] [data-slot='textarea'] {
+  font-family: var(--font-body);
+  background-color: var(--color-bg);
+  color: var(--color-ink);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  padding: 8px 10px;
+}
+:root[data-theme='minimal'] [data-slot='textarea']:focus-visible {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(59, 47, 99, 0.1);
 }

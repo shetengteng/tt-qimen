@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 /**
  * 起签输入卡：心中所问 + 占问领域 + 启签 / 再摇 按钮。
@@ -68,12 +69,12 @@ const topicModel = computed<LingqianTopicKey>({
     <div class="ds-input-row" style="grid-template-columns: 2fr 1fr;">
       <div class="ds-input-group">
         <Label>{{ t('lingqian.input.questionLabel') }}</Label>
-        <input
-          :value="lingqianStore.question"
+        <Input
+          :model-value="lingqianStore.question"
           type="text"
           :placeholder="t('lingqian.input.questionPlaceholder')"
-          @input="lingqianStore.setQuestion(($event.target as HTMLInputElement).value)"
-        >
+          @update:model-value="(v) => lingqianStore.setQuestion(String(v))"
+        />
       </div>
       <div class="ds-input-group">
         <Label>{{ t('lingqian.input.topicLabel') }}</Label>
@@ -120,12 +121,12 @@ const topicModel = computed<LingqianTopicKey>({
     <div class="ds-input-row" style="grid-template-columns: 2fr 1fr;">
       <div class="ds-input-group">
         <Label>{{ t('lingqian.input.questionLabel') }}</Label>
-        <input
-          :value="lingqianStore.question"
+        <Input
+          :model-value="lingqianStore.question"
           type="text"
           :placeholder="t('lingqian.input.questionPlaceholder')"
-          @input="lingqianStore.setQuestion(($event.target as HTMLInputElement).value)"
-        >
+          @update:model-value="(v) => lingqianStore.setQuestion(String(v))"
+        />
       </div>
       <div class="ds-input-group">
         <Label>{{ t('lingqian.input.topicLabel') }}</Label>

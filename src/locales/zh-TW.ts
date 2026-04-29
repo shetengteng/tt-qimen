@@ -423,7 +423,7 @@ export default {
         ],
       },
       {
-        heading: '八、AI 解讀功能（DeepSeek API）',
+        heading: '八、AI 解讀功能',
         paragraphs: [
           '本站提供可選的 AI 命盤解讀功能，由 DeepSeek 大模型 API 驅動。該功能完全基於「自帶 API Key」（BYOK）模式：',
         ],

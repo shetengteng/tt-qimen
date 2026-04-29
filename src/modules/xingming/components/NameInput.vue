@@ -5,6 +5,7 @@ import { useThemeStore } from '@/stores/theme'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
@@ -97,7 +98,7 @@ function genderLabel(g: Gender) {
     <div class="ds-input-row xm-row-name">
       <div class="ds-input-group">
         <Label>{{ t('xingming.field.surname') }}</Label>
-        <input
+        <Input
           v-model="surname"
           type="text"
           :placeholder="t('xingming.placeholder.surname')"
@@ -106,7 +107,7 @@ function genderLabel(g: Gender) {
       </div>
       <div class="ds-input-group">
         <Label>{{ t('xingming.field.givenName') }}</Label>
-        <input
+        <Input
           v-model="givenName"
           type="text"
           :placeholder="t('xingming.placeholder.givenName')"
@@ -162,7 +163,7 @@ function genderLabel(g: Gender) {
     <div class="ds-input-row xm-row-name">
       <div class="ds-input-group">
         <Label>{{ t('xingming.field.surname') }}</Label>
-        <input
+        <Input
           v-model="surname"
           type="text"
           :placeholder="t('xingming.placeholder.surname')"
@@ -171,7 +172,7 @@ function genderLabel(g: Gender) {
       </div>
       <div class="ds-input-group">
         <Label>{{ t('xingming.field.givenName') }}</Label>
-        <input
+        <Input
           v-model="givenName"
           type="text"
           :placeholder="t('xingming.placeholder.givenName')"

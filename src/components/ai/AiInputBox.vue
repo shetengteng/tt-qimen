@@ -14,6 +14,7 @@ import { computed, nextTick, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Send, Square } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 const props = withDefaults(defineProps<{
   streaming?: boolean
@@ -86,7 +87,10 @@ defineExpose({
     <textarea
       ref="taRef"
       v-model="text"
-      class="ai-textarea flex-1 resize-none rounded-lg border border-border bg-background px-3 py-2 text-sm leading-relaxed text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-1 focus:ring-ring"
+      data-slot="textarea"
+      :class="cn(
+        'ai-textarea flex-1 min-h-0 field-sizing-content resize-none border-input dark:bg-input/30 focus-visible:border-ring focus-visible:ring-ring/50 rounded-lg border bg-transparent px-3 py-2 text-sm leading-relaxed text-foreground transition-colors focus-visible:ring-3 placeholder:text-muted-foreground/70 outline-none disabled:cursor-not-allowed disabled:opacity-50'
+      )"
       :placeholder="effectivePlaceholder"
       :disabled="props.disabled && !props.streaming"
       rows="1"

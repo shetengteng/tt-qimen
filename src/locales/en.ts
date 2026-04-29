@@ -423,7 +423,7 @@ export default {
         ],
       },
       {
-        heading: '8. AI interpretation (DeepSeek API)',
+        heading: '8. AI interpretation',
         paragraphs: [
           'tt-qimen offers an optional AI chart interpretation feature powered by the DeepSeek LLM API, in a strict bring-your-own-key (BYOK) model:',
         ],

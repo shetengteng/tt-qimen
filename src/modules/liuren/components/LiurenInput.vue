@@ -15,6 +15,7 @@ import {
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { Input } from '@/components/ui/input'
 
 interface Props {
   /** 即时起卦模式下展示的"当前时辰"汉字 */
@@ -76,12 +77,12 @@ function setMode(m: 'immediate' | 'custom') {
     <div class="ds-input-row lr-input-row">
       <div class="ds-input-group lr-question-group">
         <Label>{{ t('liuren.input.questionLabel') }}</Label>
-        <input
-          :value="liurenStore.question"
+        <Input
+          :model-value="liurenStore.question"
           type="text"
           :placeholder="t('liuren.input.questionPlaceholder')"
-          @input="liurenStore.setQuestion(($event.target as HTMLInputElement).value)"
-        >
+          @update:model-value="(v) => liurenStore.setQuestion(String(v))"
+        />
       </div>
       <div class="ds-input-group">
         <Label>{{ t('liuren.input.aspectLabel') }}</Label>
@@ -128,23 +129,23 @@ function setMode(m: 'immediate' | 'custom') {
     <div v-if="liurenStore.mode === 'custom'" class="ds-input-row lr-input-row">
       <div class="ds-input-group">
         <Label>{{ t('liuren.input.monthLabel') }}</Label>
-        <input
-          :value="liurenStore.custom.month"
+        <Input
+          :model-value="liurenStore.custom.month"
           type="number"
           min="1"
           max="12"
-          @input="liurenStore.setCustom({ month: Number(($event.target as HTMLInputElement).value) })"
-        >
+          @update:model-value="(v) => liurenStore.setCustom({ month: Number(v) })"
+        />
       </div>
       <div class="ds-input-group">
         <Label>{{ t('liuren.input.dayLabel') }}</Label>
-        <input
-          :value="liurenStore.custom.day"
+        <Input
+          :model-value="liurenStore.custom.day"
           type="number"
           min="1"
           max="30"
-          @input="liurenStore.setCustom({ day: Number(($event.target as HTMLInputElement).value) })"
-        >
+          @update:model-value="(v) => liurenStore.setCustom({ day: Number(v) })"
+        />
       </div>
     </div>
 
@@ -178,12 +179,12 @@ function setMode(m: 'immediate' | 'custom') {
     <div class="ds-input-row lr-input-row">
       <div class="ds-input-group lr-question-group">
         <Label>{{ t('liuren.input.questionLabel') }}</Label>
-        <input
-          :value="liurenStore.question"
+        <Input
+          :model-value="liurenStore.question"
           type="text"
           :placeholder="t('liuren.input.questionPlaceholder')"
-          @input="liurenStore.setQuestion(($event.target as HTMLInputElement).value)"
-        >
+          @update:model-value="(v) => liurenStore.setQuestion(String(v))"
+        />
       </div>
       <div class="ds-input-group">
         <Label>{{ t('liuren.input.aspectLabel') }}</Label>
@@ -230,23 +231,23 @@ function setMode(m: 'immediate' | 'custom') {
     <div v-if="liurenStore.mode === 'custom'" class="ds-input-row lr-input-row">
       <div class="ds-input-group">
         <Label>{{ t('liuren.input.monthLabel') }}</Label>
-        <input
-          :value="liurenStore.custom.month"
+        <Input
+          :model-value="liurenStore.custom.month"
           type="number"
           min="1"
           max="12"
-          @input="liurenStore.setCustom({ month: Number(($event.target as HTMLInputElement).value) })"
-        >
+          @update:model-value="(v) => liurenStore.setCustom({ month: Number(v) })"
+        />
       </div>
       <div class="ds-input-group">
         <Label>{{ t('liuren.input.dayLabel') }}</Label>
-        <input
-          :value="liurenStore.custom.day"
+        <Input
+          :model-value="liurenStore.custom.day"
           type="number"
           min="1"
           max="30"
-          @input="liurenStore.setCustom({ day: Number(($event.target as HTMLInputElement).value) })"
-        >
+          @update:model-value="(v) => liurenStore.setCustom({ day: Number(v) })"
+        />
       </div>
     </div>
 
