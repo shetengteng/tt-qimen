@@ -62,5 +62,5 @@ export const DEFAULT_AI_CONFIG: AiConfig = {
   apiKey: '',
   baseUrl: 'https://api.deepseek.com',
   model: 'deepseek-v4-flash',
-  temperature: 0.7,
+  temperature: 0.3,
 }
