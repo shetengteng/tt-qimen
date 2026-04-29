@@ -271,7 +271,7 @@ function goHome() {
             <Label for="ai-api-key">
               {{ t('settings.section.ai.apiKey.label') }}
             </Label>
-            <div class="flex gap-2">
+            <div class="flex flex-col gap-2 sm:flex-row">
               <div class="relative flex-1">
                 <Input
                   id="ai-api-key"
@@ -299,6 +299,7 @@ function goHome() {
               <Button
                 v-if="aiConfig.hasKey"
                 variant="outline"
+                class="w-full sm:w-auto"
                 @click="clearKey"
               >
                 {{ t('settings.section.ai.apiKey.clear') }}
@@ -363,7 +364,7 @@ function goHome() {
             <Label for="ai-base-url">
               {{ t('settings.section.ai.baseUrl.label') }}
             </Label>
-            <div class="flex gap-2">
+            <div class="flex flex-col gap-2 sm:flex-row">
               <Input
                 id="ai-base-url"
                 v-model="baseUrlValue"
@@ -372,7 +373,7 @@ function goHome() {
                 spellcheck="false"
                 :placeholder="t('settings.section.ai.baseUrl.placeholder')"
               />
-              <Button variant="outline" @click="resetBaseUrl">
+              <Button variant="outline" class="w-full sm:w-auto" @click="resetBaseUrl">
                 {{ t('settings.section.ai.baseUrl.useDefault') }}
               </Button>
             </div>
@@ -385,6 +386,7 @@ function goHome() {
           <div class="space-y-2">
             <Button
               variant="default"
+              class="w-full sm:w-auto"
               :disabled="testState.kind === 'running'"
               @click="testConnection"
             >
@@ -432,27 +434,27 @@ function goHome() {
             </p>
           </div>
         </div>
-        <div class="mt-4 flex flex-wrap gap-6">
-          <div class="space-y-1">
+        <div class="mt-4 grid grid-cols-2 divide-x divide-border/60 overflow-hidden rounded-lg border border-border/60 bg-muted/30">
+          <div class="px-4 py-3">
             <div class="text-xs text-muted-foreground">
               {{ t('settings.section.ai.sessions.countLabel') }}
             </div>
-            <div class="font-mono text-2xl font-semibold text-foreground">
+            <div class="mt-1 font-mono text-xl font-semibold text-foreground md:text-2xl">
               {{ aiHistory.count }}
             </div>
           </div>
-          <div class="space-y-1">
+          <div class="px-4 py-3">
             <div class="text-xs text-muted-foreground">
               {{ t('settings.section.ai.sessions.messagesLabel') }}
             </div>
-            <div class="font-mono text-2xl font-semibold text-foreground">
+            <div class="mt-1 font-mono text-xl font-semibold text-foreground md:text-2xl">
               {{ aiHistory.totalMessages }}
             </div>
           </div>
         </div>
         <Button
           variant="outline"
-          class="mt-4"
+          class="mt-4 w-full sm:w-auto"
           :disabled="aiHistory.count === 0"
           @click="clearAllSessions"
         >
