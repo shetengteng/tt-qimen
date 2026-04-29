@@ -453,8 +453,6 @@ export default {
       toggleClose: '關閉 AI 解讀',
     },
     freeChat: {
-      label: '自由諮詢',
-      welcomeTitle: '與 AI 命理顧問自由對話',
       welcomeBody:
         '當前沒有命盤上下文。你可以直接提問關於八字、紫微、擇日、解夢等命理話題；如想得到針對你個人的精準解讀，請先在對應模組錄入生辰排盤。',
       inputPlaceholder: '請輸入你的命理諮詢問題…',

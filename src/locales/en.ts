@@ -453,8 +453,6 @@ export default {
       toggleClose: 'Close AI panel',
     },
     freeChat: {
-      label: 'Free chat',
-      welcomeTitle: 'Free chat with the AI divination advisor',
       welcomeBody:
         'No chart context loaded. You can ask any question about BaZi, Zi Wei, date selection, dream interpretation and other Chinese divination topics. For a personalized reading, please first generate a chart in one of the modules.',
       inputPlaceholder: 'Ask the divination advisor anything…',

@@ -261,9 +261,12 @@ const showChat = computed(
   () => aiConfig.hasKey && (!!aiSidebar.chart || aiSidebar.freeChat),
 )
 
-/** 顶部标签：自由对话 → ai.freeChat.label；命盘 → displayLabel */
+/**
+ * 顶部 chip：仅在「具体命盘」上下文展示模块/命盘 label；
+ * 「自由咨询」模式不展示 chip（用户决策 2026-04-29 简化 header）。
+ */
 const headerLabel = computed(() => {
-  if (aiSidebar.freeChat) return t('ai.freeChat.label')
+  if (aiSidebar.freeChat) return ''
   return ctx.value?.displayLabel ?? ''
 })
 
@@ -348,15 +351,11 @@ const showScrollToBottom = computed(() => !atBottom.value && chat.messages.value
         @scroll="checkAtBottom"
       >
         <div class="flex flex-col gap-3 px-4 py-4">
-          <!-- 自由对话首次进入：welcome 卡片，引导用户提问 / 去排盘 -->
+          <!-- 自由对话首次进入：仅展示 body 提示 + 引导排盘（welcomeTitle 已弃用） -->
           <div
             v-if="aiSidebar.freeChat && chat.messages.value.length === 0"
             class="rounded-lg border border-border bg-muted/40 px-4 py-3 text-sm leading-relaxed text-foreground"
           >
-            <div class="mb-1 flex items-center gap-2 font-semibold">
-              <Sparkles class="size-4 text-primary" aria-hidden="true" />
-              {{ t('ai.freeChat.welcomeTitle') }}
-            </div>
             <p class="text-sm text-muted-foreground">
               {{ t('ai.freeChat.welcomeBody') }}
             </p>

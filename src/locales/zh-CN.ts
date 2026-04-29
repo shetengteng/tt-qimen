@@ -470,8 +470,6 @@ export default {
       toggleClose: '关闭 AI 解读',
     },
     freeChat: {
-      label: '自由咨询',
-      welcomeTitle: '与 AI 命理顾问自由对话',
       welcomeBody:
         '当前没有命盘上下文。你可以直接提问关于八字、紫微、择日、解梦等命理话题；如想得到针对你个人的精准解读，请先在对应模块录入生辰排盘。',
       inputPlaceholder: '请输入你的命理咨询问题…',
