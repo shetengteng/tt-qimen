@@ -228,6 +228,7 @@ function genderLabel(v: 'male' | 'female') {
     </h2>
     <ToggleGroup
       type="single"
+      size="lg"
       :model-value="calendar"
       class="ds-calendar-switch"
       @update:model-value="(v: any) => v && setCalendar(v as 'solar' | 'lunar')"
@@ -326,6 +327,7 @@ function genderLabel(v: 'male' | 'female') {
     </h2>
     <ToggleGroup
       type="single"
+      size="lg"
       :model-value="calendar"
       class="ds-calendar-switch"
       @update:model-value="(v: any) => v && setCalendar(v as 'solar' | 'lunar')"

@@ -151,11 +151,11 @@ watch(
     </div>
 
     <div class="ds-input-actions">
-      <Button type="button" variant="default" :size="isGuofeng ? 'default' : 'lg'" @click="onQuery">
+      <Button type="button" variant="default" size="lg" @click="onQuery">
         <template v-if="isGuofeng">{{ t('huangli.query.btnQueryIcon') }} </template>
         {{ t('huangli.query.btnQuery') }}
       </Button>
-      <Button type="button" variant="outline" @click="onToday">
+      <Button type="button" variant="outline" size="lg" @click="onToday">
         <template v-if="isGuofeng">{{ t('huangli.query.btnTodayIcon') }} </template>
         {{ t('huangli.query.btnToday') }}
       </Button>

@@ -191,14 +191,14 @@ function goHome() {
             :key="id"
             type="button"
             variant="outline"
-            class="h-auto flex-col items-start gap-1 px-4 py-3 text-left whitespace-normal aria-pressed:border-primary aria-pressed:bg-accent"
+            class="group/opt h-auto flex-col items-start gap-1 px-4 py-3 text-left whitespace-normal aria-pressed:border-primary aria-pressed:bg-accent aria-pressed:text-accent-foreground"
             :aria-pressed="id === themeStore.id"
             @click="themeStore.set(id)"
           >
-            <span class="text-sm font-medium text-foreground">
+            <span class="text-sm font-medium text-foreground group-aria-pressed/opt:text-current">
               {{ getThemeName(id) }}
             </span>
-            <span class="text-xs font-normal text-muted-foreground">
+            <span class="text-xs font-normal text-muted-foreground group-aria-pressed/opt:text-current/80">
               {{ getThemeDesc(id) }}
             </span>
           </Button>
@@ -226,14 +226,14 @@ function goHome() {
             :key="id"
             type="button"
             variant="outline"
-            class="h-auto justify-start gap-3 px-4 py-3 aria-pressed:border-primary aria-pressed:bg-accent"
+            class="group/opt h-auto justify-start gap-3 px-4 py-3 aria-pressed:border-primary aria-pressed:bg-accent aria-pressed:text-accent-foreground"
             :aria-pressed="id === localeStore.id"
             @click="localeStore.set(id)"
           >
-            <span class="rounded-md bg-muted px-2 py-0.5 text-xs font-semibold text-muted-foreground">
+            <span class="rounded-md bg-muted px-2 py-0.5 text-xs font-semibold text-muted-foreground group-aria-pressed/opt:bg-current/15 group-aria-pressed/opt:text-current">
               {{ LANG_LABELS[id].short }}
             </span>
-            <span class="text-sm font-medium text-foreground">
+            <span class="text-sm font-medium text-foreground group-aria-pressed/opt:text-current">
               {{ LANG_LABELS[id].full }}
             </span>
           </Button>
@@ -319,14 +319,14 @@ function goHome() {
                 :key="m.id"
                 type="button"
                 variant="outline"
-                class="h-auto flex-col items-start gap-1 px-4 py-3 text-left whitespace-normal aria-pressed:border-primary aria-pressed:bg-accent"
+                class="group/opt h-auto flex-col items-start gap-1 px-4 py-3 text-left whitespace-normal aria-pressed:border-primary aria-pressed:bg-accent aria-pressed:text-accent-foreground"
                 :aria-pressed="m.id === aiConfig.config.model"
                 @click="aiConfig.setModel(m.id)"
               >
-                <span class="text-sm font-medium text-foreground">
+                <span class="text-sm font-medium text-foreground group-aria-pressed/opt:text-current">
                   {{ t(m.labelKey) }}
                 </span>
-                <span class="text-xs font-normal text-muted-foreground">
+                <span class="text-xs font-normal text-muted-foreground group-aria-pressed/opt:text-current/80">
                   {{ t(getModelDescKey(m.id)) }}
                 </span>
               </Button>

@@ -153,7 +153,7 @@ function setMode(m: 'immediate' | 'custom') {
       <Button type="button" variant="default" size="lg" @click="emit('paipan')">
         {{ t('liuren.btn.paipanIcon') }} {{ t('liuren.btn.paipan') }}
       </Button>
-      <Button type="button" variant="outline" @click="emit('reset')">
+      <Button type="button" variant="outline" size="lg" @click="emit('reset')">
         {{ t('liuren.btn.resetIcon') }} {{ t('liuren.btn.reset') }}
       </Button>
     </div>
@@ -255,7 +255,7 @@ function setMode(m: 'immediate' | 'custom') {
       <Button type="button" variant="default" size="lg" @click="emit('paipan')">
         {{ t('liuren.btn.paipan') }}
       </Button>
-      <Button type="button" variant="outline" @click="emit('reset')">
+      <Button type="button" variant="outline" size="lg" @click="emit('reset')">
         {{ t('liuren.btn.reset') }}
       </Button>
     </div>

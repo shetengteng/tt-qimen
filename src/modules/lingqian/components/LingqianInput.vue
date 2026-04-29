@@ -105,7 +105,7 @@ const topicModel = computed<LingqianTopicKey>({
       <Button type="button" variant="default" size="lg" @click="emit('paipan')">
         {{ t('lingqian.btn.paipanIcon') }} {{ t('lingqian.btn.paipan') }}
       </Button>
-      <Button type="button" variant="outline" @click="emit('reset')">
+      <Button type="button" variant="outline" size="lg" @click="emit('reset')">
         {{ t('lingqian.btn.resetIcon') }} {{ t('lingqian.btn.reset') }}
       </Button>
     </div>
@@ -157,7 +157,7 @@ const topicModel = computed<LingqianTopicKey>({
       <Button type="button" variant="default" size="lg" @click="emit('paipan')">
         {{ t('lingqian.btn.paipan') }}
       </Button>
-      <Button type="button" variant="outline" @click="emit('reset')">
+      <Button type="button" variant="outline" size="lg" @click="emit('reset')">
         {{ t('lingqian.btn.reset') }}
       </Button>
     </div>

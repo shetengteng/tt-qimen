@@ -85,7 +85,7 @@ function onReset() {
       <Button type="button" variant="default" size="lg" @click="onSubmit">
         {{ t('jiemeng.btn.searchIcon') }} {{ t('jiemeng.btn.search') }}
       </Button>
-      <Button type="button" variant="outline" @click="onReset">
+      <Button type="button" variant="outline" size="lg" @click="onReset">
         {{ t('jiemeng.btn.resetIcon') }} {{ t('jiemeng.btn.reset') }}
       </Button>
     </div>
@@ -131,7 +131,7 @@ function onReset() {
       <Button type="button" variant="default" size="lg" @click="onSubmit">
         {{ t('jiemeng.btn.search') }}
       </Button>
-      <Button type="button" variant="outline" @click="onReset">
+      <Button type="button" variant="outline" size="lg" @click="onReset">
         {{ t('jiemeng.btn.reset') }}
       </Button>
     </div>
