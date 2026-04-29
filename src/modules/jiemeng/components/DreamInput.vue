@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
 
 /**
  * 解梦 · 搜索输入卡：复用 ds-input-card 公共规范。
@@ -80,12 +81,12 @@ function onReset() {
     </div>
 
     <div class="ds-input-actions">
-      <button type="button" class="gf-btn" @click="onSubmit">
+      <Button type="button" variant="default" size="lg" @click="onSubmit">
         {{ t('jiemeng.btn.searchIcon') }} {{ t('jiemeng.btn.search') }}
-      </button>
-      <button type="button" class="gf-btn gf-btn-outline" @click="onReset">
+      </Button>
+      <Button type="button" variant="outline" @click="onReset">
         {{ t('jiemeng.btn.resetIcon') }} {{ t('jiemeng.btn.reset') }}
-      </button>
+      </Button>
     </div>
 
     <p class="jm-input-hint">{{ t('jiemeng.input.hint') }}</p>
@@ -126,12 +127,12 @@ function onReset() {
     </div>
 
     <div class="ds-input-actions">
-      <button type="button" class="mn-btn mn-btn-lg" @click="onSubmit">
+      <Button type="button" variant="default" size="lg" @click="onSubmit">
         {{ t('jiemeng.btn.search') }}
-      </button>
-      <button type="button" class="mn-btn mn-btn-outline" @click="onReset">
+      </Button>
+      <Button type="button" variant="outline" @click="onReset">
         {{ t('jiemeng.btn.reset') }}
-      </button>
+      </Button>
     </div>
 
     <p class="jm-input-hint">{{ t('jiemeng.input.hint') }}</p>

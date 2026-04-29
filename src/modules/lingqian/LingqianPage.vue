@@ -6,10 +6,13 @@ import { useThemeStore } from '@/stores/theme'
 import ShareToast from '@/components/common/ShareToast.vue'
 import SharePreviewDialog from '@/components/common/SharePreviewDialog.vue'
 import ResultBanner from '@/components/common/ResultBanner.vue'
+import { Button } from '@/components/ui/button'
 import { useSkeletonReveal } from '@/composables/useSkeletonReveal'
 import { useShareCard } from '@/composables/useShareCard'
 import { buildShareUrl, normalizeQuery, readIntInRange } from '@/lib/shareUrl'
 
+import AskAiButton from '@/components/ai/AskAiButton.vue'
+import { useAiSidebarStore } from '@/stores/aiSidebar'
 import LingqianInput from './components/LingqianInput.vue'
 import LotteryTube from './components/LotteryTube.vue'
 import LotteryCenterpiece, { type CenterpieceStage } from './components/LotteryCenterpiece.vue'
@@ -50,6 +53,12 @@ const tubeSceneEl = ref<HTMLElement | null>(null)
 
 const result = shallowRef<LingqianResult | null>(null)
 const currentTopic = ref<TopicKey>('family')
+
+const aiSidebar = useAiSidebarStore()
+function onAskAi() {
+  if (!result.value) return
+  aiSidebar.show({ moduleId: 'lingqian', chart: result.value })
+}
 
 /** 抽签中标志：驱动 LotteryTube 的剧烈摇晃动画 */
 const drawing = ref(false)
@@ -316,9 +325,9 @@ watch(
       <div v-if="showComputeError" class="compute-error-card">
         <h3>◈ {{ t('lingqian.computeError.title') }}</h3>
         <p>{{ t('lingqian.computeError.hint') }}</p>
-        <button class="gf-btn gf-btn-outline" @click="onRepaipan">
+        <Button type="button" variant="outline" @click="onRepaipan">
           {{ t('lingqian.btn.repaipanIcon') }} {{ t('lingqian.computeError.retry') }}
-        </button>
+        </Button>
       </div>
 
       <template v-else-if="result">
@@ -348,12 +357,13 @@ watch(
         </div>
 
         <div class="action-bar">
-          <button type="button" class="gf-btn" @click="onPreview">
+          <Button type="button" variant="default" @click="onPreview">
             {{ t('lingqian.btn.shareIcon') }} {{ t('lingqian.btn.share') }}
-          </button>
-          <button type="button" class="gf-btn gf-btn-outline" @click="onRepaipan">
+          </Button>
+          <AskAiButton :disabled="!result" @click="onAskAi" />
+          <Button type="button" variant="outline" @click="onRepaipan">
             {{ t('lingqian.btn.repaipanIcon') }} {{ t('lingqian.btn.repaipan') }}
-          </button>
+          </Button>
         </div>
       </template>
     </div>
@@ -389,9 +399,9 @@ watch(
         <div class="compute-error-card mn">
           <h3>{{ t('lingqian.computeError.title') }}</h3>
           <p>{{ t('lingqian.computeError.hint') }}</p>
-          <button class="mn-btn mn-btn-outline" @click="onRepaipan">
+          <Button type="button" variant="outline" @click="onRepaipan">
             {{ t('lingqian.computeError.retry') }}
-          </button>
+          </Button>
         </div>
       </main>
 
@@ -415,8 +425,9 @@ watch(
         </div>
 
         <div class="actions mn-container">
-          <button type="button" class="mn-btn" @click="onPreview">{{ t('lingqian.btn.share') }}</button>
-          <button type="button" class="mn-btn mn-btn-ghost" @click="onRepaipan">{{ t('lingqian.btn.repaipan') }}</button>
+          <Button type="button" variant="default" @click="onPreview">{{ t('lingqian.btn.share') }}</Button>
+          <AskAiButton :disabled="!result" @click="onAskAi" />
+          <Button type="button" variant="ghost" @click="onRepaipan">{{ t('lingqian.btn.repaipan') }}</Button>
         </div>
       </template>
     </div>
@@ -441,4 +452,5 @@ watch(
     @save="onSave"
     @share="onShare"
   />
+
 </template>

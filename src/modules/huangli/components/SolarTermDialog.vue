@@ -24,6 +24,7 @@ import {
 import { X } from 'lucide-vue-next'
 import { useThemeStore } from '@/stores/theme'
 import { getSolarTerm, type SolarTermSeason } from '../data/solarTerms'
+import { Button } from '@/components/ui/button'
 
 const props = defineProps<{
   open: boolean
@@ -121,14 +122,9 @@ function setOpen(value: boolean) {
         </div>
 
         <footer v-if="term" class="jm-dialog-foot">
-          <button
-            type="button"
-            class="jm-action-btn"
-            :class="isGuofeng ? 'gf-btn gf-btn-outline' : 'mn-btn mn-btn-outline'"
-            @click="emit('view-day')"
-          >
+          <Button type="button" variant="outline" class="jm-action-btn" @click="emit('view-day')">
             {{ t('huangli.solarTerm.viewDayBtn') }}
-          </button>
+          </Button>
         </footer>
       </DialogContent>
     </DialogPortal>

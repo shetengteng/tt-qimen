@@ -25,6 +25,7 @@ import { X } from 'lucide-vue-next'
 import { useThemeStore } from '@/stores/theme'
 import DreamDetail from './DreamDetail.vue'
 import ShareQrcode from '@/components/common/ShareQrcode.vue'
+import { Button } from '@/components/ui/button'
 import type { DreamEntry } from '../types'
 
 const props = defineProps<{
@@ -82,22 +83,17 @@ function setOpen(value: boolean) {
         </div>
 
         <footer class="jm-dialog-foot">
-          <button
-            type="button"
-            class="jm-action-btn"
-            :class="isGuofeng ? 'gf-btn' : 'mn-btn'"
-            @click="emit('preview')"
-          >
+          <Button type="button" variant="default" class="jm-action-btn" @click="emit('preview')">
             <template v-if="isGuofeng">{{ t('jiemeng.btn.shareIcon') }} </template>{{ t('jiemeng.btn.share') }}
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            :variant="isGuofeng ? 'outline' : 'ghost'"
             class="jm-action-btn"
-            :class="isGuofeng ? 'gf-btn gf-btn-outline' : 'mn-btn mn-btn-ghost'"
             @click="emit('another')"
           >
             <template v-if="isGuofeng">{{ t('jiemeng.btn.anotherIcon') }} </template>{{ t('jiemeng.btn.another') }}
-          </button>
+          </Button>
         </footer>
       </DialogContent>
     </DialogPortal>

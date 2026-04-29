@@ -117,4 +117,13 @@ export default {
     title: 'My Guanyin Sacred Lot · TT Divination',
     text: 'Sincere intent · divine guidance · a Guanyin Sacred Lot from TT Divination.',
   },
+
+  ai: {
+    preset: {
+      poemReading: 'Verse line-by-line · allusion + imagery',
+      matter: 'My specific question · how this lot answers it',
+      outlook: 'Near-term outlook · when to expect movement',
+      tips: 'Action tips · what to follow & what to avoid',
+    },
+  },
 }

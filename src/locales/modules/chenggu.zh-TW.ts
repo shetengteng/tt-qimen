@@ -68,4 +68,13 @@ export default {
     title: '我的秤骨算命 · TT 占卜',
     text: '年月日時 · 骨重相加 · 袁天罡古法。來自 TT 占卜的秤骨結果。',
   },
+
+  ai: {
+    preset: {
+      poemMeaning: '歌訣深讀 · 逐句白話翻譯與意象',
+      weight: '骨重含義 · 這個分量代表的人生底色',
+      lifeOverview: '一生概觀 · 早 / 中 / 晚年的趨勢',
+      improvement: '調和方向 · 哪些事可助運、可避凶',
+    },
+  },
 }

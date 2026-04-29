@@ -28,18 +28,28 @@ export interface AiConfig {
   temperature: number
 }
 
-/** DeepSeek 模型枚举（2026/07/24 后 deepseek-chat / deepseek-reasoner 弃用） */
+/**
+ * DeepSeek 模型枚举。
+ *
+ * 2026/07/24 之后 deepseek-chat / deepseek-reasoner 已下线（API 已不可用），
+ * 我们不再把弃用项暴露给用户选择，但 type union 仍保留 'deepseek-chat'
+ * / 'deepseek-reasoner' 字面量，避免老用户 localStorage 里残留的 model 字段
+ * 在 TS 编译期报错。运行时如果检测到这两个 id，会在 store 自动迁移到
+ * 'deepseek-v4-flash'。
+ */
 export const DEEPSEEK_MODELS = [
   /** 高速 / 便宜 / 对话场景默认（deepseek-chat 的非思考模式继任者） */
   { id: 'deepseek-v4-flash', labelKey: 'ai.model.v4Flash' },
   /** 思维链 / 深度解读（deepseek-reasoner 的继任者） */
   { id: 'deepseek-v4-pro',   labelKey: 'ai.model.v4Pro' },
-  /** 旧型号，2026/07/24 弃用，仅作兼容 */
-  { id: 'deepseek-chat',     labelKey: 'ai.model.chatLegacy', deprecated: true },
-  { id: 'deepseek-reasoner', labelKey: 'ai.model.reasonerLegacy', deprecated: true },
 ] as const
 
-export type DeepseekModelId = typeof DEEPSEEK_MODELS[number]['id']
+/** 已弃用的旧 model id，仅用于运行时迁移识别，不再出现在 UI */
+export const DEPRECATED_DEEPSEEK_MODEL_IDS = ['deepseek-chat', 'deepseek-reasoner'] as const
+
+export type DeepseekModelId =
+  | typeof DEEPSEEK_MODELS[number]['id']
+  | typeof DEPRECATED_DEEPSEEK_MODEL_IDS[number]
 
 export const DEFAULT_AI_CONFIG: AiConfig = {
   providerId: 'deepseek',

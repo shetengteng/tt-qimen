@@ -36,6 +36,8 @@ import {
 } from '@/components/ui/select'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import CityCombobox from '@/components/common/CityCombobox.vue'
 import { CITY_LONGITUDE } from '@/lib/trueSolarTime'
 
@@ -224,22 +226,19 @@ function genderLabel(v: 'male' | 'female') {
       {{ title || t('common.birthInput.inputCardTitle') }}
       <span class="ds-ornament">◈</span>
     </h2>
-    <div class="ds-calendar-switch">
-      <button
-        :class="['ds-switch-btn', { active: calendar === 'solar' }]"
-        type="button"
-        @click="setCalendar('solar')"
-      >
+    <ToggleGroup
+      type="single"
+      :model-value="calendar"
+      class="ds-calendar-switch"
+      @update:model-value="(v: any) => v && setCalendar(v as 'solar' | 'lunar')"
+    >
+      <ToggleGroupItem value="solar">
         {{ t('common.birthInput.calendar.solar') }}
-      </button>
-      <button
-        :class="['ds-switch-btn', { active: calendar === 'lunar' }]"
-        type="button"
-        @click="setCalendar('lunar')"
-      >
+      </ToggleGroupItem>
+      <ToggleGroupItem value="lunar">
         {{ t('common.birthInput.calendar.lunar') }}
-      </button>
-    </div>
+      </ToggleGroupItem>
+    </ToggleGroup>
     <div class="ds-input-row">
       <div class="ds-input-group">
         <Label>{{ t('common.birthInput.field.year') }}</Label>
@@ -311,9 +310,10 @@ function genderLabel(v: 'male' | 'female') {
       </div>
     </div>
     <div class="ds-input-actions">
-      <button class="gf-btn" type="button" @click="onPaipan">
-        <span>{{ t('common.birthInput.btn.paipanIcon') }}</span> {{ primaryLabel || t('common.birthInput.btn.paipan') }}
-      </button>
+      <Button type="button" variant="default" size="lg" @click="onPaipan">
+        <span>{{ t('common.birthInput.btn.paipanIcon') }}</span>
+        {{ primaryLabel || t('common.birthInput.btn.paipan') }}
+      </Button>
     </div>
   </div>
 
@@ -324,22 +324,19 @@ function genderLabel(v: 'male' | 'female') {
       {{ title || t('common.birthInput.inputCardTitle') }}
       <span class="ds-ornament">·</span>
     </h2>
-    <div class="ds-calendar-switch">
-      <button
-        :class="['ds-switch-btn', { active: calendar === 'solar' }]"
-        type="button"
-        @click="setCalendar('solar')"
-      >
+    <ToggleGroup
+      type="single"
+      :model-value="calendar"
+      class="ds-calendar-switch"
+      @update:model-value="(v: any) => v && setCalendar(v as 'solar' | 'lunar')"
+    >
+      <ToggleGroupItem value="solar">
         {{ t('common.birthInput.calendar.solar') }}
-      </button>
-      <button
-        :class="['ds-switch-btn', { active: calendar === 'lunar' }]"
-        type="button"
-        @click="setCalendar('lunar')"
-      >
+      </ToggleGroupItem>
+      <ToggleGroupItem value="lunar">
         {{ t('common.birthInput.calendar.lunar') }}
-      </button>
-    </div>
+      </ToggleGroupItem>
+    </ToggleGroup>
     <div class="ds-input-row">
       <div class="ds-input-group">
         <Label>{{ t('common.birthInput.field.year') }}</Label>
@@ -411,9 +408,9 @@ function genderLabel(v: 'male' | 'female') {
       </div>
     </div>
     <div class="ds-input-actions">
-      <button class="mn-btn mn-btn-lg" type="button" @click="onPaipan">
+      <Button type="button" variant="default" size="lg" @click="onPaipan">
         {{ primaryLabel || t('common.birthInput.btn.paipan') }}
-      </button>
+      </Button>
     </div>
   </div>
 </template>

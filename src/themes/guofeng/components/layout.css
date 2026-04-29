@@ -133,58 +133,10 @@
   text-align: center;
 }
 
-/* ============ Buttons ============ */
-:root[data-theme='guofeng'] .gf-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  padding: 12px 28px;
-  font-family: var(--font-display);
-  font-size: 16px;
-  color: var(--color-ink-inverse);
-  background-color: var(--color-accent);
-  border: none;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  text-decoration: none;
-  box-shadow: var(--shadow-sm);
-  transition: all var(--transition-fast);
-  position: relative;
-  overflow: hidden;
-}
-
-:root[data-theme='guofeng'] .gf-btn:hover {
-  background-color: var(--color-accent-hover);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-  color: var(--color-ink-inverse);
-}
-
-:root[data-theme='guofeng'] .gf-btn:active {
-  transform: translateY(0);
-}
-
-:root[data-theme='guofeng'] .gf-btn-outline {
-  background-color: transparent;
-  color: var(--color-ink);
-  border: 1px solid var(--color-warning);
-}
-
-:root[data-theme='guofeng'] .gf-btn-outline:hover {
-  background-color: var(--color-warning);
-  color: var(--color-ink-inverse);
-}
-
-:root[data-theme='guofeng'] .gf-btn-gold {
-  background-color: var(--color-warning);
-  color: var(--color-ink);
-}
-
-:root[data-theme='guofeng'] .gf-btn-gold:hover {
-  background-color: #d4a94a;
-  color: var(--color-ink);
-}
+/* ============ Buttons ============
+ * 已迁移到 shadcn-vue Button (themes/guofeng/shadcn.css 接管)
+ * .gf-btn / .gf-btn-outline / .gf-btn-gold / .gf-btn-sm 全部弃用
+ * ============================================ */
 
 /* ============ Card ============ */
 :root[data-theme='guofeng'] .gf-card {

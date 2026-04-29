@@ -242,4 +242,15 @@ export default {
     classicalLabel: '古籍原文',
     pending: '待审校',
   },
+
+  ai: {
+    preset: {
+      career: '事业方向 · 适合行业与决策建议',
+      marriage: '婚姻感情 · 配偶宫与桃花',
+      wealth: '财富格局 · 求财方向与近期机会',
+      health: '健康调养 · 五行偏颇与作息建议',
+      thisYear: '今年流年运势 · 重点机会与避坑',
+      lifeStage: '人生阶段 · 当前大运的关键事',
+    },
+  },
 }

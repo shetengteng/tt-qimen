@@ -16,7 +16,7 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { ArrowLeft, Eye, EyeOff } from 'lucide-vue-next'
+import { ArrowLeft, Eye, EyeOff, Palette, Languages, Sparkles } from 'lucide-vue-next'
 import { useThemeStore } from '@/stores/theme'
 import { useLocaleStore } from '@/stores/locale'
 import { useAiConfigStore } from '@/stores/aiConfig'
@@ -30,9 +30,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
-import { Separator } from '@/components/ui/separator'
 
-const { t, locale: i18nLocale } = useI18n()
+const { t, tm, rt, locale: i18nLocale } = useI18n()
 const router = useRouter()
 const themeStore = useThemeStore()
 const localeStore = useLocaleStore()
@@ -121,6 +120,25 @@ function clearAllSessions() {
   }
 }
 
+/**
+ * 隐私要点列表。
+ *
+ * vue-i18n@9 不支持 `t(key, { returnObjects: true })`（这是 i18next 的 API）；
+ * 旧实现把 key 字符串当作 string 拿到，再被模板 v-for 拆成单字符 <li>，导致渲染为
+ * "s/e/t/t/i/n/g/s/..." 乱码。正确姿势是 `tm()` 取数组消息节点，再 `rt()` 解
+ * 引用每条字符串（即使没有插值参数也要走 rt，否则拿到的是 MessageNode 对象）。
+ *
+ * tm 返回类型在 vue-i18n@9 的泛型推导里非常深，给 raw 显式标注 unknown[] 即可
+ * 短路递归类型，避免 "Type instantiation is excessively deep" 报错。
+ *
+ * 参考：vue-i18n Composer.tm / Composer.rt
+ */
+const privacyItems = computed<string[]>(() => {
+  const raw = tm('settings.section.ai.privacy.items') as unknown as unknown[]
+  if (!Array.isArray(raw)) return []
+  return raw.map((node) => rt(node as never))
+})
+
 function goPrivacy() {
   router.push({ name: 'privacy' })
 }
@@ -132,7 +150,7 @@ function goHome() {
 
 <template>
   <main class="mx-auto max-w-3xl px-4 py-6 md:py-10">
-    <Button variant="ghost" size="sm" class="mb-6" @click="goHome">
+    <Button variant="ghost" size="sm" class="mb-6 -ml-2" @click="goHome">
       <ArrowLeft class="size-4" />
       {{ t('common.button.back') }}
     </Button>
@@ -146,50 +164,64 @@ function goHome() {
       </p>
     </header>
 
-    <div class="space-y-10">
+    <div class="space-y-6">
       <!-- ============== 主题 ============== -->
-      <section>
-        <h2 class="text-base font-semibold text-foreground">
-          {{ t('settings.section.theme.title') }}
-        </h2>
-        <p class="mt-1 text-xs text-muted-foreground">
-          {{ t('settings.section.theme.hint') }}
-        </p>
+      <section class="rounded-xl border border-border bg-card p-5 md:p-6">
+        <div class="flex items-start gap-3">
+          <div class="rounded-lg bg-muted p-2 text-muted-foreground">
+            <Palette class="size-4" aria-hidden="true" />
+          </div>
+          <div class="flex-1">
+            <h2 class="text-base font-semibold text-foreground">
+              {{ t('settings.section.theme.title') }}
+            </h2>
+            <p class="mt-1 text-xs text-muted-foreground">
+              {{ t('settings.section.theme.hint') }}
+            </p>
+          </div>
+        </div>
         <div class="mt-4 grid gap-2 sm:grid-cols-2">
-          <button
+          <Button
             v-for="id in themeStore.list"
             :key="id"
             type="button"
-            class="flex flex-col items-start gap-1 rounded-lg border border-border bg-background px-4 py-3 text-left transition-colors hover:border-primary aria-pressed:border-primary aria-pressed:bg-accent"
+            variant="outline"
+            class="h-auto flex-col items-start gap-1 px-4 py-3 text-left whitespace-normal aria-pressed:border-primary aria-pressed:bg-accent"
             :aria-pressed="id === themeStore.id"
             @click="themeStore.set(id)"
           >
             <span class="text-sm font-medium text-foreground">
               {{ getThemeName(id) }}
             </span>
-            <span class="text-xs text-muted-foreground">
+            <span class="text-xs font-normal text-muted-foreground">
               {{ getThemeDesc(id) }}
             </span>
-          </button>
+          </Button>
         </div>
       </section>
 
-      <Separator />
-
       <!-- ============== 语言 ============== -->
-      <section>
-        <h2 class="text-base font-semibold text-foreground">
-          {{ t('settings.section.language.title') }}
-        </h2>
-        <p class="mt-1 text-xs text-muted-foreground">
-          {{ t('settings.section.language.hint') }}
-        </p>
+      <section class="rounded-xl border border-border bg-card p-5 md:p-6">
+        <div class="flex items-start gap-3">
+          <div class="rounded-lg bg-muted p-2 text-muted-foreground">
+            <Languages class="size-4" aria-hidden="true" />
+          </div>
+          <div class="flex-1">
+            <h2 class="text-base font-semibold text-foreground">
+              {{ t('settings.section.language.title') }}
+            </h2>
+            <p class="mt-1 text-xs text-muted-foreground">
+              {{ t('settings.section.language.hint') }}
+            </p>
+          </div>
+        </div>
         <div class="mt-4 grid gap-2 sm:grid-cols-3">
-          <button
+          <Button
             v-for="id in localeStore.list"
             :key="id"
             type="button"
-            class="flex items-center gap-3 rounded-lg border border-border bg-background px-4 py-3 transition-colors hover:border-primary aria-pressed:border-primary aria-pressed:bg-accent"
+            variant="outline"
+            class="h-auto justify-start gap-3 px-4 py-3 aria-pressed:border-primary aria-pressed:bg-accent"
             :aria-pressed="id === localeStore.id"
             @click="localeStore.set(id)"
           >
@@ -199,26 +231,31 @@ function goHome() {
             <span class="text-sm font-medium text-foreground">
               {{ LANG_LABELS[id].full }}
             </span>
-          </button>
+          </Button>
         </div>
       </section>
 
-      <Separator />
-
       <!-- ============== AI 解读 ============== -->
-      <section>
-        <h2 class="text-base font-semibold text-foreground">
-          {{ t('settings.section.ai.title') }}
-        </h2>
-        <p class="mt-2 text-sm leading-relaxed text-muted-foreground">
-          {{ t('settings.section.ai.lead') }}
-        </p>
+      <section class="rounded-xl border border-border bg-card p-5 md:p-6">
+        <div class="flex items-start gap-3">
+          <div class="rounded-lg bg-primary/10 p-2 text-primary">
+            <Sparkles class="size-4" aria-hidden="true" />
+          </div>
+          <div class="flex-1">
+            <h2 class="text-base font-semibold text-foreground">
+              {{ t('settings.section.ai.title') }}
+            </h2>
+            <p class="mt-2 text-sm leading-relaxed text-muted-foreground">
+              {{ t('settings.section.ai.lead') }}
+            </p>
+          </div>
+        </div>
 
         <div class="mt-6 space-y-6">
           <!-- Provider -->
           <div class="space-y-2">
             <Label>{{ t('settings.section.ai.providerLabel') }}</Label>
-            <div class="rounded-lg border border-primary bg-accent px-4 py-3 text-sm font-medium text-foreground">
+            <div class="rounded-lg border border-primary/40 bg-accent/40 px-4 py-3 text-sm font-medium text-foreground">
               {{ t('settings.section.ai.providerOption.deepseek') }}
             </div>
           </div>
@@ -239,9 +276,11 @@ function goHome() {
                   :placeholder="t('settings.section.ai.apiKey.placeholder')"
                   class="pr-10"
                 />
-                <button
+                <Button
                   type="button"
-                  class="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  variant="ghost"
+                  size="icon"
+                  class="absolute right-1 top-1/2 size-7 -translate-y-1/2"
                   :aria-label="showApiKey
                     ? t('settings.section.ai.apiKey.hide')
                     : t('settings.section.ai.apiKey.show')"
@@ -249,12 +288,11 @@ function goHome() {
                 >
                   <Eye v-if="!showApiKey" class="size-4" aria-hidden="true" />
                   <EyeOff v-else class="size-4" aria-hidden="true" />
-                </button>
+                </Button>
               </div>
               <Button
                 v-if="aiConfig.hasKey"
                 variant="outline"
-                size="sm"
                 @click="clearKey"
               >
                 {{ t('settings.section.ai.apiKey.clear') }}
@@ -269,24 +307,19 @@ function goHome() {
           <div class="space-y-2">
             <Label>{{ t('settings.section.ai.model.label') }}</Label>
             <div class="space-y-2">
-              <button
+              <Button
                 v-for="m in DEEPSEEK_MODELS"
                 :key="m.id"
                 type="button"
-                class="flex w-full items-start justify-between gap-3 rounded-lg border border-border bg-background px-4 py-3 text-left transition-colors hover:border-primary aria-pressed:border-primary aria-pressed:bg-accent"
+                variant="outline"
+                class="h-auto w-full justify-start px-4 py-3 text-left aria-pressed:border-primary aria-pressed:bg-accent"
                 :aria-pressed="m.id === aiConfig.config.model"
                 @click="aiConfig.setModel(m.id)"
               >
                 <span class="text-sm font-medium text-foreground">
                   {{ t(m.labelKey) }}
                 </span>
-                <span
-                  v-if="'deprecated' in m && m.deprecated"
-                  class="shrink-0 rounded-md bg-destructive/10 px-2 py-0.5 text-xs text-destructive"
-                >
-                  {{ t('ai.model.deprecatedTip') }}
-                </span>
-              </button>
+              </Button>
             </div>
             <p class="text-xs text-muted-foreground">
               {{ t('settings.section.ai.model.hint') }}
@@ -330,7 +363,7 @@ function goHome() {
                 spellcheck="false"
                 :placeholder="t('settings.section.ai.baseUrl.placeholder')"
               />
-              <Button variant="outline" size="sm" @click="resetBaseUrl">
+              <Button variant="outline" @click="resetBaseUrl">
                 {{ t('settings.section.ai.baseUrl.useDefault') }}
               </Button>
             </div>
@@ -373,63 +406,63 @@ function goHome() {
             </p>
           </div>
         </div>
+      </section>
 
-        <Separator class="my-8" />
-
-        <!-- 对话历史 -->
-        <div>
-          <h3 class="text-sm font-semibold text-foreground">
-            {{ t('settings.section.ai.sessions.title') }}
-          </h3>
-          <div class="mt-3 flex flex-wrap gap-6">
-            <div class="space-y-1">
-              <div class="text-xs text-muted-foreground">
-                {{ t('settings.section.ai.sessions.countLabel') }}
-              </div>
-              <div class="font-mono text-2xl font-semibold text-foreground">
-                {{ aiHistory.count }}
-              </div>
+      <!-- ============== 对话历史 ============== -->
+      <section class="rounded-xl border border-border bg-card p-5 md:p-6">
+        <h3 class="text-sm font-semibold text-foreground">
+          {{ t('settings.section.ai.sessions.title') }}
+        </h3>
+        <div class="mt-3 flex flex-wrap gap-6">
+          <div class="space-y-1">
+            <div class="text-xs text-muted-foreground">
+              {{ t('settings.section.ai.sessions.countLabel') }}
             </div>
-            <div class="space-y-1">
-              <div class="text-xs text-muted-foreground">
-                {{ t('settings.section.ai.sessions.messagesLabel') }}
-              </div>
-              <div class="font-mono text-2xl font-semibold text-foreground">
-                {{ aiHistory.totalMessages }}
-              </div>
+            <div class="font-mono text-2xl font-semibold text-foreground">
+              {{ aiHistory.count }}
             </div>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            class="mt-4"
-            :disabled="aiHistory.count === 0"
-            @click="clearAllSessions"
+          <div class="space-y-1">
+            <div class="text-xs text-muted-foreground">
+              {{ t('settings.section.ai.sessions.messagesLabel') }}
+            </div>
+            <div class="font-mono text-2xl font-semibold text-foreground">
+              {{ aiHistory.totalMessages }}
+            </div>
+          </div>
+        </div>
+        <Button
+          variant="outline"
+          class="mt-4"
+          :disabled="aiHistory.count === 0"
+          @click="clearAllSessions"
+        >
+          {{ t('settings.section.ai.sessions.clearButton') }}
+        </Button>
+      </section>
+
+      <!-- ============== 隐私 ============== -->
+      <section class="rounded-xl border border-border bg-card p-5 md:p-6">
+        <h3 class="text-sm font-semibold text-foreground">
+          {{ t('settings.section.ai.privacy.title') }}
+        </h3>
+        <ul class="mt-3 space-y-2 pl-5 text-sm text-muted-foreground">
+          <li
+            v-for="(item, i) in privacyItems"
+            :key="i"
+            class="list-disc leading-relaxed"
           >
-            {{ t('settings.section.ai.sessions.clearButton') }}
-          </Button>
-        </div>
-
-        <Separator class="my-8" />
-
-        <!-- 隐私 -->
-        <div>
-          <h3 class="text-sm font-semibold text-foreground">
-            {{ t('settings.section.ai.privacy.title') }}
-          </h3>
-          <ul class="mt-3 space-y-2 pl-5 text-sm text-muted-foreground">
-            <li
-              v-for="(item, i) in (t('settings.section.ai.privacy.items', { returnObjects: true }) as unknown as string[])"
-              :key="i"
-              class="list-disc leading-relaxed"
-            >
-              {{ item }}
-            </li>
-          </ul>
-          <Button variant="link" class="mt-2 px-0" @click="goPrivacy">
-            {{ t('settings.section.ai.privacy.privacyLink') }}
-          </Button>
-        </div>
+            {{ item }}
+          </li>
+        </ul>
+        <Button
+          variant="link"
+          size="sm"
+          class="mt-3 h-auto px-0 text-primary hover:text-primary/80"
+          @click="goPrivacy"
+        >
+          {{ t('settings.section.ai.privacy.privacyLink') }}
+        </Button>
       </section>
     </div>
   </main>

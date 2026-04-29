@@ -151,11 +151,96 @@
 }
 
 /* ----------------------------------------------------------------------------
- * Button：与原型 .mn-btn-lg 对齐
+ * Button —— 简约视觉规范
+ *
+ * 项目从原生 .mn-btn / .mn-btn-outline / .mn-btn-ghost / .mn-btn-lg 全面迁移
+ * 到 shadcn-vue `Button`，依靠 [data-slot='button'][data-variant='*'] selector
+ * 在简约主题下重写视觉（紫色主调 / 圆角 / hover 上浮）。
+ *
+ * variant 映射：
+ *   default   → 原 .mn-btn       紫色实心
+ *   outline   → 原 .mn-btn-outline 灰描边、悬浮翻紫
+ *   secondary → 原 .mn-btn-gold   柔金（备用）
+ *   ghost     → 原 .mn-btn-ghost   透明 hover 浅紫
+ *   destructive → shadcn 默认 destructive token
+ * size lg → 与 mn-btn-lg 对齐（>15px 字号）
  * -------------------------------------------------------------------------- */
-:root[data-theme='minimal'] [data-slot='button'][data-variant='default'] {
+:root[data-theme='minimal'] [data-slot='button'] {
   font-family: var(--font-body);
   border-radius: var(--radius-md);
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+:root[data-theme='minimal'] [data-slot='button']:hover:not(:disabled):not([data-state='open']) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+:root[data-theme='minimal'] [data-slot='button']:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+:root[data-theme='minimal'] [data-slot='button'][data-variant='default'] {
+  background-color: var(--color-accent);
+  color: var(--color-ink-inverse);
+}
+:root[data-theme='minimal'] [data-slot='button'][data-variant='default']:hover:not(:disabled) {
+  background-color: var(--color-accent-hover);
+  color: var(--color-ink-inverse);
+}
+
+:root[data-theme='minimal'] [data-slot='button'][data-variant='outline'] {
+  background-color: transparent;
+  color: var(--color-ink);
+  border: 1px solid var(--color-border-strong);
+}
+:root[data-theme='minimal'] [data-slot='button'][data-variant='outline']:hover:not(:disabled) {
+  background-color: var(--color-accent-soft);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+/* outline 在被选中（用于多选/单选 segment 列表）的视觉 */
+:root[data-theme='minimal'] [data-slot='button'][data-variant='outline'][aria-pressed='true'] {
+  background-color: var(--color-accent-soft);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+:root[data-theme='minimal'] [data-slot='button'][data-variant='ghost'] {
+  color: var(--color-ink-soft);
+}
+:root[data-theme='minimal'] [data-slot='button'][data-variant='ghost']:hover:not(:disabled) {
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+/* size=lg 国风/简约共用：参考原 mn-btn-lg / gf-btn 大字号 */
+:root[data-theme='minimal'] [data-slot='button'][data-size='lg'],
+:root[data-theme='guofeng'] [data-slot='button'][data-size='lg'] {
+  height: 44px;
+  padding-inline: 24px;
+  font-size: 15px;
+  border-radius: var(--radius-lg);
+}
+
+/* ToggleGroupItem（公历/农历分段切换）简约视觉 */
+:root[data-theme='minimal'] [data-slot='toggle-group-item'] {
+  background-color: transparent;
+  color: var(--color-ink-soft);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 6px 16px;
+  font-size: 13px;
+  font-family: inherit;
+  transition: all var(--transition-fast);
+}
+:root[data-theme='minimal'] [data-slot='toggle-group-item'][data-state='on'] {
+  background-color: var(--color-accent);
+  color: var(--color-ink-inverse);
 }
 
 /* ----------------------------------------------------------------------------

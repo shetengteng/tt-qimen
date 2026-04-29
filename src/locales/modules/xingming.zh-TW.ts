@@ -168,4 +168,13 @@ export default {
   },
 
   disclaimer: '81 數理由熊崎健翁 1918 年整理，屬文化參考，不等於人格。',
+
+  ai: {
+    preset: {
+      nameMeaning: '名字寓意 · 字義、音律、文化背景',
+      nameStrength: '五格強弱 · 三才配置點評',
+      improvement: '改善方向 · 是否需要補字 / 改名',
+      compatibility: '名字與人 · 與個性 / 行業的契合度',
+    },
+  },
 }

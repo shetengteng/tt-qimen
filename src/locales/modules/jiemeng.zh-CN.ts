@@ -85,4 +85,13 @@ export default {
     title: '我的解梦词条 · TT 占卜',
     text: '古籍原文 · 现代解读 · 来自 TT 占卜的周公解梦。',
   },
+
+  ai: {
+    preset: {
+      symbolism: '梦境象征 · 这个意象在心理层面的指向',
+      emotion: '情绪线索 · 梦境反映的近期情绪状态',
+      advice: '现实建议 · 醒来后可以做什么',
+      lifeRelevance: '与近况的关联 · 哪些事可能在催此梦',
+    },
+  },
 }

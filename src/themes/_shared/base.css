@@ -41,15 +41,29 @@ svg {
 }
 
 button {
-  font: inherit;
-  color: inherit;
+  /*
+    用 longhand 而不是 `font: inherit`，避免 shadcn-vue button 上的
+    Tailwind utility（如 text-[0.8rem] / text-primary-foreground）被
+    shorthand 整组覆盖。Tailwind v4 把 utility 放在 @layer utilities，
+    base layer/unlayered 的 element selector 反而在 cascade 顺序里排前；
+    shorthand 跨属性整组应用，会让 utility 字号 / 颜色失效。
+    用 longhand 只补需要的字体属性，让颜色与字号继续走 utility。
+  */
+  font-family: inherit;
+  font-weight: inherit;
+  font-style: inherit;
+  line-height: inherit;
   cursor: pointer;
 }
 
 input,
 select,
 textarea {
-  font: inherit;
+  /* 同 button 注释：避免 shorthand 整组覆盖 Tailwind utility 字号。 */
+  font-family: inherit;
+  font-weight: inherit;
+  font-style: inherit;
+  line-height: inherit;
 }
 
 a {
@@ -151,6 +165,17 @@ body {
     color 0.18s ease,
     border-color 0.18s ease,
     box-shadow 0.18s ease;
+}
+.layout-popover-trigger:disabled,
+.layout-popover-trigger[disabled] {
+  cursor: not-allowed;
+  opacity: 0.4;
+  pointer-events: none;
+}
+.layout-popover-trigger.is-active {
+  /* 激活态在每个主题层用 :root[data-theme=xxx] .layout-popover-trigger.is-active 覆盖颜色 */
+  background-color: rgba(99, 102, 241, 0.12);
+  color: rgba(99, 102, 241, 0.92);
 }
 .layout-popover-trigger-icon {
   flex: 0 0 auto;
@@ -300,7 +325,8 @@ body {
   font-family: var(--gf-font-serif, 'Noto Serif SC', serif);
 }
 :root[data-theme='guofeng'] .layout-popover-trigger:hover,
-:root[data-theme='guofeng'] .layout-popover-trigger[data-state='open'] {
+:root[data-theme='guofeng'] .layout-popover-trigger[data-state='open'],
+:root[data-theme='guofeng'] .layout-popover-trigger.is-active {
   background: rgba(255, 251, 240, 0.95);
   border-color: rgba(108, 39, 25, 0.7);
   color: #6c2719;
@@ -344,7 +370,8 @@ body {
   color: rgba(15, 23, 42, 0.78);
 }
 :root[data-theme='minimal'] .layout-popover-trigger:hover,
-:root[data-theme='minimal'] .layout-popover-trigger[data-state='open'] {
+:root[data-theme='minimal'] .layout-popover-trigger[data-state='open'],
+:root[data-theme='minimal'] .layout-popover-trigger.is-active {
   background: #ffffff;
   border-color: rgba(99, 102, 241, 0.6);
   color: rgba(99, 102, 241, 0.92);

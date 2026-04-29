@@ -5,10 +5,13 @@ import { useRoute, useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
 import { BIRTH_STORE_KEY } from '@/composables/useBirthStore'
 import BirthForm from '@/components/common/BirthForm.vue'
+import AskAiButton from '@/components/ai/AskAiButton.vue'
+import { useAiSidebarStore } from '@/stores/aiSidebar'
 import CollapsibleSection from '@/components/common/CollapsibleSection.vue'
 import ShareToast from '@/components/common/ShareToast.vue'
 import SharePreviewDialog from '@/components/common/SharePreviewDialog.vue'
 import ResultBanner from '@/components/common/ResultBanner.vue'
+import { Button } from '@/components/ui/button'
 import { useSkeletonReveal } from '@/composables/useSkeletonReveal'
 import { useShareCard } from '@/composables/useShareCard'
 import { buildShareUrl, normalizeQuery, readIntInRange } from '@/lib/shareUrl'
@@ -45,6 +48,20 @@ const chartRef = ref<InstanceType<typeof ZiweiPalaceChart> | null>(null)
 
 const showSanfang = ref(true)
 const chart = shallowRef<ZiweiChart | null>(null)
+
+const aiSidebar = useAiSidebarStore()
+const aiUserContext = computed(() => ({
+  gender: ziweiStore.birth.gender,
+}))
+
+function onAskAi() {
+  if (!chart.value) return
+  aiSidebar.show({
+    moduleId: 'ziwei',
+    chart: chart.value,
+    userContext: aiUserContext.value,
+  })
+}
 
 const skeleton = useSkeletonReveal({
   delay: 1500,
@@ -220,9 +237,9 @@ onMounted(() => {
         <div class="compute-error-card">
           <h3>◈ {{ t('ziwei.computeError.title') }}</h3>
           <p>{{ t('ziwei.computeError.hint') }}</p>
-          <button class="gf-btn gf-btn-outline" @click="onRepaipan">
+          <Button type="button" variant="outline" @click="onRepaipan">
             {{ t('ziwei.btn.repaipanIcon') }} {{ t('ziwei.computeError.retry') }}
-          </button>
+          </Button>
         </div>
       </div>
       <template v-else>
@@ -304,12 +321,13 @@ onMounted(() => {
       </div><!-- /ziwei-share-card -->
 
       <div class="action-bar">
-        <button type="button" class="gf-btn" @click="onPreview">
+        <Button type="button" variant="default" @click="onPreview">
           {{ t('ziwei.btn.shareIcon') }} {{ t('ziwei.btn.share') }}
-        </button>
-        <button type="button" class="gf-btn gf-btn-outline" @click="onRepaipan">
+        </Button>
+        <AskAiButton :disabled="!chart" @click="onAskAi" />
+        <Button type="button" variant="outline" @click="onRepaipan">
           {{ t('ziwei.btn.repaipanIcon') }} {{ t('ziwei.btn.repaipan') }}
-        </button>
+        </Button>
       </div>
       </template>
     </div>
@@ -345,9 +363,9 @@ onMounted(() => {
         <div class="compute-error-card mn">
           <h3>{{ t('ziwei.computeError.title') }}</h3>
           <p>{{ t('ziwei.computeError.hint') }}</p>
-          <button class="mn-btn mn-btn-outline" @click="onRepaipan">
+          <Button type="button" variant="outline" @click="onRepaipan">
             {{ t('ziwei.computeError.retry') }}
-          </button>
+          </Button>
         </div>
       </main>
       <template v-else>
@@ -427,8 +445,9 @@ onMounted(() => {
       </div><!-- /ziwei-share-card -->
 
       <div class="actions mn-container">
-        <button type="button" class="mn-btn" @click="onPreview">{{ t('ziwei.btn.share') }}</button>
-        <button type="button" class="mn-btn mn-btn-ghost" @click="onRepaipan">{{ t('ziwei.btn.repaipan') }}</button>
+        <Button type="button" variant="default" @click="onPreview">{{ t('ziwei.btn.share') }}</Button>
+        <AskAiButton :disabled="!chart" @click="onAskAi" />
+        <Button type="button" variant="ghost" @click="onRepaipan">{{ t('ziwei.btn.repaipan') }}</Button>
       </div>
       </template>
     </div>
@@ -458,4 +477,5 @@ onMounted(() => {
     @save="onSave"
     @share="onShare"
   />
+
 </template>

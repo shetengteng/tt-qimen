@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
 
 /**
  * 起签输入卡：心中所问 + 占问领域 + 启签 / 再摇 按钮。
@@ -100,12 +101,12 @@ const topicModel = computed<LingqianTopicKey>({
     </p>
 
     <div class="ds-input-actions">
-      <button type="button" class="gf-btn" @click="emit('paipan')">
+      <Button type="button" variant="default" size="lg" @click="emit('paipan')">
         {{ t('lingqian.btn.paipanIcon') }} {{ t('lingqian.btn.paipan') }}
-      </button>
-      <button type="button" class="gf-btn gf-btn-outline" @click="emit('reset')">
+      </Button>
+      <Button type="button" variant="outline" @click="emit('reset')">
         {{ t('lingqian.btn.resetIcon') }} {{ t('lingqian.btn.reset') }}
-      </button>
+      </Button>
     </div>
   </div>
 
@@ -152,12 +153,12 @@ const topicModel = computed<LingqianTopicKey>({
     </p>
 
     <div class="ds-input-actions">
-      <button type="button" class="mn-btn mn-btn-lg" @click="emit('paipan')">
+      <Button type="button" variant="default" size="lg" @click="emit('paipan')">
         {{ t('lingqian.btn.paipan') }}
-      </button>
-      <button type="button" class="mn-btn mn-btn-outline" @click="emit('reset')">
+      </Button>
+      <Button type="button" variant="outline" @click="emit('reset')">
         {{ t('lingqian.btn.reset') }}
-      </button>
+      </Button>
     </div>
   </div>
 </template>

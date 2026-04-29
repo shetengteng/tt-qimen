@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
+import { Button } from '@/components/ui/button'
 
 const props = defineProps<{ moduleId: string }>()
 const { t } = useI18n()
@@ -10,13 +11,14 @@ const router = useRouter()
 <template>
   <main class="ds-container module-placeholder">
     <header class="module-placeholder__hero">
-      <button
+      <Button
         type="button"
-        class="ds-button ds-button--ghost module-placeholder__back"
+        variant="ghost"
+        class="module-placeholder__back"
         @click="router.push({ name: 'home' })"
       >
         ← {{ t('common.button.back') }}
-      </button>
+      </Button>
       <h1>{{ t(`${props.moduleId}.title`) }}</h1>
       <p class="module-placeholder__sub">{{ t(`${props.moduleId}.subtitle`) }}</p>
     </header>

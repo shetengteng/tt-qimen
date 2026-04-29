@@ -113,4 +113,13 @@ export default {
     title: '我的觀音靈籤 · TT 占卜',
     text: '虔誠一念 · 神明指引 · 來自 TT 占卜的觀音靈籤。',
   },
+
+  ai: {
+    preset: {
+      poemReading: '籤詩逐句解讀 · 典故 + 意象',
+      matter: '針對所問之事 · 此籤如何應',
+      outlook: '近期走勢 · 何時見動 / 何時見果',
+      tips: '行事建議 · 順勢與避忌',
+    },
+  },
 }

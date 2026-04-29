@@ -95,4 +95,13 @@ export default {
     title: 'My Xiao Liu Ren reading · TT Divination',
     text: 'Snap of fingers, instant answer. Shared from TT Divination.',
   },
+
+  ai: {
+    preset: {
+      thisQuestion: 'This cast · the core verdict for what I asked',
+      palaceMeaning: 'Why this palace · what makes it land here',
+      timing: 'Timing window · when results are likely to surface',
+      outcome: 'Suitable / avoid · how to ride the wave or sidestep',
+    },
+  },
 }

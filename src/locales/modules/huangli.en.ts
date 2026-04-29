@@ -180,4 +180,13 @@ export default {
     title: 'My Almanac Day · TT Divination',
     text: 'Daily yi/ji, deities and 9 matters — from TT Divination.',
   },
+
+  ai: {
+    preset: {
+      suitability: 'Today\u2019s "suitable" list · which matters fit best',
+      avoidance: 'Today\u2019s "avoid" list · which matters to skip',
+      detailedHours: 'Auspicious hours · when is best / worst',
+      matterAdvice: 'For one specific plan · is today the right day?',
+    },
+  },
 }

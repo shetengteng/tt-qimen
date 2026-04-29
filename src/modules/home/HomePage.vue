@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
 import { MODULES, type ModuleId } from '@/router'
+import { Button } from '@/components/ui/button'
 
 interface ModuleVM {
   id: ModuleId
@@ -75,12 +76,12 @@ function go(id: ModuleId) {
         {{ t('home.hero.subtitle2') }}
       </p>
       <div class="hero-cta">
-        <a href="#" class="gf-btn" @click.prevent="go('bazi')">
+        <Button as="a" href="#" variant="default" size="lg" @click.prevent="go('bazi')">
           <span>{{ t('home.hero.ctaPrimaryIcon') }}</span> {{ t('home.hero.ctaPrimary') }}
-        </a>
-        <a href="#modules" class="gf-btn gf-btn-outline">
+        </Button>
+        <Button as="a" href="#modules" variant="outline" size="lg">
           <span>{{ t('home.hero.ctaSecondaryIcon') }}</span> {{ t('home.hero.ctaSecondary') }}
-        </a>
+        </Button>
       </div>
     </section>
 
@@ -172,13 +173,13 @@ function go(id: ModuleId) {
         {{ t('home.hero.subtitleMn2') }}
       </p>
       <div class="hero-cta">
-        <a href="#" class="mn-btn mn-btn-lg" @click.prevent="go('bazi')">
+        <Button as="a" href="#" variant="default" size="lg" @click.prevent="go('bazi')">
           {{ t('home.hero.ctaMnPrimary') }}
           <span>→</span>
-        </a>
-        <a href="#modules" class="mn-btn mn-btn-lg mn-btn-outline">
+        </Button>
+        <Button as="a" href="#modules" variant="outline" size="lg">
           {{ t('home.hero.ctaMnSecondary') }}
-        </a>
+        </Button>
       </div>
       <div class="hero-stats">
         <div class="stat">
@@ -220,10 +221,10 @@ function go(id: ModuleId) {
           <span class="hl-content">{{ t('home.huangli.jiValue') }}</span>
         </div>
       </div>
-      <a href="#" class="mn-btn mn-btn-outline" @click.prevent="go('huangli')">
+      <Button as="a" href="#" variant="outline" @click.prevent="go('huangli')">
         {{ t('home.huangli.detailLinkMn') }}
         <span>→</span>
-      </a>
+      </Button>
     </div>
 
     <section class="modules-section" id="modules">

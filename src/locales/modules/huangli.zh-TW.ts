@@ -180,4 +180,13 @@ export default {
     title: '我的黃曆一日 · TT 占卜',
     text: '每日宜忌 · 吉神凶煞 · 九類事由 · 來自 TT 占卜。',
   },
+
+  ai: {
+    preset: {
+      suitability: '今日宜事 · 哪幾件最適合做',
+      avoidance: '今日忌事 · 哪幾件務必避開',
+      detailedHours: '吉時擇刻 · 幾點最旺、幾點最忌',
+      matterAdvice: '針對一件事問 · 適不適合今天做',
+    },
+  },
 }

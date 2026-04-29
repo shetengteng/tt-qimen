@@ -16,6 +16,7 @@ import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
 import { FortuneError } from '@/lib/errors'
+import { Button } from '@/components/ui/button'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -82,12 +83,12 @@ function goHome() {
       </p>
 
       <div class="error-actions">
-        <button type="button" class="gf-btn" @click="retry">
+        <Button type="button" variant="default" @click="retry">
           {{ t('errorBoundary.retry') }}
-        </button>
-        <button type="button" class="gf-btn gf-btn-outline" @click="goHome">
+        </Button>
+        <Button type="button" variant="outline" @click="goHome">
           {{ t('errorBoundary.goHome') }}
-        </button>
+        </Button>
       </div>
     </div>
   </main>
@@ -115,12 +116,12 @@ function goHome() {
       </p>
 
       <div class="error-actions">
-        <button type="button" class="mn-btn" @click="retry">
+        <Button type="button" variant="default" @click="retry">
           {{ t('errorBoundary.retry') }}
-        </button>
-        <button type="button" class="mn-btn mn-btn-outline" @click="goHome">
+        </Button>
+        <Button type="button" variant="outline" @click="goHome">
           {{ t('errorBoundary.goHome') }}
-        </button>
+        </Button>
       </div>
     </div>
   </main>

@@ -168,4 +168,13 @@ export default {
   },
 
   disclaimer: 'The 81-number system was compiled by Kumazaki Kenou in 1918. For cultural reference only and does not equate to personality.',
+
+  ai: {
+    preset: {
+      nameMeaning: 'Name meaning · characters, sound & cultural context',
+      nameStrength: 'Five-grid strength · San-Cai (Three-Talents) review',
+      improvement: 'Improvement · whether to add a character or rename',
+      compatibility: 'Name vs person · fit with personality / industry',
+    },
+  },
 }

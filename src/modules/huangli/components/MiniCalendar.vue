@@ -18,6 +18,7 @@ import {
 } from '../core/huangli'
 import type { HuangliMonth, HuangliMonthDay } from '../types'
 import MonthYearPicker from './MonthYearPicker.vue'
+import { Button } from '@/components/ui/button'
 
 const props = defineProps<{
   /** 当前 dialog 正在展示的日（用于在月历里加细 outline 高亮）。null = 无 */
@@ -297,14 +298,15 @@ function onPickMonth(y: number, m: number) {
 <template>
   <div :class="['hl-cal', isGuofeng ? 'hl-cal--gf' : 'hl-cal--mn']">
     <div class="hl-cal-head">
-      <button
+      <Button
         type="button"
-        :class="isGuofeng ? 'gf-btn gf-btn-outline' : 'mn-btn mn-btn-ghost'"
+        :variant="isGuofeng ? 'outline' : 'ghost'"
+        size="sm"
         :aria-label="t('huangli.calendar.prevMonthAria', { month: store.month === 1 ? 12 : store.month - 1 })"
         @click="onPrev"
       >
         ← {{ prevLabel }}
-      </button>
+      </Button>
 
       <MonthYearPicker
         v-model:open="pickerOpen"
@@ -316,14 +318,15 @@ function onPickMonth(y: number, m: number) {
         @pick="onPickMonth"
       />
 
-      <button
+      <Button
         type="button"
-        :class="isGuofeng ? 'gf-btn gf-btn-outline' : 'mn-btn mn-btn-ghost'"
+        :variant="isGuofeng ? 'outline' : 'ghost'"
+        size="sm"
         :aria-label="t('huangli.calendar.nextMonthAria', { month: store.month === 12 ? 1 : store.month + 1 })"
         @click="onNext"
       >
         {{ nextLabel }} →
-      </button>
+      </Button>
     </div>
 
     <div v-if="store.activeMatter" class="hl-cal-filter">

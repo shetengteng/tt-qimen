@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { Button } from '@/components/ui/button'
 
 const router = useRouter()
 const { t } = useI18n()
@@ -10,9 +11,9 @@ const { t } = useI18n()
   <main class="ds-container not-found">
     <h1>404</h1>
     <p>{{ t('common.nodata') }}</p>
-    <button type="button" class="ds-button" @click="router.push({ name: 'home' })">
+    <Button type="button" variant="outline" @click="router.push({ name: 'home' })">
       {{ t('common.button.back') }}
-    </button>
+    </Button>
   </main>
 </template>
 

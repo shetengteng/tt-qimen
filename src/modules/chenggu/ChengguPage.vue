@@ -6,9 +6,12 @@ import { useThemeStore } from '@/stores/theme'
 import { useLocaleStore } from '@/stores/locale'
 import { BIRTH_STORE_KEY } from '@/composables/useBirthStore'
 import BirthForm from '@/components/common/BirthForm.vue'
+import AskAiButton from '@/components/ai/AskAiButton.vue'
+import { useAiSidebarStore } from '@/stores/aiSidebar'
 import ShareToast from '@/components/common/ShareToast.vue'
 import SharePreviewDialog from '@/components/common/SharePreviewDialog.vue'
 import ResultBanner from '@/components/common/ResultBanner.vue'
+import { Button } from '@/components/ui/button'
 import { useSkeletonReveal } from '@/composables/useSkeletonReveal'
 import { useShareCard } from '@/composables/useShareCard'
 import { buildShareUrl, normalizeQuery, readIntInRange } from '@/lib/shareUrl'
@@ -34,6 +37,20 @@ const resultBannerEl = ref<HTMLElement | null>(null)
 const shareCardEl = ref<HTMLElement | null>(null)
 
 const result = shallowRef<ChengguResult | null>(null)
+
+const aiSidebar = useAiSidebarStore()
+const aiUserContext = computed(() => ({
+  gender: chengguStore.birth.gender,
+}))
+
+function onAskAi() {
+  if (!result.value) return
+  aiSidebar.show({
+    moduleId: 'chenggu',
+    chart: result.value,
+    userContext: aiUserContext.value,
+  })
+}
 
 const skeleton = useSkeletonReveal({
   delay: 1500,
@@ -173,9 +190,9 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
       <div v-if="showComputeError" class="compute-error-card">
         <h3>◈ {{ t('chenggu.computeError.title') }}</h3>
         <p>{{ t('chenggu.computeError.hint') }}</p>
-        <button class="gf-btn gf-btn-outline" @click="onRepaipan">
+        <Button type="button" variant="outline" @click="onRepaipan">
           {{ t('chenggu.btn.repaipanIcon') }} {{ t('chenggu.computeError.retry') }}
-        </button>
+        </Button>
       </div>
 
       <template v-else-if="result">
@@ -193,12 +210,13 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
         </div>
 
         <div class="action-bar">
-          <button type="button" class="gf-btn" @click="onPreview">
+          <Button type="button" variant="default" @click="onPreview">
             {{ t('chenggu.btn.shareIcon') }} {{ t('chenggu.btn.share') }}
-          </button>
-          <button type="button" class="gf-btn gf-btn-outline" @click="onRepaipan">
+          </Button>
+          <AskAiButton :disabled="!result" @click="onAskAi" />
+          <Button type="button" variant="outline" @click="onRepaipan">
             {{ t('chenggu.btn.repaipanIcon') }} {{ t('chenggu.btn.repaipan') }}
-          </button>
+          </Button>
         </div>
       </template>
     </div>
@@ -238,9 +256,9 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
         <div class="compute-error-card mn">
           <h3>{{ t('chenggu.computeError.title') }}</h3>
           <p>{{ t('chenggu.computeError.hint') }}</p>
-          <button class="mn-btn mn-btn-outline" @click="onRepaipan">
+          <Button type="button" variant="outline" @click="onRepaipan">
             {{ t('chenggu.computeError.retry') }}
-          </button>
+          </Button>
         </div>
       </main>
 
@@ -259,8 +277,9 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
         </div>
 
         <div class="actions mn-container">
-          <button type="button" class="mn-btn" @click="onPreview">{{ t('chenggu.btn.share') }}</button>
-          <button type="button" class="mn-btn mn-btn-ghost" @click="onRepaipan">{{ t('chenggu.btn.repaipan') }}</button>
+          <Button type="button" variant="default" @click="onPreview">{{ t('chenggu.btn.share') }}</Button>
+          <AskAiButton :disabled="!result" @click="onAskAi" />
+          <Button type="button" variant="ghost" @click="onRepaipan">{{ t('chenggu.btn.repaipan') }}</Button>
         </div>
       </template>
     </div>
@@ -287,4 +306,5 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
     @share="onShare"
   />
   <ShareToast :state="toastState" />
+
 </template>

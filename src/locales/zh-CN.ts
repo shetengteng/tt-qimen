@@ -451,6 +451,18 @@ export default {
   ai: {
     askButton: '询问 AI',
     askButtonAria: '使用 AI 解读当前命盘',
+    header: {
+      toggleOpen: '打开 AI 解读',
+      toggleClose: '关闭 AI 解读',
+    },
+    freeChat: {
+      label: '自由咨询',
+      welcomeTitle: '与 AI 命理顾问自由对话',
+      welcomeBody:
+        '当前没有命盘上下文。你可以直接提问关于八字、紫微、择日、解梦等命理话题；如想得到针对你个人的精准解读，请先在对应模块录入生辰排盘。',
+      inputPlaceholder: '请输入你的命理咨询问题…',
+      hintGoModule: '想要排盘？请前往顶部导航选择对应模块',
+    },
     drawer: {
       title: 'AI 解读',
       closeAria: '关闭 AI 解读面板',
@@ -472,9 +484,6 @@ export default {
     model: {
       v4Flash: 'DeepSeek V4 Flash · 快速 / 便宜',
       v4Pro: 'DeepSeek V4 Pro · 深度推理',
-      chatLegacy: 'deepseek-chat（旧版 · 即将弃用）',
-      reasonerLegacy: 'deepseek-reasoner（旧版 · 即将弃用）',
-      deprecatedTip: '该模型 2026/07/24 起将弃用，建议切换到 V4 系列',
     },
     error: {
       aborted: '已中止生成',

@@ -238,4 +238,15 @@ export default {
     hint: 'The current birth input cannot produce a Ziwei chart. Please review your birth details and cast again.',
     retry: 'Cast again',
   },
+
+  ai: {
+    preset: {
+      mingPalace: 'Self palace stars · personality core & life axis',
+      palaces: 'Twelve-palace overview · which are strongest / weakest',
+      lifeMaster: 'Soul master / Body master / Doujun · combined reading',
+      decadalLuck: 'Current decadal cycle · key palaces & flying mutagens',
+      sihua: 'Native four mutagens · meaning of Lu / Quan / Ke / Ji',
+      friends: 'Parents / siblings / children / friends · relationships',
+    },
+  },
 }

@@ -113,4 +113,13 @@ export default {
     title: '我的观音灵签 · TT 占卜',
     text: '虔诚一念 · 神明指引 · 来自 TT 占卜的观音灵签。',
   },
+
+  ai: {
+    preset: {
+      poemReading: '签诗逐句解读 · 典故 + 意象',
+      matter: '针对所问之事 · 此签如何应',
+      outlook: '近期走势 · 何时见动 / 何时见果',
+      tips: '行事建议 · 顺势与避忌',
+    },
+  },
 }

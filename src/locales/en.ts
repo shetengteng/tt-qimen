@@ -434,6 +434,18 @@ export default {
   ai: {
     askButton: 'Ask AI',
     askButtonAria: 'Use AI to interpret the current chart',
+    header: {
+      toggleOpen: 'Open AI panel',
+      toggleClose: 'Close AI panel',
+    },
+    freeChat: {
+      label: 'Free chat',
+      welcomeTitle: 'Free chat with the AI divination advisor',
+      welcomeBody:
+        'No chart context loaded. You can ask any question about BaZi, Zi Wei, date selection, dream interpretation and other Chinese divination topics. For a personalized reading, please first generate a chart in one of the modules.',
+      inputPlaceholder: 'Ask the divination advisor anything…',
+      hintGoModule: 'Need a chart? Pick a module from the top navigation',
+    },
     drawer: {
       title: 'AI Interpretation',
       closeAria: 'Close AI panel',
@@ -455,9 +467,6 @@ export default {
     model: {
       v4Flash: 'DeepSeek V4 Flash · fast / cheap',
       v4Pro: 'DeepSeek V4 Pro · deep reasoning',
-      chatLegacy: 'deepseek-chat (legacy, sunsetting)',
-      reasonerLegacy: 'deepseek-reasoner (legacy, sunsetting)',
-      deprecatedTip: 'Sunsetting after 2026-07-24. Switch to the V4 series.',
     },
     error: {
       aborted: 'Generation cancelled',

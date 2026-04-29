@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
 import {
   Select,
   SelectContent,
@@ -145,9 +146,9 @@ function genderLabel(g: Gender) {
     </div>
 
     <div class="ds-input-actions">
-      <button class="gf-btn" type="button" @click="commitAndEmit">
+      <Button type="button" variant="default" size="lg" @click="commitAndEmit">
         <span>◈</span> {{ primaryLabel || t('xingming.btn.calculate') }}
-      </button>
+      </Button>
     </div>
   </div>
 
@@ -210,9 +211,9 @@ function genderLabel(g: Gender) {
     </div>
 
     <div class="ds-input-actions">
-      <button class="mn-btn mn-btn-lg" type="button" @click="commitAndEmit">
+      <Button type="button" variant="default" size="lg" @click="commitAndEmit">
         {{ primaryLabel || t('xingming.btn.calculate') }}
-      </button>
+      </Button>
     </div>
   </div>
 </template>

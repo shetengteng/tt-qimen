@@ -27,7 +27,10 @@ import { useShareCard } from '@/composables/useShareCard'
 import { FortuneError, type FortuneErrorCode } from '@/lib/errors'
 import { buildShareUrl, normalizeQuery, readIntInRange } from '@/lib/shareUrl'
 
+import AskAiButton from '@/components/ai/AskAiButton.vue'
+import { useAiSidebarStore } from '@/stores/aiSidebar'
 import DateQueryCard from './components/DateQueryCard.vue'
+import { Button } from '@/components/ui/button'
 import TodayCard from './components/TodayCard.vue'
 import YijiCards from './components/YijiCards.vue'
 import ShenshaCards from './components/ShenshaCards.vue'
@@ -84,6 +87,12 @@ const computeErrorHint = computed<string>(() => {
       return t('huangli.computeError.byCode.unknown')
   }
 })
+
+const aiSidebar = useAiSidebarStore()
+function onAskAi() {
+  if (!day.value) return
+  aiSidebar.show({ moduleId: 'huangli', chart: day.value })
+}
 
 const day = computed<HuangliDay | null>(() => {
   try {
@@ -236,9 +245,9 @@ onMounted(() => {
       <div v-if="computeError" class="compute-error-card">
         <h3>◈ {{ t('huangli.computeError.title') }}</h3>
         <p>{{ computeErrorHint }}</p>
-        <button class="gf-btn gf-btn-outline" @click="onBackToToday">
+        <Button type="button" variant="outline" @click="onBackToToday">
           ↻ {{ t('huangli.computeError.retry') }}
-        </button>
+        </Button>
       </div>
 
       <template v-else-if="day">
@@ -253,12 +262,13 @@ onMounted(() => {
         </div>
 
         <div class="action-bar">
-          <button type="button" class="gf-btn" @click="onPreview">
+          <Button type="button" variant="default" @click="onPreview">
             {{ t('huangli.btn.shareIcon') }} {{ t('huangli.btn.share') }}
-          </button>
-          <button type="button" class="gf-btn gf-btn-outline" @click="onBackToToday">
+          </Button>
+          <AskAiButton :disabled="!day" @click="onAskAi" />
+          <Button type="button" variant="outline" @click="onBackToToday">
             {{ t('huangli.btn.resetIcon') }} {{ t('huangli.btn.reset') }}
-          </button>
+          </Button>
         </div>
       </template>
     </div>
@@ -281,9 +291,9 @@ onMounted(() => {
       <div v-if="computeError" class="compute-error-card mn">
         <h3>{{ t('huangli.computeError.title') }}</h3>
         <p>{{ computeErrorHint }}</p>
-        <button class="mn-btn mn-btn-outline" @click="onBackToToday">
+        <Button type="button" variant="outline" @click="onBackToToday">
           {{ t('huangli.computeError.retry') }}
-        </button>
+        </Button>
       </div>
 
       <template v-else-if="day">
@@ -296,10 +306,11 @@ onMounted(() => {
         </div>
 
         <div class="actions mn-container">
-          <button type="button" class="mn-btn" @click="onPreview">{{ t('huangli.btn.share') }}</button>
-          <button type="button" class="mn-btn mn-btn-ghost" @click="onBackToToday">
+          <Button type="button" variant="default" @click="onPreview">{{ t('huangli.btn.share') }}</Button>
+          <AskAiButton :disabled="!day" @click="onAskAi" />
+          <Button type="button" variant="ghost" @click="onBackToToday">
             {{ t('huangli.btn.reset') }}
-          </button>
+          </Button>
         </div>
       </template>
     </main>
@@ -327,4 +338,5 @@ onMounted(() => {
     @save="onSave"
     @share="onShare"
   />
+
 </template>

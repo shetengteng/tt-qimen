@@ -14,12 +14,13 @@ import ShenshaBlock from './components/ShenshaBlock.vue'
 import DayunTimeline from './components/DayunTimeline.vue'
 import FlowYears from './components/FlowYears.vue'
 import CollapsibleSection from '@/components/common/CollapsibleSection.vue'
+import { Button } from '@/components/ui/button'
 import InlineAnnotsBar from '@/components/common/InlineAnnotsBar.vue'
 import ShareToast from '@/components/common/ShareToast.vue'
 import SharePreviewDialog from '@/components/common/SharePreviewDialog.vue'
 import ResultBanner from '@/components/common/ResultBanner.vue'
 import AskAiButton from '@/components/ai/AskAiButton.vue'
-import AiDrawer from '@/components/ai/AiDrawer.vue'
+import { useAiSidebarStore } from '@/stores/aiSidebar'
 import { useAnnotBar } from '@/composables/useAnnotBar'
 import { useShareCard } from '@/composables/useShareCard'
 import { buildShareUrl, normalizeQuery, readIntInRange } from '@/lib/shareUrl'
@@ -268,11 +269,20 @@ const shareUrl = computed(() => {
 const previewOpen = ref(false)
 const previewImage = ref('')
 
-const aiOpen = ref(false)
+const aiSidebar = useAiSidebarStore()
 const aiUserContext = computed(() => ({
   name: userStore.name || undefined,
   gender: userStore.birth.gender,
 }))
+
+function onAskAi() {
+  if (!chart.value) return
+  aiSidebar.show({
+    moduleId: 'bazi',
+    chart: chart.value,
+    userContext: aiUserContext.value,
+  })
+}
 
 async function onPreview() {
   previewImage.value = ''
@@ -419,9 +429,9 @@ function go(name: 'home') {
       <div v-if="showComputeError" class="compute-error-card">
         <h3>◈ {{ t('bazi.computeError.title') }}</h3>
         <p>{{ t('bazi.computeError.hint') }}</p>
-        <button class="gf-btn gf-btn-outline" @click="onRepaipan">
+        <Button type="button" variant="outline" @click="onRepaipan">
           {{ t('bazi.btn.repaipanIcon') }} {{ t('bazi.computeError.retry') }}
-        </button>
+        </Button>
       </div>
       <template v-else>
         <div ref="shareCardEl" class="bazi-share-card">
@@ -515,13 +525,13 @@ function go(name: 'home') {
         </div><!-- /bazi-share-card -->
 
         <div class="action-bar">
-          <button type="button" class="gf-btn" @click="onPreview">
+          <Button type="button" variant="default" @click="onPreview">
             {{ t('bazi.btn.shareIcon') }} {{ t('bazi.btn.share') }}
-          </button>
-          <AskAiButton :disabled="!chart" @click="aiOpen = true" />
-          <button type="button" class="gf-btn gf-btn-outline" @click="onRepaipan">
+          </Button>
+          <AskAiButton :disabled="!chart" @click="onAskAi" />
+          <Button type="button" variant="outline" @click="onRepaipan">
             {{ t('bazi.btn.repaipanIcon') }} {{ t('bazi.btn.repaipan') }}
-          </button>
+          </Button>
         </div>
       </template>
     </div>
@@ -553,9 +563,9 @@ function go(name: 'home') {
         <div class="compute-error-card mn">
           <h3>{{ t('bazi.computeError.title') }}</h3>
           <p>{{ t('bazi.computeError.hint') }}</p>
-          <button class="mn-btn mn-btn-outline" @click="onRepaipan">
+          <Button type="button" variant="outline" @click="onRepaipan">
             {{ t('bazi.computeError.retry') }}
-          </button>
+          </Button>
         </div>
       </main>
       <template v-else>
@@ -652,9 +662,9 @@ function go(name: 'home') {
         </div><!-- /bazi-share-card -->
 
         <div class="actions mn-container">
-          <button type="button" class="mn-btn" @click="onPreview">{{ t('bazi.btn.share') }}</button>
-          <AskAiButton :disabled="!chart" @click="aiOpen = true" />
-          <button type="button" class="mn-btn mn-btn-ghost" @click="onRepaipan">{{ t('bazi.btn.repaipan') }}</button>
+          <Button type="button" variant="default" @click="onPreview">{{ t('bazi.btn.share') }}</Button>
+          <AskAiButton :disabled="!chart" @click="onAskAi" />
+          <Button type="button" variant="ghost" @click="onRepaipan">{{ t('bazi.btn.repaipan') }}</Button>
         </div>
       </template>
     </div>
@@ -685,11 +695,4 @@ function go(name: 'home') {
     @share="onShare"
   />
 
-  <!-- AI 解读 Drawer -->
-  <AiDrawer
-    v-model:open="aiOpen"
-    module-id="bazi"
-    :chart="chart"
-    :user-context="aiUserContext"
-  />
 </template>

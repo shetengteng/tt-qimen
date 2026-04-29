@@ -85,4 +85,13 @@ export default {
     title: 'My dream entry · TT Divination',
     text: 'Classical source & modern reading — from TT Divination.',
   },
+
+  ai: {
+    preset: {
+      symbolism: 'Dream symbolism · what this image points to psychologically',
+      emotion: 'Emotional cues · recent feelings the dream may reflect',
+      advice: 'Real-life advice · what to do after waking',
+      lifeRelevance: 'Connection to recent events · what may have triggered it',
+    },
+  },
 }

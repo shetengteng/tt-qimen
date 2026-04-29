@@ -14,6 +14,7 @@
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/theme'
+import { Button } from '@/components/ui/button'
 import type { BaziChart } from '../types'
 
 interface Props {
@@ -118,9 +119,9 @@ const flowTagsMn = (idx: number): FlowTagMn[] =>
     </div>
 
     <div v-if="showMoreBtn" style="text-align: center; margin-top: var(--gf-space-lg);">
-      <button type="button" class="gf-btn gf-btn-outline" @click="onShowMore">
+      <Button type="button" variant="outline" @click="onShowMore">
         {{ t('bazi.btn.moreYears') }}
-      </button>
+      </Button>
     </div>
   </section>
 
@@ -160,9 +161,9 @@ const flowTagsMn = (idx: number): FlowTagMn[] =>
     </div>
 
     <div v-if="showMoreBtn" style="text-align: center; margin-top: var(--mn-space-6);">
-      <button type="button" class="mn-btn mn-btn-outline" @click="onShowMore">
+      <Button type="button" variant="outline" @click="onShowMore">
         {{ t('bazi.btn.moreYears') }}
-      </button>
+      </Button>
     </div>
   </section>
 </template>

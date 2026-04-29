@@ -235,4 +235,15 @@ export default {
     classicalLabel: 'Classical source',
     pending: 'Under review',
   },
+
+  ai: {
+    preset: {
+      career: 'Career direction · suitable industries & decisions',
+      marriage: 'Marriage & relationships · spouse palace insights',
+      wealth: 'Wealth pattern · how & when money is likely to come',
+      health: 'Health & rhythm · five-element imbalances',
+      thisYear: 'This year — key opportunities and pitfalls',
+      lifeStage: 'Current life stage · the focus of this decadal cycle',
+    },
+  },
 }

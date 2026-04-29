@@ -13,6 +13,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
+import { Button } from '@/components/ui/button'
 
 interface Section {
   heading: string
@@ -52,9 +53,9 @@ function goHome() {
 
 <template>
   <main v-if="isGuofeng" class="gf-container legal-page">
-    <button type="button" class="gf-btn gf-btn-outline legal-back" @click="goHome">
+    <Button type="button" variant="outline" class="legal-back" @click="goHome">
       ← {{ t('common.button.back') }}
-    </button>
+    </Button>
 
     <header class="legal-hero">
       <h1 class="legal-title">{{ t(props.titleKey) }}</h1>
@@ -73,9 +74,9 @@ function goHome() {
   </main>
 
   <main v-else class="mn-container legal-page legal-page--mn">
-    <button type="button" class="mn-btn mn-btn-outline legal-back" @click="goHome">
+    <Button type="button" variant="outline" class="legal-back" @click="goHome">
       ← {{ t('common.button.back') }}
-    </button>
+    </Button>
 
     <header class="legal-hero legal-hero--mn">
       <h1 class="legal-title legal-title--mn">{{ t(props.titleKey) }}</h1>

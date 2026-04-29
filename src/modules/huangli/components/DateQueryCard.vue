@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
 import type { HuangliMatterKey } from '../types'
 
 const { t, tm, rt } = useI18n()
@@ -150,22 +151,14 @@ watch(
     </div>
 
     <div class="ds-input-actions">
-      <button
-        type="button"
-        :class="isGuofeng ? 'gf-btn' : 'mn-btn mn-btn-lg'"
-        @click="onQuery"
-      >
+      <Button type="button" variant="default" :size="isGuofeng ? 'default' : 'lg'" @click="onQuery">
         <template v-if="isGuofeng">{{ t('huangli.query.btnQueryIcon') }} </template>
         {{ t('huangli.query.btnQuery') }}
-      </button>
-      <button
-        type="button"
-        :class="isGuofeng ? 'gf-btn gf-btn-outline' : 'mn-btn mn-btn-outline'"
-        @click="onToday"
-      >
+      </Button>
+      <Button type="button" variant="outline" @click="onToday">
         <template v-if="isGuofeng">{{ t('huangli.query.btnTodayIcon') }} </template>
         {{ t('huangli.query.btnToday') }}
-      </button>
+      </Button>
     </div>
   </div>
 </template>

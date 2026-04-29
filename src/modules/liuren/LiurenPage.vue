@@ -11,7 +11,10 @@ import { useSkeletonReveal } from '@/composables/useSkeletonReveal'
 import { useShareCard } from '@/composables/useShareCard'
 import { buildShareUrl, normalizeQuery, readIntInRange } from '@/lib/shareUrl'
 
+import AskAiButton from '@/components/ai/AskAiButton.vue'
+import { useAiSidebarStore } from '@/stores/aiSidebar'
 import LiurenInput from './components/LiurenInput.vue'
+import { Button } from '@/components/ui/button'
 import TimeBar from './components/TimeBar.vue'
 import PalaceWheel from './components/PalaceWheel.vue'
 import AspectReading from './components/AspectReading.vue'
@@ -35,6 +38,12 @@ const resultBannerEl = ref<HTMLElement | null>(null)
 const shareCardEl = ref<HTMLElement | null>(null)
 
 const result = shallowRef<LiurenResult | null>(null)
+
+const aiSidebar = useAiSidebarStore()
+function onAskAi() {
+  if (!result.value) return
+  aiSidebar.show({ moduleId: 'liuren', chart: result.value })
+}
 /**
  * 预览态：用户点击非命中宫位时记录，AspectReading 显示该宫的解读；
  * 退出预览（点命中宫 / 重置 / 重起卦）时设为 null。
@@ -283,9 +292,9 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
       <div v-if="showComputeError" class="compute-error-card">
         <h3>◈ {{ t('liuren.computeError.title') }}</h3>
         <p>{{ t('liuren.computeError.hint') }}</p>
-        <button class="gf-btn gf-btn-outline" @click="onRepaipan">
+        <Button type="button" variant="outline" @click="onRepaipan">
           {{ t('liuren.btn.repaipanIcon') }} {{ t('liuren.computeError.retry') }}
-        </button>
+        </Button>
       </div>
 
       <template v-else-if="result && displayedResult">
@@ -300,9 +309,9 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
 
             <div v-if="isPreviewing" class="lr-preview-banner">
               <span>{{ t('liuren.preview.viewing', { palace: displayedResult.palace.name }) }}</span>
-              <button type="button" class="gf-btn gf-btn-outline gf-btn-sm" @click="onPreviewPalace(null)">
+              <Button type="button" variant="outline" size="sm" @click="onPreviewPalace(null)">
                 {{ t('liuren.preview.back') }}
-              </button>
+              </Button>
             </div>
 
             <AspectReading
@@ -314,12 +323,13 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
         </div>
 
         <div class="action-bar">
-          <button type="button" class="gf-btn" @click="onPreview">
+          <Button type="button" variant="default" @click="onPreview">
             {{ t('liuren.btn.shareIcon') }} {{ t('liuren.btn.share') }}
-          </button>
-          <button type="button" class="gf-btn gf-btn-outline" @click="onRepaipan">
+          </Button>
+          <AskAiButton :disabled="!result" @click="onAskAi" />
+          <Button type="button" variant="outline" @click="onRepaipan">
             {{ t('liuren.btn.repaipanIcon') }} {{ t('liuren.btn.repaipan') }}
-          </button>
+          </Button>
         </div>
       </template>
     </div>
@@ -361,9 +371,9 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
         <div class="compute-error-card mn">
           <h3>{{ t('liuren.computeError.title') }}</h3>
           <p>{{ t('liuren.computeError.hint') }}</p>
-          <button class="mn-btn mn-btn-outline" @click="onRepaipan">
+          <Button type="button" variant="outline" @click="onRepaipan">
             {{ t('liuren.computeError.retry') }}
-          </button>
+          </Button>
         </div>
       </main>
 
@@ -379,9 +389,9 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
 
             <div v-if="isPreviewing" class="lr-preview-banner mn">
               <span>{{ t('liuren.preview.viewing', { palace: displayedResult.palace.name }) }}</span>
-              <button type="button" class="mn-btn mn-btn-outline" @click="onPreviewPalace(null)">
+              <Button type="button" variant="outline" size="sm" @click="onPreviewPalace(null)">
                 {{ t('liuren.preview.back') }}
-              </button>
+              </Button>
             </div>
 
             <AspectReading
@@ -393,8 +403,9 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
         </div>
 
         <div class="actions mn-container">
-          <button type="button" class="mn-btn" @click="onPreview">{{ t('liuren.btn.share') }}</button>
-          <button type="button" class="mn-btn mn-btn-ghost" @click="onRepaipan">{{ t('liuren.btn.repaipan') }}</button>
+          <Button type="button" variant="default" @click="onPreview">{{ t('liuren.btn.share') }}</Button>
+          <AskAiButton :disabled="!result" @click="onAskAi" />
+          <Button type="button" variant="ghost" @click="onRepaipan">{{ t('liuren.btn.repaipan') }}</Button>
         </div>
       </template>
     </div>
@@ -422,4 +433,5 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
     @save="onSave"
     @share="onShare"
   />
+
 </template>

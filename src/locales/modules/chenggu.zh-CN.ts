@@ -87,4 +87,13 @@ export default {
     title: '我的称骨算命 · TT 占卜',
     text: '年月日时 · 骨重相加 · 袁天罡古法。来自 TT 占卜的称骨结果。',
   },
+
+  ai: {
+    preset: {
+      poemMeaning: '歌诀深读 · 逐句白话翻译与意象',
+      weight: '骨重含义 · 这个分量代表的人生底色',
+      lifeOverview: '一生概观 · 早 / 中 / 晚年的趋势',
+      improvement: '调和方向 · 哪些事可助运、可避凶',
+    },
+  },
 }

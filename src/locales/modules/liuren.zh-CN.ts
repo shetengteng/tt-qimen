@@ -95,4 +95,13 @@ export default {
     title: '我的小六壬 · TT 占卜',
     text: '掐指一算 · 应事即时 · 来自 TT 占卜的小六壬结果。',
   },
+
+  ai: {
+    preset: {
+      thisQuestion: '本卦 · 针对所问之事的核心判断',
+      palaceMeaning: '落宫含义 · 这个宫位为何应事',
+      timing: '应期推断 · 多少天 / 多少日内见分晓',
+      outcome: '宜忌行动 · 如何顺势 / 如何避祸',
+    },
+  },
 }

@@ -1,7 +1,12 @@
 import { defineStore } from 'pinia'
 import { useStorage } from '@vueuse/core'
 import { computed } from 'vue'
-import { DEFAULT_AI_CONFIG, DEEPSEEK_MODELS, type AiConfig } from '@/composables/ai/types'
+import {
+  DEEPSEEK_MODELS,
+  DEPRECATED_DEEPSEEK_MODEL_IDS,
+  DEFAULT_AI_CONFIG,
+  type AiConfig,
+} from '@/composables/ai/types'
 
 const STORAGE_KEY = 'tt-qimen:ai-config'
 
@@ -28,6 +33,12 @@ export const useAiConfigStore = defineStore('aiConfig', () => {
     undefined,
     { mergeDefaults: true },
   )
+
+  // 启动时兜底：如果 storage 里残留 2026/07 后弃用的 deepseek-chat / deepseek-reasoner
+  // 直接迁移到默认推荐模型，避免下次发请求 400
+  if (DEPRECATED_DEEPSEEK_MODEL_IDS.includes(config.value.model as never)) {
+    config.value = { ...config.value, model: DEFAULT_AI_CONFIG.model }
+  }
 
   const hasKey = computed(() => config.value.apiKey.trim().length > 0)
   const isConfigured = computed(() => hasKey.value && config.value.baseUrl.trim().length > 0)
@@ -79,10 +90,8 @@ export const useAiConfigStore = defineStore('aiConfig', () => {
 })
 
 function sanitizeModel(model: string): string {
-  const known = DEEPSEEK_MODELS.find((m) => m.id === model)
-  if (!known) return DEFAULT_AI_CONFIG.model
-  const deprecated = 'deprecated' in known && known.deprecated === true
-  return deprecated ? DEFAULT_AI_CONFIG.model : model
+  const known = DEEPSEEK_MODELS.some((m) => m.id === model)
+  return known ? model : DEFAULT_AI_CONFIG.model
 }
 
 function clamp01to2(t: number): number {

@@ -7,9 +7,12 @@ import { useLocaleStore } from '@/stores/locale'
 import ShareToast from '@/components/common/ShareToast.vue'
 import SharePreviewDialog from '@/components/common/SharePreviewDialog.vue'
 import ResultBanner from '@/components/common/ResultBanner.vue'
+import { Button } from '@/components/ui/button'
 import { useSkeletonReveal } from '@/composables/useSkeletonReveal'
 import { useShareCard } from '@/composables/useShareCard'
 import { buildShareUrl, normalizeQuery, readIntInRange } from '@/lib/shareUrl'
+import AskAiButton from '@/components/ai/AskAiButton.vue'
+import { useAiSidebarStore } from '@/stores/aiSidebar'
 import NameInput from './components/NameInput.vue'
 import StrokesBreakdown from './components/StrokesBreakdown.vue'
 import FiveGrids from './components/FiveGrids.vue'
@@ -36,6 +39,12 @@ const resultBannerEl = ref<HTMLElement | null>(null)
 const shareCardEl = ref<HTMLElement | null>(null)
 
 const result = shallowRef<XingmingResult | null>(null)
+
+const aiSidebar = useAiSidebarStore()
+function onAskAi() {
+  if (!result.value) return
+  aiSidebar.show({ moduleId: 'xingming', chart: result.value })
+}
 const errorMessage = ref<string | null>(null)
 
 /**
@@ -267,9 +276,9 @@ const showComputeError = computed(
       <div v-if="showComputeError" class="compute-error-card">
         <h3>◈ {{ t('xingming.computeError.title') }}</h3>
         <p>{{ computeErrorHint }}</p>
-        <button class="gf-btn gf-btn-outline" @click="onRecalculate">
+        <Button type="button" variant="outline" @click="onRecalculate">
           ✎ {{ t('xingming.computeError.retry') }}
-        </button>
+        </Button>
       </div>
 
       <template v-else-if="result">
@@ -297,12 +306,13 @@ const showComputeError = computed(
         </div>
 
         <div class="action-bar">
-          <button type="button" class="gf-btn" @click="onPreview">
+          <Button type="button" variant="default" @click="onPreview">
             ◈ {{ t('xingming.btn.share') }}
-          </button>
-          <button type="button" class="gf-btn gf-btn-outline" @click="onRecalculate">
+          </Button>
+          <AskAiButton :disabled="!result" @click="onAskAi" />
+          <Button type="button" variant="outline" @click="onRecalculate">
             ✎ {{ t('xingming.btn.recalculate') }}
-          </button>
+          </Button>
         </div>
       </template>
     </div>
@@ -338,9 +348,9 @@ const showComputeError = computed(
         <div class="compute-error-card mn">
           <h3>{{ t('xingming.computeError.title') }}</h3>
           <p>{{ computeErrorHint }}</p>
-          <button class="mn-btn mn-btn-outline" @click="onRecalculate">
+          <Button type="button" variant="outline" @click="onRecalculate">
             {{ t('xingming.computeError.retry') }}
-          </button>
+          </Button>
         </div>
       </main>
 
@@ -374,8 +384,9 @@ const showComputeError = computed(
         </div>
 
         <div class="actions mn-container">
-          <button type="button" class="mn-btn" @click="onPreview">{{ t('xingming.btn.share') }}</button>
-          <button type="button" class="mn-btn mn-btn-ghost" @click="onRecalculate">{{ t('xingming.btn.recalculate') }}</button>
+          <Button type="button" variant="default" @click="onPreview">{{ t('xingming.btn.share') }}</Button>
+          <AskAiButton :disabled="!result" @click="onAskAi" />
+          <Button type="button" variant="ghost" @click="onRecalculate">{{ t('xingming.btn.recalculate') }}</Button>
         </div>
       </template>
     </div>
@@ -403,4 +414,5 @@ const showComputeError = computed(
     @save="onSave"
     @share="onShare"
   />
+
 </template>

@@ -36,23 +36,9 @@
   margin-bottom: var(--space-4);
 }
 
-:root[data-theme='guofeng'] .ds-switch-btn {
-  padding: 6px 16px;
-  font-family: var(--font-display);
-  font-size: 14px;
-  background: transparent;
-  color: var(--color-ink-soft);
-  border: 1px solid rgba(176, 141, 59, 0.3);
-  cursor: pointer;
-  border-radius: var(--radius-sm);
-  transition: all var(--transition-fast);
-}
-
-:root[data-theme='guofeng'] .ds-switch-btn.active {
-  background-color: var(--color-accent);
-  color: var(--color-ink-inverse);
-  border-color: var(--color-accent);
-}
+/* .ds-switch-btn 已弃用，改用 shadcn-vue ToggleGroupItem
+ * 视觉规范在 themes/guofeng/shadcn.css → [data-slot='toggle-group-item']
+ */
 
 :root[data-theme='guofeng'] .ds-input-row {
   display: grid;
@@ -74,15 +60,24 @@
 }
 
 :root[data-theme='guofeng'] .ds-input-group input,
-:root[data-theme='guofeng'] .ds-input-group select,
-:root[data-theme='guofeng'] .ds-input-group textarea {
-  padding: 10px 14px;
+:root[data-theme='guofeng'] .ds-input-group select {
+  height: 32px;
+  padding: 0 12px;
   border: 1px solid rgba(176, 141, 59, 0.4);
+  border-radius: 6px;
   background-color: rgba(255, 251, 240, 0.8);
   font-family: var(--font-display);
-  font-size: 15px;
+  font-size: 14px;
   color: var(--color-ink);
-  border-radius: var(--radius-sm);
+}
+:root[data-theme='guofeng'] .ds-input-group textarea {
+  padding: 8px 12px;
+  border: 1px solid rgba(176, 141, 59, 0.4);
+  border-radius: 6px;
+  background-color: rgba(255, 251, 240, 0.8);
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--color-ink);
   transition: border-color 0.18s, box-shadow 0.18s;
 }
 
@@ -106,5 +101,6 @@
   :root[data-theme='guofeng'] .ds-input-card { padding: var(--space-4); }
   :root[data-theme='guofeng'] .ds-input-row { grid-template-columns: repeat(2, 1fr); gap: var(--space-2); }
   :root[data-theme='guofeng'] .ds-input-group input,
-  :root[data-theme='guofeng'] .ds-input-group select { font-size: 14px; padding: 8px 12px; }
+  :root[data-theme='guofeng'] .ds-input-group select { font-size: 13px; padding: 0 10px; }
+  :root[data-theme='guofeng'] .ds-input-group textarea { padding: 8px 10px; }
 }

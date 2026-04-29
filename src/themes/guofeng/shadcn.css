@@ -165,12 +165,100 @@
 }
 
 /* ----------------------------------------------------------------------------
- * Button (国风主按钮已有 .gf-btn，shadcn Button 仅作 fallback)
+ * Button —— 国风视觉规范
+ *
+ * 项目从原生 .gf-btn / .gf-btn-outline / .gf-btn-gold 全面迁移到 shadcn-vue
+ * `Button`，依靠 [data-slot='button'][data-variant='*'] selector 在国风主题下
+ * 重写视觉（衬线字体 / 米黄朱红配色 / 微圆角 / hover 上浮）。
+ *
+ * variant 映射：
+ *   default   → 原 .gf-btn       朱红实心
+ *   outline   → 原 .gf-btn-outline 朱描边、悬浮翻转
+ *   secondary → 原 .gf-btn-gold   金色强调
+ *   ghost     → 透明 hover 米黄
+ *   destructive → shadcn 默认（已用国风 destructive token）
  * -------------------------------------------------------------------------- */
-:root[data-theme='guofeng'] [data-slot='button'][data-variant='default'] {
+:root[data-theme='guofeng'] [data-slot='button'] {
   font-family: var(--font-display);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   border-radius: var(--radius-sm);
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+:root[data-theme='guofeng'] [data-slot='button']:hover:not(:disabled):not([data-state='open']) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+:root[data-theme='guofeng'] [data-slot='button']:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+:root[data-theme='guofeng'] [data-slot='button'][data-variant='default'] {
+  background-color: var(--color-accent);
+  color: var(--color-ink-inverse);
+  border: 1px solid var(--color-accent);
+}
+:root[data-theme='guofeng'] [data-slot='button'][data-variant='default']:hover:not(:disabled) {
+  background-color: var(--color-accent-hover);
+  color: var(--color-ink-inverse);
+  box-shadow: var(--shadow-md);
+}
+
+:root[data-theme='guofeng'] [data-slot='button'][data-variant='outline'] {
+  background-color: transparent;
+  color: var(--color-ink);
+  border: 1px solid var(--color-warning);
+}
+:root[data-theme='guofeng'] [data-slot='button'][data-variant='outline']:hover:not(:disabled) {
+  background-color: var(--color-warning);
+  color: var(--color-ink-inverse);
+}
+/* outline 在被选中（用于多选/单选 segment 列表）的视觉 */
+:root[data-theme='guofeng'] [data-slot='button'][data-variant='outline'][aria-pressed='true'] {
+  background-color: var(--color-accent);
+  color: var(--color-ink-inverse);
+  border-color: var(--color-accent);
+}
+
+:root[data-theme='guofeng'] [data-slot='button'][data-variant='secondary'] {
+  background-color: var(--color-warning);
+  color: var(--color-ink);
+  border: 1px solid var(--color-warning);
+}
+:root[data-theme='guofeng'] [data-slot='button'][data-variant='secondary']:hover:not(:disabled) {
+  background-color: #d4a94a;
+  color: var(--color-ink);
+}
+
+:root[data-theme='guofeng'] [data-slot='button'][data-variant='ghost'] {
+  color: var(--color-ink-soft);
+}
+:root[data-theme='guofeng'] [data-slot='button'][data-variant='ghost']:hover:not(:disabled) {
+  background-color: rgba(176, 141, 59, 0.18);
+  color: var(--color-ink);
+}
+
+/* ToggleGroupItem（公历 / 农历分段切换）国风视觉 */
+:root[data-theme='guofeng'] [data-slot='toggle-group-item'] {
+  font-family: var(--font-display);
+  background-color: transparent;
+  color: var(--color-ink-soft);
+  border: 1px solid rgba(176, 141, 59, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 6px 16px;
+  font-size: 14px;
+  transition: all var(--transition-fast);
+}
+:root[data-theme='guofeng'] [data-slot='toggle-group-item'][data-state='on'] {
+  background-color: var(--color-accent);
+  color: var(--color-ink-inverse);
+  border-color: var(--color-accent);
 }
 
 /* ----------------------------------------------------------------------------

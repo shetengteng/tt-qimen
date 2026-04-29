@@ -3,16 +3,16 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter, type RouteLocationRaw } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
+import { useAiSidebarStore } from '@/stores/aiSidebar'
 import { PopoverRoot, PopoverTrigger, PopoverPortal, PopoverContent } from 'reka-ui'
-import { ChevronDown, Settings } from 'lucide-vue-next'
-import ThemeSwitch from './ThemeSwitch.vue'
-import LangSwitch from './LangSwitch.vue'
+import { ChevronDown, Settings, Sparkles } from 'lucide-vue-next'
 import DisclaimerBanner from '@/components/common/DisclaimerBanner.vue'
 
 const { t } = useI18n()
 const router = useRouter()
 const route = useRoute()
 const themeStore = useThemeStore()
+const aiSidebar = useAiSidebarStore()
 
 const isGuofeng = computed(() => themeStore.id === 'guofeng')
 const currentName = computed(() => route.name as string | undefined)
@@ -62,6 +62,39 @@ const isSettingsActive = computed(() => currentName.value === 'settings')
 function goSettings() {
   router.push({ name: 'settings' })
   mobileNavOpen.value = false
+}
+
+/**
+ * Header 上的 AI 开关按钮：
+ * - 已开启 → 点击 hide()
+ * - 未开启 + store 里已有上次 chart（同会话内用户在模块页 askAi 过）→ 重新 open()
+ * - 未开启 + 无 chart → 按钮 disabled（用户必须先去模块页排盘）
+ *
+ * 这里复用 store.show 的入参契约：moduleId/chart/userContext 都已经在 store
+ * 里持久化（shallowRef 会保留上次值），open 只需把 open=true。
+ */
+const aiButtonActive = computed(() => aiSidebar.open)
+const aiButtonAria = computed(() =>
+  aiSidebar.open ? t('ai.header.toggleClose') : t('ai.header.toggleOpen'),
+)
+
+/**
+ * 点 header AI 按钮：
+ *   - 已打开 → 关闭
+ *   - 未打开 + 有 chart → 直接展示原模块的对话
+ *   - 未打开 + 无 chart → 进入「自由对话」模式
+ */
+function toggleAi() {
+  if (aiSidebar.open) {
+    aiSidebar.hide()
+    return
+  }
+  mobileNavOpen.value = false
+  if (aiSidebar.chart) {
+    aiSidebar.open = true
+    return
+  }
+  aiSidebar.openFreeChat()
 }
 </script>
 
@@ -132,14 +165,22 @@ function goSettings() {
             <button
               type="button"
               class="layout-popover-trigger layout-popover-trigger--settings"
+              :aria-label="aiButtonAria"
+              :title="aiButtonAria"
+              :class="{ 'is-active': aiButtonActive }"
+              @click="toggleAi"
+            >
+              <Sparkles class="layout-popover-trigger-icon" :size="16" aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              class="layout-popover-trigger layout-popover-trigger--settings"
               :aria-label="settingsAria"
               :class="{ 'is-active': isSettingsActive }"
               @click="goSettings"
             >
               <Settings class="layout-popover-trigger-icon" :size="16" aria-hidden="true" />
             </button>
-            <LangSwitch />
-            <ThemeSwitch />
           </div>
         </div>
       </div>
@@ -212,14 +253,22 @@ function goSettings() {
             <button
               type="button"
               class="layout-popover-trigger layout-popover-trigger--settings"
+              :aria-label="aiButtonAria"
+              :title="aiButtonAria"
+              :class="{ 'is-active': aiButtonActive }"
+              @click="toggleAi"
+            >
+              <Sparkles class="layout-popover-trigger-icon" :size="16" aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              class="layout-popover-trigger layout-popover-trigger--settings"
               :aria-label="settingsAria"
               :class="{ 'is-active': isSettingsActive }"
               @click="goSettings"
             >
               <Settings class="layout-popover-trigger-icon" :size="16" aria-hidden="true" />
             </button>
-            <LangSwitch />
-            <ThemeSwitch />
           </div>
         </div>
       </div>

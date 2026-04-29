@@ -13,6 +13,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 
 interface Props {
   /** 即时起卦模式下展示的"当前时辰"汉字 */
@@ -61,20 +63,15 @@ function setMode(m: 'immediate' | 'custom') {
       <span class="ds-ornament">◉</span>
     </h3>
 
-    <div class="ds-calendar-switch">
-      <button
-        type="button"
-        class="ds-switch-btn"
-        :class="{ active: liurenStore.mode === 'immediate' }"
-        @click="setMode('immediate')"
-      >{{ t('liuren.input.modeImmediate') }}</button>
-      <button
-        type="button"
-        class="ds-switch-btn"
-        :class="{ active: liurenStore.mode === 'custom' }"
-        @click="setMode('custom')"
-      >{{ t('liuren.input.modeCustom') }}</button>
-    </div>
+    <ToggleGroup
+      type="single"
+      :model-value="liurenStore.mode"
+      class="ds-calendar-switch"
+      @update:model-value="(v: any) => v && setMode(v as 'immediate' | 'custom')"
+    >
+      <ToggleGroupItem value="immediate">{{ t('liuren.input.modeImmediate') }}</ToggleGroupItem>
+      <ToggleGroupItem value="custom">{{ t('liuren.input.modeCustom') }}</ToggleGroupItem>
+    </ToggleGroup>
 
     <div class="ds-input-row lr-input-row">
       <div class="ds-input-group lr-question-group">
@@ -152,12 +149,12 @@ function setMode(m: 'immediate' | 'custom') {
     </div>
 
     <div class="ds-input-actions">
-      <button type="button" class="gf-btn" @click="emit('paipan')">
+      <Button type="button" variant="default" size="lg" @click="emit('paipan')">
         {{ t('liuren.btn.paipanIcon') }} {{ t('liuren.btn.paipan') }}
-      </button>
-      <button type="button" class="gf-btn gf-btn-outline" @click="emit('reset')">
+      </Button>
+      <Button type="button" variant="outline" @click="emit('reset')">
         {{ t('liuren.btn.resetIcon') }} {{ t('liuren.btn.reset') }}
-      </button>
+      </Button>
     </div>
   </div>
 
@@ -168,20 +165,15 @@ function setMode(m: 'immediate' | 'custom') {
       {{ t('liuren.input.title') }}
     </h3>
 
-    <div class="ds-calendar-switch">
-      <button
-        type="button"
-        class="ds-switch-btn"
-        :class="{ active: liurenStore.mode === 'immediate' }"
-        @click="setMode('immediate')"
-      >{{ t('liuren.input.modeImmediate') }}</button>
-      <button
-        type="button"
-        class="ds-switch-btn"
-        :class="{ active: liurenStore.mode === 'custom' }"
-        @click="setMode('custom')"
-      >{{ t('liuren.input.modeCustom') }}</button>
-    </div>
+    <ToggleGroup
+      type="single"
+      :model-value="liurenStore.mode"
+      class="ds-calendar-switch"
+      @update:model-value="(v: any) => v && setMode(v as 'immediate' | 'custom')"
+    >
+      <ToggleGroupItem value="immediate">{{ t('liuren.input.modeImmediate') }}</ToggleGroupItem>
+      <ToggleGroupItem value="custom">{{ t('liuren.input.modeCustom') }}</ToggleGroupItem>
+    </ToggleGroup>
 
     <div class="ds-input-row lr-input-row">
       <div class="ds-input-group lr-question-group">
@@ -259,12 +251,12 @@ function setMode(m: 'immediate' | 'custom') {
     </div>
 
     <div class="ds-input-actions">
-      <button type="button" class="mn-btn mn-btn-lg" @click="emit('paipan')">
+      <Button type="button" variant="default" size="lg" @click="emit('paipan')">
         {{ t('liuren.btn.paipan') }}
-      </button>
-      <button type="button" class="mn-btn mn-btn-outline" @click="emit('reset')">
+      </Button>
+      <Button type="button" variant="outline" @click="emit('reset')">
         {{ t('liuren.btn.reset') }}
-      </button>
+      </Button>
     </div>
   </div>
 </template>
