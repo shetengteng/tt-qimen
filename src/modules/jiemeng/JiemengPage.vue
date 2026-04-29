@@ -154,7 +154,7 @@ async function onPreview() {
   previewImage.value = ''
   previewOpen.value = true
   try {
-    previewImage.value = await previewCard(el, { fileName: buildShareOpts().fileName })
+    previewImage.value = await previewCard(el, {})
   } catch (err) {
     console.error('[jiemeng] preview failed:', err)
     previewOpen.value = false

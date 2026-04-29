@@ -10,7 +10,15 @@ import { resolve } from 'node:path'
 const COMPRESS_FILTER = /\.(js|mjs|css|html|svg|json|wasm)$/i
 const COMPRESS_THRESHOLD = 1024
 
+/**
+ * GitHub Pages 项目仓库部署到 https://<user>.github.io/<repo>/，
+ * 资源必须以 /<repo>/ 为前缀。GITHUB_PAGES=true 时启用 /tt-qimen/，
+ * 本地 dev/build 默认 /。
+ */
+const isGithubPages = process.env.GITHUB_PAGES === 'true'
+
 export default defineConfig({
+  base: isGithubPages ? '/tt-qimen/' : '/',
   plugins: [
     vue(),
     tailwindcss(),

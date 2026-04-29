@@ -79,7 +79,7 @@ describe.runIf(distExists)('P6-10 bundle budget', () => {
     const indexHtmlPath = join(process.cwd(), 'dist', 'index.html')
     if (!existsSync(indexHtmlPath)) return
     const html = readFileSync(indexHtmlPath, 'utf8')
-    const entryMatch = html.match(/<script[^>]+src="\/assets\/([^"]+\.js)"/)
+    const entryMatch = html.match(/<script[^>]+src="\/(?:[\w-]+\/)?assets\/([^"]+\.js)"/)
     expect(entryMatch?.[1], 'no entry script found in index.html').toBeTruthy()
     const entry = entryMatch![1]
     const entryFull = join(DIST, entry)

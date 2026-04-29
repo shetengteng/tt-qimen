@@ -51,9 +51,9 @@ export function useShareCard() {
     tone: 'info',
   })
 
-  let toastTimer: ReturnType<typeof window.setTimeout> | null = null
+  let toastTimer: number | null = null
   function showToast(message: string, tone: ShareToastTone = 'info', duration = 2400) {
-    if (toastTimer) {
+    if (toastTimer != null) {
       window.clearTimeout(toastTimer)
       toastTimer = null
     }

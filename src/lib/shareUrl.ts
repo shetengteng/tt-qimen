@@ -60,13 +60,21 @@ export function serializeQuery(q?: ShareQuery): string {
  * 多值时只取第一个，避免 [v1, v2] 进入 schema 化字段（YYYY-MM-DD 类）。
  */
 export function normalizeQuery(
-  raw: Record<string, string | string[] | null | undefined> | undefined,
+  raw:
+    | Record<string, string | string[] | null | undefined>
+    | Record<string, (string | null) | (string | null)[] | undefined>
+    | undefined,
 ): Record<string, string> {
   const out: Record<string, string> = {}
   if (!raw) return out
   for (const [k, v] of Object.entries(raw)) {
     if (v === null || v === undefined) continue
-    out[k] = Array.isArray(v) ? (v[0] ?? '') : v
+    if (Array.isArray(v)) {
+      const first = v[0]
+      if (first != null) out[k] = first
+      continue
+    }
+    out[k] = v
   }
   return out
 }

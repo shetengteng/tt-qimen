@@ -41,7 +41,7 @@ const isMobile = useMediaQuery('(max-width: 767.98px)')
 const aiSheetOpen = computed({
   get: () => aiSidebar.open,
   set: (v: boolean) => {
-    if (v) aiSidebar.show()
+    if (v) aiSidebar.open = true
     else aiSidebar.hide()
   },
 })

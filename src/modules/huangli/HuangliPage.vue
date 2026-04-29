@@ -214,7 +214,7 @@ async function onPreview() {
   previewImage.value = ''
   previewOpen.value = true
   try {
-    previewImage.value = await previewCard(shareCardEl.value, { fileName: buildShareOpts().fileName })
+    previewImage.value = await previewCard(shareCardEl.value, {})
   } catch (err) {
     console.error('[huangli] preview failed:', err)
     previewOpen.value = false

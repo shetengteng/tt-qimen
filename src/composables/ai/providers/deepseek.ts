@@ -74,10 +74,14 @@ export const deepseekProvider: LlmProvider = {
     const client = buildClient(config)
     const includeReasoning = !shouldDisableThinking(config.model)
     try {
-      const stream = await client.chat.completions.create(
+      const stream = (await client.chat.completions.create(
         buildChatPayload(config.model, messages, config.temperature, true),
         { signal: options?.signal },
-      )
+      )) as AsyncIterable<{
+        choices: Array<{
+          delta?: { content?: string | null; reasoning_content?: string | null }
+        }>
+      }>
       for await (const chunk of stream) {
         const delta = chunk.choices[0]?.delta as
           | { content?: string | null; reasoning_content?: string | null }
