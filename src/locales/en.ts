@@ -22,6 +22,7 @@ export default {
     age: '{n} y/o',
     nodata: 'No data',
     loading: 'Computing…',
+    pageLoading: 'Loading',
     underConstruction: 'This module is under construction. Stay tuned.',
     share: {
       preview: {

@@ -22,6 +22,7 @@ export default {
     age: '{n} 歲',
     nodata: '暫無資料',
     loading: '推算中…',
+    pageLoading: '載入中',
     underConstruction: '此模組建設中，敬請期待。',
     share: {
       preview: {

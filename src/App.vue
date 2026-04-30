@@ -5,6 +5,7 @@ import { useEventListener, useMediaQuery } from '@vueuse/core'
 import { useUrlSync } from '@/composables/useUrlSync'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
+import AppRouterView from '@/components/layout/AppRouterView.vue'
 import AppErrorBoundary from '@/components/common/AppErrorBoundary.vue'
 import {
   ResizablePanelGroup,
@@ -99,7 +100,7 @@ function onAiPanelResize(size: number) {
       -->
       <template v-if="isMobile">
         <AppHeader />
-        <RouterView />
+        <AppRouterView />
         <AppFooter />
         <Sheet v-model:open="aiSheetOpen">
           <SheetContent
@@ -113,7 +114,7 @@ function onAiPanelResize(size: number) {
       </template>
       <template v-else-if="!aiOpen">
         <AppHeader />
-        <RouterView />
+        <AppRouterView />
         <AppFooter />
       </template>
       <div v-else class="app-resizable-wrap">
@@ -135,7 +136,7 @@ function onAiPanelResize(size: number) {
             -->
             <div class="app-main-scroll">
               <AppHeader />
-              <RouterView />
+              <AppRouterView />
               <AppFooter />
             </div>
           </ResizablePanel>

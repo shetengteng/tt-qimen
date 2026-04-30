@@ -22,6 +22,7 @@ export default {
     age: '{n} 岁',
     nodata: '暂无数据',
     loading: '推算中…',
+    pageLoading: '加载中',
     underConstruction: '此模块正在建设中，敬请期待。',
     share: {
       preview: {
