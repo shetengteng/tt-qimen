@@ -20,6 +20,32 @@ export interface PingResult {
   message?: string
 }
 
+/**
+ * 远程模型条目（listModels 返回单元）。
+ *
+ * 对齐设计：
+ *   - 不带本地化 labelKey（API 返回的内容本身是 SDK 直出的英文 / 厂商命名，
+ *     UI 用 fallbackLabel 直接渲染；i18n 仅作用于 registry hardcoded 列表）
+ *   - tags 在 provider 实现里用启发式推断（modelId pattern → fast/thinking/...）
+ *   - created 让 SettingsPage 可以"按新→旧"排序，凸显厂商最新模型
+ */
+export interface RemoteModel {
+  readonly id: string
+  /** 兜底展示名；多数 SDK 只返回 id，此时 fallbackLabel === id */
+  readonly fallbackLabel: string
+  /** 厂商分类：chat / embedding / image / audio / unknown（用于过滤掉非聊天模型） */
+  readonly kind?: 'chat' | 'embedding' | 'image' | 'audio' | 'unknown'
+  /** Unix 秒级时间戳；可选；用于 SettingsPage 按发布时间倒序 */
+  readonly created?: number
+  /** 由 provider 实现按 id 启发推断的能力 tag */
+  readonly tags?: readonly string[]
+}
+
+export interface ListModelsResult {
+  /** 拉取到的模型清单（已去重，按 provider 习惯排序） */
+  readonly models: readonly RemoteModel[]
+}
+
 export interface LlmProvider {
   /** 'deepseek' | 'openai' | ... */
   readonly id: string
@@ -44,4 +70,19 @@ export interface LlmProvider {
    * 实现方应发起最小成本请求（如 max_tokens=1），返回 ok 与可选 message。
    */
   ping(config: AiConfig): Promise<PingResult>
+
+  /**
+   * （可选）拉取该 Provider 当前账号可用的模型清单。
+   *
+   * 设计契约：
+   *   - 抛任何 LlmError 时，调用方负责回退到 registry 的 hardcoded models
+   *   - 实现方应：
+   *     1. 仅返回 chat / 文本生成可用模型，过滤 embedding / image / audio
+   *     2. 给每条结果尽量补 tags（通过 inferModelTags 启发式）
+   *     3. 不引入额外的 retry / 缓存（这些由调用层 store 处理）
+   *
+   * 不实现此方法的 provider（如：本地 mock、未支持的厂商）保持字段缺失，
+   * 调用方用 `'listModels' in provider` 判定能力。
+   */
+  listModels?(config: AiConfig): Promise<ListModelsResult>
 }

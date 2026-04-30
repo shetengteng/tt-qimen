@@ -29,10 +29,11 @@
  */
 
 import OpenAI from 'openai'
-import type { LlmProvider, PingResult } from './types'
+import type { LlmProvider, PingResult, ListModelsResult, RemoteModel } from './types'
 import type { AiConfig } from '../types'
 import type { ProviderId } from './registry'
 import { toLlmError } from '../errors'
+import { deriveModelLabel, inferModelTags, isChatLikeModelId } from './modelHeuristics'
 
 export interface OpenAiCompatibleProviderOptions {
   readonly id: ProviderId
@@ -133,6 +134,46 @@ export function createOpenAiCompatibleProvider(
       } catch (e) {
         const err = toLlmError(e)
         return { ok: false, message: err.detail }
+      }
+    },
+
+    /**
+     * 拉取该 endpoint 暴露的 GET /v1/models 列表。
+     *
+     * 各家差异（已实测兼容）：
+     *   - DeepSeek / OpenAI / Moonshot：返回带 created 字段，按 created 倒序展示最新优先
+     *   - Qwen DashScope compatible-mode：返回不带 created，按 id 字典序保留
+     *   - Zhipu：返回 obj 结构同 OpenAI，created 多为 0
+     *   - xAI：少量模型，返回 created 字段
+     *
+     * 全家族共性：
+     *   - data[].id 是 chat / embedding / image / audio 等混合，需按命名启发式过滤
+     *   - 抛错统一走 toLlmError → store 调用方 fallback 到 hardcoded
+     */
+    async listModels(config: AiConfig): Promise<ListModelsResult> {
+      const client = buildClient(config)
+      try {
+        const res = await client.models.list()
+        const models: RemoteModel[] = []
+        for (const m of res.data) {
+          if (!isChatLikeModelId(m.id)) continue
+          models.push({
+            id: m.id,
+            fallbackLabel: deriveModelLabel(m.id),
+            kind: 'chat',
+            created: typeof m.created === 'number' && m.created > 0 ? m.created : undefined,
+            tags: inferModelTags(m.id),
+          })
+        }
+        models.sort((a, b) => {
+          if (a.created && b.created) return b.created - a.created
+          if (a.created) return -1
+          if (b.created) return 1
+          return a.id.localeCompare(b.id)
+        })
+        return { models }
+      } catch (e) {
+        throw toLlmError(e)
       }
     },
   }

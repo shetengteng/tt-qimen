@@ -18,9 +18,10 @@
  */
 
 import Anthropic from '@anthropic-ai/sdk'
-import type { LlmProvider, PingResult } from './types'
+import type { LlmProvider, PingResult, ListModelsResult, RemoteModel } from './types'
 import type { AiConfig, ChatMessage } from '../types'
 import { toLlmError } from '../errors'
+import { inferModelTags } from './modelHeuristics'
 
 const DEFAULT_MAX_TOKENS = 4096
 
@@ -115,6 +116,41 @@ export const anthropicProvider: LlmProvider = {
     } catch (e) {
       const err = toLlmError(e)
       return { ok: false, message: err.detail }
+    }
+  },
+
+  /**
+   * Anthropic SDK 提供 `client.models.list()`，返回 `{ data, has_more, ... }`。
+   *
+   * 字段映射：
+   *   - data[].id  → RemoteModel.id（如 `claude-sonnet-4-6`）
+   *   - data[].display_name → fallbackLabel（如 `Claude Sonnet 4.6`，比 id 更友好）
+   *   - data[].created_at（ISO string）→ Unix 秒（按时间倒序展示新模型优先）
+   *
+   * Anthropic 列表只含 chat 模型（无 embedding/audio 干扰），无需 isChatLikeModelId 过滤。
+   * SDK 的分页默认拿 first page（20 条），目前 Claude 家族总数 < 20 一次性能拿全。
+   */
+  async listModels(config: AiConfig): Promise<ListModelsResult> {
+    const client = buildClient(config)
+    try {
+      const res = await client.models.list()
+      const models: RemoteModel[] = res.data.map((m) => {
+        const ts = Date.parse(m.created_at)
+        return {
+          id: m.id,
+          fallbackLabel: m.display_name || m.id,
+          kind: 'chat' as const,
+          created: Number.isFinite(ts) ? Math.floor(ts / 1000) : undefined,
+          tags: inferModelTags(m.id),
+        }
+      })
+      models.sort((a, b) => {
+        if (a.created && b.created) return b.created - a.created
+        return a.id.localeCompare(b.id)
+      })
+      return { models }
+    } catch (e) {
+      throw toLlmError(e)
     }
   },
 }

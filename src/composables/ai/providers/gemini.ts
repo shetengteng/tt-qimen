@@ -19,9 +19,10 @@
  */
 
 import { GoogleGenAI, type Content } from '@google/genai'
-import type { LlmProvider, PingResult } from './types'
+import type { LlmProvider, PingResult, ListModelsResult, RemoteModel } from './types'
 import type { AiConfig, ChatMessage } from '../types'
 import { toLlmError } from '../errors'
+import { deriveModelLabel, inferModelTags } from './modelHeuristics'
 
 interface GeminiPayload {
   systemInstruction: string | undefined
@@ -105,6 +106,53 @@ export const geminiProvider: LlmProvider = {
     } catch (e) {
       const err = toLlmError(e)
       return { ok: false, message: err.detail }
+    }
+  },
+
+  /**
+   * Gemini SDK 的 `client.models.list()` 返回 `Pager<Model>`，AsyncIterable
+   * 自动翻页。这里我们把 pageSize 拉到 100 一次性吃完所有 base 模型。
+   *
+   * 过滤策略：
+   *   - 必须 `supportedActions` 含 'generateContent'（其它如 embed/image 不要）
+   *   - 必须 name 以 `models/` 开头（base model；过滤 `tunedModels/...`）
+   *   - 必须不被识别为 image / TTS / aqa / embedding（按 displayName + name 综合启发）
+   *
+   * 字段映射：
+   *   - name: `models/gemini-3-flash` → id: `gemini-3-flash`
+   *   - displayName: `Gemini 3 Flash` → fallbackLabel
+   *   - inputTokenLimit ≥ 100k → 自动加 'long-context' tag
+   */
+  async listModels(config: AiConfig): Promise<ListModelsResult> {
+    const client = buildClient(config)
+    try {
+      const pager = await client.models.list({
+        config: { pageSize: 100, queryBase: true },
+      })
+      const models: RemoteModel[] = []
+      for await (const m of pager) {
+        if (!m.name) continue
+        if (!m.name.startsWith('models/')) continue
+        const actions = m.supportedActions ?? []
+        if (!actions.includes('generateContent')) continue
+        const id = deriveModelLabel(m.name)
+        const fallbackLabel = m.displayName?.trim() || id
+        const tags = new Set<string>(inferModelTags(id))
+        if (typeof m.inputTokenLimit === 'number' && m.inputTokenLimit >= 100_000) {
+          tags.add('long-context')
+        }
+        if (m.thinking) tags.add('thinking')
+        models.push({
+          id,
+          fallbackLabel,
+          kind: 'chat',
+          tags: Array.from(tags),
+        })
+      }
+      models.sort((a, b) => a.id.localeCompare(b.id))
+      return { models }
+    } catch (e) {
+      throw toLlmError(e)
     }
   },
 }
