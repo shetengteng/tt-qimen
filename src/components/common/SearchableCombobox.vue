@@ -218,6 +218,20 @@ watch(
         size === 'sm' ? 'h-8' : 'h-9',
       )"
     >
+      <!--
+        关闭内部 input / button 的 :focus-visible outline。
+
+        项目 src/themes/_shared/base.css 第 79-82 行定义了一条全局
+            :focus-visible { outline: 2px solid var(--color-border-strong); outline-offset: 2px; }
+        优先级（单伪类 0,0,1,0）与 Tailwind utility 同级，但 base.css 后于
+        Tailwind utility 加载，因此 utility 的 outline-hidden / outline-none 都会被
+        全局规则覆盖回 2px 实色 outline，叠加在 trigger 圆角描边外侧，视觉上
+        是一圈"无圆角的黑色方框"（用户称为「大黑框」）。
+
+        修复策略：保留 utility 作为 inline 防线，真正生效的 override 在文件底部
+        scoped style 中（input:focus-visible / button:focus-visible 显式 outline:none）。
+        视觉焦点完全交给 trigger 容器的 :focus-within 主题色描边 + box-shadow。
+      -->
       <input
         ref="inputEl"
         :id="id"
@@ -228,7 +242,8 @@ watch(
         spellcheck="false"
         :disabled="disabled"
         :class="cn(
-          'flex-1 min-w-0 bg-transparent px-3 py-1.5 text-sm outline-none',
+          'flex-1 min-w-0 bg-transparent px-3 py-1.5 text-sm',
+          'outline-hidden focus:outline-hidden focus-visible:outline-hidden focus-visible:ring-0',
           'placeholder:text-muted-foreground',
           'disabled:cursor-not-allowed',
         )"
@@ -242,7 +257,12 @@ watch(
       <button
         v-if="clearable && modelValue && !open"
         type="button"
-        class="mr-1 grid size-5 shrink-0 place-items-center rounded-full text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+        tabindex="-1"
+        :class="cn(
+          'mr-1 grid size-5 shrink-0 place-items-center rounded-full',
+          'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
+          'outline-hidden focus-visible:outline-hidden focus-visible:ring-0',
+        )"
         :aria-label="$attrs['aria-label'] as string ?? 'Clear'"
         @mousedown.prevent="clearSelection"
       >
@@ -251,7 +271,11 @@ watch(
       <button
         type="button"
         tabindex="-1"
-        class="mr-2 grid size-5 shrink-0 place-items-center text-muted-foreground"
+        :class="cn(
+          'mr-2 grid size-5 shrink-0 place-items-center rounded-md',
+          'text-muted-foreground',
+          'outline-hidden focus-visible:outline-hidden focus-visible:ring-0',
+        )"
         :aria-label="open ? 'Close list' : 'Open list'"
         @mousedown.prevent="toggleOpen"
       >
@@ -296,3 +320,20 @@ watch(
     </ul>
   </div>
 </template>
+
+<style scoped>
+/*
+ * 抑制全局 :focus-visible outline（src/themes/_shared/base.css 第 79-82 行）
+ * 在组件内部的 input/button 上的副作用：trigger 容器自身用 :focus-within 边框 +
+ * box-shadow 表达聚焦态，内部元素再画一圈 outline 会出现「2px 实色方框」叠加在
+ * 圆角 trigger 外，视觉上像未完成的黑色边框（用户称为"大黑框"）。
+ *
+ * 仅对本组件内部生效；其他页面/组件的 :focus-visible 焦点指示器不受影响。
+ */
+input:focus,
+input:focus-visible,
+button:focus,
+button:focus-visible {
+  outline: none;
+}
+</style>
