@@ -88,9 +88,9 @@ export default {
         title: 'Privacy & safety',
         hint: 'We never collect your key or proxy LLM traffic. Key facts below.',
         items: [
-          'Your API key is stored only in this browser\'s localStorage. Clearing site data or switching devices means re-entering it.',
-          'Every request is sent directly from your browser to DeepSeek. We do not proxy or relay any traffic.',
-          'We do not collect, store, or analyze any chat content. To mitigate key leakage, rotate the key from the DeepSeek console regularly.',
+          'Your API keys are stored only in this browser\'s localStorage, kept independently per provider. Clearing site data or switching devices means re-entering them.',
+          'Every request is sent directly from your browser to the active provider\'s official endpoint. We do not proxy or relay any traffic.',
+          'We do not collect, store, or analyze any chat content. To mitigate key leakage, rotate keys from each provider\'s official console regularly.',
         ],
         privacyLink: 'Read the full privacy policy →',
       },

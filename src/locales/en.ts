@@ -426,13 +426,14 @@ export default {
       {
         heading: '8. AI interpretation',
         paragraphs: [
-          'tt-qimen offers an optional AI chart interpretation feature powered by the DeepSeek LLM API, in a strict bring-your-own-key (BYOK) model:',
+          'tt-qimen offers an optional AI chart interpretation feature with 8 mainstream LLM providers you can pick and switch between, in a strict bring-your-own-key (BYOK) model:',
         ],
         list: [
-          'Your API key is stored only in your local browser\'s localStorage. We never collect, upload, or proxy your key.',
-          'Every AI request is sent **directly from your browser to DeepSeek\'s servers**. There is no intermediate proxy or logging server.',
-          'The payload sent to DeepSeek contains: the structured fields of the current chart (year/month/day/hour, Five Elements, Ten Gods, hexagram, etc.) plus your prompt. It does **not** include your real name, IP address, email, or any personally identifiable information.',
-          'DeepSeek operates under its own privacy policy (retention periods, training usage, etc.). Please consult the official policy at https://www.deepseek.com.',
+          'Available providers: OpenAI, Anthropic Claude, Google Gemini, xAI Grok (4 international) + DeepSeek, Qwen, Moonshot Kimi, Zhipu GLM (4 domestic to China).',
+          'Your API keys are stored only in your local browser\'s localStorage, kept independently per provider. We never collect, upload, or proxy any key.',
+          'Every AI request is sent **directly from your browser to the official endpoint of the active provider** (e.g. api.openai.com, api.anthropic.com, api.deepseek.com). There is no intermediate proxy and no logging on our side.',
+          'The payload sent to the provider contains: the structured fields of the current chart (year/month/day/hour, Five Elements, Ten Gods, hexagram, etc.) plus your prompt. It does **not** include your real name, IP address, email, or any personally identifiable information.',
+          'Each provider operates under its own privacy policy (retention periods, training usage, etc.). Please consult the corresponding official console and policy. Switching providers never erases keys you have already saved for the others.',
           'Conversation history is kept locally in your browser\'s localStorage (grouped by chart fingerprint). You can wipe everything via Settings → Chat history → Clear all AI sessions.',
           'When you open the AI panel directly from the header into "Free chat" mode, the conversation is ephemeral and is cleared on close.',
         ],

@@ -45,25 +45,69 @@ export class LlmError extends Error {
 /**
  * 把任意异常映射为 LlmError。
  *
- * 优先识别 OpenAI SDK 的 APIError 子类（含 status 字段 + name），其次识别 AbortError，
- * 兜底归为 'unknown'。
+ * 多 Provider 适配（按优先级识别）：
+ *   1. OpenAI / DeepSeek / Qwen / Moonshot / Zhipu / xAI（openai SDK APIError 体系）：
+ *      实例上有 `status: number` + 标准 `message` 字段；status 走 mapStatusToCode
+ *   2. Anthropic SDK：`@anthropic-ai/sdk` 抛 `APIError` 子类，**也是** `status: number`，
+ *      命中第 1 步即可；细分 401/429/5xx 与 OpenAI 一致
+ *   3. Google Gemini（@google/genai）：错误对象上没有 `status`，typically 抛
+ *      `ApiError` 或带 message 的字符串（如 "[400 Bad Request] API key not valid"）；
+ *      用 message 前缀正则提取状态码兜底
+ *   4. AbortController.abort() → 'aborted'（reka 在 SSE 中断时也走这路径）
+ *   5. fetch 层 TypeError → 'network'（CORS / DNS / offline）
+ *   6. 其余 → 'unknown'
  */
 export function toLlmError(e: unknown): LlmError {
   if (LlmError.is(e)) return e
 
-  // OpenAI SDK 的 APIError：含 status 数字字段，name === 'APIError' / 'AuthenticationError' / 'RateLimitError' 等
-  const anyE = e as { status?: number; message?: string; name?: string; code?: string }
+  const anyE = e as {
+    status?: number
+    message?: string
+    name?: string
+    code?: string
+    error?: { code?: number | string; status?: number | string; message?: string }
+  }
+
+  // Step 1+2：OpenAI SDK / Anthropic SDK 都用 `status` 数字
   if (typeof anyE?.status === 'number') {
     const code = mapStatusToCode(anyE.status)
     return new LlmError(anyE.status, anyE.message ?? anyE.name ?? 'API error', code)
   }
 
-  // AbortController.abort()
+  // Step 3a：Anthropic 也可能在 `error.status` 嵌套字段（部分版本）
+  const nestedStatus = anyE?.error?.status
+  if (typeof nestedStatus === 'number') {
+    return new LlmError(
+      nestedStatus,
+      anyE?.error?.message ?? anyE?.message ?? 'API error',
+      mapStatusToCode(nestedStatus),
+    )
+  }
+  if (typeof nestedStatus === 'string' && /^\d{3}$/.test(nestedStatus)) {
+    const num = Number(nestedStatus)
+    return new LlmError(
+      num,
+      anyE?.error?.message ?? anyE?.message ?? 'API error',
+      mapStatusToCode(num),
+    )
+  }
+
+  // Step 3b：Gemini @google/genai 在 message 前缀塞状态码，如 "[400 Bad Request] ..."
+  // 当 message 形如 `[NNN ...]` 提取 NNN
+  if (typeof anyE?.message === 'string') {
+    const m = anyE.message.match(/^\[(\d{3})\b/)
+    if (m) {
+      const num = Number(m[1])
+      return new LlmError(num, anyE.message, mapStatusToCode(num))
+    }
+  }
+
+  // Step 4：AbortController.abort()
   if ((e as Error)?.name === 'AbortError') {
     return new LlmError(0, 'aborted', 'aborted')
   }
 
-  // 浏览器 fetch 抛 TypeError 通常是网络/CORS 错
+  // Step 5：浏览器 fetch 抛 TypeError 通常是网络/CORS 错
   if (e instanceof TypeError) {
     return new LlmError(0, e.message, 'network')
   }

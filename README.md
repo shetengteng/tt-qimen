@@ -17,10 +17,10 @@
 ## ✨ 特性
 
 - **8 大占卜模块** —— 全部基于真实民间术数算法（八字四柱 / 紫微 12 宫 + 四化 / 小六壬六宫 / 袁天罡称骨 / 观音灵签 100 签 / 姓名学五格三才 / 老黄历宜忌吉时 / 周公解梦词条搜索），结果可视化呈现
-- **AI 智能解读** —— 任意模块结果 / 全局自由咨询；DeepSeek 流式响应；BYOK（自带 API Key）；本地持久化对话历史；按命盘指纹隔离会话
+- **AI 智能解读** —— 任意模块结果 / 全局自由咨询；**8 家主流 LLM Provider 任选**（OpenAI / Anthropic / Gemini / xAI / DeepSeek / Qwen / Moonshot / Zhipu）；流式响应；BYOK（自带 API Key，按 Provider 独立保存）；本地持久化对话历史；按命盘指纹隔离会话
 - **双主题** —— `国风` / `简约` 两套完整设计语言，URL 参数 `?theme=` 切换
 - **三语 i18n** —— 简体中文 / 繁體中文 / English，URL 参数 `?lang=` 切换；零运行时回退警告
-- **零后端** —— 所有数据在浏览器本地计算与存储；GitHub Pages 静态托管；用户的 API Key 仅存在 `localStorage`，对话直发 DeepSeek，本站不收任何数据
+- **零后端** —— 所有数据在浏览器本地计算与存储；GitHub Pages 静态托管；用户的 API Key 仅存在 `localStorage`，对话直发当前选中 Provider 的官方 endpoint，本站不收任何数据
 - **响应式 + 无障碍** —— shadcn-vue + reka-ui 组件层，键盘可达、ARIA 完整、移动端布局适配
 - **可验证可分享** —— 排盘结果支持 `html2canvas` 截图分享；URL hash 携带主题/语言便于发链接
 
@@ -38,7 +38,7 @@
 | 06 | **姓名学** | 五格剖象 · 三才配置 | 康熙笔画 + 五格数理 + 三才相生相克 + 综合评分 |
 | 07 | **老黄历** | 宜忌吉时 · 节气物候 | 宜/忌 + 黄道吉时 + 神煞方位 + 12 建星 + 彭祖百忌 |
 | 08 | **周公解梦** | 梦境寻踪 · 心象索解 | Fuse.js 模糊搜索 + 古籍原文 + 现代心理学解读 |
-| ✨ | **AI 解读侧栏** | 跨 8 模块 · 自由咨询 | DeepSeek V4 Flash / Pro · 流式 · 8 套模块解读骨架 · 多轮对话 |
+| ✨ | **AI 解读侧栏** | 跨 8 模块 · 自由咨询 | 8 家主流 LLM Provider 任选 · 流式 · 8 套模块解读骨架 · 多轮对话 |
 
 ---
 
@@ -58,7 +58,7 @@
 | 紫微引擎 | `iztro` |
 | 工具 | `@vueuse/core` + `@vueuse/router` + `fuse.js` + `chinese-conv` |
 | 截图分享 | `html2canvas` + `qrcode` |
-| AI | `openai`（OpenAI SDK 兼容协议）→ DeepSeek 流式 + `markstream-vue` 增量 markdown 渲染 |
+| AI | 8 家 Provider · `openai`（OpenAI 协议族：OpenAI / DeepSeek / Qwen / Moonshot / Zhipu / xAI）+ `@anthropic-ai/sdk` + `@google/genai` + `markstream-vue` 增量 markdown 渲染 |
 | 测试 | Vitest 4 + happy-dom + 覆盖率 v8 |
 | 部署 | GitHub Pages（GitHub Actions） |
 
@@ -101,17 +101,31 @@ npm run preview
 
 ## 🤖 AI 解读功能
 
+支持 8 家主流大模型 Provider（按设置页分组顺序）：
+
+| 分组 | Provider | 协议 | 推荐场景 |
+|---|---|---|---|
+| 国际 | **OpenAI** | OpenAI SDK | 全球开发者首选，生态最完整 |
+| 国际 | **Anthropic Claude** | `@anthropic-ai/sdk` | 顶级推理与编码（Claude 4.6/4.7） |
+| 国际 | **Google Gemini** | `@google/genai` | 原生多模态，超长上下文 |
+| 国际 | **xAI Grok** | OpenAI 兼容 | 100% OpenAI 协议兼容 |
+| 国内 | **DeepSeek 深度求索** | OpenAI 兼容 | 中文性价比首选，思维链可选 |
+| 国内 | **通义千问 Qwen** | OpenAI 兼容 | 中文场景，超大上下文窗口 |
+| 国内 | **月之暗面 Kimi** | OpenAI 兼容 | 长文档场景代表 |
+| 国内 | **智谱 GLM** | OpenAI 兼容 | 推理与长文档，国内自研 |
+
 启用步骤：
 
-1. 进入设置页 `/settings`，填入你的 [DeepSeek API Key](https://platform.deepseek.com/)
-2. 在任意模块完成排盘 → 点击右上角「询问 AI」按钮
-3. 右侧侧栏自动展开，AI 基于命盘开始流式解读
+1. 进入设置页 `/settings`，在「服务方」下拉中选择任一 Provider（支持搜索）
+2. 点击右上角「获取 API Key →」打开对应 Provider 官方控制台获取 Key
+3. 粘贴 Key（每家 Provider 独立保存，切换不会互相覆盖）
+4. 在任意模块完成排盘 → 点击「询问 AI」按钮，右侧侧栏开始流式解读
 4. 可继续多轮提问；点预设 chip 一键发问；按命盘指纹隔离会话
 
 **隐私保证**：
 
-- API Key 仅存在浏览器 `localStorage`，从不发往本站任何后端（本站没有后端）
-- 对话请求由你的浏览器**直接**发往 `api.deepseek.com`
+- API Key 仅存在浏览器 `localStorage`（**按 Provider 独立保存**），从不发往本站任何后端（本站没有后端）
+- 对话请求由你的浏览器**直接**发往当前选中 Provider 的官方 endpoint（`api.openai.com` / `api.anthropic.com` / `api.deepseek.com` 等）
 - 对话历史只存在你本机的 `localStorage`，可随时清除
 
 未配 Key 也能使用全部 8 个排盘模块——AI 解读纯属可选增强。
@@ -205,7 +219,7 @@ tt-qimen/
 
 - 排盘的所有输入（生辰、姓名、问题）**仅在你的浏览器内计算**；本站没有任何后端服务器
 - 排盘结果不上传，仅在你需要分享时才生成本地图片
-- AI 解读的 API Key 与对话历史**仅存于本机浏览器 `localStorage`**；对话请求由你的浏览器直发 DeepSeek
+- AI 解读的 API Key 与对话历史**仅存于本机浏览器 `localStorage`**；对话请求由你的浏览器直发当前选中 Provider 的官方 endpoint
 - 详见站内 `/privacy` 页面
 
 ---
@@ -221,6 +235,7 @@ MIT © shetengteng
 - 历法引擎：[`tyme4ts`](https://github.com/6tail/tyme4ts) · [`lunisolar`](https://github.com/waterbeside/lunisolar)
 - 紫微引擎：[`iztro`](https://github.com/SylarLong/iztro)
 - UI：[`shadcn-vue`](https://www.shadcn-vue.com/) · [`reka-ui`](https://reka-ui.com/) · [`Tailwind CSS`](https://tailwindcss.com/)
-- AI：[`DeepSeek`](https://platform.deepseek.com/)
+- AI Provider：[`OpenAI`](https://platform.openai.com/) · [`Anthropic`](https://console.anthropic.com/) · [`Google AI Studio`](https://aistudio.google.com/) · [`xAI`](https://console.x.ai/) · [`DeepSeek`](https://platform.deepseek.com/) · [`通义千问`](https://bailian.console.aliyun.com/) · [`Moonshot`](https://platform.moonshot.cn/) · [`智谱 BigModel`](https://bigmodel.cn/)
+- AI SDK：[`openai`](https://github.com/openai/openai-node) · [`@anthropic-ai/sdk`](https://github.com/anthropics/anthropic-sdk-typescript) · [`@google/genai`](https://github.com/googleapis/js-genai)
 - 流式 markdown：[`markstream-vue`](https://github.com/markstream-vue)
 - 民间术数文献整理：所有为传统文化数字化贡献心力的前辈

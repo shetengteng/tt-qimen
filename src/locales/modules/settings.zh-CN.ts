@@ -88,9 +88,9 @@ export default {
         title: '隐私与安全',
         hint: '本站不收集 Key、不中转 LLM 请求；以下为关键事实。',
         items: [
-          'API Key 仅存于本机浏览器 localStorage；清缓存或换设备后需要重新填入。',
-          '所有对话由你的浏览器直接发送给 DeepSeek，不经过本站任何后端中转。',
-          '本站不收集、不存储、不分析任何对话内容；如担心 Key 泄漏，请定期到 DeepSeek 控制台轮换。',
+          'API Key 仅存于本机浏览器 localStorage；每家 Provider 独立保存，清缓存或换设备后需要重新填入。',
+          '所有对话由你的浏览器直接发送给当前选中 Provider 的官方 endpoint，不经过本站任何后端中转。',
+          '本站不收集、不存储、不分析任何对话内容；如担心 Key 泄漏，请定期到对应 Provider 的官方控制台轮换。',
         ],
         privacyLink: '查看完整隐私政策 →',
       },

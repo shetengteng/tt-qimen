@@ -426,13 +426,14 @@ export default {
       {
         heading: '八、AI 解讀功能',
         paragraphs: [
-          '本站提供可選的 AI 命盤解讀功能，由 DeepSeek 大模型 API 驅動。該功能完全基於「自帶 API Key」（BYOK）模式：',
+          '本站提供可選的 AI 命盤解讀功能，支援你在 8 家主流大模型 Provider 中自選切換；功能完全基於「自帶 API Key」（BYOK）模式：',
         ],
         list: [
-          'API Key 僅保存在你本機的 localStorage，本站不收集、不上傳、不代理你的 Key。',
-          '所有 AI 請求由你的瀏覽器**直接發送給 DeepSeek 伺服器**，本站不經任何中間代理或日誌記錄伺服器。',
-          '發送給 DeepSeek 的內容包含：當前命盤的結構化欄位（年月日時、五行、十神、卦象等）+ 你輸入的提問。**不包含**真實姓名、IP、信箱或可辨識身分的資訊。',
-          'DeepSeek 伺服器對 API 請求有自己的隱私政策（保留期、訓練用途等），請參閱 https://www.deepseek.com 的官方政策。',
+          '當前可選 Provider：OpenAI、Anthropic Claude、Google Gemini、xAI Grok（國際 4 家）+ DeepSeek、通義 Qwen、月之暗面 Kimi、智譜 GLM（國內 4 家）。',
+          'API Key 僅保存在你本機的 localStorage，每家 Provider 獨立儲存，互不影響；本站不收集、不上傳、不代理任何 Key。',
+          '所有 AI 請求由你的瀏覽器**直接發送給當前選中 Provider 的官方 endpoint**（如 api.openai.com / api.anthropic.com / api.deepseek.com 等），本站不經任何中間代理、不記錄任何日誌。',
+          '發送給 Provider 的內容僅包含：當前命盤的結構化欄位（年月日時、五行、十神、卦象等）+ 你輸入的提問。**不包含**真實姓名、IP、信箱或可辨識身分的資訊。',
+          '各家 Provider 對 API 請求有自己的隱私政策（保留期、是否用於訓練等），請分別參閱其官方控制台與隱私政策；切換 Provider 不會清空其他已設的 Key。',
           '對話歷史僅保存在你本機 localStorage（按命盤指紋分組），可在「設定 - 對話歷史 - 清空所有 AI 會話」一鍵清除。',
           '從 header 直接打開 AI 進入「自由諮詢」模式時，對話內容不持久化，關閉即清。',
         ],

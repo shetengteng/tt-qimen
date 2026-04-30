@@ -17,10 +17,10 @@
 ## ✨ Highlights
 
 - **Eight divination modules** — all powered by genuine traditional algorithms (BaZi Four Pillars / Zi Wei 12 palaces + Four Transformations / Xiao Liu Ren six palaces / Yuan Tian-Gang bone weighing / Guan Yin 100-slip oracle / Five-Grid + Three-Talents name analysis / Huang Li auspicious-hours almanac / Duke of Zhou dream search), with rich visualisations
-- **AI interpretation** — works on every module's chart, plus a free-form consultation mode; DeepSeek streaming; **BYOK** (bring your own key); local conversation history persisted per chart fingerprint
+- **AI interpretation** — works on every module's chart, plus a free-form consultation mode; **8 mainstream LLM providers to choose from** (OpenAI / Anthropic / Gemini / xAI / DeepSeek / Qwen / Moonshot / Zhipu); streaming responses; **BYOK** (bring your own key, stored independently per provider); local conversation history persisted per chart fingerprint
 - **Two themes** — `guofeng` (Chinese-classical) and `minimal` (modern-clean), switchable via `?theme=`
 - **Three languages** — Simplified Chinese / Traditional Chinese / English, switchable via `?lang=`, with zero runtime fallback warnings
-- **Zero backend** — all computation and storage stay in your browser; hosted on GitHub Pages; your DeepSeek API key lives only in `localStorage`, requests go directly to DeepSeek, this site collects nothing
+- **Zero backend** — all computation and storage stay in your browser; hosted on GitHub Pages; your API keys live only in `localStorage`, requests go directly to the active provider's official endpoint, this site collects nothing
 - **Responsive & accessible** — shadcn-vue + reka-ui component layer; full keyboard navigation; ARIA-complete; mobile-friendly layouts
 - **Verifiable & shareable** — chart results can be exported as images via `html2canvas`; URL hash carries theme/language so links travel intact
 
@@ -38,7 +38,7 @@
 | 06 | **Chinese Name Analysis** | Five Grids · Three Talents | Kangxi strokes + five-grid numerology + Three-Talents generation/restraint + composite score |
 | 07 | **Huang Li (Almanac)** | Suitable / Avoid · Auspicious hours | Daily suitability + auspicious hours + spirits & directions + 12 Duties + Pengzu taboos |
 | 08 | **Dream Interpretation** | Trace your dream · Decode your psyche | Fuse.js fuzzy search + classical Duke-of-Zhou source + modern psychological reading |
-| ✨ | **AI Sidebar** | Cross-module · Free consultation | DeepSeek V4 Flash / Pro · streaming · 8 module-specific reading frameworks · multi-turn dialogue |
+| ✨ | **AI Sidebar** | Cross-module · Free consultation | 8 mainstream LLM providers · streaming · 8 module-specific reading frameworks · multi-turn dialogue |
 
 ---
 
@@ -58,7 +58,7 @@
 | Zi Wei engine | `iztro` |
 | Utilities | `@vueuse/core` + `@vueuse/router` + `fuse.js` + `chinese-conv` |
 | Sharing | `html2canvas` + `qrcode` |
-| AI | `openai` SDK (OpenAI-compatible protocol) → DeepSeek streaming + `markstream-vue` for incremental markdown rendering |
+| AI | 8 providers · `openai` SDK (OpenAI-compatible family: OpenAI / DeepSeek / Qwen / Moonshot / Zhipu / xAI) + `@anthropic-ai/sdk` + `@google/genai` + `markstream-vue` for incremental markdown rendering |
 | Testing | Vitest 4 + happy-dom + v8 coverage |
 | Deployment | GitHub Pages (GitHub Actions) |
 
@@ -101,17 +101,31 @@ npm run preview
 
 ## 🤖 AI Interpretation
 
+Eight mainstream LLM providers are supported (in the order they appear in the settings page):
+
+| Group | Provider | Protocol | Best for |
+|---|---|---|---|
+| International | **OpenAI** | OpenAI SDK | Most popular among global developers, broadest ecosystem |
+| International | **Anthropic Claude** | `@anthropic-ai/sdk` | Top-tier reasoning and coding (Claude 4.6 / 4.7) |
+| International | **Google Gemini** | `@google/genai` | Native multimodal, ultra-long context |
+| International | **xAI Grok** | OpenAI-compatible | 100% OpenAI-protocol compatible |
+| China | **DeepSeek** | OpenAI-compatible | Best Chinese price/perf, optional thinking mode |
+| China | **Qwen (通义千问)** | OpenAI-compatible | Strong Chinese, very large context window |
+| China | **Moonshot Kimi** | OpenAI-compatible | Long-document specialist |
+| China | **Zhipu GLM** | OpenAI-compatible | Deep reasoning + long docs, domestic |
+
 How to enable:
 
-1. Open the settings page at `/settings` and paste your [DeepSeek API key](https://platform.deepseek.com/)
-2. In any of the 8 modules, generate a chart and click the **Ask AI** button
-3. The right-hand sidebar opens and starts streaming an interpretation grounded in your chart
+1. Open the settings page at `/settings`, pick a provider in the search-enabled dropdown
+2. Click **Get API key →** to open the provider's official console and grab a key
+3. Paste the key (each provider is stored independently — switching providers never overwrites the others)
+4. In any of the 8 modules, generate a chart and click **Ask AI** — the right-hand sidebar streams an interpretation grounded in your chart
 4. Continue with multi-turn questions; click a preset chip for one-tap prompts; conversations are isolated per chart fingerprint
 
 **Privacy guarantees**:
 
-- The API key is stored **only** in your browser's `localStorage`; it is never sent to any server of this site (this site has no server)
-- AI requests go **directly** from your browser to `api.deepseek.com`
+- API keys are stored **only** in your browser's `localStorage` (**kept independently per provider**); they are never sent to any server of this site (this site has no server)
+- AI requests go **directly** from your browser to the active provider's official endpoint (`api.openai.com` / `api.anthropic.com` / `api.deepseek.com`, etc.)
 - All conversation history lives **only** in your local `localStorage` and can be cleared at any time
 
 You can use all 8 divination modules **without** an AI key — the AI sidebar is purely an optional enhancement.
@@ -205,7 +219,7 @@ Live URL: <https://shetengteng.github.io/tt-qimen/>
 
 - All chart inputs (birth time, name, question) are computed **only inside your browser**; this site has no backend server
 - Chart results are not uploaded; image sharing is generated locally on demand
-- The DeepSeek API key and AI conversation history live **only** in your browser's `localStorage`; AI requests go directly from your browser to DeepSeek
+- API keys and AI conversation history live **only** in your browser's `localStorage`; AI requests go directly from your browser to the active provider's official endpoint
 - See `/privacy` inside the app for the full statement
 
 ---
@@ -221,6 +235,7 @@ MIT © shetengteng
 - Calendar engines: [`tyme4ts`](https://github.com/6tail/tyme4ts) · [`lunisolar`](https://github.com/waterbeside/lunisolar)
 - Zi Wei engine: [`iztro`](https://github.com/SylarLong/iztro)
 - UI: [`shadcn-vue`](https://www.shadcn-vue.com/) · [`reka-ui`](https://reka-ui.com/) · [`Tailwind CSS`](https://tailwindcss.com/)
-- AI: [`DeepSeek`](https://platform.deepseek.com/)
+- AI providers: [`OpenAI`](https://platform.openai.com/) · [`Anthropic`](https://console.anthropic.com/) · [`Google AI Studio`](https://aistudio.google.com/) · [`xAI`](https://console.x.ai/) · [`DeepSeek`](https://platform.deepseek.com/) · [`Qwen (Bailian)`](https://bailian.console.aliyun.com/) · [`Moonshot`](https://platform.moonshot.cn/) · [`Zhipu BigModel`](https://bigmodel.cn/)
+- AI SDKs: [`openai`](https://github.com/openai/openai-node) · [`@anthropic-ai/sdk`](https://github.com/anthropics/anthropic-sdk-typescript) · [`@google/genai`](https://github.com/googleapis/js-genai)
 - Streaming markdown: [`markstream-vue`](https://github.com/markstream-vue)
 - All the scholars who have worked to digitise traditional Chinese divination knowledge

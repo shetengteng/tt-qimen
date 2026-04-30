@@ -426,13 +426,14 @@ export default {
       {
         heading: '八、AI 解读功能',
         paragraphs: [
-          '本站提供可选的 AI 命盘解读功能，由 DeepSeek 大模型 API 驱动。该功能完全基于「自带 API Key」（BYOK）模式：',
+          '本站提供可选的 AI 命盘解读功能，支持你在 8 家主流大模型 Provider 中自选切换；功能完全基于「自带 API Key」（BYOK）模式：',
         ],
         list: [
-          'API Key 仅保存在你本机的 localStorage，本站不收集、不上传、不代理你的 Key。',
-          '所有 AI 请求由你的浏览器**直接发送给 DeepSeek 服务器**，本站不经任何中间代理或日志记录服务器。',
-          '发送给 DeepSeek 的内容包含：当前命盘的结构化字段（年月日时、五行、十神、卦象等）+ 你输入的提问。**不包含**真实姓名、IP、邮箱或可识别身份的信息。',
-          'DeepSeek 服务器对 API 请求有自己的隐私政策（保留期、训练用途等），请参阅 https://www.deepseek.com 的官方政策。',
+          '当前可选 Provider：OpenAI、Anthropic Claude、Google Gemini、xAI Grok（国际 4 家） + DeepSeek、通义 Qwen、月之暗面 Kimi、智谱 GLM（国内 4 家）。',
+          'API Key 仅保存在你本机的 localStorage，每家 Provider 独立存储，互不影响；本站不收集、不上传、不代理任何 Key。',
+          '所有 AI 请求由你的浏览器**直接发送给当前选中 Provider 的官方 endpoint**（如 api.openai.com / api.anthropic.com / api.deepseek.com 等），本站不经任何中间代理、不记录任何日志。',
+          '发送给 Provider 的内容仅包含：当前命盘的结构化字段（年月日时、五行、十神、卦象等）+ 你输入的提问。**不包含**真实姓名、IP、邮箱或可识别身份的信息。',
+          '各家 Provider 对 API 请求有自己的隐私政策（保留期、是否用于训练等），请分别参阅其官方控制台与隐私政策；切换 Provider 不会清空其它已配的 Key。',
           '对话历史仅保存在你本机 localStorage（按命盘指纹分组），可在「设置 - 对话历史 - 清空所有 AI 会话」一键清除。',
           '从 header 直接打开 AI 进入「自由咨询」模式时，对话内容不持久化，关闭即清。',
         ],
