@@ -16,7 +16,7 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { ArrowLeft, ExternalLink, Eye, EyeOff, Palette, Languages, Sparkles, History, ShieldCheck } from 'lucide-vue-next'
+import { ArrowLeft, ChevronsUpDown, ExternalLink, Eye, EyeOff, Palette, Languages, Sparkles, History, ShieldCheck } from 'lucide-vue-next'
 import { useThemeStore } from '@/stores/theme'
 import { useLocaleStore } from '@/stores/locale'
 import { useAiConfigStore } from '@/stores/aiConfig'
@@ -41,14 +41,23 @@ import { Slider } from '@/components/ui/slider'
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  // 与 ui/label 的 `Label` 冲突，重命名为 SelectGroupLabel
-  SelectLabel as SelectGroupLabel,
-  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command'
 
 const { t, tm, rt, locale: i18nLocale } = useI18n()
 const router = useRouter()
@@ -100,20 +109,6 @@ const temperatureSliderValue = computed<number[]>({
  */
 const currentProvider = computed(() => getProviderDescriptor(aiConfig.activeProviderId))
 
-/** 按"国际 / 国内"分组的 ProviderId 列表（UI 渲染顺序保持 PROVIDER_IDS） */
-const providerGroups = computed(() => {
-  const international: ProviderId[] = []
-  const domestic: ProviderId[] = []
-  for (const id of PROVIDER_IDS) {
-    if (PROVIDERS[id].group === 'international') international.push(id)
-    else domestic.push(id)
-  }
-  return [
-    { categoryKey: 'international' as const, ids: international },
-    { categoryKey: 'domestic' as const, ids: domestic },
-  ]
-})
-
 /** 当前 provider 的可选 model 列表（剔除 deprecated 项，UI 不展示历史型号） */
 const currentModels = computed<readonly ModelDescriptor[]>(
   () => currentProvider.value.models.filter((m) => !m.deprecated),
@@ -160,17 +155,30 @@ async function testConnection() {
 }
 
 /**
- * v-model 桥接：reka-ui Select 的 modelValue 是 string；
- * setter 内做 ProviderId 守卫并重置 testState（避免上一次连接成功/失败标记被错误沿用到新 Provider）。
+ * Provider Combobox（Popover + Command）的开合状态。
+ *
+ * 用 Combobox 而不是 Select 的原因（用户反馈 2026-04-30）：
+ *   1. Select 不支持搜索过滤；8 家 Provider 平铺时仍想快速键盘搜索定位
+ *   2. reka-ui Select 在某些场景下滚动会抖动（item-aligned 偏移再校准）
+ *   3. 8 家 Provider 不再按"国际 / 国内"分组，平铺单组列表更直观
  */
-const providerSelectValue = computed<string>({
-  get: () => aiConfig.activeProviderId,
-  set: (v: string) => {
-    if (v === aiConfig.activeProviderId) return
-    aiConfig.setActiveProvider(v as ProviderId)
-    testState.value = { kind: 'idle' }
-  },
-})
+const providerPopoverOpen = ref(false)
+
+/**
+ * Combobox 选中回调：reka-ui ListboxRoot 用 modelValue 双向绑定，
+ * 这里通过 @update:model-value 拿到新选中的 string，
+ * 再走 store mutator + 关闭 popover + 重置 testState。
+ */
+function onProviderSelected(v: unknown) {
+  const id = String(v) as ProviderId
+  if (id === aiConfig.activeProviderId) {
+    providerPopoverOpen.value = false
+    return
+  }
+  aiConfig.setActiveProvider(id)
+  testState.value = { kind: 'idle' }
+  providerPopoverOpen.value = false
+}
 
 /**
  * Model 下拉的 v-model 桥接；setModel 内部已有 sanitize 兜底。
@@ -360,31 +368,49 @@ function goHome() {
         </div>
 
         <div class="mt-6 space-y-6">
-          <!-- Provider -->
+          <!-- Provider · shadcn-vue Combobox (Popover + Command) 支持搜索 -->
           <div class="space-y-2">
-            <Label for="ai-provider-select">{{ t('settings.section.ai.providerLabel') }}</Label>
-            <Select v-model="providerSelectValue">
-              <SelectTrigger id="ai-provider-select" class="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <template v-for="(group, gi) in providerGroups" :key="group.categoryKey">
-                  <SelectGroup>
-                    <SelectGroupLabel>
-                      {{ t(`settings.section.ai.providerCategory.${group.categoryKey}`) }}
-                    </SelectGroupLabel>
-                    <SelectItem
-                      v-for="id in group.ids"
-                      :key="id"
-                      :value="id"
-                    >
-                      {{ getProviderDisplayName(id) }}
-                    </SelectItem>
-                  </SelectGroup>
-                  <SelectSeparator v-if="gi < providerGroups.length - 1" />
-                </template>
-              </SelectContent>
-            </Select>
+            <Label for="ai-provider-trigger">{{ t('settings.section.ai.providerLabel') }}</Label>
+            <Popover v-model:open="providerPopoverOpen">
+              <PopoverTrigger as-child>
+                <Button
+                  id="ai-provider-trigger"
+                  type="button"
+                  variant="outline"
+                  role="combobox"
+                  :aria-expanded="providerPopoverOpen"
+                  class="w-full justify-between font-normal"
+                >
+                  <span class="truncate">
+                    {{ getProviderDisplayName(aiConfig.activeProviderId) }}
+                  </span>
+                  <ChevronsUpDown class="ml-2 size-4 shrink-0 opacity-50" aria-hidden="true" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                class="w-[var(--reka-popper-anchor-width)] p-0"
+                align="start"
+              >
+                <Command
+                  :model-value="aiConfig.activeProviderId"
+                  @update:model-value="onProviderSelected"
+                >
+                  <CommandInput :placeholder="t('settings.section.ai.providerSearchPlaceholder')" />
+                  <CommandList>
+                    <CommandEmpty>{{ t('settings.section.ai.providerEmpty') }}</CommandEmpty>
+                    <CommandGroup>
+                      <CommandItem
+                        v-for="id in PROVIDER_IDS"
+                        :key="id"
+                        :value="id"
+                      >
+                        {{ getProviderDisplayName(id) }}
+                      </CommandItem>
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
             <p class="text-xs text-muted-foreground">
               <span class="text-foreground/80">
                 {{ t(`settings.section.ai.providerOption.${aiConfig.activeProviderId}`) }}

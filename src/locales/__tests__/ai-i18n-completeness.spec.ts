@@ -89,6 +89,8 @@ const SETTINGS_AI_PATHS: readonly string[] = [
   'section.ai.lead',
   'section.ai.providerLabel',
   'section.ai.providerHint',
+  'section.ai.providerSearchPlaceholder',
+  'section.ai.providerEmpty',
   'section.ai.providerCategory.international',
   'section.ai.providerCategory.domestic',
   'section.ai.providerOption.deepseek',

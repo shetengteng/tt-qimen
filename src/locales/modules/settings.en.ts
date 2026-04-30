@@ -17,6 +17,8 @@ export default {
       lead: 'After you configure your own API key, every divination module can use AI for natural-language interpretation and multi-turn Q&A. We do not collect your key or proxy any LLM request.',
       providerLabel: 'Provider',
       providerHint: 'Configure multiple providers in parallel; switching never erases keys you have already saved for the others.',
+      providerSearchPlaceholder: 'Search providers…',
+      providerEmpty: 'No matching provider',
       providerCategory: {
         international: 'International',
         domestic: 'China',

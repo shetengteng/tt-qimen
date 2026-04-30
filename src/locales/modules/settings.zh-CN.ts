@@ -17,6 +17,8 @@ export default {
       lead: '配置自带 API Key 后，即可在每个排盘页用 AI 做自然语言解读与多轮问答。本站不收集你的 Key，也不代理任何 LLM 请求。',
       providerLabel: '服务方',
       providerHint: '可同时配置多家；切换不会丢失其它家已存的 Key。',
+      providerSearchPlaceholder: '搜索服务方…',
+      providerEmpty: '没有匹配的服务方',
       providerCategory: {
         international: '国际',
         domestic: '国内',
