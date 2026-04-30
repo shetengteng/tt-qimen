@@ -361,7 +361,7 @@ const shouldShowChips = computed(() => {
     :aria-label="t('ai.drawer.title')"
   >
     <!-- 顶部 -->
-    <header class="flex shrink-0 items-center justify-between border-b border-border px-4 py-2.5 md:py-3">
+    <header class="flex shrink-0 items-center justify-between px-4 py-2.5 md:py-3">
       <div class="flex items-center gap-2 text-base font-semibold">
         <Sparkles class="size-4 text-primary" aria-hidden="true" />
         <span>{{ t('ai.drawer.title') }}</span>

@@ -13,7 +13,6 @@
 import { computed, nextTick, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Send, Square } from 'lucide-vue-next'
-import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 const props = withDefaults(defineProps<{
@@ -83,63 +82,215 @@ defineExpose({
 </script>
 
 <template>
-  <div class="ai-input flex items-end gap-2 border-t border-border bg-card px-3 py-3 md:py-3">
-    <textarea
-      ref="taRef"
-      v-model="text"
-      data-slot="textarea"
-      :class="cn(
-        'ai-textarea flex-1 min-h-0 field-sizing-content resize-none border-input dark:bg-input/30 focus-visible:border-ring focus-visible:ring-ring/50 rounded-lg border bg-transparent px-3 py-2 text-sm leading-relaxed text-foreground transition-colors focus-visible:ring-3 placeholder:text-muted-foreground/70 outline-none disabled:cursor-not-allowed disabled:opacity-50'
-      )"
-      :placeholder="effectivePlaceholder"
-      :disabled="props.disabled && !props.streaming"
-      rows="1"
-      @keydown="onKeydown"
-    />
-
-    <Button
-      v-if="props.streaming"
-      type="button"
-      variant="outline"
-      size="icon"
-      :aria-label="t('ai.drawer.stop')"
-      :title="t('ai.drawer.stop')"
-      class="shrink-0 size-10 md:size-9"
-      @click="onStop"
+  <div class="ai-input bg-card px-3 py-3 md:py-3">
+    <div
+      class="ai-composer"
+      :class="{ 'is-disabled': props.disabled && !props.streaming }"
     >
-      <Square class="size-4" aria-hidden="true" />
-    </Button>
+      <textarea
+        ref="taRef"
+        v-model="text"
+        :class="cn(
+          'ai-textarea resize-none text-foreground placeholder:text-muted-foreground/60 disabled:cursor-not-allowed'
+        )"
+        :placeholder="effectivePlaceholder"
+        :disabled="props.disabled && !props.streaming"
+        rows="1"
+        @keydown="onKeydown"
+      />
 
-    <Button
-      v-else
-      type="button"
-      variant="default"
-      size="icon"
-      :aria-label="t('ai.drawer.sendAria')"
-      :title="t('ai.drawer.sendAria')"
-      :disabled="sendDisabled"
-      class="shrink-0 size-10 md:size-9 transition-opacity disabled:opacity-40"
-      @click="onSend"
-    >
-      <Send class="size-4" aria-hidden="true" />
-    </Button>
+      <button
+        v-if="props.streaming"
+        type="button"
+        class="ai-send-btn ai-send-btn--stop"
+        :aria-label="t('ai.drawer.stop')"
+        :title="t('ai.drawer.stop')"
+        @click="onStop"
+      >
+        <Square class="size-4" aria-hidden="true" />
+      </button>
+
+      <button
+        v-else
+        type="button"
+        class="ai-send-btn"
+        :aria-label="t('ai.drawer.sendAria')"
+        :title="t('ai.drawer.sendAria')"
+        :disabled="sendDisabled"
+        @click="onSend"
+      >
+        <Send class="ai-send-icon size-4" aria-hidden="true" />
+      </button>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.ai-textarea {
-  min-height: 40px;
-  max-height: 144px;
-  line-height: 1.5;
-  font-family: inherit;
-}
 .ai-input {
   padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
 }
+
+.ai-composer {
+  position: relative;
+  border-radius: 1.5rem;
+  background: color-mix(in srgb, var(--muted, #f4f4f6) 50%, var(--background, #ffffff));
+  border: 1px solid transparent;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.03),
+    0 0 0 1px color-mix(in srgb, var(--border, #e4e4e7) 60%, transparent);
+  transition: box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ai-composer:hover {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 0 0 1px color-mix(in srgb, var(--border, #e4e4e7) 90%, transparent);
+}
+
+.ai-composer:focus-within {
+  background: var(--background, #ffffff);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--primary, #3b2f63) 35%, var(--border, #e4e4e7)),
+    0 0 0 4px color-mix(in srgb, var(--primary, #3b2f63) 12%, transparent),
+    0 4px 12px -4px color-mix(in srgb, var(--primary, #3b2f63) 18%, transparent);
+}
+
+.ai-composer.is-disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.ai-textarea {
+  display: block;
+  width: 100%;
+  min-height: 52px;
+  max-height: 200px;
+  padding: 16px 56px 16px 18px;
+  line-height: 1.5;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  border-radius: inherit;
+  outline: none;
+  box-shadow: none;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border, #e4e4e7) transparent;
+}
+
+.ai-textarea:focus,
+.ai-textarea:focus-visible {
+  outline: none;
+  box-shadow: none;
+  border: 0;
+}
+
+.ai-textarea::-webkit-scrollbar {
+  width: 6px;
+}
+.ai-textarea::-webkit-scrollbar-thumb {
+  background: var(--border, #e4e4e7);
+  border-radius: 3px;
+}
+.ai-textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ai-send-btn {
+  position: absolute;
+  right: 9px;
+  bottom: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  color: var(--primary-foreground, #ffffff);
+  background: linear-gradient(
+    135deg,
+    var(--primary, #3b2f63) 0%,
+    color-mix(in srgb, var(--primary, #3b2f63) 78%, #000) 100%
+  );
+  box-shadow:
+    0 4px 12px -3px color-mix(in srgb, var(--primary, #3b2f63) 45%, transparent),
+    0 1px 2px color-mix(in srgb, var(--primary, #3b2f63) 25%, transparent),
+    0 1px 0 rgba(255, 255, 255, 0.18) inset;
+  transition:
+    transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 200ms ease,
+    opacity 180ms ease,
+    background 200ms ease;
+}
+
+.ai-send-icon {
+  transform: translateX(-1px);
+}
+
+.ai-send-btn:hover:not(:disabled) {
+  transform: scale(1.06);
+  box-shadow:
+    0 8px 18px -4px color-mix(in srgb, var(--primary, #3b2f63) 55%, transparent),
+    0 2px 4px color-mix(in srgb, var(--primary, #3b2f63) 30%, transparent),
+    0 1px 0 rgba(255, 255, 255, 0.22) inset;
+}
+
+.ai-send-btn:active:not(:disabled) {
+  transform: scale(0.96);
+  transition-duration: 80ms;
+}
+
+.ai-send-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+  background: color-mix(in srgb, var(--muted-foreground, #71717a) 35%, var(--muted, #f4f4f6));
+  box-shadow: none;
+}
+
+.ai-send-btn--stop {
+  background: var(--background, #ffffff);
+  color: var(--foreground, #18181b);
+  border: 1px solid var(--border, #e4e4e7);
+  box-shadow:
+    0 2px 6px -2px rgba(0, 0, 0, 0.12),
+    0 1px 0 rgba(255, 255, 255, 0.4) inset;
+}
+
+.ai-send-btn--stop:hover:not(:disabled) {
+  background: var(--muted, #f4f4f6);
+}
+
 @media (max-width: 767.98px) {
   .ai-input {
     padding-top: 0.875rem;
     padding-bottom: max(0.875rem, env(safe-area-inset-bottom));
+  }
+
+  .ai-textarea {
+    min-height: 58px;
+    padding: 18px 60px 18px 18px;
+  }
+
+  .ai-send-btn {
+    width: 38px;
+    height: 38px;
+    right: 10px;
+    bottom: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-composer,
+  .ai-send-btn {
+    transition: none;
+  }
+  .ai-send-btn:hover:not(:disabled),
+  .ai-send-btn:active:not(:disabled) {
+    transform: none;
   }
 }
 </style>
