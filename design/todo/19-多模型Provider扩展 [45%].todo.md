@@ -1,4 +1,4 @@
-# 19 · 多模型 Provider 扩展 · TODO（功能视角）· 20%
+# 19 · 多模型 Provider 扩展 · TODO（功能视角）· 45%
 
 > 对应设计文档：本 TODO 暂作为唯一规划文档（待实施前如需 RFC 再补充设计文档 `design/2026-04-30-01-多模型 Provider 扩展.md`）
 > 状态约定：`[x]` 已完成 · `[~]` 部分实现 · `[ ]` 待办
@@ -52,9 +52,9 @@
 | # | 功能维度 | MVP 范围 | 状态 | 实现位置（计划） | 依赖 |
 |---|---|---|---|---|---|
 | 1 | **Provider 注册表** | 全部 8 个 Provider 的 `ProviderDescriptor` 列表（id / displayName i18n / homepage / docsUrl / defaultBaseUrl / models / defaultModel） | `[x]` ✅ | `src/composables/ai/providers/registry.ts` | — |
-| 2 | **OpenAI 兼容通用 provider** | 抽出 `createOpenAiCompatibleProvider(opts)` 工厂函数，`deepseek.ts` 改为它的实例化；6 个 OpenAI 兼容 Provider 共用 | `[ ]` ⏳ | `src/composables/ai/providers/openaiCompatible.ts` | `openai` SDK（已装） |
-| 3 | **Anthropic Provider** | 走 `@anthropic-ai/sdk`，独立 `streamChat` + `ping`；处理 messages 系统消息从 `messages[0]` 提取到顶层 `system` 字段 | `[ ]` ⏳ | `src/composables/ai/providers/anthropic.ts` | 新增 npm `@anthropic-ai/sdk@^0.x` |
-| 4 | **Gemini Provider** | 走 `@google/genai`，独立 `streamChat` + `ping`；把 `messages` 转 Gemini `contents` 格式 | `[ ]` ⏳ | `src/composables/ai/providers/gemini.ts` | 新增 npm `@google/genai@^0.x` |
+| 2 | **OpenAI 兼容通用 provider** | `createOpenAiCompatibleProvider(opts)` 工厂；deepseek/openai/qwen/moonshot/zhipu/xai 6 家共用 | `[x]` ✅ | `src/composables/ai/providers/openaiCompatible.ts` + 6 个 instance 文件 | `openai` SDK（已装） |
+| 3 | **Anthropic Provider** | 走 `@anthropic-ai/sdk@0.91.1`，独立 `streamChat` + `ping`；`convertMessagesToAnthropic` 把第一条 system 提到顶层、保留 user/assistant 顺序、二次 system 降级为 user | `[x]` ✅ | `src/composables/ai/providers/anthropic.ts` | `@anthropic-ai/sdk@0.91.1` |
+| 4 | **Gemini Provider** | 走 `@google/genai@1.51.0`，独立 `streamChat` + `ping`；`convertMessagesToGemini` 把 system 拼到 systemInstruction、assistant→model、user→user，contents 包成 `{ role, parts: [{ text }] }` | `[x]` ✅ | `src/composables/ai/providers/gemini.ts` | `@google/genai@1.51.0` |
 | 5 | **AiConfig 重构（多 provider 配置）** | `AiUserConfig` 多 provider 持久化 + 扁平 `AiConfig` 投影保持 LlmProvider 接口零变化；切 Provider 不丢其它家 Key | `[x]` ✅ | `src/composables/ai/types.ts` + `src/stores/aiConfig.ts` | — |
 | 6 | **Settings UI · Provider 切换器** | 当前 hardcode "deepseek" chip 改为 8 个 Provider 选项卡 / Combobox；切换后下方 apiKey + model 区域同步刷新 | `[ ]` ⏳ | `src/modules/settings/SettingsPage.vue` AI 段 | — |
 | 7 | **Settings UI · 每 Provider 独立 apiKey** | apiKey 输入框跟随当前选中 Provider；切回某 Provider 自动回显历史 apiKey；展示该 Provider 的 docsUrl 链接 | `[ ]` ⏳ | `SettingsPage.vue` | — |
@@ -96,22 +96,21 @@
 
 > 目标：8 个 Provider 全部接入，`registry.ts` 真正可用；现有 `deepseek.ts` 改造为 OpenAI 兼容工厂的实例。
 
-- [ ] ⏳ P2-01 写 `src/composables/ai/providers/openaiCompatible.ts`：
-    - `createOpenAiCompatibleProvider({ id, supportsThinking?: (model: string) => boolean })` 工厂函数
-    - 复用现有 `deepseek.ts` 的 thinking 处理逻辑（仅对支持 thinking 的 provider+model 启用）
-- [ ] ⏳ P2-02 重构 `src/composables/ai/providers/deepseek.ts`：调 `createOpenAiCompatibleProvider({ id: 'deepseek', supportsThinking: m => /pro/i.test(m) })`，行为零变化
-- [ ] ⏳ P2-03 创建 `openai.ts` / `qwen.ts` / `moonshot.ts` / `zhipu.ts` / `xai.ts`：均为 `createOpenAiCompatibleProvider` 实例（每个 ~5 行）
-- [ ] ⏳ P2-04 安装 `@anthropic-ai/sdk` 并写 `anthropic.ts`：
-    - 把 `messages` 数组里第一条 system role 提取到顶层 `system` 字段（Anthropic API 要求）
-    - 用 `client.messages.stream()` 拿到 stream，`for await` 解析 `content_block_delta` 事件 → yield `delta.text`
-    - `dangerouslyAllowBrowser: true`
-- [ ] ⏳ P2-05 安装 `@google/genai` 并写 `gemini.ts`：
-    - `GoogleGenAI({ apiKey })` 客户端
-    - 把 OpenAI 风格 `messages: [{role, content}]` 转 Gemini `contents: [{role, parts: [{text}]}]`，system role 转 `systemInstruction`
-    - `model.generateContentStream(...)` 流式 yield
-- [ ] ⏳ P2-06 完成 `registry.ts`：填充 `PROVIDERS` instance map + 8 家完整 metadata（displayName / homepage / docsUrl / defaultBaseUrl / models / defaultModel）
-- [ ] ⏳ P2-07 写 `getProvider(id)` 辅助函数 + 类型安全保护
-- [ ] ⏳ P2-08 单元测试每个 Provider 的 streamChat 关键逻辑（mock SDK，验证 messages 转换）
+- [x] ✅ P2-01 写 `src/composables/ai/providers/openaiCompatible.ts`：
+    - `createOpenAiCompatibleProvider({ id, shouldDisableThinking?, consumeReasoningContent? })` 工厂函数
+    - 复用 thinking 处理逻辑（仅对支持 thinking 的 provider+model 启用 extra_body）
+- [x] ✅ P2-02 重构 `src/composables/ai/providers/deepseek.ts`：调 `createOpenAiCompatibleProvider({ id: 'deepseek', shouldDisableThinking: m => /flash/i.test(m), consumeReasoningContent: true })`，行为零变化（diff 119 → 25 行）
+- [x] ✅ P2-03 创建 `openai.ts` / `qwen.ts` / `moonshot.ts` / `zhipu.ts` / `xai.ts`：均为 `createOpenAiCompatibleProvider` 实例（每个 5-8 行）
+- [x] ✅ P2-04 安装 `@anthropic-ai/sdk@0.91.1` 并写 `anthropic.ts`：
+    - `convertMessagesToAnthropic` 把第一条 system 提到顶层 `system` 字段（多余 system 降级为 user）
+    - `client.messages.create({ stream: true })` → `for await` `content_block_delta` 事件 → yield `delta.text`
+    - `dangerouslyAllowBrowser: true` + `max_tokens: 4096`（Anthropic API 必填）
+- [x] ✅ P2-05 安装 `@google/genai@1.51.0` 并写 `gemini.ts`：
+    - `GoogleGenAI({ apiKey, httpOptions: { baseUrl } })` 客户端
+    - `convertMessagesToGemini` 把 system 拼接到 `config.systemInstruction`，assistant→model，user→user，content → `{ role, parts: [{ text }] }`
+    - `client.models.generateContentStream(...)` 流式 yield 每个 chunk 的 `.text`
+- [x] ✅ P2-06 + P2-07 新建 `src/composables/ai/providers/index.ts`：`PROVIDER_INSTANCES: Record<ProviderId, LlmProvider>` + `getProvider(id)` 兜底
+- [x] ✅ P2-08 单元测试 `messageConversion.spec.ts`（12 用例，全过）：covers Anthropic 第一条 system 提取 / 多 system 降级 / hidden message 透传 / 空数组安全；Gemini systemInstruction 多 system 拼接 / role rename / 空 content 跳过 / 无 system 输出 undefined / 文本完整保留
 
 ### Phase 3 — UI 与上下游接入 · ~0.5 天
 
@@ -262,7 +261,7 @@
 | Phase | 状态 | 完成日期 | 备注 |
 |---|---|---|---|
 | Phase 1 — 类型与配置层重构 | `[x]` ✅ | 2026-04-30 | registry + types + store + 19 单元测试；vue-tsc 0 错；vitest 463/0；vite build 5.88s 通过；行为对外零变化 |
-| Phase 2 — Provider 实现 | `[ ]` ⏳ | — | — |
+| Phase 2 — Provider 实现 | `[x]` ✅ | 2026-04-30 | openaiCompatible 工厂 + 8 个 instance + index.ts 聚合 + 12 conversion 测试；vue-tsc 0 错；vitest 475/0；vite build 5.51s；feat-ai chunk tree-shake 后 SDK 暂未进入 bundle（等 Phase 3 接入 UI 后才会被引用）|
 | Phase 3 — UI 与上下游接入 | `[ ]` ⏳ | — | — |
 | Phase 4 — i18n 与文档收尾 | `[ ]` ⏳ | — | — |
 
