@@ -48,6 +48,12 @@ const chartRef = ref<InstanceType<typeof ZiweiPalaceChart> | null>(null)
 
 const showSanfang = ref(true)
 const chart = shallowRef<ZiweiChart | null>(null)
+/**
+ * 计算失败标记：仅在 onPaipan 真正捕获异常 / 拿到 null 结果时才被设置。
+ * 用于区分"骨架屏已 reveal 但 chart 还在异步计算中"这一中间窗口
+ * （此时 chart === null，但不应当显示错误卡片）。
+ */
+const computeError = ref<Error | null>(null)
 
 const aiSidebar = useAiSidebarStore()
 const aiUserContext = computed(() => ({
@@ -74,18 +80,26 @@ const skeleton = useSkeletonReveal({
 })
 
 async function onPaipan() {
+  computeError.value = null
   skeleton.start(() => resultBannerEl.value)
   try {
-    chart.value = await buildZiweiChart(ziweiStore.birth)
-    if (chart.value) ziweiStore.recordComputed()
+    const built = await buildZiweiChart(ziweiStore.birth)
+    chart.value = built
+    if (built) {
+      ziweiStore.recordComputed()
+    } else {
+      computeError.value = new Error('ziwei.buildChart.returnedNull')
+    }
   } catch (err) {
     console.error('[ziwei] calculate failed:', err)
     chart.value = null
+    computeError.value = err instanceof Error ? err : new Error(String(err))
   }
 }
 
 function onRepaipan() {
   chart.value = null
+  computeError.value = null
   ziweiStore.clearComputed()
   skeleton.reset(() => inputCardEl.value)
 }
@@ -119,11 +133,22 @@ async function tryRestoreLastResult(): Promise<boolean> {
 }
 
 /**
- * 排盘失败友好态：与 bazi/chenggu/xingming/lingqian/liuren/huangli 6 模块一致。
- * 触发条件：骨架屏已揭示但 chart 仍为 null（例：FortuneError(invalid-input)、iztro 内部异常）。
- * 渲染：替换整个 result-zone 为单一 compute-error-card，避免空盘 + 一堆空盒子的劣质 UX。
+ * 排盘失败友好态：对齐 xingming 模块的"双门闩"判定。
+ * 触发条件三者**同时成立**：
+ *   1. 骨架屏已 reveal（避免在排盘动画期间闪烁错误卡）
+ *   2. chart 为 null（确实没有可渲染的命盘）
+ *   3. computeError !== null（确实捕获到了异常 / 拿到 null 结果）
+ *
+ * 第 3 条是关键守卫——它把"chart 还在异步计算中"（此时 1+2 满足但第 3 条不满足）
+ * 与"chart 真的算失败了"区分开。skeleton delay (1500ms) 短于慢速 buildZiweiChart
+ * 的耗时时，会出现 reveal 早于 chart 完成的中间窗口，旧实现会在该窗口误报错。
  */
-const showComputeError = computed(() => skeleton.revealed.value && chart.value === null)
+const showComputeError = computed(
+  () =>
+    skeleton.revealed.value
+    && chart.value === null
+    && computeError.value !== null,
+)
 
 function go(name: 'home') {
   router.push({ name })
