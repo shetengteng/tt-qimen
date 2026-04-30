@@ -11,7 +11,9 @@
     "type-check": "vue-tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "export-data": "tsx scripts/export-shared-data/export.ts",
+    "research-fixtures": "tsx scripts/research-fixtures/export-path-a.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.91.1",
