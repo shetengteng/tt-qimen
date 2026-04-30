@@ -474,7 +474,7 @@ export default {
         cta: 'Open Settings',
         privacyNote: 'The key is stored only in this browser and never uploaded to our backend.',
       },
-      firstResponse: 'Based on the chart above, please give me a concise overall interpretation.',
+      firstResponse: 'Based on the chart above, walk through every section listed in the "Module Framework" of the system prompt and produce a **thorough, in-depth** interpretation: each section starts with a one-line conclusion, then cites concrete fields from the chart as evidence, and ends with one line on "what it means in everyday life". Close with 3-5 actionable, real-world suggestions.',
     },
     history: {
       collapsed: '{count} earlier messages hidden (kept locally; the latest 50 are sent to the AI).',
