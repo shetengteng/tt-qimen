@@ -36,6 +36,36 @@ import {
 } from '@/modules/bazi/data/interpretTemplate'
 import { SHENSHA_MEANING } from '@/modules/bazi/data/shenshaMeaning'
 
+// 小六壬
+import { PALACES_ORDER, PALACES, PALACE_JIXIONG } from '@/modules/liuren/data/palaces'
+
+// 称骨
+import {
+  YEAR_WEIGHT,
+  MONTH_WEIGHT,
+  DAY_WEIGHT,
+  HOUR_WEIGHT,
+  HOUR_BRANCH_NAMES as CHENGGU_HOUR_NAMES,
+  WEIGHT_MIN,
+  WEIGHT_MAX,
+} from '@/modules/chenggu/data/weights'
+import { POEMS as CHENGGU_POEMS } from '@/modules/chenggu/data/poems'
+
+// 老黄历
+import { DUTY_MEANING } from '@/modules/huangli/data/dutyMeaning'
+import { MATTER_KEYWORDS } from '@/modules/huangli/data/matterKeywords'
+import { MATTER_ICONS, MATTER_ORDER } from '@/modules/huangli/data/matterIcons'
+
+// 姓名学
+import { NUMEROLOGY } from '@/modules/xingming/data/numerology'
+import { KANGXI_CORRECTIONS } from '@/modules/xingming/data/strokesFallback'
+import { COMPOUND_SURNAMES } from '@/modules/xingming/data/compoundSurnames'
+
+// 周公解梦
+import { DREAM_ENTRIES_GENERATED } from '@/modules/jiemeng/data/dreams.generated'
+import { DREAM_CATEGORIES } from '@/modules/jiemeng/data/categories'
+import { SENSITIVE_WORDS } from '@/modules/jiemeng/data/sensitiveWords'
+
 // ---------------------------------------------------------------------------
 // 路径
 // ---------------------------------------------------------------------------
@@ -108,6 +138,104 @@ async function exportBaziData(): Promise<void> {
 }
 
 // ---------------------------------------------------------------------------
+// 小六壬数据
+// ---------------------------------------------------------------------------
+
+async function exportLiurenData(): Promise<void> {
+  console.log('[liuren] palaces.json')
+  await writeJson('liuren/palaces.json', {
+    PALACES_ORDER,
+    PALACE_JIXIONG,
+    PALACES,
+  })
+}
+
+// ---------------------------------------------------------------------------
+// 称骨数据
+// ---------------------------------------------------------------------------
+
+async function exportChengguData(): Promise<void> {
+  console.log('[chenggu] weights.json')
+  await writeJson('chenggu/weights.json', {
+    YEAR_WEIGHT,
+    MONTH_WEIGHT,
+    DAY_WEIGHT,
+    HOUR_WEIGHT,
+    HOUR_BRANCH_NAMES: CHENGGU_HOUR_NAMES,
+    WEIGHT_MIN,
+    WEIGHT_MAX,
+  })
+
+  console.log('[chenggu] poems.json')
+  await writeJson('chenggu/poems.json', CHENGGU_POEMS)
+}
+
+// ---------------------------------------------------------------------------
+// 老黄历数据
+// ---------------------------------------------------------------------------
+
+async function exportHuangliData(): Promise<void> {
+  console.log('[huangli] dutyMeaning.json')
+  await writeJson('huangli/dutyMeaning.json', DUTY_MEANING)
+
+  console.log('[huangli] matterKeywords.json')
+  await writeJson('huangli/matterKeywords.json', MATTER_KEYWORDS)
+
+  console.log('[huangli] matterIcons.json')
+  await writeJson('huangli/matterIcons.json', { MATTER_ICONS, MATTER_ORDER })
+}
+
+// ---------------------------------------------------------------------------
+// 姓名学数据
+// ---------------------------------------------------------------------------
+
+async function exportXingmingData(): Promise<void> {
+  console.log('[xingming] numerology.json')
+  await writeJson('xingming/numerology.json', NUMEROLOGY)
+
+  console.log('[xingming] kangxiCorrections.json')
+  await writeJson('xingming/kangxiCorrections.json', KANGXI_CORRECTIONS)
+
+  console.log('[xingming] compoundSurnames.json')
+  await writeJson('xingming/compoundSurnames.json', COMPOUND_SURNAMES)
+}
+
+// ---------------------------------------------------------------------------
+// 周公解梦数据
+// ---------------------------------------------------------------------------
+
+async function exportJiemengData(): Promise<void> {
+  console.log('[jiemeng] dreams.json')
+  await writeJson('jiemeng/dreams.json', DREAM_ENTRIES_GENERATED)
+
+  console.log('[jiemeng] categories.json')
+  await writeJson('jiemeng/categories.json', DREAM_CATEGORIES)
+
+  console.log('[jiemeng] sensitiveWords.json')
+  await writeJson('jiemeng/sensitiveWords.json', SENSITIVE_WORDS)
+}
+
+// ---------------------------------------------------------------------------
+// 观音灵签数据（直接拷贝既有 JSON）
+// ---------------------------------------------------------------------------
+
+async function exportLingqianData(): Promise<void> {
+  const srcPath = path.resolve(
+    process.cwd(),
+    'src/modules/lingqian/data/guanyin.json',
+  )
+  const destPath = path.join(SHARED_DATA_DIR, 'lingqian/guanyin.json')
+  await fs.mkdir(path.dirname(destPath), { recursive: true })
+  const content = await fs.readFile(srcPath, 'utf-8')
+  const wrapped = {
+    _meta: META,
+    data: JSON.parse(content),
+  }
+  await fs.writeFile(destPath, JSON.stringify(wrapped, null, 2) + '\n', 'utf-8')
+  console.log(`  ✓ ${destPath}`)
+}
+
+// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 
@@ -121,8 +249,20 @@ async function main(): Promise<void> {
   console.log('')
   await exportBaziData()
   console.log('')
+  await exportLiurenData()
+  console.log('')
+  await exportChengguData()
+  console.log('')
+  await exportHuangliData()
+  console.log('')
+  await exportXingmingData()
+  console.log('')
+  await exportJiemengData()
+  console.log('')
+  await exportLingqianData()
+  console.log('')
 
-  console.log('✓ 全部数据资产抽离完毕（P1.1：城市经度 + 八字 7 表）')
+  console.log('✓ 全部数据资产抽离完毕（P1：城市经度 + 8 模块共 22 表）')
 }
 
 main().catch((err) => {

@@ -85,6 +85,8 @@ function asBirthInput(c: CaseRecord): BirthInput {
     hour: i.hour as number,
     minute: (i.minute as number) ?? 0,
     gender: (i.gender as 'male' | 'female') ?? 'male',
+    longitude: i.longitude as number | undefined,
+    birthplace: i.birthplace as string | undefined,
   }
 }
 
