@@ -72,9 +72,11 @@ export default {
       },
       temperature: {
         label: 'Temperature (creativity)',
-        hint: 'Range 0.0 – 2.0. Lower = more conservative; higher = more divergent. Shared across providers.',
+        hint: 'Range 0.0 – 2.0. Lower keeps answers conservative and consistent; higher gets more divergent. Default 0.2 fits divination well — most users never need to change it. Shared across providers.',
         min: '0.0 · conservative',
         max: '2.0 · divergent',
+        expand: 'Expand',
+        collapse: 'Collapse',
       },
       baseUrl: {
         label: 'Base URL',

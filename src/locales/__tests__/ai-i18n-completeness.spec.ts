@@ -134,6 +134,8 @@ const SETTINGS_AI_PATHS: readonly string[] = [
   'section.ai.temperature.hint',
   'section.ai.temperature.min',
   'section.ai.temperature.max',
+  'section.ai.temperature.expand',
+  'section.ai.temperature.collapse',
   'section.ai.baseUrl.label',
   'section.ai.baseUrl.placeholder',
   'section.ai.baseUrl.hint',

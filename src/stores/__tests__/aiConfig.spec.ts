@@ -179,7 +179,7 @@ describe('aiConfig store — temperature is shared across providers', () => {
     store.setTemperature(-1)
     expect(store.config.temperature).toBe(0)
     store.setTemperature(Number.NaN)
-    expect(store.config.temperature).toBe(0.3) // default
+    expect(store.config.temperature).toBe(0.2) // default
   })
 })
 
@@ -206,7 +206,7 @@ describe('aiConfig store — clearKeyOnly / reset', () => {
 
     store.reset()
     expect(store.activeProviderId).toBe('deepseek')
-    expect(store.config.temperature).toBe(0.3)
+    expect(store.config.temperature).toBe(0.2)
     expect(store.userConfig.perProvider.deepseek.apiKey).toBe('')
     expect(store.userConfig.perProvider.openai.apiKey).toBe('')
   })

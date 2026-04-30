@@ -28,6 +28,7 @@ import {
   ShieldCheck,
   RefreshCw,
   Loader2,
+  ChevronDown,
 } from 'lucide-vue-next'
 import { useThemeStore } from '@/stores/theme'
 import { useLocaleStore } from '@/stores/locale'
@@ -88,8 +89,18 @@ const baseUrlValue = computed({
 
 const temperatureSliderValue = computed<number[]>({
   get: () => [aiConfig.config.temperature],
-  set: (v: number[]) => aiConfig.setTemperature(v[0] ?? 0.7),
+  set: (v: number[]) => aiConfig.setTemperature(v[0] ?? 0.2),
 })
+
+/**
+ * 温度区折叠状态：默认收起。
+ *
+ * 决策（2026-04-30 用户反馈）：
+ *   - 占卜场景默认值 0.2 已能产出"高一致性"的输出，绝大多数用户不需要调
+ *   - 把这个高级旋钮藏到 `<details>` 后能让设置页"主线"更短，新手不被参数刷屏
+ *   - 高级用户点开后状态保留在本地组件（不持久化），下次进入仍是收起
+ */
+const temperatureExpanded = ref(false)
 
 /**
  * 当前 active Provider 的元数据（i18n displayName / 模型清单 / docs 链接 / baseUrl 策略）。
@@ -645,27 +656,55 @@ function goHome() {
             </p>
           </div>
 
-          <!-- Temperature -->
-          <div class="space-y-3">
-            <div class="flex items-baseline justify-between">
-              <Label>{{ t('settings.section.ai.temperature.label') }}</Label>
-              <span class="font-mono text-sm text-muted-foreground">
-                {{ aiConfig.config.temperature.toFixed(1) }}
+          <!-- Temperature · 默认折叠（占卜场景默认 0.2 已合适，给高级用户用） -->
+          <div class="rounded-lg border border-border/60 bg-muted/30">
+            <button
+              type="button"
+              class="group flex w-full items-center justify-between px-3 py-2.5 text-left text-sm font-medium text-foreground hover:bg-muted/50"
+              :aria-expanded="temperatureExpanded"
+              aria-controls="ai-temperature-panel"
+              @click="temperatureExpanded = !temperatureExpanded"
+            >
+              <span class="flex items-center gap-2">
+                <span>{{ t('settings.section.ai.temperature.label') }}</span>
+                <span class="rounded-md bg-background px-1.5 py-0.5 font-mono text-xs text-muted-foreground">
+                  {{ aiConfig.config.temperature.toFixed(1) }}
+                </span>
               </span>
+              <span class="flex items-center gap-2 text-xs font-normal text-muted-foreground">
+                <span>{{
+                  temperatureExpanded
+                    ? t('settings.section.ai.temperature.collapse')
+                    : t('settings.section.ai.temperature.expand')
+                }}</span>
+                <ChevronDown
+                  :class="[
+                    'size-4 shrink-0 transition-transform',
+                    temperatureExpanded && 'rotate-180',
+                  ]"
+                  aria-hidden="true"
+                />
+              </span>
+            </button>
+            <div
+              v-show="temperatureExpanded"
+              id="ai-temperature-panel"
+              class="space-y-3 border-t border-border/60 px-3 pb-3 pt-3"
+            >
+              <Slider
+                v-model="temperatureSliderValue"
+                :min="0"
+                :max="2"
+                :step="0.1"
+              />
+              <div class="flex justify-between text-xs text-muted-foreground">
+                <span>{{ t('settings.section.ai.temperature.min') }}</span>
+                <span>{{ t('settings.section.ai.temperature.max') }}</span>
+              </div>
+              <p class="text-xs text-muted-foreground">
+                {{ t('settings.section.ai.temperature.hint') }}
+              </p>
             </div>
-            <Slider
-              v-model="temperatureSliderValue"
-              :min="0"
-              :max="2"
-              :step="0.1"
-            />
-            <div class="flex justify-between text-xs text-muted-foreground">
-              <span>{{ t('settings.section.ai.temperature.min') }}</span>
-              <span>{{ t('settings.section.ai.temperature.max') }}</span>
-            </div>
-            <p class="text-xs text-muted-foreground">
-              {{ t('settings.section.ai.temperature.hint') }}
-            </p>
           </div>
 
           <!-- Base URL（仅 OpenAI 协议兼容族暴露） -->

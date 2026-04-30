@@ -72,9 +72,11 @@ export default {
       },
       temperature: {
         label: '温度（创造性）',
-        hint: '范围 0.0 – 2.0；越低越保守，越高越发散。跨 Provider 共享。',
+        hint: '范围 0.0 – 2.0；越低越保守、回答越稳定一致，越高越发散。占卜场景默认 0.2，绝大多数情况下无需调整。跨 Provider 共享。',
         min: '0.0 · 保守',
         max: '2.0 · 发散',
+        expand: '展开调整',
+        collapse: '收起',
       },
       baseUrl: {
         label: 'Base URL',

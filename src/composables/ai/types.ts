@@ -48,7 +48,12 @@ export interface AiConfig {
   apiKey: string
   baseUrl: string
   model: string
-  /** 0..2，默认 0.3 */
+  /**
+   * 0..2，默认 0.2。
+   *
+   * 占卜场景需要稳定输出（同一命盘多次解读结果一致性高），
+   * 因此默认值定在 0.2（偏保守）。用户可在设置页"高级"区展开调整。
+   */
   temperature: number
 }
 
@@ -104,7 +109,7 @@ function buildDefaultPerProvider(): Record<ProviderId, ProviderUserConfig> {
 
 export const DEFAULT_AI_USER_CONFIG: AiUserConfig = {
   activeProviderId: 'deepseek',
-  temperature: 0.3,
+  temperature: 0.2,
   perProvider: buildDefaultPerProvider(),
 }
 
