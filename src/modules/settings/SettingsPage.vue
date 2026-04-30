@@ -16,7 +16,19 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { ArrowLeft, ExternalLink, Eye, EyeOff, Palette, Languages, Sparkles, History, ShieldCheck } from 'lucide-vue-next'
+import {
+  ArrowLeft,
+  ExternalLink,
+  Eye,
+  EyeOff,
+  Palette,
+  Languages,
+  Sparkles,
+  History,
+  ShieldCheck,
+  RefreshCw,
+  Loader2,
+} from 'lucide-vue-next'
 import { useThemeStore } from '@/stores/theme'
 import { useLocaleStore } from '@/stores/locale'
 import { useAiConfigStore } from '@/stores/aiConfig'
@@ -26,7 +38,6 @@ import {
   PROVIDER_IDS,
   getProviderDescriptor,
   isOpenAiCompatible,
-  type ModelDescriptor,
   type ModelTag,
   type ProviderId,
 } from '@/composables/ai/providers/registry'
@@ -90,10 +101,18 @@ const temperatureSliderValue = computed<number[]>({
  */
 const currentProvider = computed(() => getProviderDescriptor(aiConfig.activeProviderId))
 
-/** 当前 provider 的可选 model 列表（剔除 deprecated 项，UI 不展示历史型号） */
-const currentModels = computed<readonly ModelDescriptor[]>(
-  () => currentProvider.value.models.filter((m) => !m.deprecated),
-)
+/**
+ * 当前 provider 的可选 model 列表。
+ *
+ * 数据来源（动态）：
+ *   - 若用户主动刷新过远程列表 → store.modelsCache 中有该 provider 的远程结果；
+ *     `aiConfig.currentModels` 直接返回缓存（store 内部已转成 ModelDescriptor 形态）
+ *   - 否则 → store 回退到 registry hardcoded（已过滤 deprecated）
+ *
+ * 这样设计后 SettingsPage 不再硬编码 `currentProvider.value.models.filter(...)`，
+ * 远程刷新后立即透传到 model combobox。
+ */
+const currentModels = computed(() => aiConfig.currentModels)
 
 /** 当前 provider 是否暴露 baseUrl 自定义入口（仅 OpenAI 协议兼容族 = true） */
 const canCustomBaseUrl = computed(() => isOpenAiCompatible(aiConfig.activeProviderId))
@@ -134,6 +153,96 @@ async function testConnection() {
     }
   }
 }
+
+/**
+ * 拉取当前 active provider 的远程模型清单并写入 sessionStorage 缓存。
+ *
+ * 设计：
+ *   - 没填 apiKey 时直接拒绝（远程接口都需要 Bearer token）
+ *   - provider 实例没实现 listModels 时（理论上 8 家都实现了，作防御）写一个 unsupported 状态
+ *   - 任意失败都不污染当前缓存（保留上一次结果）
+ */
+async function refreshModels() {
+  if (aiConfig.refreshState.kind === 'loading') return
+  if (!aiConfig.hasKey) {
+    aiConfig.setRefreshState({ kind: 'error', message: t('settings.section.ai.test.missingKey') })
+    return
+  }
+  const provider = getProvider(aiConfig.activeProviderId)
+  if (typeof provider.listModels !== 'function') {
+    aiConfig.setRefreshState({
+      kind: 'error',
+      message: t('settings.section.ai.model.refresh.unsupported'),
+    })
+    return
+  }
+  aiConfig.setRefreshState({ kind: 'loading' })
+  try {
+    const result = await provider.listModels(aiConfig.config)
+    if (result.models.length === 0) {
+      aiConfig.setRefreshState({
+        kind: 'error',
+        message: t('settings.section.ai.model.refresh.empty'),
+      })
+      return
+    }
+    aiConfig.setRemoteModels(aiConfig.activeProviderId, result.models)
+  } catch (e) {
+    const msg
+      = e instanceof LlmError
+        ? t(`ai.error.${e.code}`)
+        : e instanceof Error
+          ? e.message
+          : t('ai.error.unknown')
+    aiConfig.setRefreshState({ kind: 'error', message: msg })
+  }
+}
+
+function clearRemoteModels() {
+  aiConfig.clearRemoteModels(aiConfig.activeProviderId)
+}
+
+/**
+ * 当前 provider 是否使用了远程拉取的模型缓存（决定是否展示"清空缓存"按钮 + 时间提示）
+ */
+const hasRemoteCache = computed(() => {
+  const cached = aiConfig.modelsCache[aiConfig.activeProviderId]
+  return !!cached && cached.models.length > 0
+})
+
+/**
+ * 把 fetchedAt 时间戳格式化成"刚刚 / N 分钟前 / 时:分"
+ */
+function formatRelativeTime(unixMs: number): string {
+  const now = Date.now()
+  const diffSec = Math.max(0, Math.floor((now - unixMs) / 1000))
+  if (diffSec < 60) return t('settings.section.ai.model.refresh.justNow')
+  if (diffSec < 3600) {
+    return t('settings.section.ai.model.refresh.minutesAgo', { n: Math.floor(diffSec / 60) })
+  }
+  const d = new Date(unixMs)
+  const hh = String(d.getHours()).padStart(2, '0')
+  const mm = String(d.getMinutes()).padStart(2, '0')
+  return t('settings.section.ai.model.refresh.atTime', { time: `${hh}:${mm}` })
+}
+
+/**
+ * 当前 model combobox 下方第二行 "源" 提示：
+ *   - 远程缓存：`已使用远程列表 · 12 个模型 · 5 分钟前`
+ *   - hardcoded：`使用内置列表`
+ */
+const modelSourceLine = computed(() => {
+  const cached = aiConfig.modelsCache[aiConfig.activeProviderId]
+  if (!cached || cached.models.length === 0) {
+    return t('settings.section.ai.model.refresh.useHardcoded')
+  }
+  const sep = ' · '
+  return [
+    t('settings.section.ai.model.refresh.useRemote'),
+    t('settings.section.ai.model.refresh.fromCache', { count: cached.models.length }),
+    formatRelativeTime(cached.fetchedAt),
+  ].join(sep)
+})
 
 /**
  * Provider 选择 v-model（SearchableCombobox 的 modelValue 双向绑定）。
@@ -455,9 +564,44 @@ function goHome() {
             </p>
           </div>
 
-          <!-- Model · 与 Provider 同款 SearchableCombobox -->
+          <!-- Model · 与 Provider 同款 SearchableCombobox + 刷新按钮 -->
           <div class="space-y-2">
-            <Label for="ai-model-combobox">{{ t('settings.section.ai.model.label') }}</Label>
+            <div class="flex items-baseline justify-between gap-3">
+              <Label for="ai-model-combobox">{{ t('settings.section.ai.model.label') }}</Label>
+              <div class="flex items-center gap-2 text-xs">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  class="h-7 gap-1.5 px-2 text-muted-foreground hover:text-foreground"
+                  :disabled="aiConfig.refreshState.kind === 'loading'"
+                  :aria-label="t('settings.section.ai.model.refresh.button')"
+                  @click="refreshModels"
+                >
+                  <Loader2
+                    v-if="aiConfig.refreshState.kind === 'loading'"
+                    class="size-3.5 animate-spin"
+                    aria-hidden="true"
+                  />
+                  <RefreshCw
+                    v-else
+                    class="size-3.5"
+                    aria-hidden="true"
+                  />
+                  <span>{{ t('settings.section.ai.model.refresh.button') }}</span>
+                </Button>
+                <Button
+                  v-if="hasRemoteCache"
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  class="h-7 px-2 text-muted-foreground hover:text-foreground"
+                  @click="clearRemoteModels"
+                >
+                  {{ t('settings.section.ai.model.refresh.clear') }}
+                </Button>
+              </div>
+            </div>
             <SearchableCombobox
               id="ai-model-combobox"
               v-model="modelSelectValue"
@@ -478,6 +622,26 @@ function goHome() {
                 aria-hidden="true"
               >·</span>
               <span>{{ t('settings.section.ai.model.hint') }}</span>
+            </p>
+            <p
+              :class="[
+                'text-xs',
+                aiConfig.refreshState.kind === 'error'
+                  ? 'text-destructive'
+                  : 'text-muted-foreground',
+              ]"
+            >
+              <template v-if="aiConfig.refreshState.kind === 'loading'">
+                {{ t('settings.section.ai.model.refresh.loading') }}
+              </template>
+              <template v-else-if="aiConfig.refreshState.kind === 'error'">
+                {{ t('settings.section.ai.model.refresh.error', {
+                  message: aiConfig.refreshState.message,
+                }) }}
+              </template>
+              <template v-else>
+                {{ modelSourceLine }}
+              </template>
             </p>
           </div>
 
