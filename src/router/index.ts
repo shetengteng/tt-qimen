@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-router'
 import { i18n, isLocale, loadModuleLocale, type Locale } from '@/locales'
+import { isChunkLoadError, triggerReloadOnce } from '@/lib/chunkReload'
 
 export const MODULES = [
   { id: 'bazi',     order: 1 },
@@ -82,6 +83,15 @@ router.afterEach((to) => {
   const key = to.meta.titleKey as string | undefined
   const t = key ? String(i18n.global.t(key)) : 'tt-qimen'
   document.title = `${t} · tt-qimen`
+})
+
+/**
+ * 兜底：dynamic import 路由组件失败（旧 index.html 引用的 chunk hash 已被新部署清除）
+ * 时强制刷新拿最新 index.html。`vite:preloadError` 已在 main.ts 监听 modulepreload 失败；
+ * 这里覆盖 router 实际 navigation 触发的 import error。
+ */
+router.onError((err) => {
+  if (isChunkLoadError(err)) triggerReloadOnce()
 })
 
 function capitalize(s: string): string {
