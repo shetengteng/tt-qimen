@@ -46,6 +46,19 @@ const shareUrl = computed(() => {
           <a href="#" @click.prevent="goLegal('data-source')">{{ t('footer.dataSource') }}</a> ·
           <a href="#" @click.prevent="goLegal('privacy')">{{ t('footer.privacy') }}</a>
         </div>
+        <div class="footer-stats">
+          <span id="busuanzi_container_site_pv">
+            {{ t('footer.statsPvPrefix') }}
+            <span id="busuanzi_value_site_pv">-</span>
+            {{ t('footer.statsPvSuffix') }}
+          </span>
+          <span class="footer-stats-sep">·</span>
+          <span id="busuanzi_container_site_uv">
+            {{ t('footer.statsUvPrefix') }}
+            <span id="busuanzi_value_site_uv">-</span>
+            {{ t('footer.statsUvSuffix') }}
+          </span>
+        </div>
         <div style="margin-top: 16px; font-size: 12px;">
           {{ t('footer.copyright') }}
         </div>
@@ -63,6 +76,19 @@ const shareUrl = computed(() => {
           <a href="#" @click.prevent="goLegal('disclaimer')">{{ t('footer.disclaimerLink') }}</a>
           <a href="#" @click.prevent="goLegal('data-source')">{{ t('footer.dataSource') }}</a>
           <a href="#" @click.prevent="goLegal('privacy')">{{ t('footer.privacyMn') }}</a>
+        </div>
+        <div class="footer-stats">
+          <span id="busuanzi_container_site_pv">
+            {{ t('footer.statsPvPrefix') }}
+            <span id="busuanzi_value_site_pv">-</span>
+            {{ t('footer.statsPvSuffix') }}
+          </span>
+          <span class="footer-stats-sep">·</span>
+          <span id="busuanzi_container_site_uv">
+            {{ t('footer.statsUvPrefix') }}
+            <span id="busuanzi_value_site_uv">-</span>
+            {{ t('footer.statsUvSuffix') }}
+          </span>
         </div>
         <div style="margin-top: 16px; font-size: 12px;">
           {{ t('footer.copyrightMn') }}
@@ -85,6 +111,18 @@ const shareUrl = computed(() => {
 
 .footer-text {
   text-align: center;
+}
+
+.footer-stats {
+  margin-top: 12px;
+  font-size: 12px;
+  opacity: 0.7;
+  letter-spacing: 0.02em;
+}
+
+.footer-stats-sep {
+  margin: 0 8px;
+  opacity: 0.6;
 }
 
 @media (max-width: 640px) {

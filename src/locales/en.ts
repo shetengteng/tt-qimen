@@ -195,6 +195,10 @@ export default {
     privacyMn: 'Privacy policy',
     copyright: '© 2026 tt-qimen · Cultural content for entertainment only',
     copyrightMn: '© 2026 tt-qimen. Cultural content for entertainment only.',
+    statsPvPrefix: 'Page views:',
+    statsPvSuffix: '',
+    statsUvPrefix: 'Visitors:',
+    statsUvSuffix: '',
   },
 
   about: {
@@ -393,15 +397,16 @@ export default {
         ],
         list: [
           'Real names, ID numbers, phone numbers, email addresses, postal addresses or any other identifying information.',
-          'Device fingerprints, IP addresses, browser profiles or advertising identifiers.',
-          'Behavioural logs, click heatmaps or dwell-time tracking.',
+          'Device fingerprints, browser profiles or advertising identifiers.',
+          'Click heatmaps, detailed behavioural logs, or the contents of any form fields.',
           'Third-party cookies or cross-site tracking.',
         ],
       },
       {
         heading: '4. Third-party resources',
         paragraphs: [
-          'All static assets (HTML/JS/CSS/fonts/icons) are either self-hosted or served from version-pinned open-source CDNs. We do not embed any third-party analytics, advertising or social trackers (Google Analytics, Facebook Pixel, Baidu Tongji, etc.).',
+          'All static assets (HTML/JS/CSS/fonts/icons) are either self-hosted or served from version-pinned open-source CDNs.',
+          'To understand aggregate traffic and improve the service, this site loads Google Analytics 4 and the busuanzi visitor counter. These scripts collect only anonymous visit counts per matching device, the page path (without URL query parameters, so deeplinked birth data never leaves your browser), coarse-grained region and device type. They do not set third-party tracking cookies, do not have access to the birth data you enter, and do not integrate with any advertising platform. These third parties may briefly observe your IP address during the request for UV de-duplication and region inference; we do not persist it and do not use it to re-identify you.',
           'If you use the browser\'s system-level Web Share API to share a result card to a social platform, that sharing action is governed by the destination platform\'s own privacy policy, which we cannot influence.',
         ],
       },

@@ -6,6 +6,7 @@ import {
 import { defineAsyncComponent, type Component } from 'vue'
 import { i18n, isLocale, loadModuleLocale, type Locale } from '@/locales'
 import { isChunkLoadError, triggerReloadOnce } from '@/lib/chunkReload'
+import { trackPageView } from '@/lib/analytics'
 
 export const MODULES = [
   { id: 'bazi',     order: 1 },
@@ -113,6 +114,13 @@ router.afterEach((to) => {
   const key = to.meta.titleKey as string | undefined
   const t = key ? String(i18n.global.t(key)) : 'tt-qimen'
   document.title = `${t} · tt-qimen`
+  /**
+   * SPA hash mode 路由切换不会触发原生 page_view；analytics 模块仅在
+   * VITE_GA4_ID 配置时实际上报，未配置则 noop。仅取 to.fullPath（hash 后的部分），
+   * 不上报 query 中可能含有的 deeplink 参数（避免把生辰数据落到 GA）。
+   */
+  const path = to.fullPath.split('?')[0]
+  trackPageView(path, document.title)
 })
 
 /**

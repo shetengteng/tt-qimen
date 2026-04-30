@@ -7,6 +7,7 @@ import { i18n } from './locales'
 import { applyUrlBootstrap } from './composables/useUrlBootstrap'
 import { FortuneError } from './lib/errors'
 import { installChunkReloadGuard } from './lib/chunkReload'
+import { installAnalytics } from './lib/analytics'
 
 import './themes/_shared/tailwind.css'
 import './themes/_shared/contracts.css'
@@ -14,6 +15,7 @@ import './themes/_shared/base.css'
 
 applyUrlBootstrap()
 installChunkReloadGuard()
+installAnalytics()
 
 const app = createApp(App)
 

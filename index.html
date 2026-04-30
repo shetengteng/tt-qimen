@@ -10,5 +10,12 @@
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
+    <!--
+      不蔭子（busuanzi）: cookie-less 站点访问计数。
+      仅会向其服务器发起一次 fetch 用于 PV/UV 累加；
+      不写入 cookie / localStorage，不收集行为日志。
+      展示：footer 的 PV/UV 标签（参见 src/components/layout/AppFooter.vue）。
+    -->
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
   </body>
 </html>
