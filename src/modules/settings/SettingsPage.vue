@@ -38,6 +38,17 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  // 与 ui/label 的 `Label` 冲突，重命名为 SelectGroupLabel
+  SelectLabel as SelectGroupLabel,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 const { t, tm, rt, locale: i18nLocale } = useI18n()
 const router = useRouter()
@@ -111,6 +122,12 @@ const currentModels = computed<readonly ModelDescriptor[]>(
 /** 当前 provider 是否暴露 baseUrl 自定义入口（仅 OpenAI 协议兼容族 = true） */
 const canCustomBaseUrl = computed(() => isOpenAiCompatible(aiConfig.activeProviderId))
 
+/** 当前选中 model 的 tag 描述串（"快速 · 便宜"），无 tag 时为空串 */
+const currentModelTagLine = computed(() => {
+  const m = currentModels.value.find((x) => x.id === aiConfig.config.model)
+  return m ? modelTagLine(m.tags) : ''
+})
+
 type TestState =
   | { kind: 'idle' }
   | { kind: 'running' }
@@ -142,11 +159,26 @@ async function testConnection() {
   }
 }
 
-function selectProvider(id: ProviderId) {
-  if (id === aiConfig.activeProviderId) return
-  aiConfig.setActiveProvider(id)
-  testState.value = { kind: 'idle' }
-}
+/**
+ * v-model 桥接：reka-ui Select 的 modelValue 是 string；
+ * setter 内做 ProviderId 守卫并重置 testState（避免上一次连接成功/失败标记被错误沿用到新 Provider）。
+ */
+const providerSelectValue = computed<string>({
+  get: () => aiConfig.activeProviderId,
+  set: (v: string) => {
+    if (v === aiConfig.activeProviderId) return
+    aiConfig.setActiveProvider(v as ProviderId)
+    testState.value = { kind: 'idle' }
+  },
+})
+
+/**
+ * Model 下拉的 v-model 桥接；setModel 内部已有 sanitize 兜底。
+ */
+const modelSelectValue = computed<string>({
+  get: () => aiConfig.config.model,
+  set: (v: string) => aiConfig.setModel(v),
+})
 
 function clearKey() {
   aiConfig.clearKeyOnly()
@@ -329,37 +361,36 @@ function goHome() {
 
         <div class="mt-6 space-y-6">
           <!-- Provider -->
-          <div class="space-y-3">
-            <Label>{{ t('settings.section.ai.providerLabel') }}</Label>
-            <div
-              v-for="group in providerGroups"
-              :key="group.categoryKey"
-              class="space-y-2"
-            >
-              <div class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80">
-                {{ t(`settings.section.ai.providerCategory.${group.categoryKey}`) }}
-              </div>
-              <div class="grid gap-2 sm:grid-cols-2">
-                <Button
-                  v-for="id in group.ids"
-                  :key="id"
-                  type="button"
-                  variant="outline"
-                  class="group/opt h-auto flex-col items-start gap-1 px-4 py-3 text-left whitespace-normal aria-pressed:border-primary aria-pressed:bg-accent aria-pressed:text-accent-foreground"
-                  :aria-pressed="id === aiConfig.activeProviderId"
-                  @click="selectProvider(id)"
-                >
-                  <span class="text-sm font-medium text-foreground group-aria-pressed/opt:text-current">
-                    {{ getProviderDisplayName(id) }}
-                  </span>
-                  <span class="text-xs font-normal text-muted-foreground group-aria-pressed/opt:text-current/80">
-                    {{ t(`settings.section.ai.providerOption.${id}`) }}
-                  </span>
-                </Button>
-              </div>
-            </div>
+          <div class="space-y-2">
+            <Label for="ai-provider-select">{{ t('settings.section.ai.providerLabel') }}</Label>
+            <Select v-model="providerSelectValue">
+              <SelectTrigger id="ai-provider-select" class="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <template v-for="(group, gi) in providerGroups" :key="group.categoryKey">
+                  <SelectGroup>
+                    <SelectGroupLabel>
+                      {{ t(`settings.section.ai.providerCategory.${group.categoryKey}`) }}
+                    </SelectGroupLabel>
+                    <SelectItem
+                      v-for="id in group.ids"
+                      :key="id"
+                      :value="id"
+                    >
+                      {{ getProviderDisplayName(id) }}
+                    </SelectItem>
+                  </SelectGroup>
+                  <SelectSeparator v-if="gi < providerGroups.length - 1" />
+                </template>
+              </SelectContent>
+            </Select>
             <p class="text-xs text-muted-foreground">
-              {{ t('settings.section.ai.providerHint') }}
+              <span class="text-foreground/80">
+                {{ t(`settings.section.ai.providerOption.${aiConfig.activeProviderId}`) }}
+              </span>
+              <span class="mx-1.5 text-muted-foreground/60" aria-hidden="true">·</span>
+              <span>{{ t('settings.section.ai.providerHint') }}</span>
             </p>
           </div>
 
@@ -422,30 +453,31 @@ function goHome() {
 
           <!-- Model -->
           <div class="space-y-2">
-            <Label>{{ t('settings.section.ai.model.label') }}</Label>
-            <div class="grid gap-2 sm:grid-cols-2">
-              <Button
-                v-for="m in currentModels"
-                :key="m.id"
-                type="button"
-                variant="outline"
-                class="group/opt h-auto flex-col items-start gap-1 px-4 py-3 text-left whitespace-normal aria-pressed:border-primary aria-pressed:bg-accent aria-pressed:text-accent-foreground"
-                :aria-pressed="m.id === aiConfig.config.model"
-                @click="aiConfig.setModel(m.id)"
-              >
-                <span class="text-sm font-medium text-foreground group-aria-pressed/opt:text-current">
-                  {{ m.labelKey ? t(m.labelKey) : m.fallbackLabel }}
-                </span>
-                <span
-                  v-if="modelTagLine(m.tags)"
-                  class="text-xs font-normal text-muted-foreground group-aria-pressed/opt:text-current/80"
+            <Label for="ai-model-select">{{ t('settings.section.ai.model.label') }}</Label>
+            <Select v-model="modelSelectValue">
+              <SelectTrigger id="ai-model-select" class="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem
+                  v-for="m in currentModels"
+                  :key="m.id"
+                  :value="m.id"
                 >
-                  {{ modelTagLine(m.tags) }}
-                </span>
-              </Button>
-            </div>
+                  {{ m.labelKey ? t(m.labelKey) : m.fallbackLabel }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
             <p class="text-xs text-muted-foreground">
-              {{ t('settings.section.ai.model.hint') }}
+              <span v-if="currentModelTagLine" class="text-foreground/80">
+                {{ currentModelTagLine }}
+              </span>
+              <span
+                v-if="currentModelTagLine"
+                class="mx-1.5 text-muted-foreground/60"
+                aria-hidden="true"
+              >·</span>
+              <span>{{ t('settings.section.ai.model.hint') }}</span>
             </p>
           </div>
 

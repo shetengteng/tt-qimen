@@ -23,7 +23,20 @@ interface ChunkBudget {
 
 const BUDGETS: readonly ChunkBudget[] = [
   { pattern: /^vendor-openai-[A-Za-z0-9_-]+\.js$/, maxGzip: 50 * 1024, required: true },
-  { pattern: /^feat-ai-[A-Za-z0-9_-]+\.js$/, maxGzip: 110 * 1024, required: true },
+  /**
+   * feat-ai chunk 包含 8 家 LLM Provider 的运行时实例 + provider/index.ts 聚合 + useAiChat。
+   *
+   * 历史预算变化：
+   *   - Phase 0 单 DeepSeek：~95KB gz（OpenAI SDK 已在 vendor-openai 拆出）
+   *   - Phase 3 多 Provider 接入（todo 19）：+ @anthropic-ai/sdk（~30KB gz） +
+   *     @google/genai（~50KB gz）= ~170KB gz
+   *
+   * 预算 200KB gz：在当前 171KB 之上留 ~30KB 冗余给后续小功能（错误码扩展 / token 统计）；
+   * 不进一步上调以保持对"无意识把新大依赖打进 ai chunk"的报警敏感度。
+   *
+   * 仍排除出 modulePreload，懒加载 → 用户不点开 AI 侧栏永不下载，首屏体积零增量。
+   */
+  { pattern: /^feat-ai-[A-Za-z0-9_-]+\.js$/, maxGzip: 200 * 1024, required: true },
   { pattern: /^vendor-vue-[A-Za-z0-9_-]+\.js$/, maxGzip: 60 * 1024, required: true },
 ]
 
