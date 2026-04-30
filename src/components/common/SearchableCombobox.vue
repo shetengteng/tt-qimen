@@ -200,11 +200,21 @@ watch(
     ref="rootEl"
     :class="cn('relative w-full', props.disabled && 'opacity-50 pointer-events-none')"
   >
+    <!--
+      Trigger 容器：通过 data-slot="combobox-trigger" 让国风/简约两个主题的
+      `themes/<id>/shadcn.css` 接管 :focus-within 视觉（与原生 `[data-slot='input']`
+      的 :focus-visible 完全一致：border-color + box-shadow 0 0 0 3px rgba(...,0.1)）。
+
+      这样避免 Tailwind 默认 `ring-ring/50` 在 minimal 主题下叠加 `--ring`
+      自带的 0.4 alpha → 实际 0.2 alpha 的环，看起来比项目其它 input 深一倍
+      的"黑框"。
+    -->
     <div
+      data-slot="combobox-trigger"
       :class="cn(
         'relative flex items-center gap-1.5 rounded-lg border border-input bg-transparent dark:bg-input/30',
         'transition-colors',
-        'focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50',
+        'focus-within:border-ring',
         size === 'sm' ? 'h-8' : 'h-9',
       )"
     >

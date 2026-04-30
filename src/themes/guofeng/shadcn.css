@@ -310,6 +310,12 @@
   box-shadow: 0 0 0 3px rgba(194, 58, 42, 0.1);
 }
 
+/* SearchableCombobox trigger 与 input 同款 focus 视觉（见 minimal 同名规则） */
+:root[data-theme='guofeng'] [data-slot='combobox-trigger']:focus-within {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(194, 58, 42, 0.1);
+}
+
 :root[data-theme='guofeng'] [data-slot='textarea'] {
   font-family: var(--font-display);
   background-color: rgba(255, 251, 240, 0.8);

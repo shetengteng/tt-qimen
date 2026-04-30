@@ -292,6 +292,15 @@
   box-shadow: 0 0 0 3px rgba(59, 47, 99, 0.1);
 }
 
+/* SearchableCombobox trigger 与 input 同款 focus 视觉
+ * 走 :focus-within 而非 :focus-visible（容器是 div，不可 focus；只有内部 input 能 focus）。
+ * box-shadow alpha 0.1 与 [data-slot='input']:focus-visible 严格对齐，避免比项目其它 input 框看起来深一倍。
+ */
+:root[data-theme='minimal'] [data-slot='combobox-trigger']:focus-within {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(59, 47, 99, 0.1);
+}
+
 :root[data-theme='minimal'] [data-slot='textarea'] {
   font-family: var(--font-body);
   background-color: var(--color-bg);
