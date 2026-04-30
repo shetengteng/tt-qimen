@@ -1,4 +1,4 @@
-# 19 · 多模型 Provider 扩展 · TODO（功能视角）· 0%
+# 19 · 多模型 Provider 扩展 · TODO（功能视角）· 20%
 
 > 对应设计文档：本 TODO 暂作为唯一规划文档（待实施前如需 RFC 再补充设计文档 `design/2026-04-30-01-多模型 Provider 扩展.md`）
 > 状态约定：`[x]` 已完成 · `[~]` 部分实现 · `[ ]` 待办
@@ -51,11 +51,11 @@
 
 | # | 功能维度 | MVP 范围 | 状态 | 实现位置（计划） | 依赖 |
 |---|---|---|---|---|---|
-| 1 | **Provider 注册表** | 全部 8 个 Provider 的 `ProviderDescriptor` 列表（id / displayName i18n / homepage / docsUrl / defaultBaseUrl / models / defaultModel） | `[ ]` ⏳ | `src/composables/ai/providers/registry.ts` | — |
+| 1 | **Provider 注册表** | 全部 8 个 Provider 的 `ProviderDescriptor` 列表（id / displayName i18n / homepage / docsUrl / defaultBaseUrl / models / defaultModel） | `[x]` ✅ | `src/composables/ai/providers/registry.ts` | — |
 | 2 | **OpenAI 兼容通用 provider** | 抽出 `createOpenAiCompatibleProvider(opts)` 工厂函数，`deepseek.ts` 改为它的实例化；6 个 OpenAI 兼容 Provider 共用 | `[ ]` ⏳ | `src/composables/ai/providers/openaiCompatible.ts` | `openai` SDK（已装） |
 | 3 | **Anthropic Provider** | 走 `@anthropic-ai/sdk`，独立 `streamChat` + `ping`；处理 messages 系统消息从 `messages[0]` 提取到顶层 `system` 字段 | `[ ]` ⏳ | `src/composables/ai/providers/anthropic.ts` | 新增 npm `@anthropic-ai/sdk@^0.x` |
 | 4 | **Gemini Provider** | 走 `@google/genai`，独立 `streamChat` + `ping`；把 `messages` 转 Gemini `contents` 格式 | `[ ]` ⏳ | `src/composables/ai/providers/gemini.ts` | 新增 npm `@google/genai@^0.x` |
-| 5 | **AiConfig 重构（多 provider 配置）** | `AiConfig` 拆为 `activeProviderId + perProvider: Record<ProviderId, ProviderConfig>`；切 Provider 不丢其它家 Key | `[ ]` ⏳ | `src/composables/ai/types.ts` + `src/stores/aiConfig.ts` | — |
+| 5 | **AiConfig 重构（多 provider 配置）** | `AiUserConfig` 多 provider 持久化 + 扁平 `AiConfig` 投影保持 LlmProvider 接口零变化；切 Provider 不丢其它家 Key | `[x]` ✅ | `src/composables/ai/types.ts` + `src/stores/aiConfig.ts` | — |
 | 6 | **Settings UI · Provider 切换器** | 当前 hardcode "deepseek" chip 改为 8 个 Provider 选项卡 / Combobox；切换后下方 apiKey + model 区域同步刷新 | `[ ]` ⏳ | `src/modules/settings/SettingsPage.vue` AI 段 | — |
 | 7 | **Settings UI · 每 Provider 独立 apiKey** | apiKey 输入框跟随当前选中 Provider；切回某 Provider 自动回显历史 apiKey；展示该 Provider 的 docsUrl 链接 | `[ ]` ⏳ | `SettingsPage.vue` | — |
 | 8 | **Settings UI · 模型选择器（按 Provider）** | 当前选中 Provider 的 models 列表展示为 Button grid，每条 model 有 i18n 描述（速度 / 推理 / 长上下文 / 价格档位） | `[ ]` ⏳ | `SettingsPage.vue` | — |
@@ -78,17 +78,19 @@
 > 目标：先把 `AiConfig` 多 provider 化，store 升级，**保持当前 DeepSeek 单一 provider 行为不变**。
 > **决策（2026-04-30 用户）**：项目尚未公开使用，**不做旧版 storage migration**；老用户（即开发者本人）重新填写 Key 即可。`localStorage` 旧格式直接被新结构覆盖。
 
-- [ ] ⏳ P1-01 写 `src/composables/ai/providers/registry.ts`：导出 `ProviderId` union + `ProviderDescriptor` interface + 占位 `PROVIDERS: Record<ProviderId, ProviderDescriptor>`（先填 8 家 metadata，不填 instance）
-- [ ] ⏳ P1-02 重写 `src/composables/ai/types.ts`：
-    - `AiConfig` 拆为 `{ activeProviderId, temperature, perProvider }`
-    - `ProviderConfig = { apiKey: string; baseUrl: string; model: string }`
-    - 旧 `DEEPSEEK_MODELS` / `DEPRECATED_DEEPSEEK_MODEL_IDS` 保留作 deprecated alias（仅给 sanitize 兜底用），新增 `DEEPSEEK_MODELS_DESCRIPTOR`
-- [ ] ⏳ P1-03 重写 `src/stores/aiConfig.ts`：
-    - `useStorage` 默认值改为新结构 `DEFAULT_AI_CONFIG`；旧格式被 mergeDefaults 覆盖（无迁移逻辑）
-    - 新增 `setActiveProvider(id)` / `setProviderApiKey(id, key)` / `setProviderModel(id, model)` / `setProviderBaseUrl(id, url)`
-    - `currentProviderConfig` computed = `perProvider[activeProviderId]`
-    - `hasKey` / `isConfigured` 改为读 `currentProviderConfig.apiKey`
-- [ ] ⏳ P1-04 单元测试 `aiConfig.spec.ts`：切 Provider 不丢 Key / per-provider 默认 baseUrl 兜底 / sanitize 旧 deepseek model id 仍生效
+- [x] ✅ P1-01 写 `src/composables/ai/providers/registry.ts`：导出 `ProviderId` union + `ProviderDescriptor` interface + `PROVIDERS: Record<ProviderId, ProviderDescriptor>`（8 家完整 metadata：displayName 三语 / homepage / apiKeyDocsUrl / defaultBaseUrl / allowCustomBaseUrl / models / defaultModelId / group）+ `sanitizeModelId` 兜底（同时拒绝 deprecated:true 的 model）
+- [x] ✅ P1-02 重写 `src/composables/ai/types.ts`：
+    - 保留 `AiConfig` 扁平 4 字段语义（apiKey + baseUrl + model + temperature）让 LlmProvider 接口零变化
+    - 新增 `AiUserConfig`（`{ activeProviderId, temperature, perProvider: Record<ProviderId, ProviderUserConfig> }`）作为持久化结构
+    - 新增 `projectRequestConfig(user) -> AiConfig` 投影函数（baseUrl/model 兜底）
+    - 旧 `DEEPSEEK_MODELS` / `DEPRECATED_DEEPSEEK_MODEL_IDS` / `DEFAULT_AI_CONFIG` 保留为 deprecated alias，从 PROVIDERS.deepseek.models 派生
+- [x] ✅ P1-03 重写 `src/stores/aiConfig.ts`：
+    - useStorage 默认值改为 `DEFAULT_AI_USER_CONFIG`；启动 `sanitizeUserConfig` 修正 activeProviderId / model / temperature 三类残留
+    - 新增 `setActiveProvider(id)`；`setApiKey / setModel / setBaseUrl / clearKeyOnly` 操作的是当前 activeProvider
+    - `setTemperature` 操作顶层共享 temperature
+    - `config` computed 暴露当前 activeProvider 的扁平 AiConfig（**关键：保持向后兼容**，AiSidebarPanel/SettingsPage 现有 `aiConfig.config.xxx` 用法零改动）
+    - 新增 `userConfig` / `currentProviderConfig` / `activeProviderId` 给设置页的 Provider 切换 UI（Phase 3）
+- [x] ✅ P1-04 单元测试 `aiConfig.spec.ts`：19 个用例全过 — 默认状态（4）/ 切 Provider 不丢 Key（2）/ 模型 sanitize 含 deprecated（3）/ baseUrl 默认兜底（4）/ temperature 跨 Provider 共享（2）/ clearKeyOnly + reset（2）/ apiKey trim（1）/ 非法 activeProviderId 兜底（1）
 
 ### Phase 2 — Provider 实现 · ~1 天
 
@@ -259,7 +261,7 @@
 
 | Phase | 状态 | 完成日期 | 备注 |
 |---|---|---|---|
-| Phase 1 — 类型与配置层重构 | `[ ]` ⏳ | — | — |
+| Phase 1 — 类型与配置层重构 | `[x]` ✅ | 2026-04-30 | registry + types + store + 19 单元测试；vue-tsc 0 错；vitest 463/0；vite build 5.88s 通过；行为对外零变化 |
 | Phase 2 — Provider 实现 | `[ ]` ⏳ | — | — |
 | Phase 3 — UI 与上下游接入 | `[ ]` ⏳ | — | — |
 | Phase 4 — i18n 与文档收尾 | `[ ]` ⏳ | — | — |
