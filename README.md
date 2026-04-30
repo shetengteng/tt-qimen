@@ -1,140 +1,226 @@
-# tt-qimen
+# tt-qimen · 启门问卜
 
-静态问卜站（Static Divination Web）—— 八个核心占卜模块的轻量化实现。
-所有计算只在浏览器内完成，**零上传隐私**。
+[简体中文](./README.md) · [English](./README.en.md)
+
+> 一个**纯静态、零后端**的中国传统占卜 Web 应用，覆盖八字 / 紫微斗数 / 小六壬 / 称骨 / 灵签 / 姓名 / 黄历 / 解梦 8 个核心模块，外加可选的 AI 解读侧栏。所有计算在浏览器内完成，**任何隐私数据都不会上传**。
+
+[![Vue](https://img.shields.io/badge/Vue-3.4-42b883?logo=vue.js&logoColor=white)](https://vuejs.org/)
+[![Vite](https://img.shields.io/badge/Vite-5-646cff?logo=vite&logoColor=white)](https://vitejs.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.5-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind](https://img.shields.io/badge/Tailwind-v4-38bdf8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](#license)
+
+🌐 **在线访问**：<https://shetengteng.github.io/tt-qimen/>
 
 ---
 
-## 项目状态
+## ✨ 特性
 
-- **设计阶段** ✅ 已完成 8 个模块 × 2 套风格的 HTML 原型 + 完整技术架构方案
-- **Sprint 1（骨架）** ✅ Vue 3 + Vite SPA 主框架、主题系统、i18n、路由、状态管理
-- **Sprint 2（首页）** ✅ Home 完整还原（与原型 ~90% 神似），国风/简约 × 中/繁/英 6 组合可用
-- **Sprint 3（八字）** ⏳ 待启动 — 计算 + Four Pillars + Dayun + 关系线 SVG
-- **Sprint 4（紫微）** ⏳ 待启动 — 12 宫盘 + 三方四正 SVG
-- **Sprint 5（其余 6 模块）** ⏳ 待启动 — 称骨/六壬/灵签/姓名/黄历/解梦
+- **8 大占卜模块** —— 全部基于真实民间术数算法（八字四柱 / 紫微 12 宫 + 四化 / 小六壬六宫 / 袁天罡称骨 / 观音灵签 100 签 / 姓名学五格三才 / 老黄历宜忌吉时 / 周公解梦词条搜索），结果可视化呈现
+- **AI 智能解读** —— 任意模块结果 / 全局自由咨询；DeepSeek 流式响应；BYOK（自带 API Key）；本地持久化对话历史；按命盘指纹隔离会话
+- **双主题** —— `国风` / `简约` 两套完整设计语言，URL 参数 `?theme=` 切换
+- **三语 i18n** —— 简体中文 / 繁體中文 / English，URL 参数 `?lang=` 切换；零运行时回退警告
+- **零后端** —— 所有数据在浏览器本地计算与存储；GitHub Pages 静态托管；用户的 API Key 仅存在 `localStorage`，对话直发 DeepSeek，本站不收任何数据
+- **响应式 + 无障碍** —— shadcn-vue + reka-ui 组件层，键盘可达、ARIA 完整、移动端布局适配
+- **可验证可分享** —— 排盘结果支持 `html2canvas` 截图分享；URL hash 携带主题/语言便于发链接
 
-### Vue 化进度表
+---
 
-| 模块 | Vue 化 | i18n 完整 | 备注 |
+## 🧭 模块矩阵
+
+| # | 模块 | 副标题 | 关键计算 |
 |---|---|---|---|
-| Home | ✅ | ✅ zh-CN/zh-TW/en | 与原型对齐 |
-| 八字 | ✅ | ✅ zh-CN/zh-TW/en | 双主题完整还原：BirthForm（**shadcn-vue Select × 4 + RadioGroup**）+ 四柱表 + 关系 SVG + 十神结构 + 五行雷达 + 命盘简析 + 大运时间轴（subway 连接线）+ 流年 |
-| 紫微 | ⏳ 占位页 | 仅基础 | Sprint 4 |
-| 称骨 | ⏳ 占位页 | 仅基础 | Sprint 5 |
-| 小六壬 | ⏳ 占位页 | 仅基础 | Sprint 5 |
-| 灵签 | ⏳ 占位页 | 仅基础 | Sprint 5 |
-| 姓名 | ⏳ 占位页 | 仅基础 | Sprint 5 |
-| 黄历 | ⏳ 占位页 | 仅基础 | Sprint 5 |
-| 解梦 | ⏳ 占位页 | 仅基础 | Sprint 5 |
+| 01 | **八字** | 四柱推命 · 五行相生 | tyme4ts + lunisolar 排盘；十神 / 藏干 / 纳音 / 大运 / 流年 / 神煞 / 格局 |
+| 02 | **紫微斗数** | 十二宫垣 · 三方四正 | iztro 引擎；命主 / 身主 / 12 宫主星亮度 / 四化飞星 / 大限 / 流年 |
+| 03 | **小六壬** | 掐指一算 · 应事即时 | 大安/留连/速喜/赤口/小吉/空亡 六宫；按月日时三步累加 |
+| 04 | **称骨论命** | 袁天罡之诀 · 一斤一两 | 年/月/日/时四骨重 + 总骨重对应评诗 |
+| 05 | **灵签问卜** | 虔诚一念 · 神明指引 | 观音 100 签全集 · 签诗 / 解曰 / 仙机 / 6 大事项 |
+| 06 | **姓名学** | 五格剖象 · 三才配置 | 康熙笔画 + 五格数理 + 三才相生相克 + 综合评分 |
+| 07 | **老黄历** | 宜忌吉时 · 节气物候 | 宜/忌 + 黄道吉时 + 神煞方位 + 12 建星 + 彭祖百忌 |
+| 08 | **周公解梦** | 梦境寻踪 · 心象索解 | Fuse.js 模糊搜索 + 古籍原文 + 现代心理学解读 |
+| ✨ | **AI 解读侧栏** | 跨 8 模块 · 自由咨询 | DeepSeek V4 Flash / Pro · 流式 · 8 套模块解读骨架 · 多轮对话 |
 
 ---
 
-## 核心模块
-
-| # | 模块 | 副标题 |
-|---|---|---|
-| 01 | 八字 | 四柱推命 · 五行相生 |
-| 02 | 紫微斗数 | 十二宫垣 · 三方四正 |
-| 03 | 小六壬 | 掐指一算 · 应事即时 |
-| 04 | 称骨论命 | 袁天罡之诀 · 一斤一两 |
-| 05 | 灵签问卜 | 虔诚一念 · 神明指引 |
-| 06 | 姓名学 | 五格剖象 · 三才配置 |
-| 07 | 老黄历 | 宜忌吉时 · 节气物候 |
-| 08 | 周公解梦 | 梦境寻踪 · 心象索解 |
-
----
-
-## 技术栈
+## 🛠 技术栈
 
 | 类别 | 选型 |
 |---|---|
-| 框架 | Vue 3 + `<script setup>` + Composition API |
-| 构建 | Vite 5 + unplugin-auto-import + unplugin-vue-components |
-| 状态 | Pinia |
-| 路由 | Vue Router 4（hash 模式，纯静态托管友好） |
+| 框架 | Vue 3.4 + `<script setup>` + Composition API |
+| 构建 | Vite 5 + unplugin-auto-import + unplugin-vue-components + vite-plugin-compression（gzip + brotli） |
+| 类型 | TypeScript 5.5 严格模式 + vue-tsc |
+| 状态 | Pinia 2 |
+| 路由 | Vue Router 4（hash 模式，纯静态托管） |
 | i18n | vue-i18n 9（按需懒加载语言包） |
-| 工具库 | `@vueuse/core` + `@vueuse/router` |
-| 类型 | TypeScript 严格模式 |
-| 农历 | lunar-typescript |
-| UI 基件 | **shadcn-vue** + Tailwind CSS v4 + reka-ui（Select/Button/Label/RadioGroup） |
-| 主题适配 | `themes/{guofeng,minimal}/shadcn.css` 通过覆盖 `--background`/`--primary`/`--border`/`--ring` 等 token 实现一套组件双风格 |
+| UI 基件 | **shadcn-vue** + Tailwind CSS v4 + reka-ui |
+| 主题适配 | 通过覆盖 CSS token（`--background` / `--primary` / `--border` / `--ring` …）实现"一套组件、双套风格" |
+| 历法 / 农历 | `tyme4ts` + `lunisolar` + `@lunisolar/plugin-char8ex` |
+| 紫微引擎 | `iztro` |
+| 工具 | `@vueuse/core` + `@vueuse/router` + `fuse.js` + `chinese-conv` |
+| 截图分享 | `html2canvas` + `qrcode` |
+| AI | `openai`（OpenAI SDK 兼容协议）→ DeepSeek 流式 + `markstream-vue` 增量 markdown 渲染 |
+| 测试 | Vitest 4 + happy-dom + 覆盖率 v8 |
+| 部署 | GitHub Pages（GitHub Actions） |
 
 ---
 
-## 目录结构
+## 🚀 启动
+
+```bash
+# 安装
+npm install
+
+# 开发（http://localhost:5180）
+npm run dev
+
+# 类型检查
+npm run type-check
+
+# 单元测试
+npm test
+
+# 测试覆盖率
+npm run test:coverage
+
+# 生产构建（输出到 dist/）
+npm run build
+
+# 本地预览构建产物
+npm run preview
+```
+
+### 一键试链接（本地启动后）
+
+| 主题 × 语言 | URL |
+|---|---|
+| 国风 / 简体 | <http://localhost:5180/#/?theme=guofeng&lang=zh-CN> |
+| 国风 / 繁體 | <http://localhost:5180/#/?theme=guofeng&lang=zh-TW> |
+| 简约 / English | <http://localhost:5180/#/?theme=minimal&lang=en> |
+
+---
+
+## 🤖 AI 解读功能
+
+启用步骤：
+
+1. 进入设置页 `/settings`，填入你的 [DeepSeek API Key](https://platform.deepseek.com/)
+2. 在任意模块完成排盘 → 点击右上角「询问 AI」按钮
+3. 右侧侧栏自动展开，AI 基于命盘开始流式解读
+4. 可继续多轮提问；点预设 chip 一键发问；按命盘指纹隔离会话
+
+**隐私保证**：
+
+- API Key 仅存在浏览器 `localStorage`，从不发往本站任何后端（本站没有后端）
+- 对话请求由你的浏览器**直接**发往 `api.deepseek.com`
+- 对话历史只存在你本机的 `localStorage`，可随时清除
+
+未配 Key 也能使用全部 8 个排盘模块——AI 解读纯属可选增强。
+
+---
+
+## 🎨 主题与多语言
+
+| 维度 | 取值 | URL 参数 | 持久化 |
+|---|---|---|---|
+| 主题 | `guofeng` / `minimal` | `?theme=` | `localStorage` |
+| 语言 | `zh-CN` / `zh-TW` / `en` | `?lang=` | `localStorage` |
+
+优先级：URL > localStorage > `navigator.language` > `zh-CN` 兜底。
+
+切换均无刷新；语义变量契约见 [`src/themes/_shared/contracts.css`](src/themes/_shared/contracts.css)；完整设计参考 [`design/2026-04-18-04-技术架构.md`](design/2026-04-18-04-技术架构.md)。
+
+---
+
+## 📁 项目结构
 
 ```
 tt-qimen/
-├── design/                       设计文档与原型
-│   ├── 2026-04-18-01-可行性分析.md
-│   ├── 2026-04-18-02-方案设计.md
-│   ├── 2026-04-18-03-原型图.md
-│   ├── 2026-04-18-04-技术架构.md  <-- 完整架构方案
-│   └── prototypes/{guofeng,minimal}/*.html
+├── design/                       # 设计文档与原型（HTML 真理源）
+├── public/                       # 静态资源
 ├── src/
-│   ├── main.ts                   入口
-│   ├── App.vue                   根组件
-│   ├── router/index.ts
-│   ├── stores/                   Pinia
+│   ├── main.ts
+│   ├── App.vue                   # ResizablePanelGroup（主区 + AI 侧栏）
+│   ├── router/index.ts           # 8 模块 + legal + settings + 404
+│   ├── stores/                   # Pinia: aiConfig / aiHistory / aiSidebar / theme / locale
+│   ├── locales/                  # zh-CN / zh-TW / en + 模块懒加载语言包
 │   ├── themes/
-│   │   ├── _shared/{contracts,base,tailwind}.css   含 shadcn-vue Tailwind v4 base 层
-│   │   ├── guofeng/{tokens,components,decorations,shadcn,meta}
-│   │   └── minimal/{tokens,components,decorations,shadcn,meta}
-│   ├── components/ui/                shadcn-vue 组件（select/button/label/radio-group）
-│   ├── lib/utils.ts                  cn() / clsx + tailwind-merge
-│   ├── locales/
-│   │   ├── index.ts              setupI18n + loadLocale
-│   │   ├── {zh-CN,zh-TW,en}.ts
-│   │   └── divination-terms.{zh-CN,zh-TW,en}.ts
-│   ├── composables/{useTheme,useLocale,useUrlSync}.ts
+│   │   ├── _shared/              # contracts / base / tailwind
+│   │   ├── guofeng/              # 国风 tokens / components / decorations / shadcn
+│   │   └── minimal/              # 简约 tokens / components / decorations / shadcn
 │   ├── components/
-│   │   └── layout/{AppHeader,AppFooter,ThemeSwitch,LangSwitch}.vue
+│   │   ├── ui/                   # shadcn-vue (button / select / input / radio-group ...)
+│   │   ├── layout/               # AppHeader / AppFooter / ThemeSwitch / LangSwitch
+│   │   ├── ai/                   # AiSidebarPanel / AskAiButton / AiMessageBubble ...
+│   │   └── common/               # BirthForm 等跨模块复用
+│   ├── composables/
+│   │   ├── ai/                   # useAiChat / providers / contextBuilders / systemPrompts
+│   │   └── ...
 │   └── modules/
-│       ├── home/HomePage.vue     ✅ 已还原（双主题）
-│       ├── bazi/                 ✅ 已还原（双主题）
-│       │   ├── BaziPage.vue
-│       │   ├── components/       BirthForm / FourPillarsTable / ShishenStructure / ElementsRadar / InterpretBlock / DayunTimeline
-│       │   ├── composables/      useBaziDrawings（关系/连接 SVG）
-│       │   └── data/             mockBazi（mock 数据 × 三语）
-│       └── ...                   6 模块占位页（紫微/称骨/小六壬/灵签/姓名/黄历/解梦）
+│       ├── home/                 # 首页（双主题完整还原）
+│       ├── bazi/                 # 八字（4 柱 + 大运 + 流年 + 神煞 + 格局）
+│       ├── ziwei/                # 紫微（12 宫 + 四化 + 大限 + 流年）
+│       ├── liuren/               # 小六壬
+│       ├── chenggu/              # 称骨
+│       ├── lingqian/             # 灵签
+│       ├── xingming/             # 姓名
+│       ├── huangli/              # 老黄历
+│       ├── jiemeng/              # 解梦
+│       ├── settings/             # AI / 主题 / 语言 / 数据管理
+│       └── legal/                # 关于 / 免责 / 数据来源 / 隐私
 ├── index.html
+├── vite.config.ts                # GitHub Pages base + manualChunks + 按需 modulePreload
 ├── package.json
-├── vite.config.ts
 └── tsconfig.json
 ```
 
 ---
 
-## 多主题 + 多语言
+## 🧪 测试
 
-- 主题：`国风 / 简约`（可扩展），URL 参数 `?theme=guofeng|minimal`
-- 语言：`简体 / 繁体 / 英文`（中文默认编译进主包，其余懒加载），URL 参数 `?lang=zh-CN|zh-TW|en`
-- 优先级：URL > localStorage > `navigator.language` > zh-CN 兜底
-- 切换均无刷新；语义变量契约见 [`src/themes/_shared/contracts.css`](src/themes/_shared/contracts.css)
-- 完整设计：[`design/2026-04-18-04-技术架构.md`](design/2026-04-18-04-技术架构.md)
+- **单元测试**：Vitest 4，覆盖排盘引擎 / AI provider / contextBuilders / stores / i18n 完整性等
+- **运行**：`npm test`（单次） / `npm run test:watch`（监听模式）
+- **覆盖率**：`npm run test:coverage`，重点覆盖 `composables/ai/**` 与 `stores/aiHistory.ts`
 
 ---
 
-## 启动
+## 🚢 部署
 
-```bash
-pnpm install
-pnpm dev          # http://localhost:5180
-pnpm build        # 产出 dist/
-pnpm preview
+`main` 分支推送后由 [`.github/workflows/main.yml`](.github/workflows/main.yml) 自动构建并部署到 GitHub Pages：
+
+```yaml
+# 关键步骤
+- run: npm ci
+- run: npm run build
+  env:
+    GITHUB_PAGES: 'true'   # vite.config.ts 据此设置 base: '/tt-qimen/'
+- uses: actions/upload-pages-artifact@v3
+- uses: actions/deploy-pages@v4
 ```
 
-## 测试链接（本地启动后）
-
-| 主题 × 语言 | URL |
-|---|---|
-| 国风 / 简体 | http://localhost:5180/#/?theme=guofeng&lang=zh-CN |
-| 国风 / 繁体 | http://localhost:5180/#/?theme=guofeng&lang=zh-TW |
-| 简约 / 英文 | http://localhost:5180/#/?theme=minimal&lang=en |
+部署 URL：<https://shetengteng.github.io/tt-qimen/>
 
 ---
 
-## 原型仓库（保留）
+## 🔒 隐私声明
 
-`design/prototypes/{guofeng,minimal}/*.html` 仍为视觉与文案的真理源（设计 review 用），与 Vue 端共存直至 Sprint 2/3 全部迁移完成。
+- 排盘的所有输入（生辰、姓名、问题）**仅在你的浏览器内计算**；本站没有任何后端服务器
+- 排盘结果不上传，仅在你需要分享时才生成本地图片
+- AI 解读的 API Key 与对话历史**仅存于本机浏览器 `localStorage`**；对话请求由你的浏览器直发 DeepSeek
+- 详见站内 `/privacy` 页面
+
+---
+
+## 📜 License
+
+MIT © shetengteng
+
+---
+
+## 🙏 致谢
+
+- 历法引擎：[`tyme4ts`](https://github.com/6tail/tyme4ts) · [`lunisolar`](https://github.com/waterbeside/lunisolar)
+- 紫微引擎：[`iztro`](https://github.com/SylarLong/iztro)
+- UI：[`shadcn-vue`](https://www.shadcn-vue.com/) · [`reka-ui`](https://reka-ui.com/) · [`Tailwind CSS`](https://tailwindcss.com/)
+- AI：[`DeepSeek`](https://platform.deepseek.com/)
+- 流式 markdown：[`markstream-vue`](https://github.com/markstream-vue)
+- 民间术数文献整理：所有为传统文化数字化贡献心力的前辈
