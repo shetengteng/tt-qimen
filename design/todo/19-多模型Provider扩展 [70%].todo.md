@@ -1,4 +1,4 @@
-# 19 · 多模型 Provider 扩展 · TODO（功能视角）· 45%
+# 19 · 多模型 Provider 扩展 · TODO（功能视角）· 70%
 
 > 对应设计文档：本 TODO 暂作为唯一规划文档（待实施前如需 RFC 再补充设计文档 `design/2026-04-30-01-多模型 Provider 扩展.md`）
 > 状态约定：`[x]` 已完成 · `[~]` 部分实现 · `[ ]` 待办
@@ -56,16 +56,16 @@
 | 3 | **Anthropic Provider** | 走 `@anthropic-ai/sdk@0.91.1`，独立 `streamChat` + `ping`；`convertMessagesToAnthropic` 把第一条 system 提到顶层、保留 user/assistant 顺序、二次 system 降级为 user | `[x]` ✅ | `src/composables/ai/providers/anthropic.ts` | `@anthropic-ai/sdk@0.91.1` |
 | 4 | **Gemini Provider** | 走 `@google/genai@1.51.0`，独立 `streamChat` + `ping`；`convertMessagesToGemini` 把 system 拼到 systemInstruction、assistant→model、user→user，contents 包成 `{ role, parts: [{ text }] }` | `[x]` ✅ | `src/composables/ai/providers/gemini.ts` | `@google/genai@1.51.0` |
 | 5 | **AiConfig 重构（多 provider 配置）** | `AiUserConfig` 多 provider 持久化 + 扁平 `AiConfig` 投影保持 LlmProvider 接口零变化；切 Provider 不丢其它家 Key | `[x]` ✅ | `src/composables/ai/types.ts` + `src/stores/aiConfig.ts` | — |
-| 6 | **Settings UI · Provider 切换器** | 当前 hardcode "deepseek" chip 改为 8 个 Provider 选项卡 / Combobox；切换后下方 apiKey + model 区域同步刷新 | `[ ]` ⏳ | `src/modules/settings/SettingsPage.vue` AI 段 | — |
-| 7 | **Settings UI · 每 Provider 独立 apiKey** | apiKey 输入框跟随当前选中 Provider；切回某 Provider 自动回显历史 apiKey；展示该 Provider 的 docsUrl 链接 | `[ ]` ⏳ | `SettingsPage.vue` | — |
-| 8 | **Settings UI · 模型选择器（按 Provider）** | 当前选中 Provider 的 models 列表展示为 Button grid，每条 model 有 i18n 描述（速度 / 推理 / 长上下文 / 价格档位） | `[ ]` ⏳ | `SettingsPage.vue` | — |
-| 9 | **Settings UI · baseUrl 自定义** | 用户可改 baseUrl 走代理 / 自部署（仅 OpenAI 兼容族 Provider 暴露此字段；Anthropic / Gemini 隐藏，避免误用） | `[ ]` ⏳ | `SettingsPage.vue` | — |
-| 10 | **测试连接按钮（多 provider）** | 当前 hardcode 调 `deepseekProvider.ping`，改为 `getProvider(activeProviderId).ping(currentProviderConfig)` | `[ ]` ⏳ | `SettingsPage.vue` | #1, #2, #3, #4 |
-| 11 | **AiSidebarPanel 切 Provider 自适应** | `useAiChat` 的 `provider` ref 改为 `computed(() => getProvider(aiConfig.activeProviderId))`，切换 Provider 时 sidebar 自动用新 Provider | `[ ]` ⏳ | `src/components/ai/AiSidebarPanel.vue` | #1 |
+| 6 | **Settings UI · Provider 切换器** | 8 个 Provider 按"国际/国内"分组渲染 Button grid，aria-pressed 反映 activeProviderId；切换后下方 apiKey + model + baseUrl 区域 reactive 刷新 | `[x]` ✅ | `src/modules/settings/SettingsPage.vue` AI 段 | — |
+| 7 | **Settings UI · 每 Provider 独立 apiKey** | apiKey 输入框跟随当前选中 Provider；切回某 Provider 自动回显（store 已 perProvider 隔离存储）；右上角"获取 API Key →"链接指向 `currentProvider.apiKeyDocsUrl`，target=_blank | `[x]` ✅ | `SettingsPage.vue` | — |
+| 8 | **Settings UI · 模型选择器（按 Provider）** | model grid 改读 `currentProvider.models.filter(!deprecated)`；每条 model 描述由 `modelTagLine(tags)` 拼接 i18n tag 翻译（"快速 · 便宜" / "思维链 · 编码" 等）| `[x]` ✅ | `SettingsPage.vue` | — |
+| 9 | **Settings UI · baseUrl 自定义** | baseUrl 区改为 `v-if="canCustomBaseUrl"` 的条件渲染（`isOpenAiCompatible(activeId)` 判定）；placeholder 改为 `currentProvider.defaultBaseUrl`，恢复默认按钮保留；Anthropic / Gemini 隐藏整段 | `[x]` ✅ | `SettingsPage.vue` | — |
+| 10 | **测试连接按钮（多 provider）** | 由 hardcode `deepseekProvider.ping` 改为 `getProvider(aiConfig.activeProviderId).ping(aiConfig.config)`；切 Provider 时主动重置 `testState` 为 idle | `[x]` ✅ | `SettingsPage.vue` | #1, #2, #3, #4 |
+| 11 | **AiSidebarPanel 切 Provider 自适应** | `providerRef` 由 `shallowRef(deepseekProvider)` 改为 `computed(() => getProvider(aiConfig.activeProviderId))`；额外 watch `activeProviderId` 在 streaming 时主动 abort，避免新旧 Provider 流混合 | `[x]` ✅ | `src/components/ai/AiSidebarPanel.vue` | #1 |
 | 12 | **DEEPSEEK_MODELS 重命名 + 扩展** | `DEEPSEEK_MODELS` 改名为 `DEEPSEEK_MODELS_DESCRIPTOR`，新增 `OPENAI_MODELS / ANTHROPIC_MODELS / GEMINI_MODELS / QWEN_MODELS / MOONSHOT_MODELS / ZHIPU_MODELS / XAI_MODELS` | `[ ]` ⏳ | `src/composables/ai/types.ts` | — |
 | 13 | **错误码扩展** | `errors.ts` `LlmError` 已映射 401/429/500/network/aborted；扩展为兼容 Anthropic & Gemini 错误体（不同 status code 与 body 结构） | `[ ]` ⏳ | `src/composables/ai/errors.ts` | #3, #4 |
-| 14 | **i18n · Provider 名称三语** | 8 个 Provider × 3 语言 displayName + apiKey docs link 标签 + baseUrl placeholder | `[ ]` ⏳ | `src/locales/{zh-CN,zh-TW,en}.ts` `settings.section.ai.providerOption.*` 扩展 | — |
-| 15 | **i18n · Model 描述三语** | 跨 Provider ~28 条主流 model id × 3 语言简短描述（用 type-tag：`{thinking, fast, cheap, longContext, multimodal}`） | `[ ]` ⏳ | `src/locales/{zh-CN,zh-TW,en}.ts` `settings.section.ai.modelDesc.*` | — |
+| 14 | **i18n · Provider 名称 + tagline 三语** | 8 个 Provider 三语 tagline（一句话定位）+ 国际/国内分组标签 + 通用"获取 API Key →"链接 + apiKey 通用 placeholder/hint；显示名 `displayName` 复用 registry.ts，三语 i18n 文件不重复维护 | `[x]` ✅ | `src/locales/modules/settings.{zh-CN,zh-TW,en}.ts` `section.ai.providerOption/Category/DocsCta/Hint` | — |
+| 15 | **i18n · Model tag 三语** | 6 个 ModelTag 通用翻译（思维链/快速/便宜/长上下文/多模态/编码）× 3 语；模板按 `modelTagLine(tags)` 拼接，~28 条主流 model 不再各自 i18n | `[x]` ✅ | `src/locales/modules/settings.{zh-CN,zh-TW,en}.ts` `section.ai.model.tag.*` | — |
 | 16 | **隐私页 Provider 列表更新** | `/privacy` 段把"DeepSeek"改为"用户选定的 Provider 直发"；列出 8 家可选 Provider | `[ ]` ⏳ | `src/locales/{zh-CN,zh-TW,en}.ts` `privacyPage.sections[7]` | — |
 | 17 | **README 更新** | `README.md` + `README.en.md` "AI 解读"段把 DeepSeek 改为"BYOK 任一主流 Provider"，附支持矩阵 | `[ ]` ⏳ | `README.md` / `README.en.md` | 全部完成后做 |
 
@@ -116,20 +116,28 @@
 
 > 目标：Settings 页可视化切换 + AiSidebarPanel 透明切换 Provider。
 
-- [ ] ⏳ P3-01 重构 `SettingsPage.vue` AI 段：
-    - 顶部 Provider 选择 grid（8 个 Button，aria-pressed 反映 activeProviderId）
-    - 切 Provider 不重置已存的其它 Provider Key
-    - apiKey / model / baseUrl 三块跟随 activeProvider 重新渲染
-    - 每个 Provider 显示一行 "获取 API Key →" 链接（点击新窗口打开 `apiKeyDocsUrl`）
-- [ ] ⏳ P3-02 重构 model 选择 grid：
-    - 不再 hardcode `DEEPSEEK_MODELS`，改读 `PROVIDERS[activeId].models`
-    - 每个 model 描述读 `settings.section.ai.modelDesc.<provider>.<modelId>`，缺失时回退到 type-tag 通用描述（如 "thinking-mode / fast / long-context"）
-- [ ] ⏳ P3-03 重构 baseUrl 区：仅 `isOpenAiCompatible` 的 Provider 显示 baseUrl 输入；Anthropic / Gemini 隐藏
-- [ ] ⏳ P3-04 重构 testConnection：用 `getProvider(activeId).ping(currentProviderConfig)` 替换 hardcode
-- [ ] ⏳ P3-05 改造 `AiSidebarPanel.vue`：
-    - `providerRef` 从 `shallowRef(deepseekProvider)` 改为 `computed(() => getProvider(aiConfig.activeProviderId))`
-    - `configRef` 从 `aiConfig.config` 改为 `aiConfig.currentProviderConfig`（含 apiKey / baseUrl / model）+ 顶层 `temperature` 合并
-- [ ] ⏳ P3-06 真实端到端 smoke：8 个 Provider 各跑一次"首次解读 → 1 轮提问 → 切到另一个 Provider 重复"
+- [x] ✅ P3-01 `registry.ts` 加 `isOpenAiCompatible(id)` helper（仅看 protocol，独立于 `allowCustomBaseUrl` 策略字段）
+- [x] ✅ P3-02 三语 i18n 扩展 `settings.{zh-CN,zh-TW,en}.ts`：
+    - 8 个 `providerOption.<id>` tagline（"中文性价比首选"/"全球开发者首选"/"原生多模态"等）
+    - `providerCategory.{international,domestic}` 分组 label
+    - `providerDocsCta` "获取 API Key →" 通用链接文案
+    - `providerHint` 切 Provider 不丢 Key 提示
+    - 6 个 `model.tag.{thinking,fast,cheap,longContext,multimodal,coding}` 通用 tag 翻译
+    - apiKey placeholder / hint 通用化（不再 DeepSeek-specific 的 "sk- 开头"）
+    - baseUrl placeholder 改 "留空使用默认 endpoint"，hint 加"仅 OpenAI 协议族"提示
+- [x] ✅ P3-03 `ai-i18n-completeness.spec.ts` 守门更新：8 ProviderOption + 2 Category + 6 Tag + 2 通用文案 = +18 条 × 3 语共 +54 测试用例（vitest 526 全过）
+- [x] ✅ P3-04 `SettingsPage.vue` AI 段顶部 Provider 选择 grid：按 international / domestic 分组渲染 2×N grid，aria-pressed 反映 activeProviderId；点击调 `selectProvider(id)`（同时重置 testState）
+- [x] ✅ P3-05 model grid + baseUrl + testConnection 多 Provider 化：
+    - model grid 改读 `currentProvider.models.filter(!deprecated)`，描述用 `modelTagLine(tags)` 拼接
+    - baseUrl 区 `v-if="canCustomBaseUrl"`，placeholder 用 `currentProvider.defaultBaseUrl`
+    - testConnection 改用 `getProvider(aiConfig.activeProviderId).ping(aiConfig.config)`
+    - "获取 API Key →" 链接 `:href="currentProvider.apiKeyDocsUrl"` target=_blank
+    - API Key label 加 "· {provider 名}" 后缀，让用户清楚正在配哪家
+- [x] ✅ P3-06 `AiSidebarPanel.vue` providerRef 多 Provider 化：
+    - `providerRef = computed(() => getProvider(aiConfig.activeProviderId))`，自动随 store 切换
+    - 新增 `watch(activeProviderId)` 在 streaming 时主动 `chat.stop()`，避免新旧 Provider stream 混合
+- [x] ✅ P3-07 验证全绿：vue-tsc 0 错；vitest 526 passed / 1 skipped；vite build 6.77s；`feat-ai` chunk 从 ~340KB 涨到 634KB（gz 171KB）— 三个 SDK 进 chunk 是预期，仍懒加载，首屏零增量
+- [x] ✅ P3-08 dev server smoke（minimal 主题）：切 Anthropic→DeepSeek 时 API Key 标签 / docs 链接 / model grid（3 Claude → 2 DeepSeek）/ Base URL input（Anthropic 隐藏 → DeepSeek 显示）全部正确 reactive 切换
 
 ### Phase 4 — i18n 与文档收尾 · ~0.5 天
 
@@ -262,7 +270,7 @@
 |---|---|---|---|
 | Phase 1 — 类型与配置层重构 | `[x]` ✅ | 2026-04-30 | registry + types + store + 19 单元测试；vue-tsc 0 错；vitest 463/0；vite build 5.88s 通过；行为对外零变化 |
 | Phase 2 — Provider 实现 | `[x]` ✅ | 2026-04-30 | openaiCompatible 工厂 + 8 个 instance + index.ts 聚合 + 12 conversion 测试；vue-tsc 0 错；vitest 475/0；vite build 5.51s；feat-ai chunk tree-shake 后 SDK 暂未进入 bundle（等 Phase 3 接入 UI 后才会被引用）|
-| Phase 3 — UI 与上下游接入 | `[ ]` ⏳ | — | — |
+| Phase 3 — UI 与上下游接入 | `[x]` ✅ | 2026-04-30 | SettingsPage 8-Provider grid + 模型/Base URL reactive 联动 + "获取 API Key →" 链接 + AiSidebarPanel providerRef 改 computed + 切换时 abort streaming；i18n 三语扩展 +18 条 × 3 语 = +54 测试；vue-tsc 0 错；vitest 526/1 skipped；vite build 6.77s；`feat-ai` chunk 涨到 634KB / 171KB gz（3 SDK 都进），首屏零增量；dev smoke 验证 Anthropic↔DeepSeek 切换全 UI 正确 reactive |
 | Phase 4 — i18n 与文档收尾 | `[ ]` ⏳ | — | — |
 
 ---

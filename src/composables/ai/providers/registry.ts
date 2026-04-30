@@ -264,6 +264,22 @@ export function getProviderDescriptor(id: ProviderId): ProviderDescriptor {
 }
 
 /**
+ * 是否为 OpenAI 协议兼容族 Provider。
+ *
+ * 仅在 settings UI 决定"是否暴露 baseUrl 自定义输入"时使用：
+ *   - openai-compatible 族允许走代理 / 自部署 endpoint，UI 暴露 baseUrl
+ *   - anthropic / gemini 走原生 SDK，自定义 baseUrl 风险大（域名校验 / 协议头不一），UI 隐藏
+ *
+ * 注意：此 helper 只看 protocol，不读 ProviderDescriptor.allowCustomBaseUrl —
+ * 后者是策略层的"用户可改 vs 隐藏"开关，前者是协议层的"客观分类"。当前两个值
+ * 在 PROVIDERS 表里 100% 一致；保留两份是为了后续策略变更（例如临时把某 OpenAI
+ * 兼容厂商的 baseUrl 锁死）不动 protocol 字段。
+ */
+export function isOpenAiCompatible(id: ProviderId): boolean {
+  return getProviderDescriptor(id).protocol === 'openai-compatible'
+}
+
+/**
  * 校验某 Provider 下 model id 是否合法且**未被弃用**。用于 sanitize 用户 storage 残留 +
  * setModel 时主动拦截。返回合法 id 或该 Provider 的 defaultModelId。
  *

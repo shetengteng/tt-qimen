@@ -17,7 +17,6 @@ import {
   ref,
   shallowRef,
   watch,
-  type Ref,
 } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
@@ -27,7 +26,7 @@ import { useAiConfigStore } from '@/stores/aiConfig'
 import { useAiHistoryStore } from '@/stores/aiHistory'
 import { useAiSidebarStore } from '@/stores/aiSidebar'
 import { useAiChat } from '@/composables/ai/useAiChat'
-import { deepseekProvider } from '@/composables/ai/providers/deepseek'
+import { getProvider } from '@/composables/ai/providers'
 import { CONTEXT_BUILDERS } from '@/composables/ai/contextBuilders'
 import type { AiContext } from '@/composables/ai/contextBuilders'
 import { getFreeChatSystemPrompt, getSystemPrompt } from '@/composables/ai/systemPrompts'
@@ -50,8 +49,16 @@ const currentLocale = computed<Locale>(() =>
 
 const ctx = shallowRef<AiContext | null>(null)
 
-const providerRef = shallowRef(deepseekProvider) as unknown as Ref<typeof deepseekProvider>
-const configRef = computed(() => aiConfig.config) as unknown as Ref<typeof aiConfig.config>
+/**
+ * 多 Provider 切换支持（Phase 3）：
+ *   - providerRef 跟随 aiConfig.activeProviderId 变化，实时切到对应 Provider 实例
+ *   - configRef 仍是 aiConfig.config 投影（store 已根据 activeProviderId 重新投影
+ *     apiKey / baseUrl / model）
+ *   - 切换时若有进行中的流式请求，由下方 watch(activeProviderId) 主动 abort，
+ *     防止"用 OpenAI Key 发出去的请求，回到 Anthropic provider 上时还在流"的混乱
+ */
+const providerRef = computed(() => getProvider(aiConfig.activeProviderId))
+const configRef = computed(() => aiConfig.config)
 
 const chat = useAiChat({
   provider: providerRef,
@@ -235,6 +242,22 @@ watch(
  */
 watch(
   () => router.currentRoute.value.fullPath,
+  (next, prev) => {
+    if (prev && next !== prev && chat.streaming.value) {
+      chat.stop()
+    }
+  },
+)
+
+/**
+ * Phase 3：用户在设置页切换 Provider 时，sidebar 若有正在流式的请求立刻 abort。
+ *
+ * 否则会出现"streaming 中途换 provider，下一次 send 用新 provider 但旧请求还在
+ * 异步追加 token"的混乱。abort 后已生成片段保留，用户能看到明确的截断点；
+ * 重新提问会自然走到新 Provider。
+ */
+watch(
+  () => aiConfig.activeProviderId,
   (next, prev) => {
     if (prev && next !== prev && chat.streaming.value) {
       chat.stop()

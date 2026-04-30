@@ -16,13 +16,21 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { ArrowLeft, Eye, EyeOff, Palette, Languages, Sparkles, History, ShieldCheck } from 'lucide-vue-next'
+import { ArrowLeft, ExternalLink, Eye, EyeOff, Palette, Languages, Sparkles, History, ShieldCheck } from 'lucide-vue-next'
 import { useThemeStore } from '@/stores/theme'
 import { useLocaleStore } from '@/stores/locale'
 import { useAiConfigStore } from '@/stores/aiConfig'
 import { useAiHistoryStore } from '@/stores/aiHistory'
-import { DEEPSEEK_MODELS } from '@/composables/ai/types'
-import { deepseekProvider } from '@/composables/ai/providers/deepseek'
+import {
+  PROVIDERS,
+  PROVIDER_IDS,
+  getProviderDescriptor,
+  isOpenAiCompatible,
+  type ModelDescriptor,
+  type ModelTag,
+  type ProviderId,
+} from '@/composables/ai/providers/registry'
+import { getProvider } from '@/composables/ai/providers'
 import { LlmError } from '@/composables/ai/errors'
 import type { ThemeId } from '@/themes'
 import type { Locale } from '@/locales'
@@ -71,6 +79,38 @@ const temperatureSliderValue = computed<number[]>({
   set: (v: number[]) => aiConfig.setTemperature(v[0] ?? 0.7),
 })
 
+/**
+ * 当前 active Provider 的元数据（i18n displayName / 模型清单 / docs 链接 / baseUrl 策略）。
+ * 切换 activeProviderId 时整个 SettingsPage AI 段会自动重新投影：
+ *   - apiKey input 跟随 aiConfig.config.apiKey 变化（store computed 已重新投影到新 provider）
+ *   - model grid 跟随 currentProvider.models 变化
+ *   - baseUrl 区按 currentProvider.allowCustomBaseUrl 决定显示与否
+ *   - testConnection / "获取 API Key →" 跟随当前 provider
+ */
+const currentProvider = computed(() => getProviderDescriptor(aiConfig.activeProviderId))
+
+/** 按"国际 / 国内"分组的 ProviderId 列表（UI 渲染顺序保持 PROVIDER_IDS） */
+const providerGroups = computed(() => {
+  const international: ProviderId[] = []
+  const domestic: ProviderId[] = []
+  for (const id of PROVIDER_IDS) {
+    if (PROVIDERS[id].group === 'international') international.push(id)
+    else domestic.push(id)
+  }
+  return [
+    { categoryKey: 'international' as const, ids: international },
+    { categoryKey: 'domestic' as const, ids: domestic },
+  ]
+})
+
+/** 当前 provider 的可选 model 列表（剔除 deprecated 项，UI 不展示历史型号） */
+const currentModels = computed<readonly ModelDescriptor[]>(
+  () => currentProvider.value.models.filter((m) => !m.deprecated),
+)
+
+/** 当前 provider 是否暴露 baseUrl 自定义入口（仅 OpenAI 协议兼容族 = true） */
+const canCustomBaseUrl = computed(() => isOpenAiCompatible(aiConfig.activeProviderId))
+
 type TestState =
   | { kind: 'idle' }
   | { kind: 'running' }
@@ -87,7 +127,7 @@ async function testConnection() {
   }
   testState.value = { kind: 'running' }
   try {
-    const res = await deepseekProvider.ping(aiConfig.config)
+    const res = await getProvider(aiConfig.activeProviderId).ping(aiConfig.config)
     if (res.ok) {
       testState.value = { kind: 'ok' }
     } else {
@@ -102,14 +142,45 @@ async function testConnection() {
   }
 }
 
+function selectProvider(id: ProviderId) {
+  if (id === aiConfig.activeProviderId) return
+  aiConfig.setActiveProvider(id)
+  testState.value = { kind: 'idle' }
+}
+
 function clearKey() {
   aiConfig.clearKeyOnly()
   testState.value = { kind: 'idle' }
 }
 
-function getModelDescKey(modelId: string): string {
-  if (modelId === 'deepseek-v4-pro') return 'settings.section.ai.model.proDesc'
-  return 'settings.section.ai.model.flashDesc'
+/**
+ * 把 ModelTag union 映射到 i18n 子键。
+ * 注意 `long-context` 含连字符不是合法对象 key，对 i18n 用 camelCase 别名。
+ */
+const TAG_I18N_KEY: Record<ModelTag, string> = {
+  thinking: 'thinking',
+  fast: 'fast',
+  cheap: 'cheap',
+  'long-context': 'longContext',
+  multimodal: 'multimodal',
+  coding: 'coding',
+}
+
+/**
+ * 把模型的 tag 列表拼成「思维链 · 长上下文」之类的描述串；
+ * 无 tag 时返回空串，模板里据此选择是否渲染描述行。
+ */
+function modelTagLine(tags: readonly ModelTag[]): string {
+  if (tags.length === 0) return ''
+  const sep = i18nLocale.value === 'en' ? ' · ' : ' · '
+  return tags
+    .map((tag) => t(`settings.section.ai.model.tag.${TAG_I18N_KEY[tag]}`))
+    .join(sep)
+}
+
+function getProviderDisplayName(id: ProviderId): string {
+  const dn = PROVIDERS[id].displayName
+  return dn[i18nLocale.value as keyof typeof dn] ?? dn['zh-CN']
 }
 
 function resetBaseUrl() {
@@ -258,19 +329,58 @@ function goHome() {
 
         <div class="mt-6 space-y-6">
           <!-- Provider -->
-          <div class="space-y-2">
+          <div class="space-y-3">
             <Label>{{ t('settings.section.ai.providerLabel') }}</Label>
-            <div class="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-3 py-1.5 text-xs font-medium text-primary">
-              <span class="size-1.5 rounded-full bg-primary" aria-hidden="true"></span>
-              {{ t('settings.section.ai.providerOption.deepseek') }}
+            <div
+              v-for="group in providerGroups"
+              :key="group.categoryKey"
+              class="space-y-2"
+            >
+              <div class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80">
+                {{ t(`settings.section.ai.providerCategory.${group.categoryKey}`) }}
+              </div>
+              <div class="grid gap-2 sm:grid-cols-2">
+                <Button
+                  v-for="id in group.ids"
+                  :key="id"
+                  type="button"
+                  variant="outline"
+                  class="group/opt h-auto flex-col items-start gap-1 px-4 py-3 text-left whitespace-normal aria-pressed:border-primary aria-pressed:bg-accent aria-pressed:text-accent-foreground"
+                  :aria-pressed="id === aiConfig.activeProviderId"
+                  @click="selectProvider(id)"
+                >
+                  <span class="text-sm font-medium text-foreground group-aria-pressed/opt:text-current">
+                    {{ getProviderDisplayName(id) }}
+                  </span>
+                  <span class="text-xs font-normal text-muted-foreground group-aria-pressed/opt:text-current/80">
+                    {{ t(`settings.section.ai.providerOption.${id}`) }}
+                  </span>
+                </Button>
+              </div>
             </div>
+            <p class="text-xs text-muted-foreground">
+              {{ t('settings.section.ai.providerHint') }}
+            </p>
           </div>
 
           <!-- API Key -->
           <div class="space-y-2">
-            <Label for="ai-api-key">
-              {{ t('settings.section.ai.apiKey.label') }}
-            </Label>
+            <div class="flex items-baseline justify-between gap-3">
+              <Label for="ai-api-key">
+                {{ t('settings.section.ai.apiKey.label') }}
+                <span class="ml-1 font-normal text-muted-foreground">·</span>
+                <span class="ml-1 font-normal text-muted-foreground">{{ getProviderDisplayName(aiConfig.activeProviderId) }}</span>
+              </Label>
+              <a
+                :href="currentProvider.apiKeyDocsUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-primary hover:underline"
+              >
+                {{ t('settings.section.ai.providerDocsCta') }}
+                <ExternalLink class="size-3" aria-hidden="true" />
+              </a>
+            </div>
             <div class="flex flex-col gap-2 sm:flex-row">
               <div class="relative flex-1">
                 <Input
@@ -315,7 +425,7 @@ function goHome() {
             <Label>{{ t('settings.section.ai.model.label') }}</Label>
             <div class="grid gap-2 sm:grid-cols-2">
               <Button
-                v-for="m in DEEPSEEK_MODELS"
+                v-for="m in currentModels"
                 :key="m.id"
                 type="button"
                 variant="outline"
@@ -324,10 +434,13 @@ function goHome() {
                 @click="aiConfig.setModel(m.id)"
               >
                 <span class="text-sm font-medium text-foreground group-aria-pressed/opt:text-current">
-                  {{ t(m.labelKey) }}
+                  {{ m.labelKey ? t(m.labelKey) : m.fallbackLabel }}
                 </span>
-                <span class="text-xs font-normal text-muted-foreground group-aria-pressed/opt:text-current/80">
-                  {{ t(getModelDescKey(m.id)) }}
+                <span
+                  v-if="modelTagLine(m.tags)"
+                  class="text-xs font-normal text-muted-foreground group-aria-pressed/opt:text-current/80"
+                >
+                  {{ modelTagLine(m.tags) }}
                 </span>
               </Button>
             </div>
@@ -359,8 +472,8 @@ function goHome() {
             </p>
           </div>
 
-          <!-- Base URL -->
-          <div class="space-y-2">
+          <!-- Base URL（仅 OpenAI 协议兼容族暴露） -->
+          <div v-if="canCustomBaseUrl" class="space-y-2">
             <Label for="ai-base-url">
               {{ t('settings.section.ai.baseUrl.label') }}
             </Label>
@@ -371,7 +484,7 @@ function goHome() {
                 type="text"
                 autocomplete="off"
                 spellcheck="false"
-                :placeholder="t('settings.section.ai.baseUrl.placeholder')"
+                :placeholder="currentProvider.defaultBaseUrl"
               />
               <Button variant="outline" class="w-full sm:w-auto" @click="resetBaseUrl">
                 {{ t('settings.section.ai.baseUrl.useDefault') }}
