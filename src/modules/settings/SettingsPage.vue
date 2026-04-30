@@ -16,7 +16,7 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { ArrowLeft, ChevronsUpDown, ExternalLink, Eye, EyeOff, Palette, Languages, Sparkles, History, ShieldCheck } from 'lucide-vue-next'
+import { ArrowLeft, ExternalLink, Eye, EyeOff, Palette, Languages, Sparkles, History, ShieldCheck } from 'lucide-vue-next'
 import { useThemeStore } from '@/stores/theme'
 import { useLocaleStore } from '@/stores/locale'
 import { useAiConfigStore } from '@/stores/aiConfig'
@@ -38,26 +38,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command'
+import SearchableCombobox from '@/components/common/SearchableCombobox.vue'
 
 const { t, tm, rt, locale: i18nLocale } = useI18n()
 const router = useRouter()
@@ -155,38 +136,65 @@ async function testConnection() {
 }
 
 /**
- * Provider Combobox（Popover + Command）的开合状态。
+ * Provider 选择 v-model（SearchableCombobox 的 modelValue 双向绑定）。
  *
- * 用 Combobox 而不是 Select 的原因（用户反馈 2026-04-30）：
- *   1. Select 不支持搜索过滤；8 家 Provider 平铺时仍想快速键盘搜索定位
- *   2. reka-ui Select 在某些场景下滚动会抖动（item-aligned 偏移再校准）
- *   3. 8 家 Provider 不再按"国际 / 国内"分组，平铺单组列表更直观
+ * 设计决策（用户三轮反馈 2026-04-30）：
+ *   1. 第一版：8 个 Button grid（占空间）
+ *   2. 第二版：shadcn-vue Select 下拉（不能搜索 + 滚动抖动）
+ *   3. 第三版：shadcn-vue Combobox = Popover + Command（支持搜索但 portal 与
+ *      项目已有 CityCombobox 风格不一致）
+ *   4. 终版（当前）：参考 `CityCombobox.vue` 自定义 input + listbox 模式实现的
+ *      `SearchableCombobox`，与项目"选择城市"风格统一，零 portal、滚动稳定
+ *
+ * 切 Provider 时同步重置 testState，避免上一次连接成功/失败标记被错误沿用。
  */
-const providerPopoverOpen = ref(false)
+const providerSelectValue = computed<ProviderId>({
+  get: () => aiConfig.activeProviderId,
+  set: (v) => {
+    if (!v || v === aiConfig.activeProviderId) return
+    aiConfig.setActiveProvider(v as ProviderId)
+    testState.value = { kind: 'idle' }
+  },
+})
 
 /**
- * Combobox 选中回调：reka-ui ListboxRoot 用 modelValue 双向绑定，
- * 这里通过 @update:model-value 拿到新选中的 string，
- * 再走 store mutator + 关闭 popover + 重置 testState。
- */
-function onProviderSelected(v: unknown) {
-  const id = String(v) as ProviderId
-  if (id === aiConfig.activeProviderId) {
-    providerPopoverOpen.value = false
-    return
-  }
-  aiConfig.setActiveProvider(id)
-  testState.value = { kind: 'idle' }
-  providerPopoverOpen.value = false
-}
-
-/**
- * Model 下拉的 v-model 桥接；setModel 内部已有 sanitize 兜底。
+ * Model 选择 v-model；setModel 内部已有 sanitize 兜底。
  */
 const modelSelectValue = computed<string>({
   get: () => aiConfig.config.model,
-  set: (v: string) => aiConfig.setModel(v),
+  set: (v: string) => {
+    if (!v) return
+    aiConfig.setModel(v)
+  },
 })
+
+/** 当前 provider 可选 model 的 id 列表（剔除 deprecated；用于 SearchableCombobox.options） */
+const currentModelIds = computed<readonly string[]>(
+  () => currentModels.value.map((m) => m.id),
+)
+
+/** 找一个 model 的 i18n 名 / fallback 名 */
+function getModelLabel(modelId: string): string {
+  const m = currentModels.value.find((x) => x.id === modelId)
+  if (!m) return modelId
+  return m.labelKey ? t(m.labelKey) : m.fallbackLabel
+}
+
+/** 找一个 model 的 tag 描述串（"快速 · 便宜"） */
+function getModelHint(modelId: string): string {
+  const m = currentModels.value.find((x) => x.id === modelId)
+  return m ? modelTagLine(m.tags) : ''
+}
+
+/**
+ * Provider 自定义匹配函数：按 displayName 三语 + tagline 联合匹配。
+ * 让用户输入 "claude" 命中 "Anthropic Claude"；输入 "中文" 命中 DeepSeek 的中文 tagline。
+ */
+function matchProvider(id: ProviderId, q: string): boolean {
+  const name = getProviderDisplayName(id).toLowerCase()
+  const tagline = t(`settings.section.ai.providerOption.${id}`).toLowerCase()
+  return name.includes(q) || tagline.includes(q) || id.toLowerCase().includes(q)
+}
 
 function clearKey() {
   aiConfig.clearKeyOnly()
@@ -368,49 +376,19 @@ function goHome() {
         </div>
 
         <div class="mt-6 space-y-6">
-          <!-- Provider · shadcn-vue Combobox (Popover + Command) 支持搜索 -->
+          <!-- Provider · 自定义 SearchableCombobox（参考 CityCombobox 风格） -->
           <div class="space-y-2">
-            <Label for="ai-provider-trigger">{{ t('settings.section.ai.providerLabel') }}</Label>
-            <Popover v-model:open="providerPopoverOpen">
-              <PopoverTrigger as-child>
-                <Button
-                  id="ai-provider-trigger"
-                  type="button"
-                  variant="outline"
-                  role="combobox"
-                  :aria-expanded="providerPopoverOpen"
-                  class="w-full justify-between font-normal"
-                >
-                  <span class="truncate">
-                    {{ getProviderDisplayName(aiConfig.activeProviderId) }}
-                  </span>
-                  <ChevronsUpDown class="ml-2 size-4 shrink-0 opacity-50" aria-hidden="true" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent
-                class="w-[var(--reka-popper-anchor-width)] p-0"
-                align="start"
-              >
-                <Command
-                  :model-value="aiConfig.activeProviderId"
-                  @update:model-value="onProviderSelected"
-                >
-                  <CommandInput :placeholder="t('settings.section.ai.providerSearchPlaceholder')" />
-                  <CommandList>
-                    <CommandEmpty>{{ t('settings.section.ai.providerEmpty') }}</CommandEmpty>
-                    <CommandGroup>
-                      <CommandItem
-                        v-for="id in PROVIDER_IDS"
-                        :key="id"
-                        :value="id"
-                      >
-                        {{ getProviderDisplayName(id) }}
-                      </CommandItem>
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
+            <Label for="ai-provider-combobox">{{ t('settings.section.ai.providerLabel') }}</Label>
+            <SearchableCombobox
+              id="ai-provider-combobox"
+              v-model="providerSelectValue"
+              :options="PROVIDER_IDS"
+              :label-of="(id) => getProviderDisplayName(id)"
+              :match-fn="(id, q) => matchProvider(id, q)"
+              :placeholder="getProviderDisplayName(aiConfig.activeProviderId)"
+              :search-placeholder="t('settings.section.ai.providerSearchPlaceholder')"
+              :no-result-text="t('settings.section.ai.providerEmpty')"
+            />
             <p class="text-xs text-muted-foreground">
               <span class="text-foreground/80">
                 {{ t(`settings.section.ai.providerOption.${aiConfig.activeProviderId}`) }}
@@ -477,23 +455,19 @@ function goHome() {
             </p>
           </div>
 
-          <!-- Model -->
+          <!-- Model · 与 Provider 同款 SearchableCombobox -->
           <div class="space-y-2">
-            <Label for="ai-model-select">{{ t('settings.section.ai.model.label') }}</Label>
-            <Select v-model="modelSelectValue">
-              <SelectTrigger id="ai-model-select" class="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem
-                  v-for="m in currentModels"
-                  :key="m.id"
-                  :value="m.id"
-                >
-                  {{ m.labelKey ? t(m.labelKey) : m.fallbackLabel }}
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            <Label for="ai-model-combobox">{{ t('settings.section.ai.model.label') }}</Label>
+            <SearchableCombobox
+              id="ai-model-combobox"
+              v-model="modelSelectValue"
+              :options="currentModelIds"
+              :label-of="getModelLabel"
+              :hint-of="getModelHint"
+              :placeholder="getModelLabel(aiConfig.config.model)"
+              :search-placeholder="t('settings.section.ai.providerSearchPlaceholder')"
+              :no-result-text="t('settings.section.ai.providerEmpty')"
+            />
             <p class="text-xs text-muted-foreground">
               <span v-if="currentModelTagLine" class="text-foreground/80">
                 {{ currentModelTagLine }}
