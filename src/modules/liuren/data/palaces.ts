@@ -8,16 +8,16 @@
  * 文案风格：白话、现代、可操作；不做具体结论式预测，只给行动建议。
  */
 
-import type { Aspect, PalaceName, PalaceReading } from '../types'
+import type { Aspect, JiXiong, PalaceName, PalaceReading } from '../types'
 
 export const PALACES_ORDER: readonly PalaceName[] = Object.freeze([
   '大安', '留连', '速喜', '赤口', '小吉', '空亡',
 ])
 
 /** 纯吉凶映射表，供路径回溯可视化用 */
-export const PALACE_JIXIONG: Readonly<Record<PalaceName, 'ji' | 'xiong' | 'neutral'>> = Object.freeze({
+export const PALACE_JIXIONG: Readonly<Record<PalaceName, JiXiong>> = Object.freeze({
   大安: 'ji',
-  留连: 'neutral',
+  留连: 'ping',
   速喜: 'ji',
   赤口: 'xiong',
   小吉: 'ji',
@@ -53,7 +53,7 @@ export const PALACES: Readonly<Record<PalaceName, PalaceReading>> = Object.freez
   ),
 
   留连: makeReading(
-    '留连', 'neutral', '迟', '土', '⏳',
+    '留连', 'ping', '迟', '土', '⏳',
     {
       overall: '留连主"滞"，事情会有拖延、反复。近期不少事情会"悬而未决"，需要多一分耐心。不是凶兆，但需要你主动推动、梳理、沟通，才能破解拖延感。',
       career: '项目容易卡在审批、对接、汇报环节。宜主动找关键人 follow-up；不宜等待、观望。文书合同类事务尤其需要反复核对。',

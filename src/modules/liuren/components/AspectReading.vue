@@ -47,13 +47,7 @@ const avoid = computed(() =>
   palace.value.avoid.length ? palace.value.avoid.join(listSep.value) : '—',
 )
 
-const verdictClass = computed(() => {
-  const j = palace.value.jiXiong
-  if (j === 'ji') return 'ji'
-  if (j === 'xiong') return 'xiong'
-  return 'ping'
-})
-
+const verdictClass = computed(() => palace.value.jiXiong)
 const verdictLabel = computed(() => t(`liuren.verdict.${palace.value.jiXiong}`))
 
 const title = computed(() => `${palaceDisplayName.value} · ${t(`liuren.aspect.${props.aspect}`)}`)

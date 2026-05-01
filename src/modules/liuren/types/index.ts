@@ -9,8 +9,12 @@
 /** 六宫名 */
 export type PalaceName = '大安' | '留连' | '速喜' | '赤口' | '小吉' | '空亡'
 
-/** 六宫吉凶：ji=吉 / xiong=凶 / neutral=平/中 */
-export type JiXiong = 'ji' | 'xiong' | 'neutral'
+/**
+ * 六宫吉凶：ji=吉 / xiong=凶 / ping=平
+ * 命名与命理传统术语一致，并直接对应 i18n key（liuren.verdict.{ji,ping,xiong}）
+ * 与 CSS 类（.lr-reading-verdict.{ji,ping,xiong}），三层共用同一枚举，避免映射歧义。
+ */
+export type JiXiong = 'ji' | 'xiong' | 'ping'
 
 /** 五行标签（简体用字） */
 export type ElementCN = '木' | '火' | '土' | '金' | '水'

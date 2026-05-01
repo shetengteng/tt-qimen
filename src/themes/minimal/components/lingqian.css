@@ -516,9 +516,8 @@
 
 /* ---------- 签诗 ---------- */
 /*
- * 简约主题同样采用古典竖排（writing-mode: vertical-rl）。简约主题的 1ine-height 略小、
- * font-weight: 500 比国风的 serif 更"现代"，但读法仍遵从原版"右起列、上向下读"。
- * 见 design/todo/13-观音灵签模块 §3 关于"签诗双主题竖排版式"的设计意图。
+ * 横排 4 行布局：每句 7 字一行，居中堆叠（设计决策见 prompts.txt 2026-05-01：
+ * 与 guofeng 保持一致，移除原 vertical-rl 竖排）。
  */
 :root[data-theme='minimal'] .lq-poem {
   text-align: center;
@@ -539,28 +538,11 @@
   color: var(--mn-ink);
   font-weight: 500;
   letter-spacing: 0.15em;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  display: inline-flex;
-  flex-direction: row;
-  gap: var(--mn-space-5);
-  white-space: nowrap;
+  display: block;
 }
 
 :root[data-theme='minimal'] .lq-poem-line {
-  display: inline-block;
-}
-
-/* 横屏窄高场景降级回横排（同 guofeng） */
-@media (orientation: landscape) and (max-height: 480px) {
-  :root[data-theme='minimal'] .lq-poem-body {
-    writing-mode: horizontal-tb;
-    display: block;
-    white-space: normal;
-  }
-  :root[data-theme='minimal'] .lq-poem-line {
-    display: block;
-  }
+  display: block;
 }
 
 /* ---------- 典故段（简约紫调色块） ---------- */
