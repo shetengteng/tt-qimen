@@ -14,10 +14,13 @@
  *   - streaming === true（且本条是末尾）时 final = false，否则 final = true
  *   - content 为空 + streaming → 渲染一个"…正在思考"占位
  */
-import { computed } from 'vue'
+import { computed, onBeforeUnmount, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { Check, Copy } from 'lucide-vue-next'
+import { useClipboard } from '@vueuse/core'
 import { MarkdownRender } from 'markstream-vue'
 import 'markstream-vue/index.css'
+import { Button } from '@/components/ui/button'
 import type { ChatMessage } from '@/composables/ai/types'
 
 const props = withDefaults(defineProps<{
@@ -45,6 +48,45 @@ const isEmptyAssistant = computed(
 )
 
 const markdownFinal = computed(() => !props.streaming)
+
+/**
+ * 复制按钮：仅对 assistant 气泡显示，复制原始 markdown 而非渲染后的 HTML。
+ * 流式中隐藏，避免用户拿到残缺内容。
+ */
+const { copy, isSupported: clipboardSupported } = useClipboard({ legacy: true })
+const justCopied = ref(false)
+let resetTimer: ReturnType<typeof setTimeout> | null = null
+
+const showCopyButton = computed(
+  () =>
+    !isUser.value
+    && !showPlaceholder.value
+    && !isEmptyAssistant.value
+    && !props.streaming
+    && !!props.message.content
+    && props.message.content.trim().length > 0,
+)
+
+async function onCopy() {
+  try {
+    await copy(props.message.content)
+    justCopied.value = true
+    if (resetTimer) clearTimeout(resetTimer)
+    resetTimer = setTimeout(() => {
+      justCopied.value = false
+      resetTimer = null
+    }, 1500)
+  } catch (err) {
+    console.warn('[AiMessageBubble] copy failed:', err)
+  }
+}
+
+onBeforeUnmount(() => {
+  if (resetTimer) {
+    clearTimeout(resetTimer)
+    resetTimer = null
+  }
+})
 </script>
 
 <template>
@@ -56,7 +98,7 @@ const markdownFinal = computed(() => !props.streaming)
   </div>
 
   <!-- 助手气泡（空 content 失败态不渲染） -->
-  <div v-else-if="!isEmptyAssistant" class="flex w-full justify-start">
+  <div v-else-if="!isEmptyAssistant" class="flex w-full flex-col items-start gap-1">
     <div
       class="ai-bubble-assistant inline-block max-w-[95%] rounded-2xl rounded-tl-sm border border-border bg-card px-4 py-3 text-sm leading-relaxed text-foreground"
     >
@@ -89,6 +131,27 @@ const markdownFinal = computed(() => !props.streaming)
         class="ai-markdown"
       />
     </div>
+
+    <!--
+      复制按钮：流式期间不渲染（避免复制残缺内容）；clipboard 不支持时也不渲染。
+      点击后图标在 1.5s 内切换为 Check 并更新 aria-label，给用户即时反馈。
+    -->
+    <Button
+      v-if="showCopyButton && clipboardSupported"
+      type="button"
+      variant="ghost"
+      size="icon-xs"
+      class="ai-copy-btn ml-1 text-muted-foreground hover:text-foreground"
+      :aria-label="justCopied ? t('ai.drawer.copied') : t('ai.drawer.copy')"
+      :title="justCopied ? t('ai.drawer.copied') : t('ai.drawer.copy')"
+      @click="onCopy"
+    >
+      <Check v-if="justCopied" class="size-3.5" aria-hidden="true" />
+      <Copy v-else class="size-3.5" aria-hidden="true" />
+    </Button>
+    <span v-if="justCopied" class="sr-only" role="status" aria-live="polite">
+      {{ t('ai.drawer.copied') }}
+    </span>
   </div>
 </template>
 

@@ -20,10 +20,11 @@ import {
 } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { ArrowDown, ArrowRight, Lock, Sparkles, X } from 'lucide-vue-next'
+import { ArrowDown, ArrowLeft, ArrowRight, History, Lock, Sparkles, X } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { useAiConfigStore } from '@/stores/aiConfig'
 import { useAiHistoryStore } from '@/stores/aiHistory'
+import type { ChatSession } from '@/stores/aiHistory'
 import { useAiSidebarStore } from '@/stores/aiSidebar'
 import { useAiChat } from '@/composables/ai/useAiChat'
 import { getProvider } from '@/composables/ai/providers'
@@ -36,6 +37,7 @@ import AiMessageBubble from './AiMessageBubble.vue'
 import AiPresetChips from './AiPresetChips.vue'
 import AiInputBox from './AiInputBox.vue'
 import AiErrorState from './AiErrorState.vue'
+import AiHistoryView from './AiHistoryView.vue'
 
 const { t, locale: i18nLocale } = useI18n()
 const router = useRouter()
@@ -353,6 +355,72 @@ const shouldShowChips = computed(() => {
   const last = chat.messages.value[chat.messages.value.length - 1]
   return !!last && last.role === 'assistant' && last.content.trim().length > 0
 })
+
+/**
+ * 会话历史视图 —— 在 sidebar 内做三态切换：
+ *   - 'chat'    ：当前命盘 / 自由对话的实时聊天（默认）
+ *   - 'history' ：会话历史列表
+ *   - 'preview' ：只读预览某历史会话（messages 直接来自 store，不接 useAiChat）
+ *
+ * 不持久化、不进 store —— 关闭 sidebar 或切换命盘时回到 'chat'。
+ */
+type AiPanelView = 'chat' | 'history' | 'preview'
+const view = ref<AiPanelView>('chat')
+const previewFingerprint = ref<string | null>(null)
+
+const previewSession = computed<ChatSession | null>(() => {
+  const fp = previewFingerprint.value
+  if (!fp) return null
+  return aiHistory.get(fp) ?? null
+})
+
+const previewMessages = computed<ChatMessage[]>(() => {
+  const s = previewSession.value
+  if (!s) return []
+  return s.messages.filter((m) => m.role !== 'system')
+})
+
+const previewModuleName = computed(() => {
+  const s = previewSession.value
+  if (!s) return ''
+  const key = `modules.${s.moduleId}.name`
+  const v = t(key)
+  return v === key ? s.moduleId : v
+})
+
+function openHistory() {
+  view.value = 'history'
+}
+
+function backToChat() {
+  view.value = 'chat'
+  previewFingerprint.value = null
+}
+
+function onHistorySelect(fp: string) {
+  previewFingerprint.value = fp
+  view.value = 'preview'
+}
+
+/**
+ * 用户在历史列表里删除了某条 —— 如果删的恰好是当前 preview 的那条，
+ * 退回到列表视图，避免渲染一个不存在的会话。
+ */
+function onHistoryDeleted(fp: string) {
+  if (previewFingerprint.value === fp) {
+    previewFingerprint.value = null
+    view.value = 'history'
+  }
+}
+
+/** 切换 chart / 关闭 sidebar 时把 view 复位，避免下次打开停留在旧视图 */
+watch(
+  () => [aiSidebar.open, aiSidebar.moduleId, aiSidebar.chart, aiSidebar.freeChat] as const,
+  () => {
+    view.value = 'chat'
+    previewFingerprint.value = null
+  },
+)
 </script>
 
 <template>
@@ -361,29 +429,99 @@ const shouldShowChips = computed(() => {
     :aria-label="t('ai.drawer.title')"
   >
     <!-- 顶部 -->
-    <header class="flex shrink-0 items-center justify-between px-4 py-2.5 md:py-3">
-      <div class="flex items-center gap-2 text-base font-semibold">
-        <Sparkles class="size-4 text-primary" aria-hidden="true" />
-        <span>{{ t('ai.drawer.title') }}</span>
+    <header class="flex shrink-0 items-center justify-between gap-2 px-4 py-2.5 md:py-3">
+      <div class="flex min-w-0 flex-1 items-center gap-2 text-base font-semibold">
+        <!-- view='history' / 'preview' 时左侧改为返回按钮 -->
+        <Button
+          v-if="view !== 'chat'"
+          variant="ghost"
+          size="icon"
+          class="size-9 md:size-7 shrink-0"
+          :aria-label="t('ai.history.backAria')"
+          :title="t('ai.history.backToChat')"
+          @click="backToChat"
+        >
+          <ArrowLeft class="size-5 md:size-4" aria-hidden="true" />
+        </Button>
+        <Sparkles v-else class="size-4 shrink-0 text-primary" aria-hidden="true" />
+
+        <span class="truncate">
+          {{ view === 'history' ? t('ai.history.title') : t('ai.drawer.title') }}
+        </span>
         <span
-          v-if="headerLabel"
-          class="rounded-md border border-border bg-muted px-2 py-0.5 text-xs md:text-[13px] font-normal text-muted-foreground"
+          v-if="view === 'chat' && headerLabel"
+          class="truncate rounded-md border border-border bg-muted px-2 py-0.5 text-xs md:text-[13px] font-normal text-muted-foreground"
         >{{ headerLabel }}</span>
       </div>
-      <Button
-        variant="ghost"
-        size="icon"
-        class="size-10 md:size-7"
-        :aria-label="t('ai.drawer.closeAria')"
-        @click="aiSidebar.hide()"
-      >
-        <X class="size-5 md:size-4" aria-hidden="true" />
-      </Button>
+      <div class="flex shrink-0 items-center gap-1">
+        <!-- History 入口：仅在聊天主区 + 已配置 Key 时显示 -->
+        <Button
+          v-if="view === 'chat' && showChat"
+          variant="ghost"
+          size="icon"
+          class="size-10 md:size-7"
+          :aria-label="t('ai.history.viewAria')"
+          :title="t('ai.history.title')"
+          @click="openHistory"
+        >
+          <History class="size-5 md:size-4" aria-hidden="true" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          class="size-10 md:size-7"
+          :aria-label="t('ai.drawer.closeAria')"
+          @click="aiSidebar.hide()"
+        >
+          <X class="size-5 md:size-4" aria-hidden="true" />
+        </Button>
+      </div>
     </header>
+
+    <!-- 历史会话列表视图 -->
+    <AiHistoryView
+      v-if="view === 'history'"
+      :current-fingerprint="ctx?.fingerprint ?? null"
+      @select="onHistorySelect"
+      @deleted="onHistoryDeleted"
+    />
+
+    <!-- 历史会话只读预览视图 -->
+    <template v-else-if="view === 'preview' && previewSession">
+      <!-- 顶部 banner：解释只读 + 引导回到对应模块 -->
+      <div
+        class="shrink-0 border-b border-border bg-muted/30 px-4 py-2.5 text-xs leading-relaxed text-muted-foreground"
+        role="status"
+      >
+        {{ t('ai.history.readonlyBanner', { module: previewModuleName }) }}
+      </div>
+      <div class="ai-scroll relative flex-1 overflow-y-auto">
+        <div class="flex flex-col gap-4 px-4 py-4 md:gap-3">
+          <template
+            v-for="(msg, idx) in previewMessages"
+            :key="`preview-${previewFingerprint}-${idx}`"
+          >
+            <AiMessageBubble
+              v-if="!msg.hidden"
+              :message="msg"
+              :message-index="idx"
+              :streaming="false"
+            />
+          </template>
+        </div>
+      </div>
+      <AiInputBox
+        :streaming="false"
+        :disabled="true"
+        :placeholder="t('ai.history.readonlyInputDisabled')"
+        @send="() => {}"
+        @stop="() => {}"
+      />
+    </template>
 
     <!-- Empty Key -->
     <div
-      v-if="showEmptyKey"
+      v-else-if="showEmptyKey"
       class="flex flex-1 flex-col items-center justify-center gap-4 px-6 py-10 text-center"
     >
       <div class="rounded-full bg-muted p-4">
