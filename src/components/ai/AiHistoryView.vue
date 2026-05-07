@@ -7,17 +7,27 @@
  *   - 每行展示：模块 chip + displayLabel + 消息数 + 相对时间 + 首条 user 预览 + 删除按钮
  *   - 高亮当前激活的 fingerprint（currentBadge）
  *   - 点击行 → emit('select', fingerprint) 由父组件切到只读预览
- *   - 单条删除：右侧 trash 按钮 + window.confirm 二次确认（删除当前会话仍允许，
+ *   - 单条删除：右侧 trash 按钮 + AlertDialog 二次确认（删除当前会话仍允许，
  *     只删 store 中的记录，不影响内存里的 chat.messages —— 父组件该如何处理由 emit('deleted', fp) 报出）
- *   - 清空全部：底部按钮 + window.confirm 二次确认
+ *   - 清空全部：底部按钮 + AlertDialog 二次确认
  *   - 空态：空标 + 提示语
  *
  * 不会修改 useAiChat / 当前命盘上下文 —— 完全只读 + 删除。
  */
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Trash2 } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { useAiHistoryStore } from '@/stores/aiHistory'
 import type { ChatSession } from '@/stores/aiHistory'
 import type { ModuleId } from '@/router'
@@ -97,19 +107,36 @@ function onSelect(session: ChatSession) {
   emit('select', session.fingerprint)
 }
 
+/**
+ * 二次确认走 shadcn AlertDialog：
+ *   - 单条删除用 deleteTarget 暂存当前候选 session（含 label 用于描述文案），
+ *     点确认后再真正调 store.removeSession 并 emit deleted
+ *   - 清空全部用独立 boolean 控制 dialog 可见性
+ *   - reka-ui AlertDialog 通过 Portal 渲染到 body，不会被 sidebar 容器裁剪
+ */
+const deleteTarget = ref<ChatSession | null>(null)
+const clearAllDialogOpen = ref(false)
+
 function onDelete(session: ChatSession, evt: Event) {
   evt.stopPropagation()
-  const msg = t('ai.history.deleteConfirm', { label: session.displayLabel })
-  if (!window.confirm(msg)) return
-  aiHistory.removeSession(session.fingerprint)
-  emit('deleted', session.fingerprint)
+  deleteTarget.value = session
+}
+
+function onConfirmDelete() {
+  const target = deleteTarget.value
+  if (!target) return
+  deleteTarget.value = null
+  aiHistory.removeSession(target.fingerprint)
+  emit('deleted', target.fingerprint)
 }
 
 function onClearAll() {
-  const total = sessions.value.length
-  if (total === 0) return
-  const msg = t('ai.history.clearConfirm', { count: total })
-  if (!window.confirm(msg)) return
+  if (sessions.value.length === 0) return
+  clearAllDialogOpen.value = true
+}
+
+function onConfirmClearAll() {
+  clearAllDialogOpen.value = false
   aiHistory.clearAll()
 }
 </script>
@@ -200,6 +227,45 @@ function onClearAll() {
         {{ t('ai.history.clearAll') }}
       </Button>
     </div>
+
+    <!-- 单条删除确认弹框 -->
+    <AlertDialog
+      :open="deleteTarget !== null"
+      @update:open="(v: boolean) => { if (!v) deleteTarget = null }"
+    >
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{{ t('ai.history.deleteTitle') }}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {{ deleteTarget ? t('ai.history.deleteConfirm', { label: deleteTarget.displayLabel }) : '' }}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>{{ t('ai.history.confirmCancel') }}</AlertDialogCancel>
+          <AlertDialogAction variant="destructive" @click="onConfirmDelete">
+            {{ t('ai.history.deleteConfirmBtn') }}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+
+    <!-- 清空全部确认弹框 -->
+    <AlertDialog v-model:open="clearAllDialogOpen">
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{{ t('ai.history.clearAllTitle') }}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {{ t('ai.history.clearConfirm', { count: sessions.length }) }}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>{{ t('ai.history.confirmCancel') }}</AlertDialogCancel>
+          <AlertDialogAction variant="destructive" @click="onConfirmClearAll">
+            {{ t('ai.history.clearAllConfirmBtn') }}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   </div>
 </template>
 

@@ -22,6 +22,16 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { ArrowDown, ArrowLeft, ArrowRight, History, Lock, MessageSquarePlus, Sparkles, X } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { useAiConfigStore } from '@/stores/aiConfig'
 import { useAiHistoryStore } from '@/stores/aiHistory'
 import type { ChatSession } from '@/stores/aiHistory'
@@ -305,13 +315,20 @@ function onRetry() {
  *   - 使用 store.clearMessages 清持久化层（保留 session 元信息），再清 chat.messages
  *   - 不依赖 watch 重新触发：fingerprint 没变 watch 不会再跑，需手动 send firstPrompt
  *   - 流式中禁用，避免与正在进行的请求竞态
- *   - window.confirm 与 history view 的删除 / 清空一致风格，零新依赖
+ *   - 二次确认走 shadcn AlertDialog（reka-ui Portal 渲染到 body，不被 sidebar 容器裁剪）
  */
-function onNewChat() {
+const newChatDialogOpen = ref(false)
+
+function onNewChatClick() {
   if (chat.streaming.value) return
+  if (!ctx.value?.fingerprint) return
+  newChatDialogOpen.value = true
+}
+
+function onNewChatConfirm() {
   const fp = ctx.value?.fingerprint
   if (!fp) return
-  if (!window.confirm(t('ai.drawer.newChatConfirm'))) return
+  newChatDialogOpen.value = false
 
   aiHistory.clearMessages(fp)
   chat.setMessages([])
@@ -492,7 +509,7 @@ watch(
           :disabled="chat.streaming.value"
           :aria-label="t('ai.drawer.newChatAria')"
           :title="t('ai.drawer.newChat')"
-          @click="onNewChat"
+          @click="onNewChatClick"
         >
           <MessageSquarePlus class="size-5 md:size-4" aria-hidden="true" />
         </Button>
@@ -689,6 +706,27 @@ watch(
       />
     </template>
   </aside>
+
+  <!--
+    新对话二次确认：shadcn AlertDialog 渲染到 body（reka-ui Portal），
+    不受 sidebar resizable 容器裁剪。`v-model:open` 双向绑控制可见性。
+  -->
+  <AlertDialog v-model:open="newChatDialogOpen">
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>{{ t('ai.drawer.newChatTitle') }}</AlertDialogTitle>
+        <AlertDialogDescription>
+          {{ t('ai.drawer.newChatConfirm') }}
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel>{{ t('ai.drawer.newChatCancel') }}</AlertDialogCancel>
+        <AlertDialogAction @click="onNewChatConfirm">
+          {{ t('ai.drawer.newChatConfirmBtn') }}
+        </AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
 </template>
 
 <style scoped>
