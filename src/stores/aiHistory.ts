@@ -113,6 +113,21 @@ export const useAiHistoryStore = defineStore('aiHistory', () => {
     touchLru(fingerprint)
   }
 
+  /**
+   * 清空指定 session 的 messages，保留 session 元信息（fingerprint / moduleId
+   * / displayLabel / createdAt）。等价于 setMessages(fp, [])，但语义更明确：
+   * 用于"开新对话"按钮 —— 用户希望从同一命盘重新与 AI 对话。
+   *
+   * 不存在的 fingerprint 静默忽略（避免 UI 层强一致校验）。
+   */
+  function clearMessages(fingerprint: string): void {
+    const s = state.value.sessions[fingerprint]
+    if (!s) return
+    s.messages = []
+    s.updatedAt = Date.now()
+    touchLru(fingerprint)
+  }
+
   function removeSession(fingerprint: string): void {
     delete state.value.sessions[fingerprint]
     state.value.lru = state.value.lru.filter((fp) => fp !== fingerprint)
@@ -160,6 +175,7 @@ export const useAiHistoryStore = defineStore('aiHistory', () => {
     loadOrCreate,
     appendMessage,
     setMessages,
+    clearMessages,
     removeSession,
     clearAll,
     listAll,

@@ -477,6 +477,9 @@ export default {
       scrollToBottom: 'Scroll to bottom',
       copy: 'Copy',
       copied: 'Copied',
+      newChat: 'New chat',
+      newChatAria: 'Clear current conversation and start over',
+      newChatConfirm: 'This will clear the conversation for the current chart and regenerate the initial interpretation. Continue?',
       emptyKey: {
         title: 'API key not configured',
         body: 'This module needs your DeepSeek API key to make requests.',

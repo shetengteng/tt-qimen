@@ -477,6 +477,9 @@ export default {
       scrollToBottom: '回到底部',
       copy: '複製',
       copied: '已複製',
+      newChat: '新對話',
+      newChatAria: '清空當前對話並重新開始',
+      newChatConfirm: '將清空與當前命盤的對話內容並重新生成首次解讀，是否繼續？',
       emptyKey: {
         title: '尚未配置 API Key',
         body: '本模組需要你提供 DeepSeek API Key 才能呼叫。',

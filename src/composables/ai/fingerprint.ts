@@ -10,8 +10,16 @@
 import type { ModuleId } from '@/router'
 
 /**
- * 各模块的 fingerprint 入参字段（设计文档 §11.2）。
- * 仅参与命盘"身份"判定的字段进入 fingerprint，UI 装饰字段（如 birthplace 字符串）排除。
+ * 各模块 fingerprint 入参字段的**参考定义**（设计文档 §11.2）。
+ *
+ * 历史教训：早期实现把这里当作"白名单"过滤 params —— 但各 contextBuilder
+ * 实际传入的 key 名常与此处不一致（例如 bazi 传 solar / yearGanzhi，
+ * 而本表写的是 year / month / day），导致除 gender 外所有字段被过滤掉，
+ * fingerprint 全部退化为"按性别一组" → 不同生辰复用同一个 AI 会话。
+ *
+ * 当前策略：本常量不再参与 hash，仅作**文档化注释 + 单测对照**。
+ * 真正进入 hash 的是 buildFingerprintSync 收到的 params 全部 own keys。
+ * 调用方负责保证："命盘身份不同 → params 内容不同"。
  */
 export const FINGERPRINT_FIELDS: Record<ModuleId, readonly string[]> = {
   bazi:     ['calendar', 'year', 'month', 'day', 'hour', 'minute', 'gender'],
@@ -25,6 +33,21 @@ export const FINGERPRINT_FIELDS: Record<ModuleId, readonly string[]> = {
 }
 
 /**
+ * 把 params 序列化成 hash 输入字符串。
+ * - 按 key 字典序排序，保证字段顺序无关
+ * - undefined / null 用空串占位，与之前行为兼容
+ */
+function serializeParams(params: Record<string, unknown>): string {
+  const keys = Object.keys(params).sort()
+  const parts: string[] = []
+  for (const k of keys) {
+    const v = params[k]
+    parts.push(`${k}=${v == null ? '' : String(v)}`)
+  }
+  return parts.join('|')
+}
+
+/**
  * 构造命盘指纹（异步，因 Web Crypto 是 async）。
  *
  * - 字段顺序无关：先按 key 排序再 stringify
@@ -35,12 +58,7 @@ export async function buildFingerprint(
   moduleId: ModuleId,
   params: Record<string, unknown>,
 ): Promise<string> {
-  const fields = FINGERPRINT_FIELDS[moduleId] ?? []
-  const sorted: Record<string, unknown> = {}
-  for (const k of [...fields].sort()) {
-    if (k in params) sorted[k] = params[k]
-  }
-  const text = `${moduleId}|${JSON.stringify(sorted)}`
+  const text = `${moduleId}|${serializeParams(params)}`
   const buf = await crypto.subtle.digest('SHA-1', new TextEncoder().encode(text))
   const hex = Array.from(new Uint8Array(buf))
     .map(b => b.toString(16).padStart(2, '0'))
@@ -58,12 +76,7 @@ export function buildFingerprintSync(
   moduleId: ModuleId,
   params: Record<string, unknown>,
 ): string {
-  const fields = FINGERPRINT_FIELDS[moduleId] ?? []
-  const parts: string[] = [moduleId]
-  for (const k of [...fields].sort()) {
-    parts.push(`${k}=${params[k] ?? ''}`)
-  }
-  const text = parts.join('|')
+  const text = `${moduleId}|${serializeParams(params)}`
   /* djb2 hash */
   let hash = 5381
   for (let i = 0; i < text.length; i++) {

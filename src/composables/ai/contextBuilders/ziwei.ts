@@ -101,9 +101,15 @@ export const ziweiContextBuilder: ContextBuilder<ZiweiChart> = {
   },
 }
 
+/**
+ * ZiweiMetaInfo 没有原始 year/month/day/hour 字段，但 meta.solar 字符串
+ * （如 "1990-05-20 午时"）已唯一标识日期 + 时辰，再叠加 gender / 五行局 /
+ * 命主 / 身主，足以保证"换生辰=换 fingerprint=换 AI 会话"语义。
+ *
+ * 字段全部参与 hash（fingerprint.ts 已无白名单过滤）。
+ */
 function parseFingerprintParams(chart: ZiweiChart): Record<string, unknown> {
   return {
-    calendar: 'solar',
     solar: chart.meta.solar,
     gender: chart.meta.gender === '男' ? 'male' : 'female',
     fiveElementsClass: chart.meta.fiveElementsClass,

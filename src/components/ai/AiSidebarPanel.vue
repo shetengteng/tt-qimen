@@ -20,7 +20,7 @@ import {
 } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { ArrowDown, ArrowLeft, ArrowRight, History, Lock, Sparkles, X } from 'lucide-vue-next'
+import { ArrowDown, ArrowLeft, ArrowRight, History, Lock, MessageSquarePlus, Sparkles, X } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { useAiConfigStore } from '@/stores/aiConfig'
 import { useAiHistoryStore } from '@/stores/aiHistory'
@@ -297,6 +297,30 @@ function onRetry() {
   void chat.send(retryText)
 }
 
+/**
+ * 新对话：清空当前命盘的对话内容并重新生成首次解读。
+ *
+ * 设计要点：
+ *   - 仅作用于"具体命盘"上下文（freeChat 场景下"新对话"语义模糊，不显示按钮）
+ *   - 使用 store.clearMessages 清持久化层（保留 session 元信息），再清 chat.messages
+ *   - 不依赖 watch 重新触发：fingerprint 没变 watch 不会再跑，需手动 send firstPrompt
+ *   - 流式中禁用，避免与正在进行的请求竞态
+ *   - window.confirm 与 history view 的删除 / 清空一致风格，零新依赖
+ */
+function onNewChat() {
+  if (chat.streaming.value) return
+  const fp = ctx.value?.fingerprint
+  if (!fp) return
+  if (!window.confirm(t('ai.drawer.newChatConfirm'))) return
+
+  aiHistory.clearMessages(fp)
+  chat.setMessages([])
+
+  if (!aiConfig.hasKey) return
+  const firstPrompt = t('ai.drawer.firstResponse')
+  void chat.send(firstPrompt, { silent: true })
+}
+
 function goSettings() {
   aiSidebar.hide()
   router.push({ name: 'settings' })
@@ -454,6 +478,24 @@ watch(
         >{{ headerLabel }}</span>
       </div>
       <div class="flex shrink-0 items-center gap-1">
+        <!--
+          新对话入口：仅在「具体命盘」聊天主区有 messages 时显示。
+          - freeChat 场景不显示（自由对话每次关闭都不持久化，没有"清空"语义）
+          - messages 为空（刚开新会话或从未提问）也不显示，避免无意义按钮
+          - 流式中 disabled 避免竞态
+        -->
+        <Button
+          v-if="view === 'chat' && showChat && !aiSidebar.freeChat && chat.messages.value.length > 0"
+          variant="ghost"
+          size="icon"
+          class="size-10 md:size-7"
+          :disabled="chat.streaming.value"
+          :aria-label="t('ai.drawer.newChatAria')"
+          :title="t('ai.drawer.newChat')"
+          @click="onNewChat"
+        >
+          <MessageSquarePlus class="size-5 md:size-4" aria-hidden="true" />
+        </Button>
         <!-- History 入口：仅在聊天主区 + 已配置 Key 时显示 -->
         <Button
           v-if="view === 'chat' && showChat"

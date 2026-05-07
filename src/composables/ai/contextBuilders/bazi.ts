@@ -76,17 +76,19 @@ export const baziContextBuilder: ContextBuilder<BaziChart> = {
 
 /**
  * 从 chart 推导 fingerprint 入参。
- * BaziChart 内没有直接保存 BirthInput；但 meta.solar 字符串带了完整日期 + 时辰，
- * 加上 chart.pillars.day / hour 即可派生指纹（精度足够"换生辰=换会话"语义）。
+ *
+ * BaziChart 内没有直接保存 BirthInput，但 meta.solar 字符串包含日期 + 时辰
+ * （如 "1990-05-20 午时"），加上 4 柱干支足以唯一确定一份命盘。
+ *
+ * 字段命名说明：所有 key 都参与 hash（fingerprint.ts 已无白名单过滤）。
+ * 字段任一变化（换日期 / 换时辰 / 换性别）→ fingerprint 必变 → AI 切到新会话。
  */
 function parseFingerprintParams(
   chart: BaziChart,
   userContext?: { gender?: 'male' | 'female' },
 ): Record<string, unknown> {
-  const solar = chart.meta.solar
   return {
-    solar,
-    genderTitle: chart.meta.genderTitle,
+    solar: chart.meta.solar,
     gender: userContext?.gender ?? (chart.meta.genderTitle === '坤造' ? 'female' : 'male'),
     yearGanzhi: chart.pillars.year.ganzhi,
     monthGanzhi: chart.pillars.month.ganzhi,

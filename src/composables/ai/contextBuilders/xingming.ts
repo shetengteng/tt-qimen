@@ -37,13 +37,15 @@ export const xingmingContextBuilder: ContextBuilder<XingmingResult> = {
   build({ chart, locale, userContext }) {
     const r = chart
     const displayLabel = `${r.fullName} · ${r.overallBadge} · ${r.overallScore} 分`
+    /**
+     * xingming（五格剖象）的命盘身份完全由"姓名 + 性别"决定：
+     * 同名同性别两次输入应得到相同分析与同一会话。
+     * 不再传 year/month/day=0 占位字段（无意义且历史遗留）。
+     * 字段全部参与 hash（fingerprint.ts 已无白名单过滤）。
+     */
     const fingerprint = buildFingerprintSync('xingming', {
       name: r.fullName,
       gender: userContext?.gender ?? 'male',
-      calendar: 'solar',
-      year: 0,
-      month: 0,
-      day: 0,
     })
 
     const narrative = locale === 'en'

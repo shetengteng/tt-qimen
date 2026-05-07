@@ -9,14 +9,14 @@ import type { ModuleId } from '@/router'
  * - 字段顺序无关（异步 + 同步）
  * - 模块互不干扰（同一份入参换 moduleId 必生不同 fp）
  * - 关键字段任一变化必生不同 fp
- * - 仅 FINGERPRINT_FIELDS 之外的字段被排除（noise 字段不影响 fp）
+ * - 任何字段（包括 noise）变化都会改变 fp —— 调用方负责筛选哪些字段进入 hash
  * - 输出格式：`{moduleId}:{16-hex}` (async) / `{moduleId}:{8-hex}` (sync)
  *
  * 8 个模块 × 5 个样本：
  * - 1 baseline
  * - 2 改一个核心字段（应换 fp）
  * - 3 字段顺序打乱（应同 fp）
- * - 4 加 noise 字段（应同 fp）
+ * - 4 加额外字段（fp 应不同 —— 历史 noise-test 已废弃）
  * - 5 换日期（应换 fp）
  */
 
@@ -162,10 +162,10 @@ describe('buildFingerprint (async, SHA-1 truncated)', () => {
         expect(fpA).toBe(fpC)
       })
 
-      it('ignores non-fingerprint noise fields', async () => {
+      it('changes when extra fields are added (caller decides what to send)', async () => {
         const fpA = await buildFingerprint(ms.moduleId, s0)
         const fpD = await buildFingerprint(ms.moduleId, s3)
-        expect(fpA).toBe(fpD)
+        expect(fpA).not.toBe(fpD)
       })
 
       it('changes when the date / id differs', async () => {
@@ -206,9 +206,9 @@ describe('buildFingerprintSync (djb2 hash)', () => {
           .toBe(buildFingerprintSync(ms.moduleId, s2))
       })
 
-      it('ignores non-fingerprint noise fields', () => {
+      it('changes when extra fields are added (caller decides what to send)', () => {
         expect(buildFingerprintSync(ms.moduleId, s0))
-          .toBe(buildFingerprintSync(ms.moduleId, s3))
+          .not.toBe(buildFingerprintSync(ms.moduleId, s3))
       })
 
       it('changes when the date / id differs', () => {

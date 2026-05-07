@@ -494,6 +494,9 @@ export default {
       scrollToBottom: '回到底部',
       copy: '复制',
       copied: '已复制',
+      newChat: '新对话',
+      newChatAria: '清空当前对话并重新开始',
+      newChatConfirm: '将清空与当前命盘的对话内容并重新生成首次解读，是否继续？',
       emptyKey: {
         title: '尚未配置 API Key',
         body: '本模块需要你提供 DeepSeek API Key 才能调用。',

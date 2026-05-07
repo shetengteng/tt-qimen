@@ -37,8 +37,12 @@ export const chengguContextBuilder: ContextBuilder<ChengguResult> = {
   build({ chart, locale, userContext }) {
     const r = chart
     const displayLabel = `${r.displayWeight} · ${LEVEL_LABEL_CN[r.poem.level]}`
+    /**
+     * chenggu 的 result 不包含原始 birth 字段，使用 breakdown 内的中文 label
+     * （如"庚午年/四月生/二十日/午时生"）+ 性别即可唯一确定一份命盘。
+     * 字段全部参与 hash（fingerprint.ts 已无白名单过滤）。
+     */
     const fingerprint = buildFingerprintSync('chenggu', {
-      calendar: 'solar',
       yearLabel: r.breakdown.year.label,
       monthLabel: r.breakdown.month.label,
       dayLabel: r.breakdown.day.label,
