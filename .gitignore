@@ -33,3 +33,14 @@ __pycache__/
 
 # infographic 视频/分镜生成工具（个人本地工具，不入库；2026-04-28 从历史中剔除）
 infographic/
+
+# Tauri 桌面端构建产物
+src-tauri/target/
+src-tauri/gen/schemas/
+# Tauri 图标由 scripts/tauri/gen-icons.ts 派生自 public/favicon.svg，不入库
+src-tauri/icons/*.png
+src-tauri/icons/*.icns
+src-tauri/icons/*.ico
+
+# 桌面端构建期机密（签名/公证），不入库
+.env.desktop.local

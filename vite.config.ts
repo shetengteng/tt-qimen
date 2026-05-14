@@ -17,8 +17,21 @@ const COMPRESS_THRESHOLD = 1024
  */
 const isGithubPages = process.env.GITHUB_PAGES === 'true'
 
+/**
+ * Tauri 桌面端构建模式（见 design/2026-05-14-01-Tauri桌面端实现方案.md §5.1）。
+ *
+ * `@tauri-apps/cli` 启动 `tauri dev` / `tauri build` 时会注入
+ * `TAURI_ENV_PLATFORM`（macos / windows / linux）环境变量，浏览器构建无此变量。
+ *
+ * Tauri 模式下：
+ *   - base 必须用相对路径 './'，因为产物加载自 `tauri://localhost` scheme
+ *   - dev server 监听 `host: '0.0.0.0'`，否则 webview 无法访问
+ *   - HMR 走独立 ws 端口（5181）避免与主 server 端口冲突
+ */
+const isTauri = process.env.TAURI_ENV_PLATFORM !== undefined
+
 export default defineConfig({
-  base: isGithubPages ? '/tt-qimen/' : '/',
+  base: isTauri ? './' : (isGithubPages ? '/tt-qimen/' : '/'),
   plugins: [
     vue(),
     tailwindcss(),
@@ -63,6 +76,8 @@ export default defineConfig({
   server: {
     port: 5180,
     strictPort: true,
+    host: isTauri ? '0.0.0.0' : 'localhost',
+    hmr: isTauri ? { protocol: 'ws', host: 'localhost', port: 5181 } : undefined,
   },
   test: {
     environment: 'node',

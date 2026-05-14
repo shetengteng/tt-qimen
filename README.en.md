@@ -89,6 +89,54 @@ npm run build
 npm run preview
 ```
 
+---
+
+## 🖥 Desktop (Tauri 2)
+
+The same SPA can be packaged as a native macOS / Windows app. All computations and AI calls still happen 100% on the user's machine — actually **more private than the web version** (no GA, no remote CDN).
+
+### Prerequisites
+
+- [Rust toolchain (rustup)](https://www.rust-lang.org/tools/install)
+- macOS: `xcode-select --install`
+- Windows: [Visual Studio Build Tools](https://aka.ms/vs/17/release/vs_BuildTools.exe) + WebView2 Runtime (bundled on Win10 21H1+ / Win11)
+- See <https://v2.tauri.app/start/prerequisites/>
+
+### Commands
+
+```bash
+# First time: generate app icons from public/favicon.svg
+npm run tauri:icons
+
+# Desktop dev (Vite + Tauri Webview with HMR)
+npm run tauri:dev
+
+# Build for current platform (output: src-tauri/target/release/bundle/)
+npm run tauri:build
+```
+
+### Installers
+
+Official releases live on [GitHub Releases](https://github.com/shetengteng/tt-qimen/releases):
+
+| Platform | File | Notes |
+|---|---|---|
+| macOS (Universal) | `tt-qimen_*_universal.dmg` | Apple Silicon + Intel; macOS 11.0+ |
+| Windows (x64) | `tt-qimen_*_x64-setup.exe` | NSIS installer; Win10 21H1+ / Win11 |
+
+> **First release is unsigned**:
+> - macOS: right-click the `.app` → Open (don't double-click) on first run.
+> - Windows: click "More info → Run anyway" when SmartScreen pops up.
+> - Code signing (Apple Developer / Windows EV) will land in a later release.
+
+### Auto-update
+
+The desktop app checks GitHub Releases `latest.json` on startup. When a new version is available, a native dialog asks the user to apply it. Patches are verified via Tauri Updater's signature check.
+
+Full architecture: [`design/2026-05-14-01-Tauri桌面端实现方案.md`](./design/2026-05-14-01-Tauri桌面端实现方案.md).
+
+---
+
 ### Quick links (after `npm run dev`)
 
 | Theme × Language | URL |

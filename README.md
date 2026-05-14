@@ -89,6 +89,54 @@ npm run build
 npm run preview
 ```
 
+---
+
+## 🖥 桌面端（Tauri 2）
+
+同一份 SPA 代码可同时打包成 macOS / Windows 原生应用，所有计算与对话依旧 100% 在本机进行，**比 Web 端更纯净**（无 GA、无远端 CDN）。
+
+### 前置依赖
+
+- [Rust 工具链（rustup）](https://www.rust-lang.org/tools/install)
+- macOS：`xcode-select --install`
+- Windows：[Visual Studio Build Tools](https://aka.ms/vs/17/release/vs_BuildTools.exe) + WebView2 Runtime（Win10 21H1+ / Win11 已内置）
+- 详见 <https://v2.tauri.app/start/prerequisites/>
+
+### 命令
+
+```bash
+# 首次：生成应用图标（从 public/favicon.svg 派生）
+npm run tauri:icons
+
+# 桌面端开发（Vite + Tauri Webview 同时启动，HMR 生效）
+npm run tauri:dev
+
+# 当前平台打包（产物：src-tauri/target/release/bundle/）
+npm run tauri:build
+```
+
+### 安装包下载
+
+正式版本在 [GitHub Releases](https://github.com/shetengteng/tt-qimen/releases) 发布：
+
+| 平台 | 文件 | 备注 |
+|---|---|---|
+| macOS (Universal) | `tt-qimen_*_universal.dmg` | 支持 Apple Silicon + Intel；macOS 11.0+ |
+| Windows (x64) | `tt-qimen_*_x64-setup.exe` | NSIS 安装器；Win10 21H1+ / Win11 |
+
+> **首版未代码签名**：
+> - macOS：首次打开时**右键点击 .app → 打开**（不要双击），后续可直接双击。
+> - Windows：SmartScreen 弹窗时点击 "More info → Run anyway"。
+> - 后续版本会接入 Apple Developer / Windows EV 证书消除该警告。
+
+### 自动更新
+
+桌面端启动后会自动检查 GitHub Releases 的 `latest.json`，发现新版本时弹原生对话框提示。用户同意后自动下载并应用补丁（基于 Tauri Updater 签名校验）。
+
+详细架构见 [`design/2026-05-14-01-Tauri桌面端实现方案.md`](./design/2026-05-14-01-Tauri桌面端实现方案.md)。
+
+---
+
 ### 一键试链接（本地启动后）
 
 | 主题 × 语言 | URL |
