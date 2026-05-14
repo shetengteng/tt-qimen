@@ -9,15 +9,17 @@
  * 用法：
  *   npm run tauri:icons
  *
- * 生成内容（由 @tauri-apps/cli 维护，可能随版本变化）：
+ * 我们只需要 5 个图标（src-tauri/tauri.conf.json#bundle.icon 引用）：
  *   - 32x32.png / 128x128.png / 128x128@2x.png（通用）
  *   - icon.icns（macOS）
  *   - icon.ico（Windows）
- *   - Square*.png / StoreLogo.png（Windows MSIX，本项目用 NSIS 不引用，但不删）
+ *
+ * 但 @tauri-apps/cli icon 会无差别生成 ~30 个 Windows MSIX / iOS / Android 图标，
+ * 本项目不打 MSIX 也不打移动端，因此生成后立即清理冗余文件。
  */
 
 import { spawn } from 'node:child_process'
-import { existsSync } from 'node:fs'
+import { existsSync, readdirSync, rmSync, statSync, unlinkSync } from 'node:fs'
 import * as path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -35,6 +37,9 @@ const REQUIRED_OUTPUTS = [
   'icon.icns',
   'icon.ico',
 ] as const
+
+const KEEP_FILES = new Set<string>([...REQUIRED_OUTPUTS, 'README.md'])
+const KEEP_DIRS = new Set<string>(['', '.']) // 不删根目录本身
 
 function fail(msg: string): never {
   console.error(`✗ ${msg}`)
@@ -70,6 +75,31 @@ async function runTauriIcon(): Promise<void> {
   })
 }
 
+/**
+ * 清理 @tauri-apps/cli icon 生成的冗余文件：
+ *   - Windows MSIX 的 Square*.png / StoreLogo.png（本项目用 NSIS，不引用）
+ *   - 64x64.png（tauri.conf.json#bundle.icon 未引用）
+ *   - icon.png（仅 Linux deb 引用，本项目不打 Linux）
+ *   - ios/ android/ 整个子目录（移动端，本项目不打）
+ */
+function pruneExtras(): number {
+  let removed = 0
+  for (const entry of readdirSync(OUT_DIR)) {
+    const full = path.join(OUT_DIR, entry)
+    const isDir = statSync(full).isDirectory()
+    if (isDir) {
+      if (!KEEP_DIRS.has(entry)) {
+        rmSync(full, { recursive: true, force: true })
+        removed += 1
+      }
+    } else if (!KEEP_FILES.has(entry)) {
+      unlinkSync(full)
+      removed += 1
+    }
+  }
+  return removed
+}
+
 async function main(): Promise<void> {
   if (!existsSync(SRC_ICON)) {
     fail(`source icon not found: ${SRC_ICON}`)
@@ -87,7 +117,9 @@ async function main(): Promise<void> {
     fail(`expected outputs missing: ${missing.join(', ')}`)
   }
 
+  const pruned = pruneExtras()
   ok(`generated ${REQUIRED_OUTPUTS.length} required icons in ${path.relative(REPO_ROOT, OUT_DIR)}/`)
+  ok(`pruned ${pruned} unused files/dirs (Windows MSIX, iOS, Android, Linux)`)
 }
 
 main().catch((err) => fail((err as Error).message))

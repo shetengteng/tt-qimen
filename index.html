@@ -15,7 +15,24 @@
       仅会向其服务器发起一次 fetch 用于 PV/UV 累加；
       不写入 cookie / localStorage，不收集行为日志。
       展示：footer 的 PV/UV 标签（参见 src/components/layout/AppFooter.vue）。
+
+      桌面端守卫（2026-05-14）：
+      协议相对 URL "//busuanzi.ibruce.info/..." 在 Tauri 桌面端会被解析成
+      "tauri://busuanzi.ibruce.info/..."（继承当前 scheme），Tauri 找不到资源
+      后回退到 index.html，浏览器把 HTML 当 JS 解析就抛 SyntaxError。
+      所以这里改为：仅在 http: / https: 协议下动态注入 busuanzi，
+      tauri: / file: 协议下整段 noop。
     -->
-    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <script>
+      (function () {
+        var p = location.protocol
+        if (p === 'http:' || p === 'https:') {
+          var s = document.createElement('script')
+          s.async = true
+          s.src = '//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js'
+          document.body.appendChild(s)
+        }
+      })()
+    </script>
   </body>
 </html>

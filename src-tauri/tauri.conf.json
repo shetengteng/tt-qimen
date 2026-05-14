@@ -26,7 +26,7 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self' tauri://localhost; connect-src 'self' https://api.openai.com https://api.anthropic.com https://generativelanguage.googleapis.com https://api.x.ai https://api.deepseek.com https://dashscope.aliyuncs.com https://api.moonshot.cn https://open.bigmodel.cn; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'",
+      "csp": null,
       "assetProtocol": { "enable": false }
     }
   },
