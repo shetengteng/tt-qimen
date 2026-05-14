@@ -26,10 +26,38 @@ export function useSkeletonReveal(opts: UseSkeletonRevealOptions = {}) {
   const skeletonVisible = ref(false)
   const revealed = ref(false)
 
+  /**
+   * 找到 el 最近的可滚动祖先：内容高度超过自身可视高度且 overflow-y 允许滚动的元素。
+   * 桌面端 AI 侧栏开启后主区滚动容器是 `.app-main-scroll`（不是 window），
+   * 所以不能写死 window.scrollTo —— 需要先识别真正的滚动容器再决定调用谁。
+   */
+  function findScrollableAncestor(el: HTMLElement): HTMLElement | null {
+    let parent: HTMLElement | null = el.parentElement
+    while (parent) {
+      if (parent === document.body || parent === document.documentElement) break
+      const style = window.getComputedStyle(parent)
+      const overflowY = style.overflowY
+      const isScrollable = overflowY === 'auto' || overflowY === 'scroll' || overflowY === 'overlay'
+      if (isScrollable && parent.scrollHeight > parent.clientHeight) {
+        return parent
+      }
+      parent = parent.parentElement
+    }
+    return null
+  }
+
   function scrollTo(el: HTMLElement | null, offset = 0) {
     if (!el || typeof window === 'undefined') return
-    const y = el.getBoundingClientRect().top + window.pageYOffset - offset
-    window.scrollTo({ top: y, behavior: 'smooth' })
+    const container = findScrollableAncestor(el)
+    if (container) {
+      const elTop = el.getBoundingClientRect().top
+      const containerTop = container.getBoundingClientRect().top
+      const y = container.scrollTop + (elTop - containerTop) - offset
+      container.scrollTo({ top: y, behavior: 'smooth' })
+    } else {
+      const y = el.getBoundingClientRect().top + window.pageYOffset - offset
+      window.scrollTo({ top: y, behavior: 'smooth' })
+    }
   }
 
   function start(getBanner?: () => HTMLElement | null) {

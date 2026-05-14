@@ -85,6 +85,12 @@ export default {
     back: 'Back to cast',
   },
 
+  restored: {
+    banner: 'Last cast {time} — what follows is the reading from that moment',
+    justNow: 'just now',
+    freshen: 'Cast again',
+  },
+
   computeError: {
     title: 'Reading failed',
     hint: 'Invalid input — please check month, day, and hour and try again.',

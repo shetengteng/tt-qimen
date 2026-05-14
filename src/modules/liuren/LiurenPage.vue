@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
+import { computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
@@ -39,6 +39,24 @@ const shareCardEl = ref<HTMLElement | null>(null)
 
 const result = shallowRef<LiurenResult | null>(null)
 
+/**
+ * 标记本次结果是否来自 onMounted 静默恢复（而不是用户主动起卦）。
+ *
+ * 用途（仅当 mode=immediate 且 result 非空）：
+ *   - 让 TimeBar 显示快照里的"起卦时刻"农历/时辰，而不是实时刷新的当前时间，
+ *     避免"当前农历"+"昨日卦象"的视觉错位
+ *   - 在结果区上方显示"上次于 X 时间起卦"提示带，让用户明确这是历史卦象
+ *
+ * 翻转时机：
+ *   - true：onMounted shouldRestore 分支（刷新进入 / 跨日重访）
+ *   - false：用户点"起卦"或"重新起卦"（onPaipan(false) / onRepaipan）
+ *   - false：deeplink hydrate 路径（onPaipan(false) 通过 deeplink 触发）
+ *
+ * KeepAlive 切走再切回：onMounted 不重跑，restoredFromCache 维持原值；
+ * 切走前是 false（用户主动起的卦）则保持 false，不会突然冒出提示带。
+ */
+const restoredFromCache = ref(false)
+
 const aiSidebar = useAiSidebarStore()
 function onAskAi() {
   if (!result.value) return
@@ -58,23 +76,39 @@ const skeleton = useSkeletonReveal({
 })
 
 /**
- * "now" 仅用于 immediate 模式的速览展示；首屏挂载后每分钟自动刷新一次，
+ * "now" 仅用于 immediate 模式的速览展示；激活后每分钟自动刷新一次，
  * 避免 TimeBar 上方的农历/时辰长期停留在挂载时刻。
  * 起卦动作发生在 onPaipan 内、单独再 seedFromDate(new Date()) 一次保证准确。
+ *
+ * KeepAlive：timer 启停跟随 onActivated/onDeactivated，避免用户切到其他模块后
+ * 后台 setInterval 仍在 tick 浪费资源。onBeforeUnmount 兜底处理最终销毁。
  */
 const now = ref(new Date())
 let timer: number | null = null
 
-onMounted(() => {
+function startNowTimer() {
+  if (timer != null) return
   timer = window.setInterval(() => {
     now.value = new Date()
   }, 60_000)
+}
 
+function stopNowTimer() {
+  if (timer != null) {
+    clearInterval(timer)
+    timer = null
+  }
+}
+
+onMounted(() => {
   /**
    * 扫码 deeplink hydrate：URL 带 mode/aspect/month/day/hourIndex 时优先消费，
    * 写入 liurenStore 后立即 paipan（覆盖默认的 shouldRestore 静默恢复）。
    *
    * question 不放入 query —— 太长，且属于个人心念，不在分享内容里复刻。
+   *
+   * KeepAlive 后 onMounted 只在首次挂载时跑一次，重复带 deeplink 进入同模块
+   * 不会重新 hydrate（接受这个边缘 case 退化，保留首次扫码进入的核心场景）。
    */
   const q = normalizeQuery(route.query as Record<string, string | string[] | undefined>)
   const hasInputs = 'mode' in q || 'month' in q
@@ -96,19 +130,27 @@ onMounted(() => {
   }
 
   /**
-   * 缓存恢复：仅 custom 模式 + lastComputed 与当前 store 一致时静默重算并跳过骨架。
-   * immediate 模式刷新就丢弃 result（避免显示昨日的卦）；用户需点击"起卦"获得当前时间的占卜。
+   * 缓存恢复：immediate / custom 两种模式都走 lastComputed 静默恢复（用户已选"永久缓存"策略）。
+   * 区别：immediate 模式提示带 "上次于 X 时间起卦"；custom 模式不提示（用户自己选的月日时一目了然）。
    */
   if (liurenStore.shouldRestore) {
+    restoredFromCache.value = true
     onPaipan(true)
   }
 })
 
+onActivated(() => {
+  // 立即同步一次，避免 KeepAlive 缓存里 now 还停留在切走时刻
+  now.value = new Date()
+  startNowTimer()
+})
+
+onDeactivated(() => {
+  stopNowTimer()
+})
+
 onBeforeUnmount(() => {
-  if (timer != null) {
-    clearInterval(timer)
-    timer = null
-  }
+  stopNowTimer()
 })
 
 const immediateSeed = computed(() => seedFromDate(now.value))
@@ -125,20 +167,59 @@ const customSeed = computed(() => {
   }
 })
 
-const displaySeed = computed(() =>
-  liurenStore.mode === 'immediate' ? immediateSeed.value : customSeed.value,
-)
+/**
+ * TimeBar 显示用的 seed。immediate 模式有两种状态：
+ *   - 用户主动起卦 / 未起卦：实时跟随 now，每分钟刷新
+ *   - 静默恢复（restoredFromCache=true）：定格在快照的"起卦时刻"农历/时辰，与卦象数据一致
+ * 这样避免"当前农历"显示当下、卦象却是昨日的视觉错位。
+ */
+const displaySeed = computed(() => {
+  if (liurenStore.mode === 'custom') return customSeed.value
+  if (restoredFromCache.value && liurenStore.lastComputed) {
+    const snap = liurenStore.lastComputed
+    return {
+      month: snap.month,
+      day: snap.day,
+      hour: snap.hourIndex,
+      lunarDateLabel: snap.lunarDateLabel,
+      hourBranchLabel: snap.hourBranchLabel,
+    }
+  }
+  return immediateSeed.value
+})
 
 /**
- * 起卦核心。silent=true 时跳过骨架动画，用于 onMounted 静默恢复 / locale 切换重算。
- * 成功时记录 custom 模式快照（immediate 模式由 store 自动忽略），
- * 失败时清空缓存避免下次刷新恢复一个脏值。
+ * 起卦核心。
+ *
+ * 行为分支（按调用上下文）：
+ *   - 普通起卦（silent=false）：用 immediate 模式 seedFromDate(new Date()) 或 custom 模式
+ *     customSeed 计算，记录新的 lastComputed 快照（含 drawnAt = Date.now()）。
+ *   - 静默恢复（silent=true，从 onMounted shouldRestore 触发）：优先复用 lastComputed
+ *     里存的 seed —— 关键是 immediate 模式刷新后**不能**重新调 seedFromDate(new Date())，
+ *     否则用户看到的是"今天的卦"但 drawnAt 仍是上次起卦时刻，自相矛盾。
+ *     不重写 lastComputed.drawnAt，保持"上次起卦于 X"提示一致。
+ *   - locale 切换静默重算（silent=true，从 watch locale 触发）：result 已存在时仅
+ *     重算解读文案，seed 从 result 的现状读取（间接走 lastComputed 兜底）。
+ *
+ * 失败时清空缓存避免下次进入恢复一个脏值。
  */
 function onPaipan(silent = false) {
   try {
-    const seed = liurenStore.mode === 'immediate'
-      ? seedFromDate(new Date())
-      : customSeed.value
+    let seed: { month: number; day: number; hour: number; lunarDateLabel: string; hourBranchLabel: string }
+    const snap = liurenStore.lastComputed
+    if (silent && snap) {
+      seed = {
+        month: snap.month,
+        day: snap.day,
+        hour: snap.hourIndex,
+        lunarDateLabel: snap.lunarDateLabel,
+        hourBranchLabel: snap.hourBranchLabel,
+      }
+    } else {
+      seed = liurenStore.mode === 'immediate'
+        ? seedFromDate(new Date())
+        : customSeed.value
+    }
     result.value = calculateLiuren(
       {
         month: seed.month,
@@ -151,11 +232,17 @@ function onPaipan(silent = false) {
       },
       localeStore.id as LiurenLocale,
     )
-    liurenStore.recordComputed()
+    if (!silent) {
+      // 仅普通起卦写新快照；silent 路径保留原 drawnAt
+      liurenStore.recordComputed(seed)
+      // 用户主动起卦的不是恢复态
+      restoredFromCache.value = false
+    }
   } catch (err) {
     console.error('[liuren] calculate failed:', err)
     result.value = null
     liurenStore.clearComputed()
+    restoredFromCache.value = false
   }
   if (silent) {
     skeleton.revealImmediately()
@@ -174,6 +261,7 @@ watch(
 function onRepaipan() {
   result.value = null
   previewedPalace.value = null
+  restoredFromCache.value = false
   liurenStore.clearComputed()
   skeleton.reset(() => inputCardEl.value)
 }
@@ -205,6 +293,33 @@ const displayedResult = computed<LiurenResult | null>(() => {
 const isPreviewing = computed(
   () => previewedPalace.value != null && result.value != null && previewedPalace.value !== result.value.palace.name,
 )
+
+/**
+ * "上次于 X 时间起卦"提示用的相对时间文案。
+ *
+ * 仅当 immediate 模式 + restoredFromCache + lastComputed.drawnAt 有效时返回非 null。
+ * custom 模式不显示（用户自定义的月日时已经从 TimeBar 直接看到）。
+ *
+ * 用 Intl.RelativeTimeFormat 走原生 i18n（zh-CN: "5 分钟前" / en: "5 minutes ago"），
+ * 不引第三方依赖；< 1 分钟 fallback 到 i18n key `liuren.restored.justNow`，避免
+ * Intl 在 numeric:'auto' 下输出"this minute / 0 分钟前"等奇怪格式。
+ *
+ * 不响应 now —— 用户切走再切回时 KeepAlive 不重渲染，文案"凝固"在恢复瞬间是可接受的；
+ * 真要每分钟更新也会跟 setInterval 起卦计时器对齐，但这里属于过度优化。
+ */
+const restoredAtLabel = computed<string | null>(() => {
+  if (!restoredFromCache.value) return null
+  if (liurenStore.mode !== 'immediate') return null
+  const snap = liurenStore.lastComputed
+  if (!snap || !snap.drawnAt) return null
+  const diffMs = Date.now() - snap.drawnAt
+  if (diffMs < 60_000) return t('liuren.restored.justNow')
+  const rtf = new Intl.RelativeTimeFormat(localeStore.id, { numeric: 'auto' })
+  if (diffMs < 3_600_000) return rtf.format(-Math.floor(diffMs / 60_000), 'minute')
+  if (diffMs < 86_400_000) return rtf.format(-Math.floor(diffMs / 3_600_000), 'hour')
+  if (diffMs < 30 * 86_400_000) return rtf.format(-Math.floor(diffMs / 86_400_000), 'day')
+  return rtf.format(-Math.floor(diffMs / (30 * 86_400_000)), 'month')
+})
 
 function go(name: 'home') {
   router.push({ name })
@@ -298,6 +413,13 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
       </div>
 
       <template v-else-if="result && displayedResult">
+        <div v-if="restoredAtLabel" class="lr-restored-banner gf-container">
+          <span>{{ t('liuren.restored.banner', { time: restoredAtLabel }) }}</span>
+          <Button type="button" variant="outline" size="sm" @click="onRepaipan">
+            {{ t('liuren.restored.freshen') }}
+          </Button>
+        </div>
+
         <div ref="shareCardEl" class="liuren-share-card">
           <div class="gf-container" style="padding-top: 0;">
             <PalaceWheel
@@ -378,6 +500,13 @@ const showComputeError = computed(() => skeleton.revealed.value && result.value 
       </main>
 
       <template v-else-if="result && displayedResult">
+        <div v-if="restoredAtLabel" class="lr-restored-banner mn mn-container">
+          <span>{{ t('liuren.restored.banner', { time: restoredAtLabel }) }}</span>
+          <Button type="button" variant="outline" size="sm" @click="onRepaipan">
+            {{ t('liuren.restored.freshen') }}
+          </Button>
+        </div>
+
         <div ref="shareCardEl" class="liuren-share-card">
           <main class="mn-container" style="padding-top: 0;">
             <PalaceWheel

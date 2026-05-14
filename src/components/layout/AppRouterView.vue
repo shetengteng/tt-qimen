@@ -9,8 +9,15 @@
  *     finalize navigation；前者让 router 看到组件是同步存在的，立即 finalize，
  *     由 Suspense 接管异步渲染 fallback。
  *
- * 抽成独立组件：App.vue 在桌面 / 桌面+AI / 移动端三种布局里都需要 `<RouterView>`，
- * 把 Suspense 模板封装一次避免三处重复。
+ * KeepAlive：用户在 A 模块测算后切到 B 模块再切回 A，原本会因为 vue-router
+ * 卸载/重挂载导致 page 实例被销毁、起卦/抽签结果丢失，需要重新点击"测算"。
+ * KeepAlive 缓存已挂载的 page 实例，切回来 state 完整保留（result / skeleton /
+ * 当前选中的 tab 等都在）。Suspense 在外层确保异步组件首次加载有 fallback；
+ * 加载完成的实例由内层 KeepAlive 接管缓存。
+ *
+ * page 内部如有 setInterval / 异步定时器 / 网络订阅等副作用，请用 onActivated /
+ * onDeactivated 启停 —— KeepAlive 下 onMounted/onBeforeUnmount 只在首次挂载和
+ * 最终销毁时触发，跨切换不会触发。
  */
 import PageLoading from './PageLoading.vue'
 </script>
@@ -18,7 +25,9 @@ import PageLoading from './PageLoading.vue'
 <template>
   <RouterView v-slot="{ Component }">
     <Suspense :timeout="0">
-      <component :is="Component" />
+      <KeepAlive>
+        <component :is="Component" />
+      </KeepAlive>
       <template #fallback>
         <PageLoading />
       </template>

@@ -9,10 +9,13 @@
  * 状态持久化：问事心念、分面选择、手动模式下的月日时。
  *
  * 结果缓存（lastComputed）：
- *   - 仅缓存 custom 模式：用户主动指定 month/day/hour，是稳定输入
- *   - immediate 模式刷新页面时 seedFromDate(new Date()) 已变化，
- *     恢复"昨天的卦"会误导用户，故主动不缓存
- *   - shouldRestore 当且仅当：mode=custom + 缓存值与当前 custom+aspect+question 完全一致
+ *   - **两种模式都缓存**：用户起卦后写入完整 seed（month/day/hourIndex + 农历/时辰文案）
+ *     + 起卦时间戳（drawnAt），下次进入静默恢复展示。
+ *   - immediate 模式不能依赖 seedFromDate(new Date()) 重算，必须从 snapshot 读 seed
+ *     避免显示当前时间却复用昨天卦的不一致；UI 层会显示"上次于 X 起卦"提示带告知用户。
+ *   - shouldRestore：
+ *       - mode=immediate + 有缓存且 mode 一致 → true（永久缓存策略，跨日仍恢复）
+ *       - mode=custom + 缓存与当前 custom+aspect+question 完全一致 → true
  */
 
 import { defineStore } from 'pinia'
@@ -29,13 +32,39 @@ export interface LiurenCustomInput {
   hourIndex: number
 }
 
-/** 用于 lastComputed 比对的输入快照（只含 custom 模式可复算的字段） */
+/**
+ * 用于 lastComputed 比对的输入快照。
+ *
+ * 字段语义：
+ *   - mode：起卦模式；恢复时按 mode 走不同分支（immediate 无脑恢复，custom 校验输入）
+ *   - month/day/hourIndex：实际参与计算的农历月/日/时辰序号（immediate 模式来自 seedFromDate）
+ *   - aspect/question：用户主诉，影响解读文案
+ *   - drawnAt：起卦时间戳，用于结果区"上次于 X 时间起卦"提示；旧数据缺失视为 0
+ *   - lunarDateLabel/hourBranchLabel：农历/时辰文案（如"三月廿八"、"未时"），immediate
+ *     模式恢复时直接复用避免重新调用 tyme4ts；旧数据缺失走兜底重算
+ */
 export interface LiurenComputedSnapshot {
+  mode: LiurenMode
   month: number
   day: number
   hourIndex: number
   aspect: Aspect
   question: string
+  drawnAt: number
+  lunarDateLabel: string
+  hourBranchLabel: string
+}
+
+/**
+ * core/immediate 与 onPaipan 共用的 seed 结构。这里复制一份避免 store 反向依赖 page。
+ * 字段命名与 calculateLiuren 接受的入参对齐（hour 即 hourIndex）。
+ */
+export interface LiurenSeed {
+  month: number
+  day: number
+  hour: number
+  lunarDateLabel: string
+  hourBranchLabel: string
 }
 
 const STORAGE_KEY = 'tt-divination:liuren-input'
@@ -59,7 +88,8 @@ const DEFAULT_STATE: LiurenStoredState = {
   },
 }
 
-function snapshotKey(s: LiurenComputedSnapshot): string {
+/** custom 模式恢复用的 key —— 只比对参与计算的字段，不含 drawnAt（时间戳每次都新）。 */
+function customSnapshotKey(s: LiurenComputedSnapshot): string {
   return `${s.month}-${s.day}-${s.hourIndex}-${s.aspect}-${s.question}`
 }
 
@@ -98,20 +128,22 @@ export const useLiurenStore = defineStore('liuren', () => {
   }
 
   /**
-   * 记录一次成功的 custom 模式计算，作为下次刷新时的恢复依据。
-   * immediate 模式调用此函数会被忽略（避免缓存"过期的当前时间"卦象）。
+   * 记录一次成功的起卦，作为下次进入 / 刷新时的恢复依据。
+   *
+   * @param seed 实际用于计算的 seed —— immediate 模式从 seedFromDate(new Date()) 来，
+   *             custom 模式从 customSeed 来。统一参数避免 store 内部判断模式时拿不到 immediate 的当下值。
    */
-  function recordComputed() {
-    if (state.value.mode !== 'custom') {
-      lastComputed.value = null
-      return
-    }
+  function recordComputed(seed: LiurenSeed) {
     lastComputed.value = {
-      month: state.value.custom.month,
-      day: state.value.custom.day,
-      hourIndex: state.value.custom.hourIndex,
+      mode: state.value.mode,
+      month: seed.month,
+      day: seed.day,
+      hourIndex: seed.hour,
       aspect: state.value.aspect,
       question: state.value.question,
+      drawnAt: Date.now(),
+      lunarDateLabel: seed.lunarDateLabel,
+      hourBranchLabel: seed.hourBranchLabel,
     }
   }
 
@@ -121,20 +153,34 @@ export const useLiurenStore = defineStore('liuren', () => {
 
   /**
    * 判断本次挂载是否可以从 lastComputed 静默恢复结果。
-   * 条件：mode=custom + 有缓存 + 缓存与当前 store 状态完全一致。
+   *
+   * 分模式判定（与 onMounted 的 hydrate 流程对齐）：
+   *   - mode=immediate：只要有 immediate 类型的快照即恢复（用户选择"永久缓存"，
+   *     跨日依旧显示，UI 用 drawnAt 提示"上次于 X 时间起卦"避免误读）
+   *   - mode=custom：缓存类型一致 + 输入字段完全一致才恢复（避免用户改了 month
+   *     却看到旧月份的解读）
+   *
+   * 兼容旧版 snapshot：旧数据无 mode 字段，视为 custom（旧实现只缓存 custom）。
    */
   const shouldRestore = computed<boolean>(() => {
-    if (state.value.mode !== 'custom') return false
     const snap = lastComputed.value
     if (snap == null || typeof snap !== 'object') return false
+    const snapMode: LiurenMode = (snap as Partial<LiurenComputedSnapshot>).mode ?? 'custom'
+    const currentMode = state.value.mode
+    if (snapMode !== currentMode) return false
+    if (currentMode === 'immediate') return true
     const current: LiurenComputedSnapshot = {
+      mode: 'custom',
       month: state.value.custom.month,
       day: state.value.custom.day,
       hourIndex: state.value.custom.hourIndex,
       aspect: state.value.aspect,
       question: state.value.question,
+      drawnAt: 0,
+      lunarDateLabel: '',
+      hourBranchLabel: '',
     }
-    return snapshotKey(snap) === snapshotKey(current)
+    return customSnapshotKey(snap) === customSnapshotKey(current)
   })
 
   return {

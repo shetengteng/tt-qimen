@@ -239,6 +239,23 @@
   font-size: 14px;
 }
 
+/* ---------- Restored banner（从持久化恢复的卦提示） ---------- */
+:root[data-theme='guofeng'] .lr-restored-banner {
+  max-width: 720px;
+  margin: 0 auto var(--gf-space-md);
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gf-space-md);
+  background: rgba(220, 230, 232, 0.55);
+  border: 1px dashed rgba(120, 140, 152, 0.5);
+  border-radius: var(--gf-radius-sm);
+  color: var(--gf-ink-muted, var(--gf-ink));
+  font-family: var(--gf-font-serif);
+  font-size: 14px;
+}
+
 /* ---------- 解读卡 ---------- */
 :root[data-theme='guofeng'] .lr-reading-card {
   max-width: 720px;

@@ -61,16 +61,47 @@ const skeleton = useSkeletonReveal({
 function onPaipan() {
   try {
     result.value = calculateChenggu(chengguStore.birth, localeStore.id)
+    if (result.value) chengguStore.recordComputed()
   } catch (err) {
     console.error('[chenggu] calculate failed:', err)
     result.value = null
+    chengguStore.clearComputed()
   }
   skeleton.start(() => resultBannerEl.value)
 }
 
 function onRepaipan() {
   result.value = null
+  chengguStore.clearComputed()
   skeleton.reset(() => inputCardEl.value)
+}
+
+/**
+ * 刷新 / 切窗回来后，若 chengguStore 里有 lastComputed 且与当前 birth 指纹一致，
+ * 直接重算并跳过骨架屏（与 bazi / ziwei / liuren 一致的输入指纹模式）。
+ *
+ * 关键点：
+ *   - 不触发 skeleton 动画：用 revealImmediately 立即露出结果区
+ *   - 计算失败则清空快照，回到默认起始态
+ *   - URL deeplink 命中时**优先走 deeplink hydrate** 路径，本函数会被跳过
+ */
+function tryRestoreLastResult(): boolean {
+  if (!chengguStore.shouldRestore) return false
+  try {
+    const fresh = calculateChenggu(chengguStore.birth, localeStore.id)
+    if (!fresh) {
+      chengguStore.clearComputed()
+      return false
+    }
+    result.value = fresh
+    skeleton.revealImmediately()
+    return true
+  } catch (err) {
+    console.error('[chenggu] restore failed:', err)
+    chengguStore.clearComputed()
+    result.value = null
+    return false
+  }
 }
 
 watch(
@@ -137,11 +168,16 @@ function onSave() {
  *
  * 仅在 onMounted 一次性消费 query；后续用户编辑表单不再受 query 影响。
  * 不在 watch route 内重复触发，避免 push 时（含路由 query 变化）出现意外重排盘。
+ *
+ * 无 query 时尝试从 lastComputed 静默恢复上次测算（刷新页面不丢盘）。
  */
 onMounted(() => {
   const q = normalizeQuery(route.query as Record<string, string | string[] | undefined>)
   const hasInputs = ['year', 'month', 'day', 'hour'].some((k) => k in q)
-  if (!hasInputs) return
+  if (!hasInputs) {
+    tryRestoreLastResult()
+    return
+  }
 
   const b = chengguStore.birth
   chengguStore.update({

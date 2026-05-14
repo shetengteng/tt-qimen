@@ -85,6 +85,12 @@ export default {
     back: '返回本卦',
   },
 
+  restored: {
+    banner: '上次於{time}起卦，下方為彼時所占之事',
+    justNow: '剛剛',
+    freshen: '重新起卦',
+  },
+
   computeError: {
     title: '起卦未成',
     hint: '輸入資料有誤，請檢查月/日/時辰後重試。',

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, shallowRef, watch } from 'vue'
+import { computed, onDeactivated, onMounted, onUnmounted, ref, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
@@ -289,6 +289,19 @@ watch(lingqianLocale, (next) => {
 
 onUnmounted(() => {
   clearPaipanTimers()
+})
+
+/**
+ * KeepAlive：用户在抽签仪式中（drawing=true / centerpieceStage 在 flying/showing/holding/fading 阶段）
+ * 切到其他模块时，清掉 setTimeout 链路，避免回来时仪式中段的视觉错乱。
+ * onUnmounted 兜底处理最终销毁，onDeactivated 处理跨切换。
+ */
+onDeactivated(() => {
+  clearPaipanTimers()
+  if (drawing.value) {
+    drawing.value = false
+    centerpieceStage.value = 'hidden'
+  }
 })
 
 watch(

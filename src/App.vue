@@ -86,17 +86,18 @@ function onAiPanelResize(size: number) {
   <ConfigProvider :scroll-body="false">
     <AppErrorBoundary>
       <!--
-        AI 关闭：原垂直布局 = AppHeader + RouterView + AppFooter（行为与改造前一致）。
-        AI 开启：完整左右双栏布局占满 viewport：
-          - 左主区 panel = 自身 overflow:auto，内含 AppHeader + RouterView + AppFooter
-          - 中：可拖拽 ResizableHandle
-          - 右 AI 侧栏 panel = 内部消息区独立 overflow-y:auto；自带"AI 解读"header
-        AppHeader / AppFooter 都属于主区，AI 侧栏独立从屏幕顶部到底部。
-        v-if/v-else 完整切换，避免 SplitterGroup 在子节点缺失时触发 reka-ui invariant。
-      -->
-      <!--
         移动端：主区始终垂直布局，AI 走 Sheet 全屏覆盖（不挤压主区）。
-        桌面端：保持原 ResizablePanelGroup 双栏 + 拖拽手柄。
+        桌面端：始终使用 ResizablePanelGroup 包裹主区 panel，无论 AI 开关。
+        AI 侧栏的 ResizableHandle + Panel 用 v-if 在 SplitterGroup 内条件渲染。
+
+        为什么始终保留 SplitterGroup（即使 AI 关闭）：
+          - v-if/v-else 在外层切换会导致 AppRouterView 销毁重建 → 当前 page 实例
+            重新挂载 → result/skeleton 等局部 state 丢失（典型表现：小六壬 immediate
+            模式下 onAskAi 后排盘结果消失，需重新起卦）。
+          - 始终保留 SplitterGroup 让主 panel 实例稳定，AI 开关只增减右侧节点，
+            page 实例不重建，所有模块的局部 state 都能保留。
+          - reka-ui SplitterGroup 在 panel 设置了 `order` 属性时支持 conditional
+            rendering，registerPanel/unregisterPanel 会自动重算 layout，单 panel 占 100%。
       -->
       <template v-if="isMobile">
         <AppHeader />
@@ -112,11 +113,6 @@ function onAiPanelResize(size: number) {
           </SheetContent>
         </Sheet>
       </template>
-      <template v-else-if="!aiOpen">
-        <AppHeader />
-        <AppRouterView />
-        <AppFooter />
-      </template>
       <div v-else class="app-resizable-wrap">
         <ResizablePanelGroup
           direction="horizontal"
@@ -124,8 +120,8 @@ function onAiPanelResize(size: number) {
           auto-save-id="tt-qimen.ai-sidebar"
         >
           <ResizablePanel
-            :default-size="100 - aiSidebar.panelSize"
-            :min-size="40"
+            :default-size="aiOpen ? 100 - aiSidebar.panelSize : 100"
+            :min-size="aiOpen ? 40 : 0"
             :order="1"
             class="app-main-panel"
           >
@@ -140,8 +136,9 @@ function onAiPanelResize(size: number) {
               <AppFooter />
             </div>
           </ResizablePanel>
-          <ResizableHandle with-handle />
+          <ResizableHandle v-if="aiOpen" with-handle />
           <ResizablePanel
+            v-if="aiOpen"
             :default-size="aiSidebar.panelSize"
             :min-size="aiSidebar.MIN_PANEL_SIZE"
             :max-size="aiSidebar.MAX_PANEL_SIZE"
@@ -159,13 +156,14 @@ function onAiPanelResize(size: number) {
 <style scoped>
 .app-resizable-wrap {
   /*
-    打开 AI 侧栏后切换为完整左右双栏布局：
+    桌面端常态布局：始终用 ResizablePanelGroup 承载主区，AI 关闭时主 panel 占 100%，
+    AI 打开时增加 handle + AI panel。
+
     - wrap 占据整个 viewport（100dvh），sticky top:0
     - 主区面板（app-main-panel）独立滚动，内含 AppHeader + RouterView + AppFooter，所以
-      header 跟随主区一起卷（关闭 AI 时 header sticky top:0 的行为在这里失效，但用户已选择
-      "header 也属于主区"的方案，刻意接受这点）
+      header 跟随主区一起卷（页面级 header sticky 改为容器级，视觉效果一致）
     - AI 侧栏面板内消息区独立 overflow-y:auto；AI 侧栏没有 footer，自带"AI 解读"header
-    左主右 AI，两个滚动条互不影响，从屏幕顶到底完全分隔。
+    左主右 AI（如开启），两个滚动条互不影响，从屏幕顶到底完全分隔。
   */
   position: sticky;
   top: 0;
