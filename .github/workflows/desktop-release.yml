@@ -18,15 +18,23 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # macOS Universal: 在 macos-14 (Apple Silicon) runner 上交叉编译
+          # macOS Apple Silicon
           - platform: macos-14
-            target: 'universal-apple-darwin'
-            rust-targets: 'aarch64-apple-darwin,x86_64-apple-darwin'
+            args: '--target aarch64-apple-darwin'
+            rust-target: aarch64-apple-darwin
+            label: macOS Apple Silicon
+          # macOS Intel
+          - platform: macos-14
+            args: '--target x86_64-apple-darwin'
+            rust-target: x86_64-apple-darwin
+            label: macOS Intel
           # Windows x64
           - platform: windows-latest
-            target: ''
-            rust-targets: ''
+            args: '--target x86_64-pc-windows-msvc'
+            rust-target: x86_64-pc-windows-msvc
+            label: Windows x64
     runs-on: ${{ matrix.platform }}
+    name: Build ${{ matrix.label }}
 
     steps:
       - name: Checkout
@@ -41,18 +49,13 @@ jobs:
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.rust-targets }}
-
-      # Linux runner 需要 webkit2gtk 等系统依赖；当前 matrix 不含 Linux，留作扩展。
-      # - name: Install Linux dependencies
-      #   if: matrix.platform == 'ubuntu-22.04'
-      #   run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+          targets: ${{ matrix.rust-target }}
 
       - name: Cache Rust build
         uses: swatinem/rust-cache@v2
         with:
           workspaces: './src-tauri -> target'
-          key: ${{ matrix.platform }}-${{ matrix.target }}
+          key: ${{ matrix.rust-target }}
 
       - name: Install npm dependencies
         run: npm ci
@@ -64,9 +67,8 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # 以下 Secrets 缺失时会以空字符串注入，tauri-action 会自动跳过对应签名步骤，
-          # 因此 unsigned 构建无需任何额外配置即可跑通。
           # macOS 代码签名 + 公证（详见 design §11.1）
+          # 以下 Secrets 缺失时会以空字符串注入，tauri-action 会自动跳过对应签名步骤
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE || '' }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD || '' }}
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY || '' }}
@@ -77,17 +79,184 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY || '' }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD || '' }}
         with:
-          tagName: ${{ github.ref_name }}
-          releaseName: 'tt-qimen ${{ github.ref_name }}'
-          releaseBody: |
-            ## tt-qimen ${{ github.ref_name }}
-
-            桌面端安装包（macOS Universal + Windows x64）。
-
-            > **首版未代码签名**：macOS 用户右键 → 打开；Windows 用户点击"More info → Run anyway"。
-            > 详细安装/升级说明见 [README.md](https://github.com/${{ github.repository }}/blob/main/README.md#-桌面端-tauri-2)。
-
-            Changelog: see commits since previous tag.
+          # tagName / releaseName 用 v__VERSION__ 占位符：
+          # tauri-action 会自动替换为 src-tauri/tauri.conf.json 的 version 字段，
+          # 而该字段配置为 "../package.json"，因此最终来源是 package.json 的 version。
+          # 单一事实来源，避免漂移。
+          tagName: v__VERSION__
+          releaseName: 'tt-qimen v__VERSION__'
           releaseDraft: true
           prerelease: false
-          args: ${{ matrix.target != '' && format('--target {0}', matrix.target) || '' }}
+          args: ${{ matrix.args }}
+
+  # ---------------------------------------------------------------------------
+  # 所有平台构建完成后，统一发一篇安装说明 + 校验信息到 Release Notes
+  # ---------------------------------------------------------------------------
+  finalize-release:
+    name: Finalize release notes
+    needs: build
+    runs-on: ubuntu-latest
+    # 仅 tag 触发时执行；workflow_dispatch 不会有 ref tag
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # 拉全部 tag 历史以便生成 changelog
+          fetch-depth: 0
+
+      - name: Resolve previous tag
+        id: prev
+        run: |
+          PREV_TAG=$(git tag --sort=-creatordate | grep -v "^${GITHUB_REF_NAME}$" | head -n 1 || true)
+          echo "tag=${PREV_TAG}" >> "$GITHUB_OUTPUT"
+          echo "Previous tag: ${PREV_TAG:-<none>}"
+
+      - name: Generate auto changelog
+        id: changelog
+        env:
+          PREV_TAG: ${{ steps.prev.outputs.tag }}
+          CURR_TAG: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ -z "$PREV_TAG" ]; then
+            RANGE="HEAD"
+            COMPARE="https://github.com/${REPO}/commits/${CURR_TAG}"
+          else
+            RANGE="${PREV_TAG}..${CURR_TAG}"
+            COMPARE="https://github.com/${REPO}/compare/${PREV_TAG}...${CURR_TAG}"
+          fi
+          {
+            echo "changelog<<EOF"
+            git log --pretty=format:'- %s (%h)' "$RANGE"
+            echo ""
+            echo "EOF"
+            echo "compare_url=${COMPARE}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Download release assets to compute SHA256
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          mkdir -p /tmp/dl
+          # 下载该 release 的全部资产（草稿状态也能拿到）
+          gh release download "$TAG" --repo "${{ github.repository }}" --dir /tmp/dl --pattern '*.dmg' --pattern '*.exe' --pattern '*.app.tar.gz' --pattern '*.nsis.zip' || true
+          echo "## Downloaded assets" && ls -lh /tmp/dl || true
+
+      - name: Compute SHA256 checksums
+        id: sha
+        run: |
+          if ls /tmp/dl/* > /dev/null 2>&1; then
+            (cd /tmp/dl && shasum -a 256 * > /tmp/SHA256SUMS.txt)
+            {
+              echo "table<<EOF"
+              echo "| File | SHA256 |"
+              echo "|---|---|"
+              awk '{ printf "| `%s` | `%s` |\n", $2, $1 }' /tmp/SHA256SUMS.txt
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
+          else
+            echo "table=_no assets found_" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload SHA256SUMS.txt to release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          if [ -f /tmp/SHA256SUMS.txt ]; then
+            gh release upload "$TAG" /tmp/SHA256SUMS.txt --repo "${{ github.repository }}" --clobber
+          fi
+
+      - name: Write rich release notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+          CHANGELOG: ${{ steps.changelog.outputs.changelog }}
+          COMPARE_URL: ${{ steps.changelog.outputs.compare_url }}
+          SHA_TABLE: ${{ steps.sha.outputs.table }}
+        run: |
+          cat > /tmp/notes.md <<NOTES
+          # tt-qimen ${TAG}
+
+          桌面端安装包（macOS Apple Silicon · macOS Intel · Windows x64），所有计算与对话依旧 100% 在本机进行。
+
+          ## 📦 下载
+
+          | 平台 | 文件 | 说明 |
+          |---|---|---|
+          | macOS (Apple Silicon, M1/M2/M3/M4) | \`tt-qimen_*_aarch64.dmg\` | 优先选 |
+          | macOS (Intel) | \`tt-qimen_*_x64.dmg\` | 2020 年前 Mac 选这个 |
+          | Windows x64 | \`tt-qimen_*_x64-setup.exe\` | Win10 21H1+ / Win11 |
+
+          ## 🖥 macOS 安装
+
+          1. 下载对应架构的 \`.dmg\`，双击挂载
+          2. 把 **tt-qimen.app** 拖到 **Applications** 文件夹
+          3. **首次启动必须右键打开**（不要双击！）：
+             - 在 Applications 里**右键** → **打开** → 在弹窗中再次点 **打开**
+             - 之后可以正常双击启动
+
+          ### macOS 异常处理
+
+          如果系统提示 "tt-qimen 已损坏，无法打开"（这是首版未代码签名导致的 Gatekeeper 误报），在终端执行：
+
+          \`\`\`bash
+          xattr -cr /Applications/tt-qimen.app
+          \`\`\`
+
+          然后重新打开即可。
+
+          如果仍被拦截，可临时放行单个应用：
+
+          \`\`\`bash
+          sudo spctl --master-disable          # 解除 Gatekeeper（不推荐长期）
+          sudo xattr -d com.apple.quarantine /Applications/tt-qimen.app
+          \`\`\`
+
+          ## 🖥 Windows 安装
+
+          1. 下载 \`tt-qimen_*_x64-setup.exe\`
+          2. **首次启动 SmartScreen 弹窗时**：
+             - 点 **More info / 详细信息**
+             - 再点 **Run anyway / 仍然运行**
+          3. 按引导完成安装（会安装到 \`C:\\Program Files\\tt-qimen\\\`）
+
+          ### Windows 异常处理
+
+          如果 SmartScreen 没有 "Run anyway" 按钮，先右键解锁文件：
+
+          \`\`\`powershell
+          # PowerShell（管理员）
+          Unblock-File -Path "\$env:USERPROFILE\Downloads\tt-qimen_*_x64-setup.exe"
+          \`\`\`
+
+          如果杀毒软件误报（首版未代码签名常见），添加白名单后重新安装即可。
+
+          ## 🔄 自动更新
+
+          应用启动 5 秒后会静默检查更新。检测到新版本会弹原生对话框，用户确认后自动下载补丁并重启应用（Tauri Updater 签名校验保障安全）。
+
+          ## 🔐 SHA256 校验
+
+          下载 \`SHA256SUMS.txt\` 后可验证文件完整性：
+
+          \`\`\`bash
+          # macOS / Linux
+          shasum -a 256 -c SHA256SUMS.txt
+
+          # Windows PowerShell
+          Get-FileHash tt-qimen_*.exe -Algorithm SHA256
+          \`\`\`
+
+          ${SHA_TABLE}
+
+          ## 📝 Changelog
+
+          ${CHANGELOG}
+
+          **Full diff**: ${COMPARE_URL}
+          NOTES
+
+          gh release edit "$TAG" --repo "${{ github.repository }}" --notes-file /tmp/notes.md --draft=false
