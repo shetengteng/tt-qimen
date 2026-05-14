@@ -63,21 +63,57 @@ jobs:
       - name: Generate Tauri icons
         run: npm run tauri:icons
 
-      - name: Build and release desktop app
+      # 关键说明（2026-05-14）：
+      # tauri-action 内部对 APPLE_CERTIFICATE 只做"存在性"判断（非空字符串就尝试签名），
+      # 因此 `secrets.APPLE_CERTIFICATE || ''` 这种 fallback **不能** 跳过签名 —— 反而
+      # 会用空字符串调用 `security import "" -k keychain`，必然失败：
+      #   "failed codesign application: failed to import keychain certificate"
+      #
+      # 正确做法：用 env 表达式 + step 级 if，仅当 secret 真正配置时才把它注入
+      # `tauri-action` 的 env。下方 if: 中通过 `vars` 不能读 secret 长度，因此走
+      # `runner.environment` 不行；改用一个 prepare 步骤先把"是否签名"写入 GITHUB_ENV，
+      # 再分流到两个互斥的 tauri-action 调用。
+      - name: Detect signing capability
+        id: signing
+        shell: bash
+        env:
+          HAS_APPLE_CERT: ${{ secrets.APPLE_CERTIFICATE != '' && 'true' || 'false' }}
+          HAS_UPDATER_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY != '' && 'true' || 'false' }}
+        run: |
+          echo "apple=$HAS_APPLE_CERT" >> "$GITHUB_OUTPUT"
+          echo "updater=$HAS_UPDATER_KEY" >> "$GITHUB_OUTPUT"
+          echo "Apple signing: $HAS_APPLE_CERT"
+          echo "Updater signing: $HAS_UPDATER_KEY"
+
+      # 路径 A: 完整签名（Apple Certificate + Updater Key 至少其一存在）
+      - name: Build and release (signed)
+        if: steps.signing.outputs.apple == 'true' || steps.signing.outputs.updater == 'true'
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # macOS 代码签名 + 公证（详见 design §11.1）
-          # 以下 Secrets 缺失时会以空字符串注入，tauri-action 会自动跳过对应签名步骤
-          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE || '' }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD || '' }}
-          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY || '' }}
-          APPLE_ID: ${{ secrets.APPLE_ID || '' }}
-          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD || '' }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID || '' }}
-          # Tauri Updater 签名（详见 design §11.3）
-          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY || '' }}
-          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD || '' }}
+          # macOS 代码签名 + 公证
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          # Tauri Updater 签名
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          tagName: v__VERSION__
+          releaseName: 'tt-qimen v__VERSION__'
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.args }}
+
+      # 路径 B: 完全不签名（首版常态：用户接受 Gatekeeper / SmartScreen 警告）
+      - name: Build and release (unsigned)
+        if: steps.signing.outputs.apple == 'false' && steps.signing.outputs.updater == 'false'
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           # tagName / releaseName 用 v__VERSION__ 占位符：
           # tauri-action 会自动替换为 src-tauri/tauri.conf.json 的 version 字段，
