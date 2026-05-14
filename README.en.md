@@ -121,8 +121,11 @@ Official releases live on [GitHub Releases](https://github.com/shetengteng/tt-qi
 
 | Platform | File | Notes |
 |---|---|---|
-| macOS (Universal) | `tt-qimen_*_universal.dmg` | Apple Silicon + Intel; macOS 11.0+ |
-| Windows (x64) | `tt-qimen_*_x64-setup.exe` | NSIS installer; Win10 21H1+ / Win11 |
+| macOS Apple Silicon (M1+) | `tt-qimen_*_aarch64.dmg` | macOS 11.0+ |
+| macOS Intel | `tt-qimen_*_x64.dmg` | macOS 11.0+ |
+| Windows x64 | `tt-qimen_*_x64-setup.exe` | NSIS installer; Win10 21H1+ / Win11 |
+
+> Each release ships a `SHA256SUMS.txt`; verify with `shasum -a 256 -c SHA256SUMS.txt`.
 
 > **First release is unsigned**:
 > - macOS: right-click the `.app` → Open (don't double-click) on first run.

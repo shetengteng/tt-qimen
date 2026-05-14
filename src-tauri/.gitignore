@@ -8,4 +8,6 @@
 /icons/*.png
 /icons/*.icns
 /icons/*.ico
+/icons/android/
+/icons/ios/
 !/icons/README.md

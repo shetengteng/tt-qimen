@@ -121,8 +121,11 @@ npm run tauri:build
 
 | 平台 | 文件 | 备注 |
 |---|---|---|
-| macOS (Universal) | `tt-qimen_*_universal.dmg` | 支持 Apple Silicon + Intel；macOS 11.0+ |
-| Windows (x64) | `tt-qimen_*_x64-setup.exe` | NSIS 安装器；Win10 21H1+ / Win11 |
+| macOS Apple Silicon (M1+) | `tt-qimen_*_aarch64.dmg` | macOS 11.0+ |
+| macOS Intel | `tt-qimen_*_x64.dmg` | macOS 11.0+ |
+| Windows x64 | `tt-qimen_*_x64-setup.exe` | NSIS 安装器；Win10 21H1+ / Win11 |
+
+> 每个 Release 同时附带 `SHA256SUMS.txt`，可用 `shasum -a 256 -c SHA256SUMS.txt` 校验文件完整性。
 
 > **首版未代码签名**：
 > - macOS：首次打开时**右键点击 .app → 打开**（不要双击），后续可直接双击。
