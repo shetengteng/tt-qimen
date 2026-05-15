@@ -56,6 +56,11 @@ jobs:
         with:
           workspaces: './src-tauri -> target'
           key: ${{ matrix.rust-target }}
+          # 不缓存 $CARGO_HOME/bin —— 该目录里的 cargo/rustc 是 rustup 二进制的 hardlink，
+          # 跨 runner 复用会让 hardlink 指向不存在的 toolchain 路径，导致 `cargo metadata`
+          # 实际跑成 `rustup-init` 并报 `unexpected argument 'metadata'`。
+          # 参考：https://github.com/Swatinem/rust-cache/pull/216
+          cache-bin: false
 
       - name: Install npm dependencies
         run: npm ci
