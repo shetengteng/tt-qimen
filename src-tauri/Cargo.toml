@@ -1,6 +1,6 @@
 [package]
 name = "tt-qimen"
-version = "0.1.0"
+version = "0.1.1"
 description = "tt-qimen desktop shell — 启门问卜桌面端"
 authors = ["shetengteng"]
 edition = "2021"
