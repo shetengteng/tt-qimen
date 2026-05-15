@@ -110,14 +110,19 @@
   display: none;
 }
 
-/* ============ Disclaimer ============ */
+/* ============ Disclaimer ============
+ * 注意：桌面端 (Tauri / macOS) 下 webview 紧贴系统标题栏，原先的 warning 黄底
+ * (#fef9c3) 会让用户视觉上感觉"整条标题栏都是黄色"。改为与 minimal 主题
+ * 整体一致的中性浅灰底 + 紫色 accent 左边条，仍保留"这是一条提示"的语义层级。
+ */
 :root[data-theme='minimal'] .mn-disclaimer {
   padding: var(--space-2) var(--space-6);
-  background-color: #fef9c3;
-  color: #713f12;
+  background-color: var(--color-surface);
+  color: var(--color-ink-soft);
   font-size: 12px;
   text-align: center;
-  border-bottom: 1px solid #fde68a;
+  border-bottom: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-accent);
 }
 
 /* ============ Buttons ============
