@@ -40,8 +40,8 @@
 | **视觉** | 全黑底 → 顶部 40px 仿浏览器顶栏(三色圆点 + URL `github.com/shetengteng/tt-qimen`)→ 底下一张真实截取的 1440×8668 GitHub 仓库截图,初始 fit-to-width 居顶显示;右上一枚朱砂红圆角徽 `github.com/shetengteng/tt-qimen · MIT · Open Source` |
 | **动效** | 截图 `opacity 0→1`(1.2s 入场);随后 `transform: translateY(0)→translateY(-18%) scale(1.00→1.04)` 做 6s 的 Ken Burns 缓动,自然向下推进让人看到 README 的开头;**不再有任何朱砂红圈/标签锚点指引**,信息全交给字幕 |
 | **屏上文字** | (仅浏览器壳与右上徽,无锚点说明) |
-| **旁白(zh)** | (静默 0.8s)"一份开源的中式占卜浏览器,代码托管在 GitHub,MIT License。" |
-| **字幕(2 行)** | `github.com/shetengteng/tt-qimen` / 一份开源的中式占卜浏览器 · MIT License |
+| **旁白(zh)** | (静默 0.8s)"一份开源的中式命理 App,代码托管在 GitHub,MIT License。" |
+| **字幕(2 行)** | `github.com/shetengteng/tt-qimen` / 一份开源的中式命理 App · MIT License |
 | **配音语气** | 男低音,平直陈述,像电影片头报字幕 |
 | **依赖资产** | `promo/v2/assets/github-repo.png`(Playwright 截自真实 GitHub 仓库) |
 | **v1.3 改动** | 整条镜头从原 S10(尾部)挪到首位作 S0;删除 `gh-annotations` 整块,删除 5 个 `.ann-*` 标注与对应 schedule;改用 Ken Burns 单一动效 |
@@ -206,7 +206,7 @@
 
 | 镜头位置 | 普通版 | 开发者版 |
 |---|---|---|
-| 开场 | "古人问天,今人问己" | "为占卜,造一台严肃的浏览器" |
+| 开场 | "古人问天,今人问己" | "一份开源的中式命理 App" |
 | 第 2 镜头 | 12 个 App 散乱抖动(痛点) | **直接展示八字排盘 demo + tyme4ts 角标** |
 | 古籍考据 | (无) | **新增 S3 整段:4 本古籍仿古页面** |
 | 模块卡 | 模块名 + 副标 | **+ 每张底部核心库标签** |

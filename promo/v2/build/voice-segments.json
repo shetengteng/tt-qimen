@@ -7,7 +7,7 @@
   "rateMain": "+10%",
   "rateTech": "+18%",
   "segments": [
-    { "id": "00", "startSec": 0.80,   "voice": "main", "text": "一份开源的中式占卜浏览器，代码托管在 GitHub，MIT License。" },
+    { "id": "00", "startSec": 0.80,   "voice": "main", "text": "一份开源的中式命理 App，代码托管在 GitHub，MIT License。" },
     { "id": "01", "startSec": 6.80,   "voice": "main", "text": "古人问天，今人问己。" },
     { "id": "02", "startSec": 9.29,   "voice": "main", "text": "一张八字排盘，从公历直接算到神煞，全部在浏览器里实时呈现。看不懂没关系，接下来，我们交给 AI 解读。" },
     { "id": "03", "startSec": 18.85,  "voice": "main", "text": "每一个算法、每一首签诗、每一条解梦词条，都能对应到古籍原文。一切有迹可循，皆可逐字溯源。" },
