@@ -41,7 +41,15 @@ const HEIGHT = 1080;
 
   // Wait for first scene to be active (storyboard's JS sets .is-active)
   await page.waitForSelector('.scene.is-active', { timeout: 10_000 });
-  console.log(`[record] first scene active. recording for ${DURATION_MS / 1000}s ...`);
+
+  // Hide the storyboard's dev HUD + controls bar so they don't appear in the
+  // recording. The CSS rule `#hud.is-hidden { opacity: 0 }` already exists.
+  await page.evaluate(() => {
+    document.getElementById('hud')?.classList.add('is-hidden');
+    document.getElementById('controls')?.classList.add('is-hidden');
+  });
+
+  console.log(`[record] first scene active, dev hud hidden. recording for ${DURATION_MS / 1000}s ...`);
 
   const t0 = Date.now();
   // Log progress every 10s

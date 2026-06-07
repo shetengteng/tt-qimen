@@ -2299,25 +2299,10 @@
     </div>
   </section>
 
-  <!-- ===== S11 · CTA ===== -->
+  <!-- ===== S11 · CTA (v1.5.2: 移除 terminal + star-btn,极简收尾) ===== -->
   <section class="scene" id="s11">
     <div class="cta-kanji">启</div>
-    <div class="terminal">
-      <div class="terminal-titlebar">
-        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-        <span class="label">~/projects · zsh</span>
-      </div>
-      <div class="terminal-body">
-        <div><span class="prompt">$</span> <span class="cmd-text" id="s11-cmd"></span><span class="cursor-blink"></span></div>
-      </div>
-    </div>
-    <div class="star-btn">
-      <span class="star">★</span>
-      <span>Star</span>
-      <span>shetengteng/tt-qimen</span>
-      <span class="star-count">1.2k</span>
-    </div>
-    <div class="cta-meta">github.com/shetengteng/tt-qimen · MIT License · Made with care</div>
+    <div class="cta-meta">MIT License · Made with care</div>
   </section>
 
 </div>
@@ -2380,8 +2365,6 @@ const SUBTITLES = [
   /* s10 项目设计思路 · v1.5 改: 去"四层架构"的几何术语 */
   { s:106.5, e:111.0, t: '一个项目 · 四件事:页面 · 数据 · 算法 · AI' },
   { s:111.3, e:116.0, t: '浏览器优先 · 零后端 · 一切可溯源 · AI 可插拔' },
-  /* s11 CTA */
-  { s:116.5, e:120.0, t: 'git clone · Star · Contribute · 一切尽在 GitHub' },
 ];
 
 const TOTAL = 120.0;
@@ -2443,9 +2426,7 @@ const PRODUCT_SCHEDULE = [
 ];
 let productFiredUntil = -1;
 
-/* S11 终端命令 typewriter (v1.4: S11 在 116-120s) */
-const TERMINAL_CMD = 'git clone https://github.com/shetengteng/tt-qimen.git';
-let terminalStart = null;
+/* v1.5.2: S11 terminal 块已移除,极简 cta 收尾 (大字 + MIT License) */
 
 function fmt(sec) {
   sec = Math.max(0, Math.min(TOTAL, sec));
@@ -2469,11 +2450,6 @@ function updateScene() {
     } else {
       document.querySelectorAll('#s5 .chip').forEach(c => c.classList.remove('is-flash'));
       chipFiredUntil = -1;
-    }
-
-    if (cur.id === 's11') {
-      terminalStart = t;
-      document.getElementById('s11-cmd').textContent = '';
     }
 
     if (cur.id !== 's9') {
@@ -2551,16 +2527,6 @@ function updateStackWall() {
   }
 }
 
-function updateTerminal() {
-  if (currentSceneId !== 's11' || terminalStart === null) return;
-  const delay = 1.0;
-  const speed = 22;
-  const elapsed = t - terminalStart - delay;
-  if (elapsed < 0) return;
-  const n = Math.min(TERMINAL_CMD.length, Math.floor(elapsed * speed));
-  document.getElementById('s11-cmd').textContent = TERMINAL_CMD.slice(0, n);
-}
-
 function updateProductSlideshow() {
   if (currentSceneId !== 's4b') return;
   for (const p of PRODUCT_SCHEDULE) {
@@ -2598,7 +2564,6 @@ function render() {
   updateChips();
   updateTokenWindow();
   updateStackWall();
-  updateTerminal();
   updateProductSlideshow();
   hudBar.style.width = `${(t / TOTAL) * 100}%`;
   meta.textContent = `${fmt(t)} / ${fmt(TOTAL)}`;
@@ -2611,9 +2576,7 @@ function resetTransientState() {
   chipFiredUntil = -1;
   tokenFiredUntil = -1;
   stackFiredUntil = -1;
-  terminalStart = null;
   productFiredUntil = -1;
-  document.getElementById('s11-cmd').textContent = '';
   document.querySelectorAll('#s4b .product-slide').forEach(s => s.classList.remove('is-on'));
   const captionPill = document.getElementById('s4b-caption');
   if (captionPill) captionPill.classList.remove('is-on');

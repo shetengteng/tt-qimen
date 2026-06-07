@@ -97,12 +97,23 @@ def main():
         print(f"        actual duration: {dur:.2f}s   starts at {seg['startSec']:.1f}s")
 
     print(f"\n== Building aligned voiceover ({total}s total) ==")
+    # Per-segment fade: 0.10s ease-in + 0.20s ease-out, then delay to start time.
+    # This removes the hard "click" between segments and gives natural breathing room.
+    FADE_IN = 0.10
+    FADE_OUT = 0.20
     inputs = []
     filters = []
     for i, sf in enumerate(seg_files):
         inputs.extend(["-i", str(sf["path"])])
         start_ms = int(round(sf["start"] * 1000))
-        filters.append(f"[{i}:a]adelay={start_ms}|{start_ms},apad[a{i}]")
+        out_start = max(0.0, sf["duration"] - FADE_OUT)
+        filters.append(
+            f"[{i}:a]"
+            f"afade=t=in:st=0:d={FADE_IN},"
+            f"afade=t=out:st={out_start:.3f}:d={FADE_OUT},"
+            f"adelay={start_ms}|{start_ms},"
+            f"apad[a{i}]"
+        )
 
     mix_inputs = "".join(f"[a{i}]" for i in range(len(seg_files)))
     filter_complex = (
