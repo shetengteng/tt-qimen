@@ -1,0 +1,2667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>tt-qimen · 宣传片 · 开发者版</title>
+<meta name="viewport" content="width=1920, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<style>
+  /* ============ 全局基底 ============ */
+  :root {
+    --c-paper: #fffbf0;
+    --c-paper-deep: #f6efd8;
+    --c-paper-old: #e8dcb3;
+    --c-ink: #1a1613;
+    --c-ink-soft: #4a3f37;
+    --c-cinnabar: #c23a2a;
+    --c-cinnabar-soft: #e15a4a;
+    --c-rouge: #f3d9d4;
+    --c-violet: #3b2f63;
+    --c-violet-soft: #ece9f5;
+    --c-bg-dark: #0a0908;
+    --c-code-bg: #1e1e1e;
+    --c-code-comment: #6a9955;
+    --c-code-string: #ce9178;
+    --c-code-keyword: #569cd6;
+    --c-code-fn: #dcdcaa;
+    --c-code-text: #d4d4d4;
+
+    --font-cn-serif: 'STZhongsong', 'STSong', 'Songti SC', 'Noto Serif CJK SC', 'SimSun', serif;
+    --font-cn-sans: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    --font-en: 'Inter', 'Helvetica Neue', 'Segoe UI', sans-serif;
+    --font-code: 'JetBrains Mono', 'Menlo', 'Consolas', 'Courier New', monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100vw; height: 100vh;
+    overflow: hidden;
+    background: #000;
+    font-family: var(--font-cn-sans);
+    color: var(--c-ink);
+    user-select: none;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ============ 全屏舞台 ============ */
+  #stage {
+    position: relative;
+    width: 100vw; height: 100vh;
+    overflow: hidden;
+  }
+  .scene {
+    position: absolute; inset: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.45s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .scene.is-active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* ============ HUD ============ */
+  #hud {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 10000;
+    height: 4px;
+    background: rgba(255,255,255,0.08);
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  #hud.is-hidden { opacity: 0; }
+  #hud-bar {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, var(--c-cinnabar), var(--c-cinnabar-soft));
+    transition: width 0.1s linear;
+  }
+  #controls {
+    position: fixed;
+    bottom: 12px; right: 12px;
+    z-index: 10000;
+    display: flex; gap: 8px;
+    padding: 8px 12px;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(8px);
+    border-radius: 999px;
+    color: #fff;
+    font-size: 12px;
+    font-family: var(--font-en);
+    transition: opacity 0.3s;
+  }
+  #controls.is-hidden { opacity: 0; pointer-events: none; }
+  #controls button {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 11px;
+    font-family: inherit;
+  }
+  #controls button:hover { background: rgba(255,255,255,0.15); }
+  #controls .meta { opacity: 0.7; padding: 0 4px; }
+
+  /* ============ 字幕 ============ */
+  #subtitles {
+    position: fixed;
+    left: 0; right: 0;
+    bottom: 8vh;
+    z-index: 9999;
+    text-align: center;
+    pointer-events: none;
+  }
+  #subtitle-text {
+    display: inline-block;
+    padding: 12px 28px;
+    background: rgba(0,0,0,0.72);
+    color: #fff;
+    font-family: var(--font-cn-sans);
+    font-size: 26px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    line-height: 1.5;
+    border-radius: 6px;
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.25s, transform 0.25s;
+    max-width: 80vw;
+  }
+  #subtitle-text.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* =========================================== */
+  /* ============ S1 · 开场 · 严肃 ================ */
+  /* =========================================== */
+  #s1 {
+    background: radial-gradient(ellipse at center, #1a0e0a 0%, #000 70%);
+    flex-direction: column;
+  }
+  #s1 .kanji-wrap {
+    position: relative;
+    text-align: center;
+  }
+  #s1 .kanji {
+    font-family: var(--font-cn-serif);
+    font-size: 320px;
+    color: var(--c-cinnabar);
+    font-weight: 700;
+    line-height: 1;
+    text-shadow:
+      0 0 40px rgba(194, 58, 42, 0.5),
+      0 0 80px rgba(194, 58, 42, 0.25);
+    opacity: 0;
+    transform: scale(1.15);
+    filter: blur(8px);
+  }
+  #s1.is-active .kanji {
+    animation: s1-kanji-in 1.8s cubic-bezier(.22,.61,.36,1) 0.4s forwards;
+  }
+  @keyframes s1-kanji-in {
+    0%   { opacity: 0; transform: scale(1.15); filter: blur(8px); }
+    100% { opacity: 1; transform: scale(1.0); filter: blur(0); }
+  }
+  #s1 .subtitle-main {
+    margin-top: 32px;
+    font-family: var(--font-cn-serif);
+    font-size: 56px;
+    color: var(--c-paper);
+    letter-spacing: 0.5em;
+    text-indent: 0.5em;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  #s1.is-active .subtitle-main {
+    animation: s1-fade-up 1.2s ease-out 1.8s forwards;
+  }
+  #s1 .subtitle-en {
+    margin-top: 18px;
+    font-family: var(--font-en);
+    font-size: 18px;
+    color: rgba(255, 251, 240, 0.55);
+    letter-spacing: 0.4em;
+    text-indent: 0.4em;
+    text-transform: lowercase;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  #s1.is-active .subtitle-en {
+    animation: s1-fade-up 1.2s ease-out 2.4s forwards;
+  }
+  @keyframes s1-fade-up {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* =========================================== */
+  /* ============ S2 · 八字排盘 demo ============== */
+  /* =========================================== */
+  #s2 {
+    background:
+      radial-gradient(ellipse at 50% 40%, rgba(243, 217, 212, 0.4), transparent 60%),
+      var(--c-paper);
+    flex-direction: column;
+  }
+  #s2 .scene-title {
+    font-family: var(--font-cn-serif);
+    font-size: 36px;
+    color: var(--c-cinnabar);
+    letter-spacing: 0.4em;
+    text-indent: 0.4em;
+    margin-bottom: 28px;
+    opacity: 0;
+  }
+  #s2.is-active .scene-title { animation: fade-in 0.6s ease-out 0.1s forwards; }
+  #s2 .paipan-card {
+    position: relative;
+    background: #fff;
+    border: 2px solid var(--c-rouge);
+    border-radius: 16px;
+    padding: 36px 44px;
+    box-shadow: 0 20px 50px rgba(194, 58, 42, 0.12);
+    width: 1100px;
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  #s2.is-active .paipan-card { animation: fade-up 0.7s ease-out 0.3s forwards; }
+  #s2 .tech-badge {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    font-family: var(--font-code);
+    font-size: 11px;
+    color: var(--c-ink-soft);
+    background: var(--c-paper-deep);
+    padding: 5px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--c-rouge);
+    letter-spacing: 0.05em;
+  }
+  #s2 .tech-badge .key { color: var(--c-cinnabar); font-weight: 600; }
+  #s2 .pillar-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+  }
+  #s2 .pillar {
+    background: var(--c-paper);
+    border-radius: 12px;
+    padding: 24px 16px;
+    text-align: center;
+    border: 1px solid var(--c-rouge);
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  #s2.is-active .pillar { animation: fade-up 0.5s ease-out forwards; }
+  #s2.is-active .pillar:nth-child(1) { animation-delay: 0.8s; }
+  #s2.is-active .pillar:nth-child(2) { animation-delay: 0.95s; }
+  #s2.is-active .pillar:nth-child(3) { animation-delay: 1.10s; }
+  #s2.is-active .pillar:nth-child(4) { animation-delay: 1.25s; }
+  #s2 .pillar-label {
+    font-size: 13px;
+    color: var(--c-ink-soft);
+    letter-spacing: 0.35em;
+    text-indent: 0.35em;
+  }
+  #s2 .pillar-gan {
+    font-family: var(--font-cn-serif);
+    font-size: 64px;
+    color: var(--c-cinnabar);
+    line-height: 1;
+    margin: 16px 0 8px;
+    font-weight: 700;
+  }
+  #s2 .pillar-zhi {
+    font-family: var(--font-cn-serif);
+    font-size: 50px;
+    color: var(--c-ink);
+    line-height: 1;
+  }
+  #s2 .pillar-meta {
+    margin-top: 18px;
+    font-size: 12px;
+    color: var(--c-ink-soft);
+    letter-spacing: 0.12em;
+    line-height: 1.5;
+  }
+  #s2 .pillar-meta .row {
+    display: flex; justify-content: space-between;
+    padding: 2px 0;
+    border-top: 1px dotted var(--c-rouge);
+  }
+  #s2 .pillar-meta .row:first-child { border: 0; }
+  #s2 .pillar-meta .row .k { opacity: 0.6; }
+  @keyframes fade-up { to { opacity: 1; transform: translateY(0); } }
+  @keyframes fade-in { to { opacity: 1; } }
+
+  /* =========================================== */
+  /* ============ S3 · 古籍考据 ================== */
+  /* =========================================== */
+  #s3 {
+    background:
+      radial-gradient(ellipse at center, rgba(50, 28, 16, 0.4), #1a0d05 80%),
+      #1a0d05;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  #s3 .scene-label {
+    position: absolute;
+    top: 6vh;
+    font-family: var(--font-cn-serif);
+    font-size: 34px;
+    color: var(--c-paper);
+    letter-spacing: 0.4em;
+    text-indent: 0.4em;
+    opacity: 0;
+  }
+  #s3.is-active .scene-label { animation: fade-in 0.8s ease-out 0.1s forwards; }
+  #s3 .scene-label small {
+    display: block;
+    font-family: var(--font-code);
+    font-size: 12px;
+    color: var(--c-cinnabar-soft);
+    letter-spacing: 0.2em;
+    margin-top: 8px;
+    opacity: 0.85;
+  }
+  #s3 .books-track {
+    position: relative;
+    width: 100vw;
+    height: 60vh;
+    display: flex;
+    align-items: center;
+  }
+  #s3 .ancient-book {
+    position: absolute;
+    width: 380px;
+    height: 460px;
+    background:
+      linear-gradient(to right, transparent 0%, transparent 50%, rgba(0,0,0,0.15) 51%, transparent 53%),
+      radial-gradient(ellipse at center, var(--c-paper-old) 0%, #d4c08c 100%);
+    border: 1.5px solid #8a6b3a;
+    box-shadow:
+      0 25px 60px rgba(0,0,0,0.5),
+      inset 0 0 60px rgba(101, 70, 25, 0.18);
+    padding: 28px 32px;
+    left: 50%;
+    transform: translateX(-50%) translateX(100vw);
+    opacity: 0;
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 14px;
+    border-radius: 4px;
+  }
+  /* 古籍纸张纹理(SVG noise) */
+  #s3 .ancient-book::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(120, 80, 30, 0.04) 0 1px, transparent 1px 4px),
+      repeating-linear-gradient(90deg, rgba(120, 80, 30, 0.03) 0 1px, transparent 1px 6px);
+    pointer-events: none;
+    border-radius: inherit;
+  }
+  /* 古籍标题(竖排篆字风) */
+  #s3 .book-title {
+    writing-mode: vertical-rl;
+    font-family: var(--font-cn-serif);
+    font-size: 42px;
+    color: #5a3a1a;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    border-left: 2px solid #8a6b3a;
+    border-right: 2px solid #8a6b3a;
+    padding: 0 16px;
+    line-height: 1.1;
+  }
+  /* 古籍正文(竖排) */
+  #s3 .book-body {
+    writing-mode: vertical-rl;
+    font-family: var(--font-cn-serif);
+    font-size: 18px;
+    color: #3d2810;
+    line-height: 2.4;
+    letter-spacing: 0.15em;
+    flex: 1;
+    overflow: hidden;
+  }
+  /* 朱文方印 */
+  #s3 .seal {
+    position: absolute;
+    bottom: 28px;
+    right: 28px;
+    width: 64px; height: 64px;
+    background: var(--c-cinnabar);
+    color: var(--c-paper-old);
+    font-family: var(--font-cn-serif);
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.2;
+    text-align: center;
+    border-radius: 4px;
+    opacity: 0;
+    transform: scale(1.5) rotate(-8deg);
+    letter-spacing: 0.05em;
+    box-shadow:
+      inset 0 0 0 2px rgba(0,0,0,0.15),
+      0 0 0 1px var(--c-cinnabar);
+  }
+  /* 古籍页码 */
+  #s3 .folio {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-cn-serif);
+    font-size: 13px;
+    color: #5a3a1a;
+    opacity: 0.7;
+    letter-spacing: 0.15em;
+  }
+
+  /* 4 本古籍依次滑入滑出(每本停 1.5s,总 8s) */
+  #s3.is-active .book-1 { animation: s3-book-pass 2.0s ease-in-out 0.4s forwards; }
+  #s3.is-active .book-2 { animation: s3-book-pass 2.0s ease-in-out 2.0s forwards; }
+  #s3.is-active .book-3 { animation: s3-book-pass 2.0s ease-in-out 3.6s forwards; }
+  #s3.is-active .book-4 { animation: s3-book-pass 2.0s ease-in-out 5.2s forwards; }
+  @keyframes s3-book-pass {
+    0%   { transform: translateX(-50%) translateX(100vw); opacity: 0; }
+    25%  { transform: translateX(-50%) translateX(0); opacity: 1; }
+    75%  { transform: translateX(-50%) translateX(0); opacity: 1; }
+    100% { transform: translateX(-50%) translateX(-100vw); opacity: 0; }
+  }
+  #s3.is-active .book-1 .seal { animation: s3-seal-stamp 0.4s ease-out 1.0s forwards; }
+  #s3.is-active .book-2 .seal { animation: s3-seal-stamp 0.4s ease-out 2.6s forwards; }
+  #s3.is-active .book-3 .seal { animation: s3-seal-stamp 0.4s ease-out 4.2s forwards; }
+  #s3.is-active .book-4 .seal { animation: s3-seal-stamp 0.4s ease-out 5.8s forwards; }
+  @keyframes s3-seal-stamp {
+    0%   { opacity: 0; transform: scale(1.5) rotate(-8deg); }
+    100% { opacity: 0.92; transform: scale(1.0) rotate(-8deg); }
+  }
+
+  /* =========================================== */
+  /* ============ S4 · 8 大模块 + 库角标 ========== */
+  /* =========================================== */
+  #s4 {
+    background:
+      radial-gradient(ellipse at 50% 25%, rgba(243, 217, 212, 0.5), transparent 60%),
+      var(--c-paper);
+  }
+  #s4 .module-title {
+    position: absolute;
+    top: 5vh;
+    width: 100%;
+    text-align: center;
+    font-family: var(--font-cn-serif);
+    font-size: 38px;
+    color: var(--c-cinnabar);
+    letter-spacing: 0.5em;
+    text-indent: 0.5em;
+    opacity: 0;
+  }
+  #s4.is-active .module-title { animation: fade-in 0.8s ease-out 0s forwards; }
+  #s4 .module-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 26px;
+    width: 80%;
+    max-width: 1500px;
+  }
+  #s4 .mod-card {
+    background: #fff;
+    border: 1.5px solid var(--c-rouge);
+    border-radius: 14px;
+    padding: 22px 20px 16px;
+    box-shadow: 0 8px 24px rgba(194, 58, 42, 0.08);
+    text-align: center;
+    opacity: 0;
+    transform: translateY(40px);
+    position: relative;
+    overflow: hidden;
+  }
+  #s4 .mod-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--c-cinnabar), var(--c-cinnabar-soft));
+  }
+  #s4 .mod-card .mod-num {
+    font-family: var(--font-cn-serif);
+    font-size: 15px;
+    color: var(--c-cinnabar);
+    letter-spacing: 0.15em;
+  }
+  #s4 .mod-card .mod-name {
+    font-family: var(--font-cn-serif);
+    font-size: 34px;
+    color: var(--c-ink);
+    margin: 6px 0 4px;
+    font-weight: 700;
+  }
+  #s4 .mod-card .mod-sub {
+    font-size: 13px;
+    color: var(--c-ink-soft);
+    letter-spacing: 0.1em;
+    line-height: 1.5;
+  }
+  /* 核心库角标 — 开发者版独有 */
+  #s4 .mod-card .lib-tag {
+    margin-top: 14px;
+    padding: 6px 4px;
+    border-top: 1px dashed var(--c-rouge);
+    font-family: var(--font-code);
+    font-size: 11px;
+    color: var(--c-ink-soft);
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+  }
+  #s4 .mod-card .lib-tag .arrow { color: var(--c-cinnabar); margin: 0 4px; }
+  #s4 .mod-card .lib-tag .lib-name { color: var(--c-cinnabar); font-weight: 600; }
+  #s4.is-active .mod-card { animation: s4-card-in 0.5s cubic-bezier(.22,.61,.36,1) forwards; }
+  #s4.is-active .mod-card:nth-child(1) { animation-delay: 0.40s; }
+  #s4.is-active .mod-card:nth-child(2) { animation-delay: 0.70s; }
+  #s4.is-active .mod-card:nth-child(3) { animation-delay: 1.00s; }
+  #s4.is-active .mod-card:nth-child(4) { animation-delay: 1.30s; }
+  #s4.is-active .mod-card:nth-child(5) { animation-delay: 1.60s; }
+  #s4.is-active .mod-card:nth-child(6) { animation-delay: 1.90s; }
+  #s4.is-active .mod-card:nth-child(7) { animation-delay: 2.20s; }
+  #s4.is-active .mod-card:nth-child(8) { animation-delay: 2.50s; }
+  @keyframes s4-card-in { to { opacity: 1; transform: translateY(0); } }
+
+  /* =========================================== */
+  /* ============ S4b · 真实产品页轮播 ============ */
+  /* =========================================== */
+  #s4b {
+    background:
+      radial-gradient(ellipse at 50% 50%, rgba(243, 217, 212, 0.4), transparent 60%),
+      var(--c-paper);
+    flex-direction: column;
+    padding: 0;
+  }
+  #s4b .product-title {
+    position: absolute;
+    top: 5vh;
+    width: 100%;
+    text-align: center;
+    font-family: var(--font-cn-serif);
+    font-size: 32px;
+    color: var(--c-cinnabar);
+    letter-spacing: 0.4em;
+    text-indent: 0.4em;
+    opacity: 0;
+    z-index: 5;
+  }
+  #s4b.is-active .product-title { animation: fade-in 0.6s ease-out 0s forwards; }
+  #s4b .product-title small {
+    display: block;
+    font-family: var(--font-en);
+    font-size: 13px;
+    color: var(--c-ink-soft);
+    letter-spacing: 0.2em;
+    margin-top: 8px;
+    opacity: 0.7;
+  }
+  /* 浏览器风窗口包裹截图 */
+  #s4b .product-frame {
+    position: relative;
+    width: 78vw;
+    max-width: 1500px;
+    aspect-ratio: 1440 / 900;
+    background: #fff;
+    border-radius: 14px 14px 8px 8px;
+    overflow: hidden;
+    border: 1.5px solid var(--c-rouge);
+    box-shadow: 0 24px 60px rgba(194, 58, 42, 0.16);
+    margin-top: 80px;
+  }
+  #s4b .product-titlebar {
+    height: 36px;
+    background: linear-gradient(180deg, #f5efde, #ebe3cc);
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    gap: 8px;
+    border-bottom: 1px solid var(--c-rouge);
+  }
+  #s4b .product-titlebar .dot { width: 12px; height: 12px; border-radius: 50%; }
+  #s4b .product-titlebar .dot.r { background: #ff5f56; }
+  #s4b .product-titlebar .dot.y { background: #ffbd2e; }
+  #s4b .product-titlebar .dot.g { background: #27c93f; }
+  #s4b .product-titlebar .urlbar {
+    flex: 1;
+    margin: 0 14px;
+    height: 22px;
+    background: #fff;
+    border: 1px solid var(--c-rouge);
+    border-radius: 11px;
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    font-family: var(--font-code);
+    font-size: 12px;
+    color: var(--c-cinnabar);
+  }
+  #s4b .product-stage {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 36px);
+    overflow: hidden;
+  }
+  #s4b .product-slide {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: top center;
+    background-repeat: no-repeat;
+    opacity: 0;
+    transform: scale(1.04);
+    transition: opacity 0.6s ease-in-out, transform 4s ease-out;
+  }
+  #s4b .product-slide.is-on {
+    opacity: 1;
+    transform: scale(1.0);
+  }
+  /* 5 张幻灯页面 */
+  #s4b .slide-home     { background-image: url('assets/app-home.png'); }
+  #s4b .slide-bazi     { background-image: url('assets/app-bazi.png'); }
+  #s4b .slide-ziwei    { background-image: url('assets/app-ziwei.png'); }
+  #s4b .slide-huangli  { background-image: url('assets/app-huangli.png'); }
+  #s4b .slide-settings { background-image: url('assets/app-settings.png'); }
+  /* 底部模块标签条(显示当前展示模块名) */
+  #s4b .product-caption {
+    position: absolute;
+    bottom: 5vh;
+    width: 100%;
+    text-align: center;
+    z-index: 5;
+  }
+  #s4b .product-caption-pill {
+    display: inline-block;
+    background: var(--c-cinnabar);
+    color: #fff;
+    font-family: var(--font-cn-serif);
+    font-size: 18px;
+    padding: 8px 22px;
+    border-radius: 999px;
+    letter-spacing: 0.2em;
+    text-indent: 0.2em;
+    box-shadow: 0 8px 20px rgba(194, 58, 42, 0.3);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.4s, transform 0.4s;
+  }
+  #s4b .product-caption-pill.is-on {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* =========================================== */
+  /* ============ S5 · AI 解读 =================== */
+  /* =========================================== */
+  #s5 {
+    background: #fffbf0;
+    flex-direction: row;
+    align-items: stretch;
+    padding: 5vh 6vw;
+  }
+  #s5 .paipan {
+    flex: 1.2;
+    background: #fff;
+    border: 1px solid var(--c-rouge);
+    border-radius: 14px;
+    padding: 28px;
+    box-shadow: 0 10px 30px rgba(194, 58, 42, 0.06);
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  #s5.is-active .paipan { animation: s5-paipan-in 0.7s ease-out 0.1s forwards; }
+  @keyframes s5-paipan-in { to { opacity: 1; transform: translateX(0); } }
+  #s5 .paipan-title {
+    font-family: var(--font-cn-serif);
+    font-size: 26px;
+    color: var(--c-cinnabar);
+    border-bottom: 2px solid var(--c-rouge);
+    padding-bottom: 12px;
+    margin-bottom: 18px;
+  }
+  #s5 .pillar-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    flex: 1;
+  }
+  #s5 .pillar {
+    background: var(--c-paper);
+    border-radius: 8px;
+    padding: 16px 8px;
+    text-align: center;
+    border: 1px solid var(--c-rouge);
+  }
+  #s5 .pillar-label {
+    font-size: 12px;
+    color: var(--c-ink-soft);
+    letter-spacing: 0.3em;
+  }
+  #s5 .pillar-gan {
+    font-family: var(--font-cn-serif);
+    font-size: 48px;
+    color: var(--c-cinnabar);
+    line-height: 1;
+    margin: 12px 0 6px;
+    font-weight: 700;
+  }
+  #s5 .pillar-zhi {
+    font-family: var(--font-cn-serif);
+    font-size: 38px;
+    color: var(--c-ink);
+    line-height: 1;
+  }
+  /* v1.4 真截图 paipan 容器:替换原 4 柱 mock,改为浏览器壳 + 真实排盘截图 + LIVE 角标 */
+  #s5 .paipan-shot {
+    position: relative;
+    padding: 0;
+    overflow: hidden;
+    background: #fff;
+  }
+  #s5 .paipan-titlebar {
+    height: 36px;
+    background: linear-gradient(180deg, #f3f3f5, #e8e8eb);
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    gap: 8px;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+  }
+  #s5 .paipan-titlebar .dot { width: 10px; height: 10px; border-radius: 50%; }
+  #s5 .paipan-titlebar .dot.r { background: #ff5f56; }
+  #s5 .paipan-titlebar .dot.y { background: #ffbd2e; }
+  #s5 .paipan-titlebar .dot.g { background: #27c93f; }
+  #s5 .paipan-urlbar {
+    flex: 1;
+    margin-left: 8px;
+    height: 22px;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 11px;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    font-family: var(--font-code);
+    font-size: 11px;
+    color: var(--c-ink-soft);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  #s5 .paipan-urlbar .lock { color: #6c9b50; margin-right: 6px; }
+  #s5 .paipan-urlbar .accent { color: var(--c-cinnabar); margin-right: 0; }
+  #s5 .paipan-img {
+    display: block;
+    width: 100%;
+    height: calc(100% - 36px);
+    object-fit: cover;
+    object-position: top center;
+  }
+  #s5 .paipan-badge {
+    position: absolute;
+    top: 50px;
+    right: 14px;
+    background: var(--c-cinnabar);
+    color: #fff;
+    font-family: var(--font-cn-serif);
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    box-shadow: 0 4px 12px rgba(194, 58, 42, 0.35);
+    letter-spacing: 0.1em;
+    z-index: 3;
+  }
+  #s5 .pillar-meta {
+    margin-top: 14px;
+    font-size: 11px;
+    color: var(--c-ink-soft);
+    letter-spacing: 0.1em;
+    line-height: 1.4;
+  }
+  #s5 .ai-side {
+    flex: 1;
+    margin-left: 28px;
+    background: linear-gradient(160deg, #fff 0%, #f9f4e3 100%);
+    border: 1px solid var(--c-rouge);
+    border-radius: 14px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  #s5.is-active .ai-side { animation: s5-ai-in 0.7s ease-out 0.9s forwards; }
+  @keyframes s5-ai-in { to { opacity: 1; transform: translateX(0); } }
+  #s5 .ai-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--c-rouge);
+    padding-bottom: 12px;
+  }
+  #s5 .ai-title {
+    font-family: var(--font-cn-serif);
+    font-size: 24px;
+    color: var(--c-cinnabar);
+  }
+  #s5 .provider-chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+    margin-bottom: 12px;
+  }
+  #s5 .chip {
+    font-size: 11px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid var(--c-rouge);
+    color: var(--c-ink-soft);
+    letter-spacing: 0.05em;
+    transition: all 0.3s;
+  }
+  #s5.is-active .chip.is-flash { animation: s5-chip-flash 0.8s ease-out forwards; }
+  @keyframes s5-chip-flash {
+    0%, 100% { background: #fff; color: var(--c-ink-soft); transform: scale(1); }
+    50% { background: var(--c-cinnabar); color: #fff; transform: scale(1.08); box-shadow: 0 4px 12px rgba(194, 58, 42, 0.35); }
+  }
+  /* 开发者版独有 — BYOK 工程化标签 */
+  #s5 .byok-line {
+    font-family: var(--font-code);
+    font-size: 11px;
+    color: var(--c-ink-soft);
+    letter-spacing: 0.05em;
+    margin-bottom: 14px;
+    opacity: 0.7;
+  }
+  #s5 .byok-line .accent { color: var(--c-cinnabar); }
+  #s5 .ai-stream {
+    flex: 1;
+    background: #fff;
+    border-radius: 8px;
+    padding: 18px 20px;
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--c-ink);
+    font-family: var(--font-cn-serif);
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(243, 217, 212, 0.6);
+  }
+  #s5 .ai-stream .cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background: var(--c-cinnabar);
+    vertical-align: text-bottom;
+    margin-left: 2px;
+    animation: cursor-blink 1s infinite;
+  }
+  /* v1.4: AI 流式输出的 markdown 渲染样式(按 systemPrompt 中要求的 ## 标题 / 列表 / 引用 排版) */
+  #s5 .ai-stream .md-h2 {
+    font-family: var(--font-cn-serif);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--c-cinnabar);
+    margin: 10px 0 6px;
+    padding-left: 8px;
+    border-left: 3px solid var(--c-cinnabar);
+    letter-spacing: 0.05em;
+  }
+  #s5 .ai-stream .md-h2:first-child { margin-top: 0; }
+  #s5 .ai-stream .md-li {
+    font-size: 14px;
+    line-height: 1.6;
+    padding-left: 12px;
+    color: var(--c-ink);
+  }
+  #s5 .ai-stream .md-dot {
+    color: var(--c-cinnabar);
+    font-weight: 700;
+    margin-right: 6px;
+  }
+  #s5 .ai-stream .md-quote {
+    margin: 6px 0;
+    padding: 8px 14px;
+    background: rgba(243, 217, 212, 0.35);
+    border-left: 3px solid var(--c-rouge);
+    border-radius: 0 6px 6px 0;
+    font-size: 14px;
+    color: var(--c-ink-soft);
+    font-family: var(--font-cn-serif);
+    font-style: italic;
+  }
+  #s5 .ai-stream .md-disclaimer {
+    margin-top: 12px;
+    font-size: 11px;
+    color: var(--c-ink-soft);
+    opacity: 0.7;
+    font-style: italic;
+    font-family: var(--font-en);
+  }
+  #s5 .ai-stream code {
+    font-family: var(--font-code);
+    font-size: 13px;
+    background: rgba(0,0,0,0.04);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--c-ink);
+  }
+  #s5 .ai-stream b {
+    color: var(--c-cinnabar);
+    font-weight: 700;
+  }
+
+  /* =========================================== */
+  /* ============ S6 · 双主题 + Token 窗 ========= */
+  /* =========================================== */
+  #s6 {
+    background: var(--c-paper);
+    overflow: hidden;
+  }
+  #s6 .split-stage {
+    position: relative;
+    width: 78%;
+    height: 65%;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+  }
+  #s6 .theme-half {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 36px 44px;
+  }
+  #s6 .theme-half.guofeng {
+    background: var(--c-paper);
+    color: var(--c-ink);
+    clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+  }
+  #s6 .theme-half.minimal {
+    background: #fff;
+    color: var(--c-ink);
+    clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+  }
+  #s6 .theme-half h3 {
+    font-family: var(--font-cn-serif);
+    font-size: 32px;
+    margin-bottom: 8px;
+  }
+  #s6 .theme-half.guofeng h3 { color: var(--c-cinnabar); }
+  #s6 .theme-half.minimal h3 { color: var(--c-violet); }
+  #s6 .theme-half .url {
+    font-family: var(--font-code);
+    font-size: 13px;
+    opacity: 0.55;
+    letter-spacing: 0.05em;
+    margin-bottom: 24px;
+  }
+  #s6 .demo-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+    border: 1px solid;
+  }
+  #s6 .theme-half.guofeng .demo-card { border-color: var(--c-rouge); }
+  #s6 .theme-half.minimal .demo-card { border-color: var(--c-violet-soft); }
+  #s6 .demo-card .demo-title {
+    font-family: var(--font-cn-serif);
+    font-size: 22px;
+    margin-bottom: 6px;
+  }
+  #s6 .theme-half.guofeng .demo-title { color: var(--c-cinnabar); }
+  #s6 .theme-half.minimal .demo-title { color: var(--c-violet); }
+  #s6 .demo-card .demo-body {
+    font-size: 14px;
+    opacity: 0.7;
+    line-height: 1.7;
+  }
+  #s6 .demo-btn {
+    margin-top: 14px;
+    display: inline-block;
+    padding: 8px 18px;
+    border-radius: 999px;
+    color: #fff;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+  }
+  #s6 .theme-half.guofeng .demo-btn { background: var(--c-cinnabar); }
+  #s6 .theme-half.minimal .demo-btn { background: var(--c-violet); }
+  #s6 .divider-sweep {
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 50%;
+    width: 6px;
+    background: linear-gradient(180deg, var(--c-cinnabar), var(--c-violet));
+    transform: translateX(-50%);
+    box-shadow: 0 0 20px rgba(194, 58, 42, 0.5);
+    opacity: 0;
+  }
+  #s6.is-active .divider-sweep { animation: s6-divider 1.2s ease-out 0.2s forwards; }
+  @keyframes s6-divider {
+    0%   { opacity: 0; height: 0; top: 50%; }
+    40%  { opacity: 1; height: 100%; top: 0; }
+    100% { opacity: 0.85; height: 100%; top: 0; }
+  }
+  /* 右上 CSS Token 切换代码窗 — 开发者版独有 */
+  #s6 .token-window {
+    position: absolute;
+    top: 5vh;
+    right: 5vw;
+    width: 320px;
+    background: var(--c-code-bg);
+    border-radius: 10px;
+    box-shadow: 0 14px 40px rgba(0,0,0,0.4);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  #s6.is-active .token-window { animation: fade-up 0.7s ease-out 0.6s forwards; }
+  #s6 .token-window .titlebar {
+    height: 28px;
+    background: #2d2d30;
+    display: flex; align-items: center;
+    padding: 0 12px;
+    gap: 6px;
+  }
+  #s6 .token-window .titlebar .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  #s6 .token-window .titlebar .dot.r { background: #ff5f56; }
+  #s6 .token-window .titlebar .dot.y { background: #ffbd2e; }
+  #s6 .token-window .titlebar .dot.g { background: #27c93f; }
+  #s6 .token-window .filename {
+    margin-left: auto;
+    font-family: var(--font-code);
+    font-size: 11px;
+    color: #aaa;
+  }
+  #s6 .token-window .code {
+    padding: 16px 18px;
+    font-family: var(--font-code);
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--c-code-text);
+  }
+  #s6 .token-window .code .kw { color: var(--c-code-keyword); }
+  #s6 .token-window .code .var { color: #9cdcfe; }
+  #s6 .token-window .code .val-gf { color: #ff7864; transition: color 0.5s; }
+  #s6 .token-window .code .val-mn { color: #b39dff; transition: color 0.5s; }
+  #s6 .token-window .code .com { color: var(--c-code-comment); }
+  #s6 .color-swatch {
+    display: inline-block;
+    width: 12px; height: 12px;
+    border-radius: 2px;
+    margin-right: 6px;
+    vertical-align: middle;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  #s6 .swatch-gf { background: #c23a2a; }
+  #s6 .swatch-mn { background: #3b2f63; }
+  #s6 .theme-tag {
+    position: absolute;
+    top: 16px;
+    font-family: var(--font-cn-serif);
+    font-size: 14px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    color: #fff;
+  }
+  #s6 .theme-tag.gf { left: 16px; background: var(--c-cinnabar); z-index: 5; }
+  #s6 .theme-tag.mn { right: 16px; background: var(--c-violet); z-index: 5; }
+  /* v1.3 新增:左右两半各嵌入"整张"真实站点截图,缩放到该半屏宽度 */
+  #s6 .theme-half .theme-shot {
+    position: absolute;
+    top: 50%;
+    width: 50%;                  /* 关键:stage 整宽的一半,正好填满 clip-path 切出的左/右半 */
+    height: auto;
+    max-height: 92%;
+    object-fit: contain;
+    display: block;
+    opacity: 0;
+    box-shadow: 0 18px 50px rgba(0,0,0,0.18);
+    border-radius: 6px;
+    transition: opacity 1.0s ease-out, transform 1.0s ease-out;
+  }
+  #s6 .theme-half.guofeng .theme-shot {
+    left: 0;
+    transform: translateY(-50%) translateX(20px);
+  }
+  #s6 .theme-half.minimal .theme-shot {
+    right: 0;
+    transform: translateY(-50%) translateX(-20px);
+  }
+  #s6.is-active .theme-half.guofeng .theme-shot {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+    transition-delay: 0.4s;
+  }
+  #s6.is-active .theme-half.minimal .theme-shot {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+    transition-delay: 0.7s;
+  }
+
+  /* =========================================== */
+  /* ============ S7 · 桌面端 ==================== */
+  /* =========================================== */
+  #s7 {
+    background:
+      radial-gradient(ellipse at 50% 30%, rgba(243, 217, 212, 0.4), transparent 60%),
+      var(--c-paper);
+    flex-direction: column;
+  }
+  #s7 .platforms {
+    display: flex;
+    gap: 32px;
+    align-items: flex-end;
+  }
+  #s7 .platform {
+    background: #fff;
+    border-radius: 12px 12px 4px 4px;
+    border: 1.5px solid var(--c-rouge);
+    box-shadow: 0 12px 32px rgba(194, 58, 42, 0.1);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  #s7 .platform.web { width: 420px; height: 260px; }
+  #s7 .platform.mac { width: 360px; height: 240px; }
+  #s7 .platform.win { width: 360px; height: 240px; }
+  #s7.is-active .platform.web { animation: fade-up 0.55s ease-out 0.2s forwards; }
+  #s7.is-active .platform.mac { animation: fade-up 0.55s ease-out 0.55s forwards; }
+  #s7.is-active .platform.win { animation: fade-up 0.55s ease-out 0.9s forwards; }
+  #s7 .titlebar {
+    height: 32px;
+    background: linear-gradient(180deg, #f5efde, #ebe3cc);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    border-bottom: 1px solid var(--c-rouge);
+    font-size: 11px;
+    color: var(--c-ink-soft);
+  }
+  #s7 .traffic-lights { display: flex; gap: 6px; margin-right: 10px; }
+  #s7 .traffic-lights span { width: 11px; height: 11px; border-radius: 50%; }
+  #s7 .traffic-lights .r { background: #ff5f56; }
+  #s7 .traffic-lights .y { background: #ffbd2e; }
+  #s7 .traffic-lights .g { background: #27c93f; }
+  #s7 .win-controls {
+    margin-left: auto;
+    font-family: var(--font-code);
+    color: var(--c-ink-soft);
+    letter-spacing: 0.3em;
+    font-size: 13px;
+  }
+  #s7 .url-bar {
+    flex: 1;
+    background: #fff;
+    border: 1px solid var(--c-rouge);
+    border-radius: 4px;
+    height: 18px;
+    margin-left: 8px;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    font-family: var(--font-code);
+    font-size: 10px;
+    color: var(--c-cinnabar);
+  }
+  #s7 .platform-body {
+    position: relative;
+    height: calc(100% - 32px);
+    overflow: hidden;
+    background: linear-gradient(135deg, #fffbf0, #f6efd8);
+  }
+  /* v1.4: 三种形态各自嵌入同一张真实截图 */
+  #s7 .platform-shot {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+  }
+  #s7 .platform-tag {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--c-cinnabar);
+    color: #fff;
+    font-family: var(--font-cn-serif);
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    box-shadow: 0 4px 10px rgba(194, 58, 42, 0.35);
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+  #s7 .platform-tag-mac { background: #1a1613; }
+  #s7 .platform-tag-win { background: #0078d4; box-shadow: 0 4px 10px rgba(0, 120, 212, 0.35); }
+  /* 顶部标题:"一份代码 · 三种形态" + 副标 */
+  #s7 .platforms-title {
+    text-align: center;
+    margin-bottom: 24px;
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  #s7.is-active .platforms-title { animation: fade-up 0.7s ease-out 0s forwards; }
+  #s7 .platforms-title span {
+    display: block;
+    font-family: var(--font-cn-serif);
+    font-size: 30px;
+    color: var(--c-cinnabar);
+    letter-spacing: 0.2em;
+  }
+  #s7 .platforms-title small {
+    display: block;
+    margin-top: 8px;
+    font-family: var(--font-code);
+    font-size: 11px;
+    color: var(--c-ink-soft);
+    letter-spacing: 0.15em;
+  }
+  /* 开发者版独有 — 技术行 + 离线 ready 角标 */
+  #s7 .tech-row {
+    margin-top: 28px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    opacity: 0;
+  }
+  #s7.is-active .tech-row { animation: fade-up 0.7s ease-out 1.5s forwards; }
+  #s7 .tech-pill {
+    background: #fff;
+    border: 1px solid var(--c-rouge);
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-family: var(--font-code);
+    font-size: 13px;
+    color: var(--c-ink-soft);
+    letter-spacing: 0.05em;
+  }
+  #s7 .tech-pill .accent { color: var(--c-cinnabar); font-weight: 700; }
+  #s7 .offline-badge {
+    background: #ddead0;
+    color: #2a6b1a;
+    border: 1.5px solid #6c9b50;
+    border-radius: 999px;
+    padding: 7px 14px;
+    font-family: var(--font-code);
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+  }
+
+  /* =========================================== */
+  /* ============ S8 · 隐私 + 工程化承诺 ========== */
+  /* =========================================== */
+  #s8 {
+    background: radial-gradient(ellipse at center, #1a1613 0%, #000 80%);
+    flex-direction: column;
+  }
+  #s8 .laptop-zone {
+    position: relative;
+    width: 100%;
+    height: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #s8 .laptop {
+    position: relative;
+    width: 420px;
+    height: 260px;
+    background: linear-gradient(180deg, #2a2520, #3a3028);
+    border-radius: 14px 14px 4px 4px;
+    border: 2px solid var(--c-cinnabar);
+    box-shadow:
+      0 0 40px rgba(194, 58, 42, 0.4),
+      inset 0 0 40px rgba(194, 58, 42, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  #s8.is-active .laptop { animation: s8-fade-in 0.7s ease-out 0.1s forwards; }
+  @keyframes s8-fade-in { to { opacity: 1; transform: scale(1); } }
+  #s8 .laptop-screen {
+    font-family: var(--font-cn-serif);
+    font-size: 100px;
+    color: var(--c-cinnabar);
+    text-shadow: 0 0 20px rgba(194, 58, 42, 0.6);
+    font-weight: 700;
+  }
+  #s8 .cloud-block {
+    position: absolute;
+    color: rgba(255, 255, 255, 0.25);
+    font-family: var(--font-en);
+    font-size: 14px;
+    padding: 10px 16px;
+    border: 1px dashed rgba(255, 255, 255, 0.25);
+    border-radius: 999px;
+    opacity: 0;
+  }
+  #s8 .cloud-block.tl { top: 12%; left: 12%; }
+  #s8 .cloud-block.tr { top: 8%; right: 10%; }
+  #s8 .cloud-block.bl { bottom: 18%; left: 16%; }
+  #s8 .cloud-block.br { bottom: 14%; right: 14%; }
+  #s8.is-active .cloud-block { animation: s8-cloud-show 0.4s ease-out forwards, s8-cloud-cross 0.4s ease-out forwards; }
+  #s8.is-active .cloud-block.tl { animation-delay: 1.8s, 2.6s; }
+  #s8.is-active .cloud-block.tr { animation-delay: 2.0s, 2.8s; }
+  #s8.is-active .cloud-block.bl { animation-delay: 2.2s, 3.0s; }
+  #s8.is-active .cloud-block.br { animation-delay: 2.4s, 3.2s; }
+  @keyframes s8-cloud-show { to { opacity: 1; } }
+  @keyframes s8-cloud-cross {
+    to { color: rgba(194, 58, 42, 0.6); border-color: var(--c-cinnabar); text-decoration: line-through; }
+  }
+  /* 三个工程化承诺卡片 - 开发者版独有 */
+  #s8 .promise-row {
+    display: flex;
+    gap: 24px;
+    margin-top: 24px;
+    opacity: 0;
+  }
+  #s8.is-active .promise-row { animation: s8-fade-in 0.7s ease-out 4s forwards; }
+  #s8 .promise-card {
+    background: rgba(255, 251, 240, 0.06);
+    border: 1px solid rgba(194, 58, 42, 0.4);
+    border-radius: 12px;
+    padding: 20px 24px;
+    width: 320px;
+    text-align: center;
+  }
+  #s8 .promise-card .head {
+    font-family: var(--font-cn-serif);
+    font-size: 22px;
+    color: var(--c-cinnabar-soft);
+    margin-bottom: 8px;
+    letter-spacing: 0.1em;
+  }
+  #s8 .promise-card .body {
+    font-family: var(--font-code);
+    font-size: 12px;
+    color: rgba(255, 251, 240, 0.65);
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+  }
+  #s8 .promise-card .body .accent { color: var(--c-cinnabar-soft); }
+
+  /* =========================================== */
+  /* ============ S9 · 技术栈墙 =================== */
+  /* =========================================== */
+  #s9 {
+    background:
+      radial-gradient(ellipse at center, rgba(60, 30, 20, 0.4), #0a0908 80%),
+      #0a0908;
+    flex-direction: column;
+  }
+  #s9 .stack-title {
+    font-family: var(--font-cn-serif);
+    font-size: 32px;
+    color: var(--c-paper);
+    letter-spacing: 0.4em;
+    text-indent: 0.4em;
+    margin-bottom: 36px;
+    opacity: 0;
+  }
+  #s9.is-active .stack-title { animation: fade-in 0.6s ease-out 0.1s forwards; }
+  #s9 .stack-title small {
+    display: block;
+    margin-top: 8px;
+    font-family: var(--font-code);
+    font-size: 13px;
+    color: var(--c-cinnabar-soft);
+    letter-spacing: 0.2em;
+    opacity: 0.85;
+  }
+  /* 13 个技术标签的"星空"散列布局 */
+  #s9 .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px 20px;
+    width: 80%;
+    max-width: 1500px;
+  }
+  #s9 .tech-tag {
+    background: rgba(255, 251, 240, 0.05);
+    border: 1.5px solid rgba(194, 58, 42, 0.35);
+    border-radius: 12px;
+    padding: 18px 16px;
+    text-align: center;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: all 0.4s;
+  }
+  #s9 .tech-tag .icon {
+    font-family: var(--font-cn-serif);
+    font-size: 28px;
+    color: var(--c-cinnabar);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  #s9 .tech-tag .name {
+    font-family: var(--font-code);
+    font-size: 15px;
+    color: var(--c-paper);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+  }
+  #s9 .tech-tag .ver {
+    font-family: var(--font-code);
+    font-size: 11px;
+    color: var(--c-cinnabar-soft);
+    margin-top: 4px;
+    letter-spacing: 0.05em;
+  }
+  #s9 .tech-tag.is-on {
+    opacity: 1;
+    transform: scale(1.0);
+    background: rgba(194, 58, 42, 0.12);
+    border-color: var(--c-cinnabar);
+    box-shadow:
+      0 0 24px rgba(194, 58, 42, 0.3),
+      inset 0 0 12px rgba(194, 58, 42, 0.08);
+  }
+  /* 跨度卡(占两列) */
+  #s9 .tech-tag.wide { grid-column: span 2; }
+
+  /* =========================================== */
+  /* ============ S0 · GitHub 真截图(v1.3 开场)= */
+  /* =========================================== */
+  /* v1.3 改造:#s10 → #s0,作为开场;删除 5 个 annotation,改为纯净的浏览器壳 + Ken Burns 缓动 */
+  #s0 {
+    background: #0d1117;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 0;
+  }
+  #s0 .gh-frame {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+  /* 浏览器顶栏装饰 */
+  #s0 .gh-browser-bar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 40px;
+    background: linear-gradient(180deg, #2d2d30, #1f1f23);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 8px;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  }
+  #s0 .gh-browser-bar .dot { width: 12px; height: 12px; border-radius: 50%; }
+  #s0 .gh-browser-bar .dot.r { background: #ff5f56; }
+  #s0 .gh-browser-bar .dot.y { background: #ffbd2e; }
+  #s0 .gh-browser-bar .dot.g { background: #27c93f; }
+  #s0 .gh-browser-bar .urlbar {
+    flex: 1;
+    margin: 0 14px;
+    height: 26px;
+    background: #18181c;
+    border-radius: 14px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    font-family: var(--font-code);
+    font-size: 13px;
+    color: #b5b5b5;
+    letter-spacing: 0.02em;
+  }
+  #s0 .gh-browser-bar .urlbar .lock { color: #6c9b50; margin-right: 8px; }
+  #s0 .gh-browser-bar .urlbar .accent { color: #ffe57f; }
+  /* 截图容器(开场:渐显 + 轻微下滚 Ken Burns) */
+  #s0 .gh-shot {
+    position: absolute;
+    top: 40px; left: 0; right: 0;
+    bottom: 0;
+    overflow: hidden;
+  }
+  #s0 .gh-shot img {
+    display: block;
+    width: 100%;
+    transform: translateY(0);
+    opacity: 0;
+    transition: opacity 1.2s ease-out;
+  }
+  #s0.is-active .gh-shot img {
+    opacity: 1;
+    animation: s0-kenburns 6s cubic-bezier(.4,0,.2,1) 0.6s forwards;
+  }
+  @keyframes s0-kenburns {
+    0%   { transform: translateY(0) scale(1.00); }
+    100% { transform: translateY(-18%) scale(1.04); }
+  }
+  /* 顶部右上"开源 / Public / MIT" 角标 — 不再带"哪里是 README"指引,只留品牌徽 */
+  #s0 .gh-corner-tag {
+    position: absolute;
+    top: 60px;
+    right: 4vw;
+    z-index: 8;
+    background: var(--c-cinnabar);
+    color: #fff;
+    font-family: var(--font-cn-serif);
+    font-size: 18px;
+    padding: 8px 18px;
+    border-radius: 999px;
+    box-shadow: 0 8px 24px rgba(194, 58, 42, 0.45);
+    letter-spacing: 0.1em;
+    opacity: 0;
+    transform: translateY(-10px) rotate(-2deg);
+    transition: opacity 0.5s, transform 0.5s;
+  }
+  #s0.is-active .gh-corner-tag {
+    opacity: 1;
+    transform: translateY(0) rotate(-2deg);
+    transition-delay: 1.5s;
+  }
+
+  /* =========================================== */
+  /* =========================================== */
+  /* ============ S10 · 项目架构(v1.4 新)========= */
+  /* =========================================== */
+  #s10 {
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(243, 217, 212, 0.25), transparent 60%),
+      var(--c-paper);
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 5vh 6vw;
+    gap: 0;
+  }
+  #s10 .arch-title {
+    text-align: center;
+    margin-bottom: 24px;
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  #s10.is-active .arch-title { animation: fade-up 0.6s ease-out 0s forwards; }
+  #s10 .arch-title span {
+    display: block;
+    font-family: var(--font-cn-serif);
+    font-size: 30px;
+    color: var(--c-cinnabar);
+    letter-spacing: 0.25em;
+  }
+  #s10 .arch-title small {
+    display: block;
+    margin-top: 6px;
+    font-family: var(--font-code);
+    font-size: 11px;
+    color: var(--c-ink-soft);
+    letter-spacing: 0.18em;
+  }
+  #s10 .arch-stage {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 32px;
+    align-items: stretch;
+  }
+  #s10 .arch-layers {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  #s10 .arch-layer {
+    background: #fff;
+    border: 1.5px solid var(--c-rouge);
+    border-radius: 12px;
+    padding: 14px 22px;
+    box-shadow: 0 6px 18px rgba(194, 58, 42, 0.08);
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  #s10.is-active .arch-layer[data-i="0"] { animation: fade-up 0.5s ease-out 0.3s forwards; }
+  #s10.is-active .arch-layer[data-i="1"] { animation: fade-up 0.5s ease-out 1.5s forwards; }
+  #s10.is-active .arch-layer[data-i="2"] { animation: fade-up 0.5s ease-out 2.7s forwards; }
+  #s10.is-active .arch-layer[data-i="3"] { animation: fade-up 0.5s ease-out 3.9s forwards; }
+  #s10 .layer-label {
+    font-family: var(--font-cn-serif);
+    font-size: 14px;
+    color: var(--c-cinnabar);
+    letter-spacing: 0.15em;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  #s10 .layer-ui .layer-label::before    { content: '① '; }
+  #s10 .layer-app .layer-label::before   { content: '② '; }
+  #s10 .layer-core .layer-label::before  { content: '③ '; }
+  #s10 .layer-ai .layer-label::before    { content: '④ '; }
+  #s10 .layer-body {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+  #s10 .layer-chip {
+    background: var(--c-paper);
+    border: 1px solid var(--c-rouge);
+    border-radius: 4px;
+    padding: 3px 10px;
+    font-family: var(--font-code);
+    font-size: 11px;
+    color: var(--c-ink);
+    letter-spacing: 0.05em;
+  }
+  #s10 .layer-ai .layer-chip { border-color: var(--c-violet-soft); color: var(--c-violet); }
+  #s10 .layer-note {
+    font-family: var(--font-cn-serif);
+    font-size: 12px;
+    color: var(--c-ink-soft);
+    line-height: 1.5;
+    font-style: italic;
+  }
+  /* 层间箭头(垂直向下,虚线 + 三角箭头) */
+  #s10 .arch-arrow {
+    position: relative;
+    align-self: center;
+    width: 2px;
+    height: 18px;
+    background: repeating-linear-gradient(180deg, var(--c-rouge) 0 4px, transparent 4px 8px);
+    opacity: 0;
+    margin: 0;
+  }
+  #s10 .arch-arrow::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 7px solid var(--c-cinnabar);
+  }
+  #s10.is-active .arch-arrow[data-i="0"] { animation: arrow-in 0.4s ease-out 1.1s forwards; }
+  #s10.is-active .arch-arrow[data-i="1"] { animation: arrow-in 0.4s ease-out 2.3s forwards; }
+  #s10.is-active .arch-arrow[data-i="2"] { animation: arrow-in 0.4s ease-out 3.5s forwards; }
+  @keyframes arrow-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  /* 右侧设计原则 aside */
+  #s10 .arch-aside {
+    background: linear-gradient(180deg, #fff, #fbf3e9);
+    border: 1.5px dashed var(--c-rouge);
+    border-radius: 12px;
+    padding: 22px 20px;
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  #s10.is-active .arch-aside {
+    animation: aside-in 0.6s ease-out 4.5s forwards;
+  }
+  @keyframes aside-in {
+    from { opacity: 0; transform: translateX(20px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  #s10 .aside-title {
+    font-family: var(--font-cn-serif);
+    font-size: 18px;
+    color: var(--c-cinnabar);
+    letter-spacing: 0.2em;
+    text-align: center;
+    border-bottom: 1px solid var(--c-rouge);
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+    font-weight: 700;
+  }
+  #s10 .aside-list {
+    margin: 0;
+    padding-left: 22px;
+    counter-reset: principle;
+    list-style: none;
+  }
+  #s10 .aside-list li {
+    counter-increment: principle;
+    position: relative;
+    margin-bottom: 12px;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--c-ink);
+  }
+  #s10 .aside-list li::before {
+    content: counter(principle, decimal-leading-zero);
+    position: absolute;
+    left: -22px;
+    top: 0;
+    font-family: var(--font-code);
+    font-size: 11px;
+    color: var(--c-cinnabar);
+    font-weight: 700;
+  }
+  #s10 .aside-list li b {
+    color: var(--c-cinnabar);
+    font-family: var(--font-cn-serif);
+    font-size: 14px;
+  }
+  #s10 .aside-list li span {
+    color: var(--c-ink-soft);
+    font-size: 11px;
+  }
+
+  /* =========================================== */
+  /* ============ S11 · CTA Star ================ */
+  /* =========================================== */
+  #s11 {
+    background: radial-gradient(ellipse at center, #1a0e0a 0%, #000 75%);
+    flex-direction: column;
+  }
+  #s11 .cta-kanji {
+    font-family: var(--font-cn-serif);
+    font-size: 180px;
+    color: var(--c-cinnabar);
+    font-weight: 700;
+    text-shadow:
+      0 0 50px rgba(194, 58, 42, 0.6),
+      0 0 100px rgba(194, 58, 42, 0.25);
+    opacity: 0;
+    transform: scale(0.9);
+    line-height: 1;
+  }
+  #s11.is-active .cta-kanji { animation: s11-fade-in 0.8s ease-out 0.1s forwards; }
+  @keyframes s11-fade-in { to { opacity: 1; transform: scale(1); } }
+  /* 终端窗 + git clone 命令 */
+  #s11 .terminal {
+    margin-top: 32px;
+    width: 720px;
+    background: var(--c-code-bg);
+    border-radius: 10px;
+    box-shadow: 0 18px 50px rgba(0,0,0,0.6);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  #s11.is-active .terminal { animation: s11-fade-in 0.7s ease-out 0.8s forwards; }
+  #s11 .terminal-titlebar {
+    height: 30px;
+    background: #2d2d30;
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    gap: 6px;
+  }
+  #s11 .terminal-titlebar .dot { width: 11px; height: 11px; border-radius: 50%; }
+  #s11 .terminal-titlebar .dot.r { background: #ff5f56; }
+  #s11 .terminal-titlebar .dot.y { background: #ffbd2e; }
+  #s11 .terminal-titlebar .dot.g { background: #27c93f; }
+  #s11 .terminal-titlebar .label {
+    margin-left: auto;
+    font-family: var(--font-code);
+    font-size: 11px;
+    color: #aaa;
+  }
+  #s11 .terminal-body {
+    padding: 18px 22px;
+    font-family: var(--font-code);
+    font-size: 17px;
+    line-height: 1.8;
+    color: var(--c-code-text);
+  }
+  #s11 .prompt { color: var(--c-code-comment); }
+  #s11 .cmd-text { color: #d4d4d4; }
+  #s11 .typed { color: #ffe57f; }
+  #s11 .cursor-blink {
+    display: inline-block;
+    width: 9px; height: 1em;
+    background: var(--c-code-text);
+    vertical-align: text-bottom;
+    margin-left: 2px;
+    animation: cursor-blink 1s infinite;
+  }
+  /* Star 按钮(模拟 GitHub) */
+  #s11 .star-btn {
+    margin-top: 28px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #21262d;
+    border: 1px solid #30363d;
+    color: #e6edf3;
+    font-family: var(--font-en);
+    font-size: 15px;
+    padding: 10px 22px;
+    border-radius: 8px;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  #s11.is-active .star-btn { animation: s11-star-in 0.6s ease-out 1.6s forwards; }
+  @keyframes s11-star-in {
+    0% { opacity: 0; transform: translateY(20px); }
+    70% { opacity: 1; transform: translateY(0) scale(1.05); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  #s11 .star-btn .star {
+    color: #f1c40f;
+    font-size: 18px;
+  }
+  #s11 .star-btn .star-count {
+    background: #30363d;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-family: var(--font-code);
+    font-size: 13px;
+    margin-left: 4px;
+  }
+  #s11 .cta-meta {
+    margin-top: 20px;
+    font-family: var(--font-code);
+    font-size: 13px;
+    color: rgba(255, 251, 240, 0.45);
+    letter-spacing: 0.15em;
+    opacity: 0;
+  }
+  #s11.is-active .cta-meta { animation: s11-fade-in 0.7s ease-out 2.2s forwards; }
+</style>
+</head>
+<body>
+
+<!-- ============ HUD ============ -->
+<div id="hud"><div id="hud-bar"></div></div>
+<div id="controls">
+  <button id="btn-replay">↻ 重播</button>
+  <button id="btn-toggle">⏸ 暂停</button>
+  <button id="btn-prev">⏮</button>
+  <button id="btn-next">⏭</button>
+  <span class="meta" id="meta">00:00 / 01:51</span>
+  <button id="btn-hide">隐藏 [H]</button>
+</div>
+
+<!-- ============ 字幕 ============ -->
+<div id="subtitles">
+  <span id="subtitle-text"></span>
+</div>
+
+<!-- ============ 舞台 ============ -->
+<div id="stage">
+
+  <!-- ===== S1 · 开场(v1 风格 · 古人问天 今人问己) ===== -->
+  <!-- ===== S0 · GitHub 真截图(v1.3 新增首位) ===== -->
+  <section class="scene" id="s0">
+    <div class="gh-frame">
+      <div class="gh-browser-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <div class="urlbar">
+          <span class="lock">🔒</span>
+          <span class="accent">github.com</span>/shetengteng/tt-qimen
+        </div>
+      </div>
+      <div class="gh-shot">
+        <img id="gh-img" src="assets/github-repo.png" alt="GitHub repo screenshot"
+             onerror="this.style.display='none'; this.parentElement.style.background='#0d1117'; this.parentElement.innerHTML='<div style=&quot;display:flex;align-items:center;justify-content:center;height:100%;color:#666;font-family:monospace;font-size:20px;&quot;>github-repo.png &#x4e0d;&#x5b58;&#x5728;,&#x8bf7;&#x5148;&#x8fd0;&#x884c;&#x622a;&#x56fe;&#x811a;&#x672c;</div>'"/>
+      </div>
+      <div class="gh-corner-tag">github.com/shetengteng/tt-qimen · MIT · Open Source</div>
+    </div>
+  </section>
+
+  <section class="scene" id="s1">
+    <div class="kanji-wrap">
+      <div class="kanji">启</div>
+      <div class="subtitle-main">启门问卜</div>
+      <div class="subtitle-en">tt-qimen · open the gate, ask the way</div>
+    </div>
+  </section>
+
+  <!-- ===== S2 · 八字排盘 demo ===== -->
+  <section class="scene" id="s2">
+    <div class="scene-title">八字排盘 · 实时计算</div>
+    <div class="paipan-card">
+      <div class="tech-badge">powered by <span class="key">tyme4ts</span> + <span class="key">lunisolar</span></div>
+      <div class="pillar-grid">
+        <div class="pillar">
+          <div class="pillar-label">年柱</div>
+          <div class="pillar-gan">甲</div>
+          <div class="pillar-zhi">寅</div>
+          <div class="pillar-meta">
+            <div class="row"><span class="k">纳音</span><span>大林木</span></div>
+            <div class="row"><span class="k">长生</span><span>建禄</span></div>
+            <div class="row"><span class="k">十神</span><span>正官</span></div>
+          </div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-label">月柱</div>
+          <div class="pillar-gan">丁</div>
+          <div class="pillar-zhi">卯</div>
+          <div class="pillar-meta">
+            <div class="row"><span class="k">纳音</span><span>炉中火</span></div>
+            <div class="row"><span class="k">长生</span><span>沐浴</span></div>
+            <div class="row"><span class="k">十神</span><span>偏印</span></div>
+          </div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-label">日柱</div>
+          <div class="pillar-gan">己</div>
+          <div class="pillar-zhi">巳</div>
+          <div class="pillar-meta">
+            <div class="row"><span class="k">纳音</span><span>大林木</span></div>
+            <div class="row"><span class="k">长生</span><span>帝旺</span></div>
+            <div class="row"><span class="k">日主</span><span>本命</span></div>
+          </div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-label">时柱</div>
+          <div class="pillar-gan">辛</div>
+          <div class="pillar-zhi">未</div>
+          <div class="pillar-meta">
+            <div class="row"><span class="k">纳音</span><span>路旁土</span></div>
+            <div class="row"><span class="k">长生</span><span>冠带</span></div>
+            <div class="row"><span class="k">十神</span><span>食神</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== S3 · 古籍考据 ===== -->
+  <section class="scene" id="s3">
+    <div class="scene-label">真实算法 · 古籍可考<small>EVIDENCE OF ANCIENT TEXTS</small></div>
+    <div class="books-track">
+      <div class="ancient-book book-1">
+        <div class="book-title">三命通會</div>
+        <div class="book-body">
+          日主旺衰之辨,須察月令深淺。<br/>
+          甲乙生於春令,木旺得時,須火土洩之以成局。<br/>
+          庚辛生於秋月,金當令權,喜水以洩其鋒。<br/>
+          四柱之中,以日干為主,以月令為提綱,審其進退。
+        </div>
+        <div class="seal">三命<br/>通會</div>
+        <div class="folio">卷之三 · 論日干</div>
+      </div>
+      <div class="ancient-book book-2">
+        <div class="book-title">袁天罡稱骨歌</div>
+        <div class="book-body">
+          四兩二錢:<br/>
+          此命推來事不同,<br/>
+          為人能幹異凡庸。<br/>
+          中年還有逍遙福,<br/>
+          不比前番運未通。
+        </div>
+        <div class="seal">袁公<br/>稱骨</div>
+        <div class="folio">四兩二錢 · 中上</div>
+      </div>
+      <div class="ancient-book book-3">
+        <div class="book-title">周公解夢</div>
+        <div class="book-body">
+          夢飛者,主名揚四海。<br/>
+          夢水者,主財祿增進。<br/>
+          夢山者,主有貴人相助。<br/>
+          夢樹者,主子孫昌盛。<br/>
+          凡夢吉者,所求皆遂。
+        </div>
+        <div class="seal">周公<br/>解夢</div>
+        <div class="folio">天地門 · 之卷</div>
+      </div>
+      <div class="ancient-book book-4">
+        <div class="book-title">觀音靈籤</div>
+        <div class="book-body">
+          第一籤 · 上上:<br/>
+          天開地闢結良緣,<br/>
+          日吉時良萬事全。<br/>
+          若得此籤非小可,<br/>
+          人行忠正帝王宣。
+        </div>
+        <div class="seal">觀音<br/>靈籤</div>
+        <div class="folio">第一籤 · 上上</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== S4 · 8 模块 + 库角标 ===== -->
+  <section class="scene" id="s4">
+    <div class="module-title">八门 · 八种算法</div>
+    <div class="module-grid">
+      <div class="mod-card">
+        <div class="mod-num">壹 · 01</div>
+        <div class="mod-name">八字</div>
+        <div class="mod-sub">四柱推命 · 五行</div>
+        <div class="lib-tag">core <span class="arrow">→</span> <span class="lib-name">tyme4ts</span> + <span class="lib-name">lunisolar</span></div>
+      </div>
+      <div class="mod-card">
+        <div class="mod-num">贰 · 02</div>
+        <div class="mod-name">紫微</div>
+        <div class="mod-sub">十二宫垣 · 四化</div>
+        <div class="lib-tag">core <span class="arrow">→</span> <span class="lib-name">iztro</span></div>
+      </div>
+      <div class="mod-card">
+        <div class="mod-num">叁 · 03</div>
+        <div class="mod-name">小六壬</div>
+        <div class="mod-sub">六宫 · 月日时</div>
+        <div class="lib-tag">core <span class="arrow">→</span> <span class="lib-name">pure logic</span></div>
+      </div>
+      <div class="mod-card">
+        <div class="mod-num">肆 · 04</div>
+        <div class="mod-name">称骨</div>
+        <div class="mod-sub">袁天罡之诀</div>
+        <div class="lib-tag">core <span class="arrow">→</span> <span class="lib-name">static rules</span></div>
+      </div>
+      <div class="mod-card">
+        <div class="mod-num">伍 · 05</div>
+        <div class="mod-name">灵签</div>
+        <div class="mod-sub">观音 100 签</div>
+        <div class="lib-tag">core <span class="arrow">→</span> <span class="lib-name">100 poems JSON</span></div>
+      </div>
+      <div class="mod-card">
+        <div class="mod-num">陆 · 06</div>
+        <div class="mod-name">姓名</div>
+        <div class="mod-sub">五格 · 三才</div>
+        <div class="lib-tag">core <span class="arrow">→</span> <span class="lib-name">chinese-character-strokes</span></div>
+      </div>
+      <div class="mod-card">
+        <div class="mod-num">柒 · 07</div>
+        <div class="mod-name">黄历</div>
+        <div class="mod-sub">宜忌 · 吉时</div>
+        <div class="lib-tag">core <span class="arrow">→</span> <span class="lib-name">tyme4ts almanac</span></div>
+      </div>
+      <div class="mod-card">
+        <div class="mod-num">捌 · 08</div>
+        <div class="mod-name">解梦</div>
+        <div class="mod-sub">周公辞典</div>
+        <div class="lib-tag">core <span class="arrow">→</span> <span class="lib-name">Fuse.js search</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== S4b · 真实产品页轮播 ===== -->
+  <section class="scene" id="s4b">
+    <div class="product-title">八门 · 七法 · 立等可现<small>EIGHT MODULES · SEVEN ARTS · INSTANT READING</small></div>
+    <div class="product-frame">
+      <div class="product-titlebar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <div class="urlbar">https://shetengteng.github.io/tt-qimen/</div>
+      </div>
+      <div class="product-stage">
+        <div class="product-slide slide-home" data-i="0"></div>
+        <div class="product-slide slide-bazi" data-i="1"></div>
+        <div class="product-slide slide-ziwei" data-i="2"></div>
+        <div class="product-slide slide-huangli" data-i="3"></div>
+        <div class="product-slide slide-settings" data-i="4"></div>
+      </div>
+    </div>
+    <div class="product-caption">
+      <span class="product-caption-pill" id="s4b-caption">首页 · Home</span>
+    </div>
+  </section>
+
+  <!-- ===== S5 · AI 解读(v1.4:左半改用真实排盘截图) ===== -->
+  <section class="scene" id="s5">
+    <div class="paipan paipan-shot">
+      <div class="paipan-titlebar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="paipan-urlbar">
+          <span class="lock">🔒</span>
+          <span class="accent">github.io</span>/tt-qimen/#/bazi?year=1994&amp;month=4&amp;day=20…
+        </span>
+      </div>
+      <img class="paipan-img" src="assets/app-bazi-result.png" alt="bazi result screenshot"
+           onerror="this.style.display='none'; this.parentElement.innerHTML += '<div style=&quot;display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-family:monospace;font-size:14px;&quot;>app-bazi-result.png 不存在,请先跑 _capture-bazi-result.cjs</div>'"/>
+      <div class="paipan-badge">真实排盘 · LIVE</div>
+    </div>
+    <div class="ai-side">
+      <div class="ai-header">
+        <div class="ai-title">AI 解读</div>
+        <div style="font-size: 11px; color: var(--c-ink-soft);">流式 · 多轮</div>
+      </div>
+      <div class="provider-chips">
+        <span class="chip" data-i="0">OpenAI</span>
+        <span class="chip" data-i="1">Claude</span>
+        <span class="chip" data-i="2">Gemini</span>
+        <span class="chip" data-i="3">Grok</span>
+        <span class="chip" data-i="4">DeepSeek</span>
+        <span class="chip" data-i="5">Qwen</span>
+        <span class="chip" data-i="6">Kimi</span>
+        <span class="chip" data-i="7">GLM</span>
+      </div>
+      <div class="byok-line">
+        <span class="accent">自带 Key</span> · 直连模型官方 · 不经任何中转
+      </div>
+      <div class="ai-stream" id="ai-stream"><span class="cursor"></span></div>
+    </div>
+  </section>
+
+  <!-- ===== S6 · 双主题 + Token 窗(v1.3:真截图) ===== -->
+  <section class="scene" id="s6">
+    <div class="split-stage">
+      <div class="theme-half guofeng">
+        <span class="theme-tag gf">国风 · Guofeng</span>
+        <img class="theme-shot" src="assets/theme-guofeng.png" alt="theme guofeng screenshot"
+             onerror="this.style.display='none'; this.parentElement.style.background='var(--c-paper)'; this.parentElement.innerHTML += '<div style=&quot;display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-family:monospace;font-size:14px;&quot;>theme-guofeng.png 不存在</div>'"/>
+      </div>
+      <div class="theme-half minimal">
+        <span class="theme-tag mn">简约 · Minimal</span>
+        <img class="theme-shot" src="assets/theme-minimal.png" alt="theme minimal screenshot"
+             onerror="this.style.display='none'; this.parentElement.style.background='#fff'; this.parentElement.innerHTML += '<div style=&quot;display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-family:monospace;font-size:14px;&quot;>theme-minimal.png 不存在</div>'"/>
+      </div>
+      <div class="divider-sweep"></div>
+    </div>
+    <!-- v1.5: 已移除右上 CSS Token 代码窗,信息聚焦到两侧真截图对比 -->
+  </section>
+
+  <!-- ===== S7 · 桌面端 ===== -->
+  <section class="scene" id="s7">
+    <div class="platforms-title">
+      <span>一份内容 · 三处可用</span>
+      <small>WEB · macOS · WINDOWS · 同一份页面 · 打开即用</small>
+    </div>
+    <div class="platforms">
+      <div class="platform web">
+        <div class="titlebar">
+          <div class="traffic-lights"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+          <div class="url-bar">https://shetengteng.github.io/tt-qimen/</div>
+        </div>
+        <div class="platform-body">
+          <img class="platform-shot" src="assets/app-home.png" alt="web build" onerror="this.style.display='none'"/>
+          <div class="platform-tag platform-tag-web">Web · 无需安装</div>
+        </div>
+      </div>
+      <div class="platform mac">
+        <div class="titlebar">
+          <div class="traffic-lights"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+          <span style="margin-left: 10px;">tt-qimen.app</span>
+        </div>
+        <div class="platform-body">
+          <img class="platform-shot" src="assets/app-home.png" alt="macOS build" onerror="this.style.display='none'"/>
+          <div class="platform-tag platform-tag-mac">macOS · 桌面端 · 离线可用</div>
+        </div>
+      </div>
+      <div class="platform win">
+        <div class="titlebar">
+          <span>tt-qimen — 启门问卜</span>
+          <div class="win-controls">— ▢ ×</div>
+        </div>
+        <div class="platform-body">
+          <img class="platform-shot" src="assets/app-home.png" alt="Windows build" onerror="this.style.display='none'"/>
+          <div class="platform-tag platform-tag-win">Windows · 桌面端 · 离线可用</div>
+        </div>
+      </div>
+    </div>
+    <div class="tech-row">
+      <div class="tech-pill">浏览器打开 · <span class="accent">立等可用</span></div>
+      <div class="tech-pill">桌面端 · <span class="accent">完全离线</span></div>
+      <div class="tech-pill">三处页面 · <span class="accent">体验一致</span></div>
+      <div class="offline-badge">✓ OFFLINE READY</div>
+    </div>
+  </section>
+
+  <!-- ===== S8 · 隐私 + 工程承诺 ===== -->
+  <section class="scene" id="s8">
+    <div class="laptop-zone">
+      <div class="cloud-block tl">☁ Cloud Server</div>
+      <div class="cloud-block tr">☁ Analytics</div>
+      <div class="cloud-block bl">☁ User Data</div>
+      <div class="cloud-block br">☁ Cookie Track</div>
+      <div class="laptop">
+        <div class="laptop-screen">启</div>
+      </div>
+    </div>
+    <div class="promise-row">
+      <div class="promise-card">
+        <div class="head">零后端</div>
+        <div class="body">
+          no server, no API,<br/>
+          <span class="accent">no data collection</span>
+        </div>
+      </div>
+      <div class="promise-card">
+        <div class="head">仅本地 Key</div>
+        <div class="body">
+          所有信息<br/>
+          <span class="accent">只保存在你的浏览器</span>
+        </div>
+      </div>
+      <div class="promise-card">
+        <div class="head">直连官方</div>
+        <div class="body">
+          requests go direct to<br/>
+          <span class="accent">api.openai.com</span>, <span class="accent">api.anthropic.com</span> …
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== S9 · 技术栈墙 ===== -->
+  <section class="scene" id="s9">
+    <div class="stack-title">技术栈<small>STACK · OPEN · TYPED · TESTED</small></div>
+    <div class="stack-grid">
+      <div class="tech-tag" data-i="0"><div class="icon">V</div><div class="name">Vue</div><div class="ver">3.4 · setup</div></div>
+      <div class="tech-tag" data-i="1"><div class="icon">⚡</div><div class="name">Vite</div><div class="ver">5.x</div></div>
+      <div class="tech-tag" data-i="2"><div class="icon">TS</div><div class="name">TypeScript</div><div class="ver">5.5 · strict</div></div>
+      <div class="tech-tag" data-i="3"><div class="icon">~</div><div class="name">Tailwind</div><div class="ver">v4</div></div>
+      <div class="tech-tag" data-i="4"><div class="icon">◇</div><div class="name">shadcn-vue</div><div class="ver">+ reka-ui</div></div>
+
+      <div class="tech-tag" data-i="5"><div class="icon">π</div><div class="name">Pinia</div><div class="ver">2.x</div></div>
+      <div class="tech-tag" data-i="6"><div class="icon">⌭</div><div class="name">Vue Router</div><div class="ver">4 · hash</div></div>
+      <div class="tech-tag" data-i="7"><div class="icon">i18n</div><div class="name">vue-i18n</div><div class="ver">9 · lazy</div></div>
+      <div class="tech-tag" data-i="8"><div class="icon">历</div><div class="name">tyme4ts</div><div class="ver">+ lunisolar</div></div>
+      <div class="tech-tag" data-i="9"><div class="icon">紫</div><div class="name">iztro</div><div class="ver">紫微引擎</div></div>
+
+      <div class="tech-tag" data-i="10"><div class="icon">⌘</div><div class="name">Tauri 2</div><div class="ver">desktop</div></div>
+      <div class="tech-tag wide" data-i="11"><div class="icon">AI</div><div class="name">8 LLM SDKs</div><div class="ver">OpenAI · Anthropic · Gemini · xAI · DeepSeek · Qwen · Kimi · GLM</div></div>
+      <div class="tech-tag" data-i="12"><div class="icon">✓</div><div class="name">Vitest 4</div><div class="ver">+ happy-dom</div></div>
+    </div>
+  </section>
+
+  <!-- ===== S10 · 项目架构 · 设计思路(v1.4 新增) ===== -->
+  <section class="scene" id="s10">
+    <div class="arch-title">
+      <span>项目设计思路</span>
+      <small>ARCHITECTURE · DATA FLOW · DESIGN PRINCIPLES</small>
+    </div>
+    <div class="arch-stage">
+      <div class="arch-layers">
+        <div class="arch-layer layer-ui" data-i="0">
+          <div class="layer-label">UI 层 · 渲染页面</div>
+          <div class="layer-body">
+            <span class="layer-chip">现代前端</span>
+            <span class="layer-chip">shadcn-vue</span>
+            <span class="layer-chip">双主题切换</span>
+            <span class="layer-chip">国风 ⇄ 简约</span>
+          </div>
+          <div class="layer-note">三种形态 · Web · macOS · Windows · 体验一致</div>
+        </div>
+        <div class="arch-arrow" data-i="0"></div>
+        <div class="arch-layer layer-app" data-i="1">
+          <div class="layer-label">应用层 · 组织数据</div>
+          <div class="layer-body">
+            <span class="layer-chip">页面路由</span>
+            <span class="layer-chip">全局状态</span>
+            <span class="layer-chip">8 大业务模块</span>
+            <span class="layer-chip">多语言</span>
+          </div>
+          <div class="layer-note">八字 · 紫微 · 小六壬 · 称骨 · 灵签 · 姓名 · 黄历 · 解梦</div>
+        </div>
+        <div class="arch-arrow" data-i="1"></div>
+        <div class="arch-layer layer-core" data-i="2">
+          <div class="layer-label">算法层 · 跑算法</div>
+          <div class="layer-body">
+            <span class="layer-chip">历法引擎</span>
+            <span class="layer-chip">紫微算法</span>
+            <span class="layer-chip">规则引擎</span>
+            <span class="layer-chip">古籍数据集</span>
+          </div>
+          <div class="layer-note">公历 ⇄ 农历 ⇄ 干支 · 十神 · 神煞 · 大运 · 流年 · 全部本地计算</div>
+        </div>
+        <div class="arch-arrow" data-i="2"></div>
+        <div class="arch-layer layer-ai" data-i="3">
+          <div class="layer-label">AI 层 · 可选 · 自带 Key</div>
+          <div class="layer-body">
+            <span class="layer-chip">OpenAI</span>
+            <span class="layer-chip">Claude</span>
+            <span class="layer-chip">Gemini</span>
+            <span class="layer-chip">DeepSeek</span>
+            <span class="layer-chip">+4 家</span>
+          </div>
+          <div class="layer-note">命盘交给 AI · 一键读懂 · 直连模型官方 · 不经任何中转</div>
+        </div>
+      </div>
+      <div class="arch-aside">
+        <div class="aside-title">设计原则</div>
+        <ol class="aside-list">
+          <li><b>浏览器优先</b><br/><span>核心算法、数据、UI 全部在浏览器内闭环</span></li>
+          <li><b>零后端</b><br/><span>没有服务器 = 没有数据可被收集</span></li>
+          <li><b>一切可溯源</b><br/><span>每条算法都标注古籍出处与字段引用</span></li>
+          <li><b>AI 可插拔</b><br/><span>自带 Key · 直连模型官方 · 不经任何中转</span></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== S11 · CTA ===== -->
+  <section class="scene" id="s11">
+    <div class="cta-kanji">启</div>
+    <div class="terminal">
+      <div class="terminal-titlebar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="label">~/projects · zsh</span>
+      </div>
+      <div class="terminal-body">
+        <div><span class="prompt">$</span> <span class="cmd-text" id="s11-cmd"></span><span class="cursor-blink"></span></div>
+      </div>
+    </div>
+    <div class="star-btn">
+      <span class="star">★</span>
+      <span>Star</span>
+      <span>shetengteng/tt-qimen</span>
+      <span class="star-count">1.2k</span>
+    </div>
+    <div class="cta-meta">github.com/shetengteng/tt-qimen · MIT License · Made with care</div>
+  </section>
+
+</div>
+
+<script>
+/* ============================================================
+   时间线驱动器(开发者版 v1.4 · 13 镜头 · 120s)
+   ============================================================ */
+
+const SCENES = [
+  { id: 's0',  start:   0.0, end:   6.0 },   // GitHub 真截图开场(Ken Burns)
+  { id: 's1',  start:   6.0, end:  12.0 },   // 启门问卜
+  { id: 's2',  start:  12.0, end:  21.0 },   // 八字 mock 4 柱
+  { id: 's3',  start:  21.0, end:  29.0 },   // 古籍考据
+  { id: 's4',  start:  29.0, end:  40.0 },   // 8 大模块矩阵
+  { id: 's4b', start:  40.0, end:  50.0 },   // 5 张产品真截图轮播
+  { id: 's5',  start:  50.0, end:  64.0 },   // v1.4: AI 解读 14s 容纳 4 段真实 markdown
+  { id: 's6',  start:  64.0, end:  74.0 },   // 双主题真截图
+  { id: 's7',  start:  74.0, end:  84.0 },   // v1.4: 三种形态真截图(Web/macOS/Windows)
+  { id: 's8',  start:  84.0, end:  94.0 },   // 隐私本地
+  { id: 's9',  start:  94.0, end: 106.0 },   // 技术栈墙
+  { id: 's10', start: 106.0, end: 116.0 },   // v1.4 新增: 项目架构与设计原则
+  { id: 's11', start: 116.0, end: 120.0 },   // CTA
+];
+
+const SUBTITLES = [
+  /* s0 开场: GitHub 真截图 */
+  { s:  0.8, e:  3.2, t: 'github.com/shetengteng/tt-qimen' },
+  { s:  3.4, e:  6.0, t: '一份开源的中式占卜浏览器 · MIT License' },
+  /* s1 启门问卜 */
+  { s:  8.0, e: 12.0, t: '古人问天 · 今人问己 · 启门问卜' },
+  /* s2 八字排盘 · v1.5 改: 引出 hook "看不懂没关系 交给 AI" */
+  { s: 12.5, e: 17.0, t: '八字四柱 · 公历直转干支 · 神煞速算' },
+  { s: 17.3, e: 21.0, t: '看不懂没关系——接下来交给 AI' },
+  /* s3 古籍 */
+  { s: 21.5, e: 25.5, t: '每一行算法 · 每一首签诗 · 皆有古籍出处' },
+  { s: 25.8, e: 29.0, t: '一切有迹可循 · 可逐字溯源' },
+  /* s4 8 模块 */
+  { s: 29.5, e: 34.5, t: '八大门类 · 各擅其法' },
+  { s: 34.8, e: 40.0, t: '看得见 · 查得到 · 跑得通' },
+  /* s4b 产品轮播 · v1.5 改: 去掉 low 的"这就是真实运行" */
+  { s: 40.3, e: 45.5, t: '八门 · 七法 · 立等可现' },
+  { s: 45.8, e: 50.0, t: '首页 · 八字 · 紫微 · 黄历 · AI 设置' },
+  /* s5 AI 解读 · v1.5 改: 强化"复杂命盘 一键读懂" hook */
+  { s: 50.5, e: 55.0, t: '左侧真实排盘 · 右侧接上 AI' },
+  { s: 55.3, e: 59.5, t: '复杂命盘 · 一键读懂' },
+  { s: 59.8, e: 64.0, t: '8 家主流大模型 · 你的 Key · 直连官方' },
+  /* s6 双主题 · v1.5 改: 去掉 CSS Token / URL 参数等开发术语 */
+  { s: 64.5, e: 69.5, t: '国风 ⇄ 简约 · 一键切换' },
+  { s: 69.8, e: 74.0, t: '同一份内容 · 两种气质' },
+  /* s7 三种形态 · v1.5 改: 去掉 Tauri 2 这类技术名 */
+  { s: 74.5, e: 79.5, t: '浏览器打开就用 · macOS 与 Windows 也有桌面端' },
+  { s: 79.8, e: 84.0, t: '同一份内容 · 三处可用 · 桌面端完全离线' },
+  /* s8 隐私 */
+  { s: 84.5, e: 89.0, t: '没有后端 · 也就没有数据收集' },
+  { s: 89.3, e: 94.0, t: '所有数据 · 始终在你自己浏览器里' },
+  /* s9 技术栈 · v1.5 改: 简化, 不堆砌每个名字 */
+  { s: 94.5, e:100.0, t: '现代前端技术栈 · 全部开源' },
+  { s:100.3, e:106.0, t: '历法、紫微、桌面、AI 各自挑选社区里的最优解' },
+  /* s10 项目设计思路 · v1.5 改: 去"四层架构"的几何术语 */
+  { s:106.5, e:111.0, t: '一个项目 · 四件事:页面 · 数据 · 算法 · AI' },
+  { s:111.3, e:116.0, t: '浏览器优先 · 零后端 · 一切可溯源 · AI 可插拔' },
+  /* s11 CTA */
+  { s:116.5, e:120.0, t: 'git clone · Star · Contribute · 一切尽在 GitHub' },
+];
+
+const TOTAL = 120.0;
+
+let t = 0;
+let playing = true;
+let timer = null;
+const TICK = 100;
+
+const subtitleEl = document.getElementById('subtitle-text');
+const hudBar = document.getElementById('hud-bar');
+const meta = document.getElementById('meta');
+const aiStream = document.getElementById('ai-stream');
+
+let currentSceneId = null;
+let lastSubtitleText = null;
+
+/* S5 真实 AI 流式输出(v1.4: 按"块"为单位逐段揭示, 每块在它的 at 时刻入场, 上一块继续可见;
+   对应左半截图命例 甲戌·戊辰·丙子·癸巳 丙火日主, 风格紧贴 systemPrompts.ts 中的 bazi framework) */
+const AI_BLOCKS = [
+  { at: 1.8, html: '<div class="md-h2">命盘总览</div>男命,公历 <code>1994-04-20 09:00</code>,<b>丙火</b>日主生于辰月(湿土晦火)。' },
+  { at: 3.2, html: '<div class="md-h2">日主与格局</div><b>身弱偏印格</b>——日干丙火生季春,辰月戊土食神当令,水势暗旺,丙火失令而又被湿土晦其光,整体偏弱。' },
+  { at: 5.0, html: '<div class="md-h2">五行喜忌</div><div class="md-li"><span class="md-dot">·</span>喜:<b>木火</b>(印星生身、比劫助身)</div><div class="md-li"><span class="md-dot">·</span>忌:<b>水土过旺</b>(子辰半合水局,防晦火)</div><div class="md-li"><span class="md-dot">·</span>用神:<b>甲木偏印</b>(年柱透干,清气可用)</div>' },
+  { at: 7.4, html: '<div class="md-h2">神煞速览</div><div class="md-quote">戌辰相冲 — 主动荡迁徙;癸水正官透时,利文职、研究类岗位。</div>' },
+  { at: 9.2, html: '<div class="md-disclaimer">以上仅为传统命理参考,不构成医学/法律/投资建议。</div>' },
+];
+let aiTypingStart = null;
+let aiTypingDone = false;
+
+/* S5 chip 切换调度(v1.4: S5 在 50-64s, 14s 内 8 chip 节奏更舒展) */
+const CHIP_SCHEDULE = [
+  { at: 51.5, i: 0 }, { at: 52.7, i: 1 }, { at: 53.9, i: 2 }, { at: 55.1, i: 3 },
+  { at: 56.3, i: 4 }, { at: 57.5, i: 5 }, { at: 58.7, i: 6 }, { at: 59.9, i: 7 },
+];
+let chipFiredUntil = -1;
+
+/* S6 Token 切换调度(v1.4: S6 在 64-74s) */
+const TOKEN_SCHEDULE = [
+  { at: 66.5, theme: 'minimal' },
+  { at: 69.0, theme: 'guofeng' },
+  { at: 71.5, theme: 'minimal' },
+];
+let tokenFiredUntil = -1;
+
+/* S9 技术栈逐个点亮(v1.4: S9 在 94-106s, 13 个 tag 在 ~9s 内) */
+const STACK_SCHEDULE = [];
+for (let i = 0; i < 13; i++) {
+  STACK_SCHEDULE.push({ at: 95.2 + i * 0.7, i: i });
+}
+let stackFiredUntil = -1;
+
+/* S4b 真实产品页轮播调度(40-50s, 5 张每张 ~2s) */
+const PRODUCT_SCHEDULE = [
+  { at: 40.3, i: 0, label: '首页 · Home' },
+  { at: 42.5, i: 1, label: '八字命盘 · Bazi' },
+  { at: 44.7, i: 2, label: '紫微斗数 · Ziwei' },
+  { at: 46.9, i: 3, label: '老黄历择日 · Almanac' },
+  { at: 49.1, i: 4, label: 'AI 设置 · Settings' },
+];
+let productFiredUntil = -1;
+
+/* S11 终端命令 typewriter (v1.4: S11 在 116-120s) */
+const TERMINAL_CMD = 'git clone https://github.com/shetengteng/tt-qimen.git';
+let terminalStart = null;
+
+function fmt(sec) {
+  sec = Math.max(0, Math.min(TOTAL, sec));
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+function updateScene() {
+  const cur = SCENES.find(sc => t >= sc.start && t < sc.end) || SCENES[SCENES.length - 1];
+  if (cur.id !== currentSceneId) {
+    document.querySelectorAll('.scene').forEach(el => el.classList.remove('is-active'));
+    const el = document.getElementById(cur.id);
+    el.classList.add('is-active');
+    currentSceneId = cur.id;
+
+    if (cur.id === 's5') {
+      aiTypingStart = t;
+      aiTypingDone = false;
+      aiStream.innerHTML = '<span class="cursor"></span>';
+    } else {
+      document.querySelectorAll('#s5 .chip').forEach(c => c.classList.remove('is-flash'));
+      chipFiredUntil = -1;
+    }
+
+    if (cur.id === 's11') {
+      terminalStart = t;
+      document.getElementById('s11-cmd').textContent = '';
+    }
+
+    if (cur.id !== 's9') {
+      document.querySelectorAll('#s9 .tech-tag').forEach(tag => tag.classList.remove('is-on'));
+      stackFiredUntil = -1;
+    }
+
+    if (cur.id !== 's4b') {
+      document.querySelectorAll('#s4b .product-slide').forEach(s => s.classList.remove('is-on'));
+      const pill = document.getElementById('s4b-caption');
+      if (pill) pill.classList.remove('is-on');
+      productFiredUntil = -1;
+    }
+  }
+}
+
+function updateSubtitle() {
+  const hit = SUBTITLES.find(sub => t >= sub.s && t < sub.e);
+  const text = hit ? hit.t : '';
+  if (text !== lastSubtitleText) {
+    if (text) {
+      subtitleEl.textContent = text;
+      subtitleEl.classList.add('is-visible');
+    } else {
+      subtitleEl.classList.remove('is-visible');
+    }
+    lastSubtitleText = text;
+  }
+}
+
+/* v1.4: 按块逐段揭示, 每块直接追加 innerHTML, 末尾保留闪烁光标直至最后一块入场 */
+function updateAITyping() {
+  if (currentSceneId !== 's5' || aiTypingDone || aiTypingStart === null) return;
+  const elapsed = t - aiTypingStart;
+  let html = '';
+  let allShown = true;
+  for (const blk of AI_BLOCKS) {
+    if (elapsed >= blk.at) {
+      html += blk.html;
+    } else {
+      allShown = false;
+    }
+  }
+  aiStream.innerHTML = html + (allShown ? '' : '<span class="cursor"></span>');
+  if (allShown) aiTypingDone = true;
+}
+
+function updateChips() {
+  if (currentSceneId !== 's5') return;
+  for (const c of CHIP_SCHEDULE) {
+    if (t >= c.at && c.at > chipFiredUntil) {
+      const chip = document.querySelector(`#s5 .chip[data-i="${c.i}"]`);
+      if (chip) {
+        document.querySelectorAll('#s5 .chip').forEach(x => x.classList.remove('is-flash'));
+        chip.classList.add('is-flash');
+        chipFiredUntil = c.at;
+      }
+    }
+  }
+}
+
+function updateTokenWindow() {
+  /* v1.5: 已移除右上 CSS Token 代码窗,此函数保留为空,以兼容现有 timeline 调用 */
+  return;
+}
+
+function updateStackWall() {
+  if (currentSceneId !== 's9') return;
+  for (const s of STACK_SCHEDULE) {
+    if (t >= s.at && s.at > stackFiredUntil) {
+      const tag = document.querySelector(`#s9 .tech-tag[data-i="${s.i}"]`);
+      if (tag) tag.classList.add('is-on');
+      stackFiredUntil = s.at;
+    }
+  }
+}
+
+function updateTerminal() {
+  if (currentSceneId !== 's11' || terminalStart === null) return;
+  const delay = 1.0;
+  const speed = 22;
+  const elapsed = t - terminalStart - delay;
+  if (elapsed < 0) return;
+  const n = Math.min(TERMINAL_CMD.length, Math.floor(elapsed * speed));
+  document.getElementById('s11-cmd').textContent = TERMINAL_CMD.slice(0, n);
+}
+
+function updateProductSlideshow() {
+  if (currentSceneId !== 's4b') return;
+  for (const p of PRODUCT_SCHEDULE) {
+    if (t >= p.at && p.at > productFiredUntil) {
+      document.querySelectorAll('#s4b .product-slide').forEach(s => s.classList.remove('is-on'));
+      const slide = document.querySelector(`#s4b .product-slide[data-i="${p.i}"]`);
+      if (slide) slide.classList.add('is-on');
+      const pill = document.getElementById('s4b-caption');
+      if (pill) {
+        pill.textContent = p.label;
+        pill.classList.remove('is-on');
+        void pill.offsetWidth;
+        pill.classList.add('is-on');
+      }
+      productFiredUntil = p.at;
+    }
+  }
+}
+
+function tick() {
+  if (!playing) return;
+  t += TICK / 1000;
+  if (t >= TOTAL) {
+    t = TOTAL;
+    playing = false;
+    document.getElementById('btn-toggle').textContent = '▶ 播放';
+  }
+  render();
+}
+
+function render() {
+  updateScene();
+  updateSubtitle();
+  updateAITyping();
+  updateChips();
+  updateTokenWindow();
+  updateStackWall();
+  updateTerminal();
+  updateProductSlideshow();
+  hudBar.style.width = `${(t / TOTAL) * 100}%`;
+  meta.textContent = `${fmt(t)} / ${fmt(TOTAL)}`;
+}
+
+function resetTransientState() {
+  currentSceneId = null;
+  aiTypingStart = null;
+  aiTypingDone = false;
+  chipFiredUntil = -1;
+  tokenFiredUntil = -1;
+  stackFiredUntil = -1;
+  terminalStart = null;
+  productFiredUntil = -1;
+  document.getElementById('s11-cmd').textContent = '';
+  document.querySelectorAll('#s4b .product-slide').forEach(s => s.classList.remove('is-on'));
+  const captionPill = document.getElementById('s4b-caption');
+  if (captionPill) captionPill.classList.remove('is-on');
+}
+
+document.getElementById('btn-toggle').addEventListener('click', () => {
+  playing = !playing;
+  document.getElementById('btn-toggle').textContent = playing ? '⏸ 暂停' : '▶ 播放';
+});
+document.getElementById('btn-replay').addEventListener('click', () => {
+  t = 0;
+  resetTransientState();
+  playing = true;
+  document.getElementById('btn-toggle').textContent = '⏸ 暂停';
+  render();
+});
+document.getElementById('btn-prev').addEventListener('click', () => {
+  const cur = SCENES.find(sc => t >= sc.start && t < sc.end);
+  const idx = cur ? SCENES.indexOf(cur) : SCENES.length - 1;
+  const target = SCENES[Math.max(0, idx - 1)];
+  t = target.start;
+  resetTransientState();
+  render();
+});
+document.getElementById('btn-next').addEventListener('click', () => {
+  const cur = SCENES.find(sc => t >= sc.start && t < sc.end);
+  const idx = cur ? SCENES.indexOf(cur) : 0;
+  const target = SCENES[Math.min(SCENES.length - 1, idx + 1)];
+  t = target.start;
+  resetTransientState();
+  render();
+});
+document.getElementById('btn-hide').addEventListener('click', () => {
+  document.getElementById('hud').classList.toggle('is-hidden');
+  document.getElementById('controls').classList.toggle('is-hidden');
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'Space') { e.preventDefault(); document.getElementById('btn-toggle').click(); }
+  else if (e.code === 'KeyR') { document.getElementById('btn-replay').click(); }
+  else if (e.code === 'ArrowLeft') { document.getElementById('btn-prev').click(); }
+  else if (e.code === 'ArrowRight') { document.getElementById('btn-next').click(); }
+  else if (e.code === 'KeyH') { document.getElementById('btn-hide').click(); }
+});
+
+timer = setInterval(tick, TICK);
+render();
+</script>
+
+</body>
+</html>

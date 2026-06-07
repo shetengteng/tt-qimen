@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>tt-qimen · 宣传片动画分镜</title>
+<meta name="viewport" content="width=1920, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<style>
+  /* ============ 全局基底 ============ */
+  :root {
+    --c-paper: #fffbf0;
+    --c-paper-deep: #f6efd8;
+    --c-ink: #1a1613;
+    --c-ink-soft: #4a3f37;
+    --c-cinnabar: #c23a2a;
+    --c-cinnabar-soft: #e15a4a;
+    --c-rouge: #f3d9d4;
+    --c-violet: #3b2f63;
+    --c-violet-soft: #ece9f5;
+    --c-bg-dark: #0a0908;
+
+    --font-cn-serif: 'STZhongsong', 'STSong', 'Songti SC', 'Noto Serif CJK SC', 'SimSun', serif;
+    --font-cn-sans: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    --font-en: 'Inter', 'Helvetica Neue', 'Segoe UI', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100vw; height: 100vh;
+    overflow: hidden;
+    background: #000;
+    font-family: var(--font-cn-sans);
+    color: var(--c-ink);
+    user-select: none;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ============ 全屏舞台 ============ */
+  #stage {
+    position: relative;
+    width: 100vw; height: 100vh;
+    overflow: hidden;
+  }
+  .scene {
+    position: absolute; inset: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.45s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .scene.is-active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* ============ 进度条 & 控制栏(录屏时可按 H 隐藏) ============ */
+  #hud {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 10000;
+    height: 4px;
+    background: rgba(255,255,255,0.08);
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  #hud.is-hidden { opacity: 0; }
+  #hud-bar {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, var(--c-cinnabar), var(--c-cinnabar-soft));
+    transition: width 0.1s linear;
+  }
+  #controls {
+    position: fixed;
+    bottom: 12px; right: 12px;
+    z-index: 10000;
+    display: flex; gap: 8px;
+    padding: 8px 12px;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(8px);
+    border-radius: 999px;
+    color: #fff;
+    font-size: 12px;
+    font-family: var(--font-en);
+    transition: opacity 0.3s;
+  }
+  #controls.is-hidden { opacity: 0; pointer-events: none; }
+  #controls button {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 11px;
+    font-family: inherit;
+  }
+  #controls button:hover { background: rgba(255,255,255,0.15); }
+  #controls .meta { opacity: 0.7; padding: 0 4px; }
+
+  /* ============ 字幕条 ============ */
+  #subtitles {
+    position: fixed;
+    left: 0; right: 0;
+    bottom: 8vh;
+    z-index: 9999;
+    text-align: center;
+    pointer-events: none;
+  }
+  #subtitle-text {
+    display: inline-block;
+    padding: 12px 28px;
+    background: rgba(0,0,0,0.72);
+    color: #fff;
+    font-family: var(--font-cn-sans);
+    font-size: 26px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    line-height: 1.5;
+    border-radius: 6px;
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.25s, transform 0.25s;
+    max-width: 80vw;
+  }
+  #subtitle-text.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* =========================================== */
+  /* ============ S1 · 开场 · 启 ================= */
+  /* =========================================== */
+  #s1 {
+    background: radial-gradient(ellipse at center, #1a0e0a 0%, #000 70%);
+  }
+  #s1 .kanji-wrap {
+    position: relative;
+    text-align: center;
+  }
+  #s1 .kanji {
+    font-family: var(--font-cn-serif);
+    font-size: 320px;
+    color: var(--c-cinnabar);
+    font-weight: 700;
+    line-height: 1;
+    text-shadow:
+      0 0 40px rgba(194, 58, 42, 0.5),
+      0 0 80px rgba(194, 58, 42, 0.25);
+    opacity: 0;
+    transform: scale(1.15);
+    filter: blur(8px);
+  }
+  #s1.is-active .kanji {
+    animation: s1-kanji-in 1.8s cubic-bezier(.22,.61,.36,1) 0.4s forwards;
+  }
+  @keyframes s1-kanji-in {
+    0%   { opacity: 0; transform: scale(1.15); filter: blur(8px); }
+    100% { opacity: 1; transform: scale(1.0); filter: blur(0); }
+  }
+  #s1 .subtitle-main {
+    margin-top: 32px;
+    font-family: var(--font-cn-serif);
+    font-size: 56px;
+    color: var(--c-paper);
+    letter-spacing: 0.5em;
+    text-indent: 0.5em;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  #s1.is-active .subtitle-main {
+    animation: s1-fade-up 1.2s ease-out 1.8s forwards;
+  }
+  #s1 .subtitle-en {
+    margin-top: 18px;
+    font-family: var(--font-en);
+    font-size: 18px;
+    color: rgba(255, 251, 240, 0.55);
+    letter-spacing: 0.4em;
+    text-indent: 0.4em;
+    text-transform: lowercase;
+    opacity: 0;
+  }
+  #s1.is-active .subtitle-en {
+    animation: s1-fade-up 1.2s ease-out 2.4s forwards;
+  }
+  @keyframes s1-fade-up {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* =========================================== */
+  /* ============ S2 · 痛点 ===================== */
+  /* =========================================== */
+  #s2 {
+    background: #1a1613;
+  }
+  #s2 .app-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 24px;
+    width: 60%;
+    max-width: 900px;
+    opacity: 0;
+  }
+  #s2.is-active .app-grid {
+    animation: s2-grid-in 0.6s ease-out 0.2s forwards, s2-grid-shake 4s ease-in-out 1.2s forwards;
+  }
+  @keyframes s2-grid-in {
+    to { opacity: 1; }
+  }
+  @keyframes s2-grid-shake {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    20%  { transform: translate(-2px, 1px) rotate(-0.5deg); }
+    40%  { transform: translate(2px, -1px) rotate(0.5deg); }
+    60%  { transform: translate(-1px, 2px) rotate(-0.3deg); }
+    80%  { transform: translate(1px, -2px) rotate(0.3deg); }
+  }
+  #s2 .app-icon {
+    aspect-ratio: 1;
+    border-radius: 22%;
+    background: linear-gradient(135deg, #2a2520, #4a3f37);
+    border: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-cn-serif);
+    font-size: 24px;
+    color: rgba(255, 251, 240, 0.45);
+  }
+  #s2 .app-icon:nth-child(3n) { background: linear-gradient(135deg, #3a2b25, #5c4238); }
+  #s2 .app-icon:nth-child(5n) { background: linear-gradient(135deg, #2c2a3a, #423f5c); }
+  #s2 .question-mark {
+    position: absolute;
+    font-family: var(--font-cn-serif);
+    font-size: 380px;
+    color: var(--c-cinnabar);
+    opacity: 0;
+    transform: scale(0.5);
+    text-shadow: 0 0 60px rgba(194, 58, 42, 0.6);
+  }
+  #s2.is-active .question-mark {
+    animation: s2-qmark 2.4s ease-out 4.8s forwards;
+  }
+  @keyframes s2-qmark {
+    0%   { opacity: 0; transform: scale(0.5); }
+    40%  { opacity: 1; transform: scale(1.05); }
+    100% { opacity: 0.85; transform: scale(1.0); }
+  }
+
+  /* =========================================== */
+  /* ============ S3 · 8 模块矩阵 ================ */
+  /* =========================================== */
+  #s3 {
+    background:
+      radial-gradient(ellipse at 50% 30%, rgba(243, 217, 212, 0.5), transparent 60%),
+      var(--c-paper);
+  }
+  #s3 .module-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+    width: 78%;
+    max-width: 1400px;
+  }
+  #s3 .mod-card {
+    background: #fff;
+    border: 1.5px solid var(--c-rouge);
+    border-radius: 14px;
+    padding: 28px 22px 24px;
+    box-shadow: 0 8px 24px rgba(194, 58, 42, 0.08);
+    text-align: center;
+    opacity: 0;
+    transform: translateY(40px);
+    position: relative;
+    overflow: hidden;
+  }
+  #s3 .mod-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--c-cinnabar), var(--c-cinnabar-soft));
+  }
+  #s3 .mod-card .mod-num {
+    font-family: var(--font-cn-serif);
+    font-size: 16px;
+    color: var(--c-cinnabar);
+    letter-spacing: 0.15em;
+  }
+  #s3 .mod-card .mod-name {
+    font-family: var(--font-cn-serif);
+    font-size: 36px;
+    color: var(--c-ink);
+    margin: 8px 0 6px;
+    font-weight: 700;
+  }
+  #s3 .mod-card .mod-sub {
+    font-size: 14px;
+    color: var(--c-ink-soft);
+    letter-spacing: 0.1em;
+    line-height: 1.5;
+  }
+  #s3.is-active .mod-card { animation: s3-card-in 0.55s cubic-bezier(.22,.61,.36,1) forwards; }
+  #s3.is-active .mod-card:nth-child(1) { animation-delay: 0.20s; }
+  #s3.is-active .mod-card:nth-child(2) { animation-delay: 0.50s; }
+  #s3.is-active .mod-card:nth-child(3) { animation-delay: 0.80s; }
+  #s3.is-active .mod-card:nth-child(4) { animation-delay: 1.10s; }
+  #s3.is-active .mod-card:nth-child(5) { animation-delay: 1.40s; }
+  #s3.is-active .mod-card:nth-child(6) { animation-delay: 1.70s; }
+  #s3.is-active .mod-card:nth-child(7) { animation-delay: 2.00s; }
+  #s3.is-active .mod-card:nth-child(8) { animation-delay: 2.30s; }
+  @keyframes s3-card-in {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  #s3 .module-title {
+    position: absolute;
+    top: 6vh;
+    width: 100%;
+    text-align: center;
+    font-family: var(--font-cn-serif);
+    font-size: 38px;
+    color: var(--c-cinnabar);
+    letter-spacing: 0.5em;
+    text-indent: 0.5em;
+    opacity: 0;
+  }
+  #s3.is-active .module-title { animation: s3-title-in 1s ease-out 0s forwards; }
+  @keyframes s3-title-in { to { opacity: 1; } }
+
+  /* =========================================== */
+  /* ============ S4 · AI 解读 =================== */
+  /* =========================================== */
+  #s4 {
+    background: #fffbf0;
+    flex-direction: row;
+    align-items: stretch;
+    padding: 5vh 6vw;
+  }
+  #s4 .paipan {
+    flex: 1.2;
+    background: #fff;
+    border: 1px solid var(--c-rouge);
+    border-radius: 14px;
+    padding: 28px;
+    box-shadow: 0 10px 30px rgba(194, 58, 42, 0.06);
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  #s4.is-active .paipan { animation: s4-paipan-in 0.7s ease-out 0.1s forwards; }
+  @keyframes s4-paipan-in { to { opacity: 1; transform: translateX(0); } }
+  #s4 .paipan-title {
+    font-family: var(--font-cn-serif);
+    font-size: 28px;
+    color: var(--c-cinnabar);
+    border-bottom: 2px solid var(--c-rouge);
+    padding-bottom: 12px;
+    margin-bottom: 18px;
+  }
+  #s4 .pillar-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    flex: 1;
+  }
+  #s4 .pillar {
+    background: var(--c-paper);
+    border-radius: 8px;
+    padding: 16px 8px;
+    text-align: center;
+    border: 1px solid var(--c-rouge);
+  }
+  #s4 .pillar-label {
+    font-size: 12px;
+    color: var(--c-ink-soft);
+    letter-spacing: 0.3em;
+  }
+  #s4 .pillar-gan {
+    font-family: var(--font-cn-serif);
+    font-size: 48px;
+    color: var(--c-cinnabar);
+    line-height: 1;
+    margin: 12px 0 6px;
+    font-weight: 700;
+  }
+  #s4 .pillar-zhi {
+    font-family: var(--font-cn-serif);
+    font-size: 38px;
+    color: var(--c-ink);
+    line-height: 1;
+  }
+  #s4 .pillar-meta {
+    margin-top: 14px;
+    font-size: 11px;
+    color: var(--c-ink-soft);
+    letter-spacing: 0.1em;
+    line-height: 1.4;
+  }
+  #s4 .ai-side {
+    flex: 1;
+    margin-left: 28px;
+    background: linear-gradient(160deg, #fff 0%, #f9f4e3 100%);
+    border: 1px solid var(--c-rouge);
+    border-radius: 14px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  #s4.is-active .ai-side { animation: s4-ai-in 0.7s ease-out 0.9s forwards; }
+  @keyframes s4-ai-in { to { opacity: 1; transform: translateX(0); } }
+  #s4 .ai-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--c-rouge);
+    padding-bottom: 12px;
+  }
+  #s4 .ai-title {
+    font-family: var(--font-cn-serif);
+    font-size: 24px;
+    color: var(--c-cinnabar);
+  }
+  #s4 .provider-chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+    margin-bottom: 16px;
+  }
+  #s4 .chip {
+    font-size: 11px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid var(--c-rouge);
+    color: var(--c-ink-soft);
+    letter-spacing: 0.05em;
+    transition: all 0.3s;
+  }
+  #s4.is-active .chip.is-flash { animation: s4-chip-flash 0.8s ease-out forwards; }
+  @keyframes s4-chip-flash {
+    0%, 100% { background: #fff; color: var(--c-ink-soft); transform: scale(1); }
+    50% { background: var(--c-cinnabar); color: #fff; transform: scale(1.08); box-shadow: 0 4px 12px rgba(194, 58, 42, 0.35); }
+  }
+  #s4 .ai-stream {
+    flex: 1;
+    background: #fff;
+    border-radius: 8px;
+    padding: 18px 20px;
+    font-size: 17px;
+    line-height: 1.8;
+    color: var(--c-ink);
+    font-family: var(--font-cn-serif);
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(243, 217, 212, 0.6);
+  }
+  #s4 .ai-stream .cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background: var(--c-cinnabar);
+    vertical-align: text-bottom;
+    margin-left: 2px;
+    animation: cursor-blink 1s infinite;
+  }
+  @keyframes cursor-blink { 50% { opacity: 0; } }
+
+  /* =========================================== */
+  /* ============ S5 · 双主题 =================== */
+  /* =========================================== */
+  #s5 {
+    background: var(--c-paper);
+    overflow: hidden;
+  }
+  #s5 .split-stage {
+    position: relative;
+    width: 80%;
+    height: 70%;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+  }
+  #s5 .theme-half {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 36px 44px;
+  }
+  #s5 .theme-half.guofeng {
+    background: var(--c-paper);
+    color: var(--c-ink);
+    clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+  }
+  #s5 .theme-half.minimal {
+    background: #fff;
+    color: var(--c-ink);
+    clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+  }
+  #s5 .theme-half h3 {
+    font-family: var(--font-cn-serif);
+    font-size: 32px;
+    margin-bottom: 8px;
+  }
+  #s5 .theme-half.guofeng h3 { color: var(--c-cinnabar); }
+  #s5 .theme-half.minimal h3 { color: var(--c-violet); }
+  #s5 .theme-half .url {
+    font-family: var(--font-en);
+    font-size: 14px;
+    opacity: 0.55;
+    letter-spacing: 0.05em;
+    margin-bottom: 24px;
+  }
+  #s5 .demo-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+    border: 1px solid;
+  }
+  #s5 .theme-half.guofeng .demo-card { border-color: var(--c-rouge); }
+  #s5 .theme-half.minimal .demo-card { border-color: var(--c-violet-soft); }
+  #s5 .demo-card .demo-title {
+    font-family: var(--font-cn-serif);
+    font-size: 22px;
+    margin-bottom: 6px;
+  }
+  #s5 .theme-half.guofeng .demo-title { color: var(--c-cinnabar); }
+  #s5 .theme-half.minimal .demo-title { color: var(--c-violet); }
+  #s5 .demo-card .demo-body {
+    font-size: 14px;
+    opacity: 0.7;
+    line-height: 1.7;
+  }
+  #s5 .demo-btn {
+    margin-top: 14px;
+    display: inline-block;
+    padding: 8px 18px;
+    border-radius: 999px;
+    color: #fff;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+  }
+  #s5 .theme-half.guofeng .demo-btn { background: var(--c-cinnabar); }
+  #s5 .theme-half.minimal .demo-btn { background: var(--c-violet); }
+  #s5 .divider-sweep {
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 50%;
+    width: 6px;
+    background: linear-gradient(180deg, var(--c-cinnabar), var(--c-violet));
+    transform: translateX(-50%);
+    box-shadow: 0 0 20px rgba(194, 58, 42, 0.5);
+    opacity: 0;
+  }
+  #s5.is-active .divider-sweep { animation: s5-divider 1.2s ease-out 0.2s forwards; }
+  @keyframes s5-divider {
+    0%   { opacity: 0; height: 0; top: 50%; }
+    40%  { opacity: 1; height: 100%; top: 0; }
+    100% { opacity: 0.85; height: 100%; top: 0; }
+  }
+  #s5 .theme-tag {
+    position: absolute;
+    top: 16px;
+    font-family: var(--font-cn-serif);
+    font-size: 14px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    color: #fff;
+  }
+  #s5 .theme-tag.gf { left: 16px; background: var(--c-cinnabar); }
+  #s5 .theme-tag.mn { right: 16px; background: var(--c-violet); }
+
+  /* =========================================== */
+  /* ============ S6 · 三语 ===================== */
+  /* =========================================== */
+  #s6 {
+    background: linear-gradient(135deg, #fffbf0 0%, #f3d9d4 100%);
+  }
+  #s6 .lang-stack {
+    position: relative;
+    height: 200px;
+    width: 70vw;
+    perspective: 1200px;
+    text-align: center;
+  }
+  #s6 .lang {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: rotateX(90deg);
+    transform-origin: center center;
+    backface-visibility: hidden;
+  }
+  #s6 .lang .lang-text {
+    font-family: var(--font-cn-serif);
+    font-size: 96px;
+    color: var(--c-ink);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+  #s6 .lang.lang-en .lang-text {
+    font-family: var(--font-en);
+    font-size: 82px;
+    letter-spacing: 0.02em;
+  }
+  #s6 .lang .lang-tag {
+    margin-top: 18px;
+    font-size: 14px;
+    color: var(--c-cinnabar);
+    letter-spacing: 0.4em;
+    text-indent: 0.4em;
+  }
+  #s6.is-active .lang-zh-cn { animation: s6-lang-show 2.3s ease-in-out 0.3s forwards; }
+  #s6.is-active .lang-zh-tw { animation: s6-lang-show 2.3s ease-in-out 2.6s forwards; }
+  #s6.is-active .lang-en    { animation: s6-lang-show 2.3s ease-in-out 4.9s forwards; }
+  @keyframes s6-lang-show {
+    0%   { opacity: 0; transform: rotateX(90deg); }
+    15%  { opacity: 1; transform: rotateX(0deg); }
+    85%  { opacity: 1; transform: rotateX(0deg); }
+    100% { opacity: 0; transform: rotateX(-90deg); }
+  }
+
+  /* =========================================== */
+  /* ============ S7 · 隐私本地 ================= */
+  /* =========================================== */
+  #s7 {
+    background:
+      radial-gradient(ellipse at center, #1a1613 0%, #000 80%);
+    flex-direction: column;
+  }
+  #s7 .laptop {
+    position: relative;
+    width: 460px;
+    height: 280px;
+    background: linear-gradient(180deg, #2a2520, #3a3028);
+    border-radius: 14px 14px 4px 4px;
+    border: 2px solid var(--c-cinnabar);
+    box-shadow:
+      0 0 40px rgba(194, 58, 42, 0.4),
+      inset 0 0 40px rgba(194, 58, 42, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  #s7.is-active .laptop { animation: s7-fade-in 0.8s ease-out 0.2s forwards; }
+  @keyframes s7-fade-in { to { opacity: 1; transform: scale(1); } }
+  #s7 .laptop-screen {
+    font-family: var(--font-cn-serif);
+    font-size: 120px;
+    color: var(--c-cinnabar);
+    text-shadow: 0 0 20px rgba(194, 58, 42, 0.6);
+    font-weight: 700;
+  }
+  #s7 .laptop-base {
+    position: absolute;
+    bottom: -10px;
+    left: -40px;
+    right: -40px;
+    height: 10px;
+    background: linear-gradient(180deg, #3a3028, #1a1613);
+    border-radius: 0 0 8px 8px;
+    opacity: 0;
+  }
+  #s7.is-active .laptop-base { animation: s7-fade-in 0.6s ease-out 0.8s forwards; }
+  #s7 .cloud-block {
+    position: absolute;
+    color: rgba(255, 255, 255, 0.25);
+    font-family: var(--font-en);
+    font-size: 15px;
+    padding: 12px 18px;
+    border: 1px dashed rgba(255, 255, 255, 0.25);
+    border-radius: 999px;
+    opacity: 0;
+  }
+  #s7 .cloud-block.tl { top: 18%; left: 14%; }
+  #s7 .cloud-block.tr { top: 14%; right: 12%; }
+  #s7 .cloud-block.bl { bottom: 22%; left: 18%; }
+  #s7 .cloud-block.br { bottom: 18%; right: 16%; }
+  #s7 .cloud-block::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    background: linear-gradient(135deg, transparent 47%, var(--c-cinnabar) 49%, var(--c-cinnabar) 51%, transparent 53%);
+    opacity: 0;
+  }
+  #s7.is-active .cloud-block { animation: s7-cloud-show 0.4s ease-out forwards, s7-cloud-cross 0.4s ease-out forwards; }
+  #s7.is-active .cloud-block.tl { animation-delay: 2.0s, 3.0s; }
+  #s7.is-active .cloud-block.tr { animation-delay: 2.4s, 3.4s; }
+  #s7.is-active .cloud-block.bl { animation-delay: 2.8s, 3.8s; }
+  #s7.is-active .cloud-block.br { animation-delay: 3.2s, 4.2s; }
+  @keyframes s7-cloud-show { to { opacity: 1; } }
+  @keyframes s7-cloud-cross {
+    to { color: rgba(194, 58, 42, 0.6); border-color: var(--c-cinnabar); text-decoration: line-through; }
+  }
+  #s7 .privacy-pillars {
+    margin-top: 60px;
+    display: flex;
+    gap: 60px;
+    opacity: 0;
+  }
+  #s7.is-active .privacy-pillars { animation: s7-fade-in 0.8s ease-out 5s forwards; }
+  #s7 .privacy-pillar {
+    text-align: center;
+    color: var(--c-paper);
+    font-family: var(--font-cn-serif);
+  }
+  #s7 .privacy-pillar .icon {
+    font-size: 32px;
+    color: var(--c-cinnabar);
+    margin-bottom: 8px;
+  }
+  #s7 .privacy-pillar .label {
+    font-size: 18px;
+    letter-spacing: 0.2em;
+  }
+  #s7 .privacy-pillar .desc {
+    margin-top: 4px;
+    font-family: var(--font-cn-sans);
+    font-size: 12px;
+    color: rgba(255, 251, 240, 0.5);
+    letter-spacing: 0.15em;
+  }
+
+  /* =========================================== */
+  /* ============ S8 · 跨端 ===================== */
+  /* =========================================== */
+  #s8 {
+    background:
+      radial-gradient(ellipse at 50% 30%, rgba(243, 217, 212, 0.4), transparent 60%),
+      var(--c-paper);
+    flex-direction: column;
+  }
+  #s8 .platforms {
+    display: flex;
+    gap: 36px;
+    align-items: flex-end;
+  }
+  #s8 .platform {
+    background: #fff;
+    border-radius: 12px 12px 4px 4px;
+    border: 1.5px solid var(--c-rouge);
+    box-shadow: 0 12px 32px rgba(194, 58, 42, 0.1);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  #s8 .platform.web { width: 460px; height: 280px; }
+  #s8 .platform.mac { width: 400px; height: 260px; }
+  #s8 .platform.win { width: 400px; height: 260px; }
+  #s8.is-active .platform.web { animation: s8-pf-in 0.6s ease-out 0.2s forwards; }
+  #s8.is-active .platform.mac { animation: s8-pf-in 0.6s ease-out 0.7s forwards; }
+  #s8.is-active .platform.win { animation: s8-pf-in 0.6s ease-out 1.2s forwards; }
+  @keyframes s8-pf-in { to { opacity: 1; transform: translateY(0); } }
+  #s8 .titlebar {
+    height: 32px;
+    background: linear-gradient(180deg, #f5efde, #ebe3cc);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    border-bottom: 1px solid var(--c-rouge);
+    font-size: 11px;
+    color: var(--c-ink-soft);
+  }
+  #s8 .traffic-lights {
+    display: flex; gap: 6px; margin-right: 10px;
+  }
+  #s8 .traffic-lights span {
+    width: 11px; height: 11px; border-radius: 50%;
+  }
+  #s8 .traffic-lights .r { background: #ff5f56; }
+  #s8 .traffic-lights .y { background: #ffbd2e; }
+  #s8 .traffic-lights .g { background: #27c93f; }
+  #s8 .win-controls {
+    margin-left: auto;
+    font-family: var(--font-en);
+    color: var(--c-ink-soft);
+    letter-spacing: 0.3em;
+    font-size: 13px;
+  }
+  #s8 .url-bar {
+    flex: 1;
+    background: #fff;
+    border: 1px solid var(--c-rouge);
+    border-radius: 4px;
+    height: 18px;
+    margin-left: 8px;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    font-family: var(--font-en);
+    font-size: 10px;
+    color: var(--c-cinnabar);
+  }
+  #s8 .platform-body {
+    height: calc(100% - 32px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #fffbf0, #f6efd8);
+  }
+  #s8 .mini-kanji {
+    font-family: var(--font-cn-serif);
+    font-size: 96px;
+    color: var(--c-cinnabar);
+    font-weight: 700;
+    line-height: 1;
+  }
+  #s8 .mini-sub {
+    font-family: var(--font-cn-serif);
+    font-size: 16px;
+    color: var(--c-ink-soft);
+    letter-spacing: 0.3em;
+    margin-top: 8px;
+  }
+  #s8 .platform-body .col { text-align: center; }
+  #s8 .platform-label {
+    text-align: center;
+    margin-top: 20px;
+    font-family: var(--font-cn-serif);
+    font-size: 22px;
+    color: var(--c-cinnabar);
+    letter-spacing: 0.3em;
+    opacity: 0;
+  }
+  #s8.is-active .platform-label.l1 { animation: s8-pf-in 0.5s ease-out 0.5s forwards; }
+  #s8.is-active .platform-label.l2 { animation: s8-pf-in 0.5s ease-out 1.0s forwards; }
+  #s8.is-active .platform-label.l3 { animation: s8-pf-in 0.5s ease-out 1.5s forwards; }
+  #s8 .platforms-labels {
+    display: flex; gap: 36px; margin-top: 20px;
+  }
+  #s8 .platforms-labels .platform-label.l1 { width: 460px; }
+  #s8 .platforms-labels .platform-label.l2 { width: 400px; }
+  #s8 .platforms-labels .platform-label.l3 { width: 400px; }
+  #s8 .tagline {
+    margin-top: 40px;
+    font-family: var(--font-cn-serif);
+    font-size: 22px;
+    color: var(--c-ink-soft);
+    letter-spacing: 0.4em;
+    opacity: 0;
+  }
+  #s8.is-active .tagline { animation: s8-pf-in 0.7s ease-out 2s forwards; }
+  #s8 .tagline .accent {
+    color: var(--c-cinnabar);
+    font-weight: 700;
+  }
+
+  /* =========================================== */
+  /* ============ S9 · 收束 · CTA ================ */
+  /* =========================================== */
+  #s9 {
+    background: radial-gradient(ellipse at center, #1a0e0a 0%, #000 75%);
+    flex-direction: column;
+  }
+  #s9 .cta-kanji {
+    font-family: var(--font-cn-serif);
+    font-size: 200px;
+    color: var(--c-cinnabar);
+    font-weight: 700;
+    text-shadow:
+      0 0 50px rgba(194, 58, 42, 0.6),
+      0 0 100px rgba(194, 58, 42, 0.25);
+    opacity: 0;
+    transform: scale(0.9);
+    line-height: 1;
+  }
+  #s9.is-active .cta-kanji { animation: s9-fade-in 1s ease-out 0.1s forwards; }
+  @keyframes s9-fade-in { to { opacity: 1; transform: scale(1); } }
+  #s9 .cta-title {
+    margin-top: 30px;
+    font-family: var(--font-cn-serif);
+    font-size: 48px;
+    color: var(--c-paper);
+    letter-spacing: 0.5em;
+    text-indent: 0.5em;
+    opacity: 0;
+  }
+  #s9.is-active .cta-title { animation: s9-fade-in 0.9s ease-out 0.8s forwards; }
+  #s9 .cta-url {
+    margin-top: 28px;
+    font-family: var(--font-en);
+    font-size: 22px;
+    color: rgba(255, 251, 240, 0.85);
+    letter-spacing: 0.1em;
+    opacity: 0;
+  }
+  #s9.is-active .cta-url { animation: s9-fade-in 0.8s ease-out 1.4s forwards; }
+  #s9 .cta-meta {
+    margin-top: 18px;
+    font-family: var(--font-en);
+    font-size: 14px;
+    color: rgba(255, 251, 240, 0.45);
+    letter-spacing: 0.2em;
+    opacity: 0;
+  }
+  #s9.is-active .cta-meta { animation: s9-fade-in 0.7s ease-out 1.8s forwards; }
+</style>
+</head>
+<body>
+
+<!-- ============ HUD ============ -->
+<div id="hud"><div id="hud-bar"></div></div>
+<div id="controls">
+  <button id="btn-replay">↻ 重播</button>
+  <button id="btn-toggle">⏸ 暂停</button>
+  <button id="btn-prev">⏮</button>
+  <button id="btn-next">⏭</button>
+  <span class="meta" id="meta">00:00 / 01:25</span>
+  <button id="btn-hide">隐藏 [H]</button>
+</div>
+
+<!-- ============ 字幕 ============ -->
+<div id="subtitles">
+  <span id="subtitle-text"></span>
+</div>
+
+<!-- ============ 舞台 ============ -->
+<div id="stage">
+
+  <!-- ===== S1 · 开场 · 启 ===== -->
+  <section class="scene" id="s1">
+    <div class="kanji-wrap">
+      <div class="kanji">启</div>
+      <div class="subtitle-main">启门问卜</div>
+      <div class="subtitle-en">tt-qimen · open the gate, ask the way</div>
+    </div>
+  </section>
+
+  <!-- ===== S2 · 痛点 ===== -->
+  <section class="scene" id="s2">
+    <div class="app-grid">
+      <div class="app-icon">命</div>
+      <div class="app-icon">紫</div>
+      <div class="app-icon">六</div>
+      <div class="app-icon">骨</div>
+      <div class="app-icon">签</div>
+      <div class="app-icon">名</div>
+      <div class="app-icon">历</div>
+      <div class="app-icon">梦</div>
+      <div class="app-icon">运</div>
+      <div class="app-icon">卦</div>
+      <div class="app-icon">辰</div>
+      <div class="app-icon">数</div>
+    </div>
+    <div class="question-mark">?</div>
+  </section>
+
+  <!-- ===== S3 · 8 模块矩阵 ===== -->
+  <section class="scene" id="s3">
+    <div class="module-title">八门齐开</div>
+    <div class="module-grid">
+      <div class="mod-card">
+        <div class="mod-num">壹 · 01</div>
+        <div class="mod-name">八字</div>
+        <div class="mod-sub">四柱推命<br/>五行相生</div>
+      </div>
+      <div class="mod-card">
+        <div class="mod-num">贰 · 02</div>
+        <div class="mod-name">紫微</div>
+        <div class="mod-sub">十二宫垣<br/>三方四正</div>
+      </div>
+      <div class="mod-card">
+        <div class="mod-num">叁 · 03</div>
+        <div class="mod-name">小六壬</div>
+        <div class="mod-sub">掐指一算<br/>应事即时</div>
+      </div>
+      <div class="mod-card">
+        <div class="mod-num">肆 · 04</div>
+        <div class="mod-name">称骨</div>
+        <div class="mod-sub">袁天罡之诀<br/>一斤一两</div>
+      </div>
+      <div class="mod-card">
+        <div class="mod-num">伍 · 05</div>
+        <div class="mod-name">灵签</div>
+        <div class="mod-sub">观音百签<br/>神明指引</div>
+      </div>
+      <div class="mod-card">
+        <div class="mod-num">陆 · 06</div>
+        <div class="mod-name">姓名</div>
+        <div class="mod-sub">五格剖象<br/>三才配置</div>
+      </div>
+      <div class="mod-card">
+        <div class="mod-num">柒 · 07</div>
+        <div class="mod-name">黄历</div>
+        <div class="mod-sub">宜忌吉时<br/>节气物候</div>
+      </div>
+      <div class="mod-card">
+        <div class="mod-num">捌 · 08</div>
+        <div class="mod-name">解梦</div>
+        <div class="mod-sub">周公辞典<br/>心象索解</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== S4 · AI 解读 ===== -->
+  <section class="scene" id="s4">
+    <div class="paipan">
+      <div class="paipan-title">八字 · 四柱推命</div>
+      <div class="pillar-grid">
+        <div class="pillar">
+          <div class="pillar-label">年柱</div>
+          <div class="pillar-gan">甲</div>
+          <div class="pillar-zhi">寅</div>
+          <div class="pillar-meta">大林木<br/>建禄</div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-label">月柱</div>
+          <div class="pillar-gan">丁</div>
+          <div class="pillar-zhi">卯</div>
+          <div class="pillar-meta">炉中火<br/>沐浴</div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-label">日柱</div>
+          <div class="pillar-gan">己</div>
+          <div class="pillar-zhi">巳</div>
+          <div class="pillar-meta">大林木<br/>帝旺</div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-label">时柱</div>
+          <div class="pillar-gan">辛</div>
+          <div class="pillar-zhi">未</div>
+          <div class="pillar-meta">路旁土<br/>冠带</div>
+        </div>
+      </div>
+    </div>
+    <div class="ai-side">
+      <div class="ai-header">
+        <div class="ai-title">AI 解读</div>
+        <div style="font-size: 11px; color: var(--c-ink-soft);">流式 · BYOK</div>
+      </div>
+      <div class="provider-chips">
+        <span class="chip" data-i="0">OpenAI</span>
+        <span class="chip" data-i="1">Claude</span>
+        <span class="chip" data-i="2">Gemini</span>
+        <span class="chip" data-i="3">Grok</span>
+        <span class="chip" data-i="4">DeepSeek</span>
+        <span class="chip" data-i="5">Qwen</span>
+        <span class="chip" data-i="6">Kimi</span>
+        <span class="chip" data-i="7">GLM</span>
+      </div>
+      <div class="ai-stream" id="ai-stream"><span class="cursor"></span></div>
+    </div>
+  </section>
+
+  <!-- ===== S5 · 双主题 ===== -->
+  <section class="scene" id="s5">
+    <div class="split-stage">
+      <div class="theme-half guofeng">
+        <span class="theme-tag gf">国风 · guofeng</span>
+        <h3 style="margin-top: 28px;">命盘解读</h3>
+        <div class="url">?theme=guofeng</div>
+        <div class="demo-card">
+          <div class="demo-title">乙木日主</div>
+          <div class="demo-body">生于秋月,金旺木囚,需丙火透干以解凉燥。喜走南方运,可承事业之基。</div>
+          <span class="demo-btn">询问 AI →</span>
+        </div>
+      </div>
+      <div class="theme-half minimal">
+        <span class="theme-tag mn">简约 · minimal</span>
+        <h3 style="margin-top: 28px;">Reading</h3>
+        <div class="url">?theme=minimal</div>
+        <div class="demo-card">
+          <div class="demo-title">Yi-Wood Day Master</div>
+          <div class="demo-body">Born in autumn — metal strong, wood imprisoned. Bing-fire transparency relieves the cold. Southern luck pillars favor career foundation.</div>
+          <span class="demo-btn">Ask AI →</span>
+        </div>
+      </div>
+      <div class="divider-sweep"></div>
+    </div>
+  </section>
+
+  <!-- ===== S6 · 三语 ===== -->
+  <section class="scene" id="s6">
+    <div class="lang-stack">
+      <div class="lang lang-zh-cn">
+        <div class="lang-text">命盘解读</div>
+        <div class="lang-tag">简体中文 · zh-CN</div>
+      </div>
+      <div class="lang lang-zh-tw">
+        <div class="lang-text">命盤解讀</div>
+        <div class="lang-tag">繁體中文 · zh-TW</div>
+      </div>
+      <div class="lang lang-en">
+        <div class="lang-text">Birth Chart Reading</div>
+        <div class="lang-tag">English · en</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== S7 · 隐私本地 ===== -->
+  <section class="scene" id="s7">
+    <div style="position: relative; width: 100%; height: 60%; display: flex; align-items: center; justify-content: center;">
+      <div class="cloud-block tl">☁ Cloud Server</div>
+      <div class="cloud-block tr">☁ Analytics</div>
+      <div class="cloud-block bl">☁ User Data</div>
+      <div class="cloud-block br">☁ Cookie Track</div>
+      <div class="laptop">
+        <div class="laptop-screen">启</div>
+        <div class="laptop-base"></div>
+      </div>
+    </div>
+    <div class="privacy-pillars">
+      <div class="privacy-pillar">
+        <div class="icon">🔒</div>
+        <div class="label">本地计算</div>
+        <div class="desc">100% in-browser</div>
+      </div>
+      <div class="privacy-pillar">
+        <div class="icon">🗝</div>
+        <div class="label">Key 不上传</div>
+        <div class="desc">localStorage only</div>
+      </div>
+      <div class="privacy-pillar">
+        <div class="icon">⛔</div>
+        <div class="label">零后端</div>
+        <div class="desc">no server, no tracking</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== S8 · 跨端 ===== -->
+  <section class="scene" id="s8">
+    <div class="platforms">
+      <div class="platform web">
+        <div class="titlebar">
+          <div class="traffic-lights"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+          <div class="url-bar">https://shetengteng.github.io/tt-qimen/</div>
+        </div>
+        <div class="platform-body">
+          <div class="col">
+            <div class="mini-kanji">启</div>
+            <div class="mini-sub">Web</div>
+          </div>
+        </div>
+      </div>
+      <div class="platform mac">
+        <div class="titlebar">
+          <div class="traffic-lights"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+          <span style="margin-left: 10px;">tt-qimen.app</span>
+        </div>
+        <div class="platform-body">
+          <div class="col">
+            <div class="mini-kanji">启</div>
+            <div class="mini-sub">macOS</div>
+          </div>
+        </div>
+      </div>
+      <div class="platform win">
+        <div class="titlebar">
+          <span>tt-qimen — 启门问卜</span>
+          <div class="win-controls">— ▢ ×</div>
+        </div>
+        <div class="platform-body">
+          <div class="col">
+            <div class="mini-kanji">启</div>
+            <div class="mini-sub">Windows</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="platforms-labels">
+      <div class="platform-label l1">Web</div>
+      <div class="platform-label l2">macOS</div>
+      <div class="platform-label l3">Windows</div>
+    </div>
+    <div class="tagline">同一份代码 · <span class="accent">Vue 3 + Tauri 2</span></div>
+  </section>
+
+  <!-- ===== S9 · 收束 ===== -->
+  <section class="scene" id="s9">
+    <div class="cta-kanji">启</div>
+    <div class="cta-title">启门问卜</div>
+    <div class="cta-url">shetengteng.github.io/tt-qimen</div>
+    <div class="cta-meta">GitHub: shetengteng/tt-qimen · MIT License · Open Source</div>
+  </section>
+
+</div>
+
+<script>
+/* ============================================================
+   时间线驱动器
+   说明:整个动画通过 setInterval(每 100ms 一次) 推进一个全局时间 t (秒)。
+        每个镜头有 [start, end] 时间区间;字幕有 [start, end] 与文本。
+        切换镜头时给目标 .scene 加 is-active(CSS 动画自动跑)。
+   ============================================================ */
+
+const SCENES = [
+  { id: 's1', start:  0.0, end:  6.0 },
+  { id: 's2', start:  6.0, end: 14.0 },
+  { id: 's3', start: 14.0, end: 28.0 },
+  { id: 's4', start: 28.0, end: 40.0 },
+  { id: 's5', start: 40.0, end: 50.0 },
+  { id: 's6', start: 50.0, end: 58.0 },
+  { id: 's7', start: 58.0, end: 70.0 },
+  { id: 's8', start: 70.0, end: 80.0 },
+  { id: 's9', start: 80.0, end: 85.0 },
+];
+
+/* 字幕表 · 必须与 subtitles.srt 严格一致 */
+const SUBTITLES = [
+  { s:  2.5, e:  6.0, t: '古人问天,今人问己。' },
+  { s:  6.5, e: 10.5, t: '八字、紫微、小六壬、称骨、灵签、姓名、黄历、解梦' },
+  { s: 10.8, e: 14.0, t: '以往散落在十几个 App 里' },
+  { s: 14.5, e: 19.0, t: '我们把 8 大经典术数,装进了一个浏览器' },
+  { s: 19.5, e: 24.5, t: '八张排盘 · 一份界面 · 真实算法 · 可视呈现' },
+  { s: 25.0, e: 28.0, t: '8 大模块 · 一站到底' },
+  { s: 28.5, e: 33.5, t: '排完盘,不必再去找解读' },
+  { s: 34.0, e: 39.5, t: '8 家主流大模型任选 · BYOK · 流式回复' },
+  { s: 40.5, e: 45.5, t: '国风沉稳,简约克制——一套数据,两种气质' },
+  { s: 46.0, e: 49.5, t: '一个 URL 参数,自由切换' },
+  { s: 50.5, e: 54.5, t: '简体 · 繁體 · English' },
+  { s: 55.0, e: 58.0, t: '三种语言,零运行时回退' },
+  { s: 58.5, e: 61.8, t: '命盘 · 在你的浏览器里算' },
+  { s: 62.2, e: 65.5, t: 'API Key · 只存在你的设备上' },
+  { s: 65.9, e: 70.0, t: '本站零后端,不收任何数据' },
+  { s: 70.5, e: 74.5, t: 'Web · macOS · Windows' },
+  { s: 74.9, e: 80.0, t: '同一份代码 · Vue 3 + Tauri 2' },
+  { s: 80.5, e: 85.0, t: '启门问卜 · 为现代人留一扇通往传统的门' },
+];
+
+const TOTAL = 85.0;
+
+let t = 0;           /* 当前时间(秒) */
+let playing = true;
+let timer = null;
+const TICK = 100;    /* 100ms */
+
+const stage = document.getElementById('stage');
+const subtitleEl = document.getElementById('subtitle-text');
+const hudBar = document.getElementById('hud-bar');
+const meta = document.getElementById('meta');
+const aiStream = document.getElementById('ai-stream');
+
+let currentSceneId = null;
+let lastSubtitleText = null;
+
+/* S4 流式打字状态 */
+const AI_TEXT = '甲木日主生于秋,金旺木囚,需丙火透干以解凉燥;喜走南方运,逢午未则身旺财生,事业根基可立。';
+let aiTypingStart = null;
+let aiTypingDone = false;
+
+/* S4 provider chip 切换调度 */
+const CHIP_SCHEDULE = [
+  { at: 29.0, i: 0 },
+  { at: 30.0, i: 1 },
+  { at: 31.0, i: 2 },
+  { at: 32.0, i: 3 },
+  { at: 33.0, i: 4 },
+  { at: 34.0, i: 5 },
+  { at: 35.0, i: 6 },
+  { at: 36.0, i: 7 },
+];
+let chipFiredUntil = -1;
+
+function fmt(sec) {
+  sec = Math.max(0, Math.min(TOTAL, sec));
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+function updateScene() {
+  /* 找出当前应处于哪个 scene */
+  const cur = SCENES.find(sc => t >= sc.start && t < sc.end) || SCENES[SCENES.length - 1];
+  if (cur.id !== currentSceneId) {
+    document.querySelectorAll('.scene').forEach(el => el.classList.remove('is-active'));
+    const el = document.getElementById(cur.id);
+    el.classList.add('is-active');
+    currentSceneId = cur.id;
+
+    /* 镜头切换时,重置 S4 流式打字 */
+    if (cur.id === 's4') {
+      aiTypingStart = t;
+      aiTypingDone = false;
+      aiStream.innerHTML = '<span class="cursor"></span>';
+    }
+    /* 镜头切换时,重置 S4 chip */
+    if (cur.id !== 's4') {
+      document.querySelectorAll('#s4 .chip').forEach(c => c.classList.remove('is-flash'));
+      chipFiredUntil = -1;
+    }
+  }
+}
+
+function updateSubtitle() {
+  const hit = SUBTITLES.find(sub => t >= sub.s && t < sub.e);
+  const text = hit ? hit.t : '';
+  if (text !== lastSubtitleText) {
+    if (text) {
+      subtitleEl.textContent = text;
+      subtitleEl.classList.add('is-visible');
+    } else {
+      subtitleEl.classList.remove('is-visible');
+    }
+    lastSubtitleText = text;
+  }
+}
+
+function updateAITyping() {
+  if (currentSceneId !== 's4' || aiTypingDone || aiTypingStart === null) return;
+  /* 打字在镜头进入 1.7s 后开始(给 AI side 入场动画留时间);速度 17 字/秒 */
+  const delay = 1.7;
+  const speed = 17;
+  const elapsed = t - aiTypingStart - delay;
+  if (elapsed < 0) return;
+  const n = Math.min(AI_TEXT.length, Math.floor(elapsed * speed));
+  aiStream.innerHTML = AI_TEXT.slice(0, n) + '<span class="cursor"></span>';
+  if (n >= AI_TEXT.length) aiTypingDone = true;
+}
+
+function updateChips() {
+  if (currentSceneId !== 's4') return;
+  for (const c of CHIP_SCHEDULE) {
+    if (t >= c.at && c.at > chipFiredUntil) {
+      const chip = document.querySelector(`#s4 .chip[data-i="${c.i}"]`);
+      if (chip) {
+        document.querySelectorAll('#s4 .chip').forEach(x => x.classList.remove('is-flash'));
+        chip.classList.add('is-flash');
+        chipFiredUntil = c.at;
+      }
+    }
+  }
+}
+
+function tick() {
+  if (!playing) return;
+  t += TICK / 1000;
+  if (t >= TOTAL) {
+    t = TOTAL;
+    playing = false;
+    document.getElementById('btn-toggle').textContent = '▶ 播放';
+  }
+  render();
+}
+
+function render() {
+  updateScene();
+  updateSubtitle();
+  updateAITyping();
+  updateChips();
+  hudBar.style.width = `${(t / TOTAL) * 100}%`;
+  meta.textContent = `${fmt(t)} / ${fmt(TOTAL)}`;
+}
+
+/* ============ 控制 ============ */
+document.getElementById('btn-toggle').addEventListener('click', () => {
+  playing = !playing;
+  document.getElementById('btn-toggle').textContent = playing ? '⏸ 暂停' : '▶ 播放';
+});
+document.getElementById('btn-replay').addEventListener('click', () => {
+  t = 0;
+  currentSceneId = null;
+  aiTypingStart = null;
+  aiTypingDone = false;
+  chipFiredUntil = -1;
+  playing = true;
+  document.getElementById('btn-toggle').textContent = '⏸ 暂停';
+  render();
+});
+document.getElementById('btn-prev').addEventListener('click', () => {
+  /* 跳到上一个镜头起点 */
+  const cur = SCENES.find(sc => t >= sc.start && t < sc.end);
+  const idx = cur ? SCENES.indexOf(cur) : SCENES.length - 1;
+  const target = SCENES[Math.max(0, idx - 1)];
+  t = target.start;
+  currentSceneId = null;
+  aiTypingStart = null;
+  aiTypingDone = false;
+  chipFiredUntil = -1;
+  render();
+});
+document.getElementById('btn-next').addEventListener('click', () => {
+  const cur = SCENES.find(sc => t >= sc.start && t < sc.end);
+  const idx = cur ? SCENES.indexOf(cur) : 0;
+  const target = SCENES[Math.min(SCENES.length - 1, idx + 1)];
+  t = target.start;
+  currentSceneId = null;
+  aiTypingStart = null;
+  aiTypingDone = false;
+  chipFiredUntil = -1;
+  render();
+});
+document.getElementById('btn-hide').addEventListener('click', () => {
+  document.getElementById('hud').classList.toggle('is-hidden');
+  document.getElementById('controls').classList.toggle('is-hidden');
+});
+
+/* 键盘快捷键 */
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'Space') { e.preventDefault(); document.getElementById('btn-toggle').click(); }
+  else if (e.code === 'KeyR') { document.getElementById('btn-replay').click(); }
+  else if (e.code === 'ArrowLeft') { document.getElementById('btn-prev').click(); }
+  else if (e.code === 'ArrowRight') { document.getElementById('btn-next').click(); }
+  else if (e.code === 'KeyH') { document.getElementById('btn-hide').click(); }
+});
+
+/* 启动 */
+timer = setInterval(tick, TICK);
+render();
+</script>
+
+</body>
+</html>
