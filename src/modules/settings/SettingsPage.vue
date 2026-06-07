@@ -44,6 +44,7 @@ import {
 } from '@/composables/ai/providers/registry'
 import { getProvider } from '@/composables/ai/providers'
 import { LlmError } from '@/composables/ai/errors'
+import { openExternal } from '@/lib/runtime'
 import type { ThemeId } from '@/themes'
 import type { Locale } from '@/locales'
 import { Button } from '@/components/ui/button'
@@ -531,6 +532,7 @@ function goHome() {
                 target="_blank"
                 rel="noopener noreferrer"
                 class="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-primary hover:underline"
+                @click.prevent="openExternal(currentProvider.apiKeyDocsUrl)"
               >
                 {{ t('settings.section.ai.providerDocsCta') }}
                 <ExternalLink class="size-3" aria-hidden="true" />

@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "tt-qimen 默认能力 - 仅暴露窗口控制与 updater 检查。最小权限原则。",
+  "description": "tt-qimen 默认能力 - 暴露窗口控制、updater 检查与系统浏览器外链。最小权限原则。",
   "windows": ["main"],
   "permissions": [
     "core:default",
@@ -10,6 +10,7 @@
     "core:window:allow-hide",
     "core:window:allow-close",
     "core:window:allow-set-size",
-    "updater:default"
+    "updater:default",
+    "opener:default"
   ]
 }

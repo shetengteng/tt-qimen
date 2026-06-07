@@ -13,3 +13,27 @@
  */
 export const isTauri =
   typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window
+
+/**
+ * 跨环境打开外部 URL。
+ *
+ * 浏览器:走原生 `window.open(_blank)`。
+ * Tauri 桌面端:`<a target="_blank">` 在 WebView 内不会响应,需通过
+ * `tauri-plugin-opener` 调系统默认浏览器(macOS open / Windows start / Linux xdg-open)。
+ *
+ * 用法(必须 prevent click 的默认行为以阻止 webview 内跳转):
+ *
+ *   ```vue
+ *   <a :href="url" target="_blank" @click.prevent="openExternal(url)">…</a>
+ *   ```
+ *
+ * 动态 import 避免浏览器 bundle 把 @tauri-apps/plugin-opener 打进去。
+ */
+export async function openExternal(url: string): Promise<void> {
+  if (isTauri) {
+    const { openUrl } = await import('@tauri-apps/plugin-opener')
+    await openUrl(url)
+    return
+  }
+  window.open(url, '_blank', 'noopener,noreferrer')
+}
