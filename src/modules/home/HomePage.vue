@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
@@ -58,6 +58,21 @@ const featuresMn = computed(
 function go(id: ModuleId) {
   router.push({ name: id })
 }
+
+/**
+ * Hero "浏览模块" 按钮滚动锚点。
+ *
+ * 不能用原生 `href="#modules"`：路由是 `createWebHashHistory`，hash 段被
+ * vue-router 解释为路径 `/modules`，没有匹配项 → 落到 404 路由。
+ * 改为程序化 `scrollIntoView`，复用 jiemeng 模块同款行为。
+ *
+ * 国风 / 简约两套模板各自渲染一个 `<section id="modules">`，由于 `v-if/v-else`
+ * 始终只渲染一个，共用同一个 ref 不会冲突。
+ */
+const modulesRef = ref<HTMLElement | null>(null)
+function scrollToModules() {
+  modulesRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
 </script>
 
 <template>
@@ -79,7 +94,7 @@ function go(id: ModuleId) {
         <Button as="a" href="#" variant="default" size="lg" @click.prevent="go('bazi')">
           <span>{{ t('home.hero.ctaPrimaryIcon') }}</span> {{ t('home.hero.ctaPrimary') }}
         </Button>
-        <Button as="a" href="#modules" variant="outline" size="lg">
+        <Button as="a" href="#" variant="outline" size="lg" @click.prevent="scrollToModules">
           <span>{{ t('home.hero.ctaSecondaryIcon') }}</span> {{ t('home.hero.ctaSecondary') }}
         </Button>
       </div>
@@ -115,7 +130,7 @@ function go(id: ModuleId) {
         <span>{{ t('home.sectionDivider') }}</span>
       </div>
 
-      <section class="modules-section" id="modules">
+      <section ref="modulesRef" class="modules-section" id="modules">
         <h2 class="section-title">{{ t('home.sectionTitle') }}</h2>
         <p class="section-subtitle">{{ t('home.sectionSubtitle') }}</p>
 
@@ -177,7 +192,7 @@ function go(id: ModuleId) {
           {{ t('home.hero.ctaMnPrimary') }}
           <span>→</span>
         </Button>
-        <Button as="a" href="#modules" variant="outline" size="lg">
+        <Button as="a" href="#" variant="outline" size="lg" @click.prevent="scrollToModules">
           {{ t('home.hero.ctaMnSecondary') }}
         </Button>
       </div>
@@ -227,7 +242,7 @@ function go(id: ModuleId) {
       </Button>
     </div>
 
-    <section class="modules-section" id="modules">
+    <section ref="modulesRef" class="modules-section" id="modules">
       <div class="section-header">
         <h2 class="section-title">{{ t('home.sectionTitleMn') }}</h2>
         <p class="section-sub">{{ t('home.sectionSubMn') }}</p>
