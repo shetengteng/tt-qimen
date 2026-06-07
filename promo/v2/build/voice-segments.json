@@ -1,0 +1,24 @@
+{
+  "comment": "Voice segment manifest for tt-qimen developer promo v1.5. Each segment has a precise start time (matching storyboard subtitle timeline) and the TTS configuration. Built once, replayable.",
+  "version": "1.5",
+  "totalDurationSec": 123,
+  "voiceMain": "zh-CN-YunyangNeural",
+  "voiceTech": "zh-CN-YunjianNeural",
+  "rateMain": "+10%",
+  "rateTech": "+18%",
+  "segments": [
+    { "id": "00", "startSec": 0.80,   "voice": "main", "text": "一份开源的中式占卜浏览器，代码托管在 GitHub，MIT License。" },
+    { "id": "01", "startSec": 6.80,   "voice": "main", "text": "古人问天，今人问己。" },
+    { "id": "02", "startSec": 9.29,   "voice": "main", "text": "一张八字排盘，从公历直接算到神煞，全部在浏览器里实时呈现。看不懂没关系，接下来，我们交给 AI 解读。" },
+    { "id": "03", "startSec": 18.85,  "voice": "main", "text": "每一个算法、每一首签诗、每一条解梦词条，都能对应到古籍原文。一切有迹可循，皆可逐字溯源。" },
+    { "id": "04", "startSec": 27.34,  "voice": "main", "text": "八大模块，八种算法实现。有的来自经典开源库，有的是规则化的纯逻辑，有的是百签全集加模糊搜索。总之，看得见、查得到、跑得通。" },
+    { "id": "05", "startSec": 39.56,  "voice": "main", "text": "八门、七法，立等可现。首页、八字、紫微、黄历，还有 AI 配置面板。打开网页，就能上手。" },
+    { "id": "06", "startSec": 48.91,  "voice": "main", "text": "左边是真实排好的命盘，右边接上 AI。再复杂的命盘，一键就能读懂。OpenAI、Claude、Gemini、DeepSeek，你想用哪家，就配哪家的 Key，数据直接发到模型官方，不经过任何中转。" },
+    { "id": "07", "startSec": 64.50,  "voice": "main", "text": "国风、简约两套主题，一键切换。同一份内容，两种气质。" },
+    { "id": "08", "startSec": 71.94,  "voice": "main", "text": "浏览器打开就能用，无需安装。macOS 和 Windows 也提供桌面端，完全离线可用。三个窗口里，是同一份内容，同一套体验。一份内容，三处可用。" },
+    { "id": "09", "startSec": 84.50,  "voice": "main", "text": "项目没有任何后端，也就没有服务器能收集你的数据。所有信息，始终留在你自己的浏览器里。" },
+    { "id": "10", "startSec": 94.50,  "voice": "tech", "text": "历法、紫微、桌面、AI，各自挑选社区里口碑最好的开源方案。该用的，都用了。" },
+    { "id": "11", "startSec": 104.51, "voice": "main", "text": "整个项目只做四件事：渲染页面、组织数据、跑算法、接入 AI。然后只守四条原则。浏览器优先、零后端、一切可溯源、AI 可插拔。" },
+    { "id": "12", "startSec": 116.50, "voice": "main", "text": "GitHub 搜索 tt-qimen。Star 它、Clone 它、贡献它。一切尽在 GitHub。" }
+  ]
+}

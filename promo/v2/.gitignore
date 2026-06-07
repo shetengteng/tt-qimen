@@ -1,0 +1,5 @@
+# Cached/regenerable artifacts — keep build scripts + final mp4, exclude intermediates
+build/seg/
+build/voiceover-dev.mp3
+build/storyboard-record.webm
+build/video-raw/
